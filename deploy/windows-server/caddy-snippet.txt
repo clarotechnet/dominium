@@ -1,0 +1,6 @@
+# Adicionar ao docker/Caddyfile do stack dominium-toa no servidor:
+
+{$DOMINIUM_DOMAIN} {
+    encode zstd gzip
+    reverse_proxy host.docker.internal:8791
+}

@@ -1,0 +1,50 @@
+PROXIMAS ETAPAS
+
+- Expandir retirada para outros modelos somente depois de captura real.
+- A transferencia oficial de equipamento serializado entre tecnicos foi
+  implementada em Natal a partir da captura de 18/07/2026. O painel consulta o
+  proprietario atual, gera uma previa assinada, exige confirmacao humana e
+  confirma origem e destino depois da escrita. Timeout ou resultado ambiguo
+  bloqueia a repeticao automatica da mesma transferencia.
+- A mudanca de instalador capturada em 18/07/2026 esta implementada em Natal.
+  O painel gera previa limitada ao contrato, assina a lista exata de IdOS e
+  envia uma chamada individual por OS somente depois da confirmacao humana.
+  Em 18/07/2026 o servidor devolveu o blob de sucesso para o contrato 4231016,
+  mas manteve ADRIANO COSTA no detalhe da OS. A operacao agora exige leitura de
+  confirmacao e nao atualiza mais a tela nesse falso positivo. Recapturar o
+  fluxo antes de considerar a movimentacao de OS plenamente validada.
+- Validar miscelaneas fora de Natal antes de permitir complemento automatico de
+  saldo nas outras bases.
+- Em 18/07/2026 a OS 2646770729 mostrou que o complemento automatico de tres
+  miscelaneas expirava em 15 segundos e era refeito pelo retry de preparacao.
+  O timeout passou para 60 segundos e a escrita agora ocorre no maximo uma vez;
+  resultado incerto bloqueia a baixa antes do ApplyUpdates e exige conferencia
+  do estoque. Validar novamente em uma unica 409 real com falta de saldo.
+- Capturar uma OS 409 com retirada e miscelaneas na mesma baixa.
+- A captura da criacao manual de OS foi preservada no manifesto
+  productive_protocol_templates.json (message_index 60) para a proxima etapa.
+- Integrar o TOA diretamente somente com autenticacao estavel; cookies e CSRF
+  copiados do navegador expiram e nao devem virar credenciais do servidor.
+- Manter uma operacao DataSnap por vez.
+- Durante uma operacao, GET /api/orders deve responder pela lista em cache em vez
+  de devolver 409 quando houver uma lista valida.
+- POST concorrente continua bloqueado para impedir duas baixas simultaneas.
+- O frontend deve aguardar e repetir automaticamente quando receber 409.
+- Exibir no painel o historico persistente de importacoes que hoje ja fica em
+  logs\importacoes-AAAAMMDD.jsonl.
+- Manter as baixas produtivas individuais; 106 e 0 continuam em lote.
+- Os codigos capturados 306 (NAO RESIDE NO ENDERECO), 404 (CLIENTE RECUSA-SE
+  DEVOLVER O DECODER / CABLES MODEM) e 512 (CONTROLE REMOTO COM DEFEITO -
+  TROCA) estao disponiveis somente no modulo Baixar OS. O codigo 404 exige uma
+  observacao escrita pelo operador. A tela Ordens de servico oferece apenas
+  106 e 0.
+- Antes de automatizar baixas vindas do TOA, implementar primeiro um modo de
+  simulacao que monte a decisao sem escrever no Imperium, depois liberar um
+  lote piloto pequeno e manter toda excecao na fila de tratativa humana.
+- Importacao TOA apos timeout consulta as OS presentes no Imperium e devolve
+  retry_os_numbers. O frontend reprocessa somente essas ausentes e nunca repete
+  automaticamente o lote ambiguo inteiro. Validar com um novo PWM pequeno.
+- A OS 2646688682 apareceu para ALMIR FAUSTINO depois da mudanca de instalador,
+  mas a baixa 409 falhou por conexao apos 3 tentativas. Isso indica falha de
+  transporte na etapa seguinte, nao falha da mudanca; repetir apenas quando o
+  DataSnap estiver estavel e depois de atualizar a lista.

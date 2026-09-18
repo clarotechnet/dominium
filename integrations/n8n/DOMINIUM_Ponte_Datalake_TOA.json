@@ -1,0 +1,79 @@
+{
+  "name": "DOMINIUM - Ponte Datalake TOA",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "3048cf60-b06f-4f08-a58b-386948670101",
+      "name": "Receber do fluxo TOA",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map((item) => item.json || {});\nconst activities = [];\nconst orders = [];\nconst details = [];\nfor (const row of rows) {\n  if (Array.isArray(row.activities)) activities.push(...row.activities);\n  else if (Array.isArray(row.atividades)) activities.push(...row.atividades);\n  else if (row.activity_id || row.atividade_id || (row.id && !row.os_number && !row.num_os)) activities.push(row);\n  if (Array.isArray(row.orders)) orders.push(...row.orders);\n  else if (Array.isArray(row.activities_os)) orders.push(...row.activities_os);\n  else if (row.os_number || row.num_os || row.codigo_baixa_id) orders.push(row);\n  if (Array.isArray(row.details)) details.push(...row.details);\n  else if (row.detail === true || row.inventory || row.installed_equipment || row.removed_equipment || row.materials || row.miscelaneas) details.push(row);\n}\nreturn [{ json: { schema: 'dominium.toa.datalake.v1', source: 'n8n-toa-datalake', collector_id: $workflow.id, observed_at: new Date().toISOString(), activities, orders, details } }];"
+      },
+      "id": "e31872bb-d431-419b-97fe-c17cb1d49fc7",
+      "name": "Normalizar lote DOMINIUM",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DOMINIUM_MAIN_INGEST_URL }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [
+          { "name": "Authorization", "value": "={{ 'Bearer ' + $env.DOMINIUM_INGEST_TOKEN }}" },
+          { "name": "Content-Type", "value": "application/json" }
+        ]},
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json) }}",
+        "options": { "timeout": 60000 }
+      },
+      "id": "99e61425-4b62-41c6-9d13-074f12db4b2b",
+      "name": "Enviar ao DOMINIUM principal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, -100],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DOMINIUM_TV_INGEST_URL }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [
+          { "name": "Authorization", "value": "={{ 'Bearer ' + $env.DOMINIUM_INGEST_TOKEN }}" },
+          { "name": "Content-Type", "value": "application/json" }
+        ]},
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($json) }}",
+        "options": { "timeout": 60000 }
+      },
+      "id": "6b6dc171-b0db-4e47-945b-312b6519db47",
+      "name": "Enviar ao DOMINIUM TV",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 100],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Receber do fluxo TOA": { "main": [[{ "node": "Normalizar lote DOMINIUM", "type": "main", "index": 0 }]] },
+    "Normalizar lote DOMINIUM": { "main": [[
+      { "node": "Enviar ao DOMINIUM principal", "type": "main", "index": 0 },
+      { "node": "Enviar ao DOMINIUM TV", "type": "main", "index": 0 }
+    ]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "adbba559-af47-438f-b9b5-d0fddf70bb74",
+  "meta": { "templateCredsSetupCompleted": false },
+  "tags": []
+}

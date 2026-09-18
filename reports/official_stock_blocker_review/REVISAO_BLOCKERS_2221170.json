@@ -1,0 +1,604 @@
+{
+  "schema": "dominium_official_stock_blocker_review_v1",
+  "mode": "offline_blocker_review",
+  "contract": "2221170",
+  "activity_aid": "194300555",
+  "material_os": "2646508672",
+  "installer_id": 328898,
+  "stock_id": 276,
+  "profile": "TECHNET NATAL",
+  "stock_read_at": "2026-07-23T16:40:39-03:00",
+  "evidence_files": [
+    {
+      "path": "INSPECAO_2221170.json",
+      "sha256": "9adff81ad42b6e27ca88e41005731441c0a8c3122e3477b4ef746ddb77c70de3"
+    },
+    {
+      "path": "logs/toa-captures/live/20260722/toa-live-2221170-194300555-150749.json",
+      "sha256": "c6d7489e74128530d1c5aaa19aca90e1ab15961263abc510514608b46a3f7b2a"
+    },
+    {
+      "path": "reports/official_material_catalog/RELATORIO_CATALOGO_2221170.json",
+      "sha256": "54d99460dd970a50e7437791cce42d1ffd36c762f497ecf07ca652be52c06d37"
+    },
+    {
+      "path": "reports/official_stock_audit/RELATORIO_ESTOQUE_2221170.json",
+      "sha256": "08d3150ddad31d100e19a5c379f767905910a2c38765c80a4ae18e811af77e9b"
+    }
+  ],
+  "reviews": [
+    {
+      "code": "22025072",
+      "source_blocker": "stock_audit_sem saldo:22025072",
+      "canonical_state": "sem_saldo",
+      "origin": {
+        "source": "inventario normalizado da atividade TOA",
+        "contract": "2221170",
+        "activity_aid": "194300555",
+        "invid": "497450948",
+        "description": "22025072_FITA ISOLANTE 3M 33+",
+        "used_quantity": "1",
+        "json_pointer": "os_list[contract=2221170].os.inventory[material_code=22025072]"
+      },
+      "contract_dependency": {
+        "required": true,
+        "material_os": "2646508672",
+        "capability": "material_capable",
+        "inspection_invid": "497450948",
+        "inspection_inv_aid": "194300555",
+        "used_quantity": "1"
+      },
+      "matching": {
+        "assessment": "exact_code_from_toa_and_inspection",
+        "matching_incorreto": false,
+        "origin_conflicts": []
+      },
+      "official_catalog": {
+        "exact_code_confirmed": true,
+        "code": "22025072",
+        "ids": [
+          "4898"
+        ],
+        "descriptions": [
+          "FITA ISOLANTE 3M 33+"
+        ],
+        "catalog_review_status": "bloqueado"
+      },
+      "stock_evidence": {
+        "code": "22025072",
+        "official_description": "FITA ISOLANTE 3M 33+",
+        "catalog_descriptions": [
+          "FITA ISOLANTE 3M 33+"
+        ],
+        "equipment_id": 4898,
+        "installer_id": 328898,
+        "stock_id": 276,
+        "available_quantity": "0",
+        "unit": "M",
+        "profile": "TECHNET NATAL",
+        "source": "Imperium DataSnap read / TDtmEquipamentos.AS_GetRecords / DspListaEquiEstoque",
+        "read_at": "2026-07-23T16:40:39-03:00",
+        "status": "sem saldo",
+        "evidence": [
+          "exact_concrete_code_match"
+        ],
+        "divergences": [],
+        "stock_description": "FITA ISOLANTE 3M 33+"
+      },
+      "unit_evidence": {
+        "toa_unit": null,
+        "inspection_unit": null,
+        "catalog_unit": null,
+        "stock_unit": "M",
+        "comparable": false,
+        "divergent": false,
+        "status": "nao_comparavel",
+        "reason": "TOA and the official catalog do not expose a unit for this contract material; stock unit alone cannot prove a divergence."
+      },
+      "candidates": [
+        {
+          "code": "22025072",
+          "descriptions": [
+            "FITA ISOLANTE 3M 33+"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description"
+          ],
+          "stock_status": "sem saldo",
+          "available_quantity": "0",
+          "unit": "M",
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22056696",
+          "descriptions": [
+            "FITA ISOLANTE 3M 33+"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description"
+          ],
+          "stock_status": null,
+          "available_quantity": null,
+          "unit": null,
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22064608",
+          "descriptions": [
+            "FITA ISOLANTE 3M HIGHLAND 19MM X 20M"
+          ],
+          "sources": [
+            "desktop_description_exact_normalized_catalog_lookup",
+            "previous_stock_audit_context_only_not_equivalence"
+          ],
+          "stock_status": "encontrado",
+          "available_quantity": "6",
+          "unit": "M",
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        }
+      ],
+      "decision": {
+        "keep_blocked": true,
+        "blocker_can_be_removed": false,
+        "material_action": "manter_bloqueado",
+        "reason": "O codigo exato do contrato e oficial e obrigatorio, mas o saldo auditado do tecnico e zero.",
+        "automatic_alias_created": false,
+        "automatic_substitution_authorized": false
+      }
+    },
+    {
+      "code": "22056343",
+      "source_blocker": "stock_audit_ausente:22056343",
+      "canonical_state": "ausente",
+      "origin": {
+        "source": "inventario normalizado da atividade TOA",
+        "contract": "2221170",
+        "activity_aid": "194300555",
+        "invid": "497450950",
+        "description": "22056343_MARCADOR CASA PTO NR 1",
+        "used_quantity": "1",
+        "json_pointer": "os_list[contract=2221170].os.inventory[material_code=22056343]"
+      },
+      "contract_dependency": {
+        "required": true,
+        "material_os": "2646508672",
+        "capability": "material_capable",
+        "inspection_invid": "497450950",
+        "inspection_inv_aid": "194300555",
+        "used_quantity": "1"
+      },
+      "matching": {
+        "assessment": "exact_code_from_toa_and_inspection",
+        "matching_incorreto": false,
+        "origin_conflicts": []
+      },
+      "official_catalog": {
+        "exact_code_confirmed": true,
+        "code": "22056343",
+        "ids": [
+          "300"
+        ],
+        "descriptions": [
+          "MARCADOR CASA PTO NR 1"
+        ],
+        "catalog_review_status": "validado"
+      },
+      "stock_evidence": {
+        "code": "22056343",
+        "official_description": "MARCADOR CASA PTO NR 1",
+        "catalog_descriptions": [
+          "MARCADOR CASA PTO NR 1"
+        ],
+        "equipment_id": null,
+        "installer_id": 328898,
+        "stock_id": 276,
+        "available_quantity": null,
+        "unit": null,
+        "profile": "TECHNET NATAL",
+        "source": "Imperium DataSnap read / TDtmEquipamentos.AS_GetRecords / DspListaEquiEstoque",
+        "read_at": "2026-07-23T16:40:39-03:00",
+        "status": "ausente",
+        "evidence": [],
+        "divergences": []
+      },
+      "unit_evidence": {
+        "toa_unit": null,
+        "inspection_unit": null,
+        "catalog_unit": null,
+        "stock_unit": null,
+        "comparable": false,
+        "divergent": false,
+        "status": "nao_comparavel",
+        "reason": "TOA and the official catalog do not expose a unit for this contract material; stock unit alone cannot prove a divergence."
+      },
+      "candidates": [
+        {
+          "code": "22055830",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 1"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description",
+            "desktop_description_exact_normalized_catalog_lookup"
+          ],
+          "stock_status": null,
+          "available_quantity": null,
+          "unit": null,
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22056343",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 1"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description",
+            "desktop_description_exact_normalized_catalog_lookup"
+          ],
+          "stock_status": "ausente",
+          "available_quantity": null,
+          "unit": null,
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22056846",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 1"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description",
+            "desktop_description_exact_normalized_catalog_lookup"
+          ],
+          "stock_status": null,
+          "available_quantity": null,
+          "unit": null,
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22065719",
+          "descriptions": [],
+          "sources": [
+            "previous_stock_audit_context_only_not_equivalence"
+          ],
+          "stock_status": "encontrado",
+          "available_quantity": "4",
+          "unit": "UN",
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        }
+      ],
+      "decision": {
+        "keep_blocked": true,
+        "blocker_can_be_removed": false,
+        "material_action": "manter_bloqueado",
+        "reason": "O codigo exato do contrato e oficial e obrigatorio, mas esta ausente do estoque auditado do tecnico.",
+        "automatic_alias_created": false,
+        "automatic_substitution_authorized": false
+      }
+    },
+    {
+      "code": "22056341",
+      "source_blocker": "stock_audit_ausente:22056341",
+      "canonical_state": "ausente",
+      "origin": {
+        "source": "inventario normalizado da atividade TOA",
+        "contract": "2221170",
+        "activity_aid": "194300555",
+        "invid": "497450951",
+        "description": "22056341_MARCADOR CASA PTO NR 7",
+        "used_quantity": "1",
+        "json_pointer": "os_list[contract=2221170].os.inventory[material_code=22056341]"
+      },
+      "contract_dependency": {
+        "required": true,
+        "material_os": "2646508672",
+        "capability": "material_capable",
+        "inspection_invid": "497450951",
+        "inspection_inv_aid": "194300555",
+        "used_quantity": "1"
+      },
+      "matching": {
+        "assessment": "exact_code_from_toa_and_inspection",
+        "matching_incorreto": false,
+        "origin_conflicts": []
+      },
+      "official_catalog": {
+        "exact_code_confirmed": true,
+        "code": "22056341",
+        "ids": [
+          "354"
+        ],
+        "descriptions": [
+          "MARCADOR CASA PTO NR 7"
+        ],
+        "catalog_review_status": "validado"
+      },
+      "stock_evidence": {
+        "code": "22056341",
+        "official_description": "MARCADOR CASA PTO NR 7",
+        "catalog_descriptions": [
+          "MARCADOR CASA PTO NR 7"
+        ],
+        "equipment_id": null,
+        "installer_id": 328898,
+        "stock_id": 276,
+        "available_quantity": null,
+        "unit": null,
+        "profile": "TECHNET NATAL",
+        "source": "Imperium DataSnap read / TDtmEquipamentos.AS_GetRecords / DspListaEquiEstoque",
+        "read_at": "2026-07-23T16:40:39-03:00",
+        "status": "ausente",
+        "evidence": [],
+        "divergences": []
+      },
+      "unit_evidence": {
+        "toa_unit": null,
+        "inspection_unit": null,
+        "catalog_unit": null,
+        "stock_unit": null,
+        "comparable": false,
+        "divergent": false,
+        "status": "nao_comparavel",
+        "reason": "TOA and the official catalog do not expose a unit for this contract material; stock unit alone cannot prove a divergence."
+      },
+      "candidates": [
+        {
+          "code": "22055827",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 7"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description",
+            "desktop_description_exact_normalized_catalog_lookup"
+          ],
+          "stock_status": null,
+          "available_quantity": null,
+          "unit": null,
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22056341",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 7"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description",
+            "desktop_description_exact_normalized_catalog_lookup"
+          ],
+          "stock_status": "ausente",
+          "available_quantity": null,
+          "unit": null,
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22056844",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 7"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description",
+            "desktop_description_exact_normalized_catalog_lookup"
+          ],
+          "stock_status": null,
+          "available_quantity": null,
+          "unit": null,
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22065725",
+          "descriptions": [],
+          "sources": [
+            "previous_stock_audit_context_only_not_equivalence"
+          ],
+          "stock_status": "encontrado",
+          "available_quantity": "4",
+          "unit": "UN",
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        }
+      ],
+      "decision": {
+        "keep_blocked": true,
+        "blocker_can_be_removed": false,
+        "material_action": "manter_bloqueado",
+        "reason": "O codigo exato do contrato e oficial e obrigatorio, mas esta ausente do estoque auditado do tecnico.",
+        "automatic_alias_created": false,
+        "automatic_substitution_authorized": false
+      }
+    },
+    {
+      "code": "22056344",
+      "source_blocker": "stock_audit_ausente:22056344",
+      "canonical_state": "ausente",
+      "origin": {
+        "source": "inventario normalizado da atividade TOA",
+        "contract": "2221170",
+        "activity_aid": "194300555",
+        "invid": "497450952",
+        "description": "22056344_MARCADOR CASA PTO NR 2",
+        "used_quantity": "1",
+        "json_pointer": "os_list[contract=2221170].os.inventory[material_code=22056344]"
+      },
+      "contract_dependency": {
+        "required": true,
+        "material_os": "2646508672",
+        "capability": "material_capable",
+        "inspection_invid": "497450952",
+        "inspection_inv_aid": "194300555",
+        "used_quantity": "1"
+      },
+      "matching": {
+        "assessment": "exact_code_from_toa_and_inspection",
+        "matching_incorreto": false,
+        "origin_conflicts": []
+      },
+      "official_catalog": {
+        "exact_code_confirmed": true,
+        "code": "22056344",
+        "ids": [
+          "324"
+        ],
+        "descriptions": [
+          "MARCADOR CASA PTO NR 2"
+        ],
+        "catalog_review_status": "validado"
+      },
+      "stock_evidence": {
+        "code": "22056344",
+        "official_description": "MARCADOR CASA PTO NR 2",
+        "catalog_descriptions": [
+          "MARCADOR CASA PTO NR 2"
+        ],
+        "equipment_id": null,
+        "installer_id": 328898,
+        "stock_id": 276,
+        "available_quantity": null,
+        "unit": null,
+        "profile": "TECHNET NATAL",
+        "source": "Imperium DataSnap read / TDtmEquipamentos.AS_GetRecords / DspListaEquiEstoque",
+        "read_at": "2026-07-23T16:40:39-03:00",
+        "status": "ausente",
+        "evidence": [],
+        "divergences": []
+      },
+      "unit_evidence": {
+        "toa_unit": null,
+        "inspection_unit": null,
+        "catalog_unit": null,
+        "stock_unit": null,
+        "comparable": false,
+        "divergent": false,
+        "status": "nao_comparavel",
+        "reason": "TOA and the official catalog do not expose a unit for this contract material; stock unit alone cannot prove a divergence."
+      },
+      "candidates": [
+        {
+          "code": "22055831",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 2"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description",
+            "desktop_description_exact_normalized_catalog_lookup"
+          ],
+          "stock_status": null,
+          "available_quantity": null,
+          "unit": null,
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22056344",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 2"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description",
+            "desktop_description_exact_normalized_catalog_lookup"
+          ],
+          "stock_status": "ausente",
+          "available_quantity": null,
+          "unit": null,
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22056847",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 2"
+          ],
+          "sources": [
+            "official_catalog_exact_normalized_description",
+            "desktop_description_exact_normalized_catalog_lookup"
+          ],
+          "stock_status": null,
+          "available_quantity": null,
+          "unit": null,
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        },
+        {
+          "code": "22065720",
+          "descriptions": [],
+          "sources": [
+            "previous_stock_audit_context_only_not_equivalence"
+          ],
+          "stock_status": "encontrado",
+          "available_quantity": "4",
+          "unit": "UN",
+          "equivalence_authorized": false,
+          "reason": "Evidencia apenas informativa: um codigo concreto diferente nao pode substituir o codigo do contrato sem prova explicita e rastreavel de equivalencia."
+        }
+      ],
+      "decision": {
+        "keep_blocked": true,
+        "blocker_can_be_removed": false,
+        "material_action": "manter_bloqueado",
+        "reason": "O codigo exato do contrato e oficial e obrigatorio, mas esta ausente do estoque auditado do tecnico.",
+        "automatic_alias_created": false,
+        "automatic_substitution_authorized": false
+      }
+    }
+  ],
+  "states_present": [
+    "ausente",
+    "sem_saldo"
+  ],
+  "blockers_before": [
+    "stock_audit_sem saldo:22025072",
+    "stock_audit_ausente:22056343",
+    "stock_audit_ausente:22056341",
+    "stock_audit_ausente:22056344"
+  ],
+  "blockers_remaining": [
+    "stock_audit_sem_saldo:22025072",
+    "stock_audit_ausente:22056343",
+    "stock_audit_ausente:22056341",
+    "stock_audit_ausente:22056344"
+  ],
+  "blockers_removable": [],
+  "warnings": [
+    "unrelated_official_catalog_critical_errors:1"
+  ],
+  "unrelated_catalog_errors": [
+    {
+      "type": "duplicate_code_with_divergent_descriptions",
+      "code": "22055857",
+      "ids": [
+        "3479",
+        "404"
+      ],
+      "descriptions": [
+        "MARCADOR CASA PTO NR 8",
+        "MARCADOR CASA PTO NR 8 DIGICOMM TELECRAFTER"
+      ],
+      "rows": [
+        146,
+        3221
+      ]
+    }
+  ],
+  "conclusions": {
+    "material_matching_defect_proven": false,
+    "material_matching_change_required": false,
+    "aliases_created": [],
+    "payload_generated": false
+  },
+  "safety": {
+    "offline_only": true,
+    "network_used": false,
+    "post_executed": false,
+    "datasnap_read_executed": false,
+    "datasnap_write_executed": false,
+    "stock_movement_executed": false
+  }
+}

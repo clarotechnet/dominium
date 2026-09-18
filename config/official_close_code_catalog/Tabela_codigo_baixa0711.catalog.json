@@ -1,0 +1,2092 @@
+{
+  "schema": "dominium_official_close_code_catalog_v1",
+  "mode": "offline_pdf_extraction",
+  "source": {
+    "file_name": "Tabela_codigo_baixa0711.pdf",
+    "sha256": "383d785ad2fb624994ace1eb3a2681d7dceb9800d663710fab646ee5ab46772c",
+    "page_count": 44
+  },
+  "occurrence_count": 171,
+  "unique_code_count": 168,
+  "entries": [
+    {
+      "code": "100",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Agendamento Não Cumprido",
+      "usage_rule": "Quando o técnico não consegue cumprir o período agendado com o cliente",
+      "customer_communication": null,
+      "source_pages": [
+        4
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "101",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Endereço Não Localizado",
+      "usage_rule": "Quando o técnico não localiza o endereço para executar o serviço.",
+      "customer_communication": null,
+      "source_pages": [
+        4
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "103",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Chuva",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e identifica que o serviço não poderá ser realizado devido à chuva.",
+      "customer_communication": "Sr. (a) [Nome], não será possível realizar a instalação neste momento devido à chuva. Por motivos de segurança, não realizamos trabalhos sob essas condições. A Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        4
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "104",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Falta de Material",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e não consegue executar o serviço, devido à falta de material ou equipamento.",
+      "customer_communication": "Sr. (a) [Nome], infelizmente, não será possível realizar a sua instalação neste momento devido a um imprevisto com o material necessário. A Claro já está trabalhando para resolver essa situação o mais rápido possível e entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        4
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "105",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Sem Energia Elétrica Na Região / Prédio / Residência",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e não consegue executar o serviço devido à falta de energia elétrica.",
+      "customer_communication": "Sr. (a) [Nome], não será possível executar a sua instalação neste momento devido à falta de energia em sua residência. Sem energia, não é possível instalar e testar os equipamentos. A Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        4
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "106",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Cliente Ausente",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e o mesmo ou os responsáveis estão ausentes",
+      "customer_communication": null,
+      "source_pages": [
+        4
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "107",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Entrada Não Autorizada",
+      "usage_rule": "Quando o técnico vai até a residência e não obtém autorização do responsável para sua entrada.",
+      "customer_communication": null,
+      "source_pages": [
+        4
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "108",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Tubulação Obstruída sem solução",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta que o mesmo tem de fazer algum tipo de obra civil ou alteração na rede elétrica em sua residência para viabilizar a execução do serviço.",
+      "customer_communication": "Sr. (a) [Nome], não será possível finalizar a sua instalação devido a um problema na tubulação [explique para o assinante onde foi o problema de tubulação e o que foi feito para desobstruir]. A Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para o cancelamento da assinatura.",
+      "source_pages": [
+        5
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "109",
+      "status": "valid",
+      "category": "RETIRADA",
+      "description": "Pagamento Apresentado",
+      "usage_rule": "Quando o técnico vai até a residência do cliente para desconectá-lo por inadimplência e o mesmo apresenta o comprovante de pagamento.",
+      "customer_communication": null,
+      "source_pages": [
+        42
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "110",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Problema Na Tubulação",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta algum problema na tubulação e o cliente resolverá o problema para viabilizar a execução do serviço.",
+      "customer_communication": "Antes da quebra informe ao assinante que existe a possibilidade do envio de uma equipe especializada para executar a desobstrução. Caso assinante não aceite estender a visita em andamento informe que será necessário uma nova visita Sr. (a) [Nome], não será possível concluir a sua instalação agora devido a um problema na tubulação. Podemos agendar uma nova visita com uma equipe especializada para tentar resolver essa situação, sem custo",
+      "source_pages": [
+        5
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "112",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Sem Acesso Ao DG / Sótão",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e não consegue acesso ao DG ou Sótão para executar o serviço",
+      "customer_communication": "Sr. (a) [Nome], não será possível realizar a sua instalação, porque não conseguimos acessar o quadro de distribuição ou sótão. A Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento, mas é necessário que o acesso a essas áreas esteja liberado.",
+      "source_pages": [
+        5
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "113",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Sem TV / Computador na Residencia / Celular",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e constata que o mesmo não possui os equipamentos, necessários para que se conclua o serviço.",
+      "customer_communication": "Sr. (a) [Nome], não será possível executar a sua instalação devido à falta de uma TV, computador ou celular. Sem esses equipamentos, não consigo validar a instalação e testar se os produtos estão funcionando corretamente. Podemos agendar uma nova visita quando esses itens estiverem disponíveis. A Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        5
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "120",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Impossibilidade ao Atendimento",
+      "usage_rule": "Quando o técnico fica impedido de realizar a visita",
+      "customer_communication": null,
+      "source_pages": [
+        6
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "125",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Cliente desiste da Agenda",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e o mesmo ou o responsável solicita novo agendamento",
+      "customer_communication": "Sr. (a) [Nome], como o senhor(a) optou por não realizar a instalação neste momento, precisamos reagendar. O Sr pode realizar o reagendamento através do app minha claro residencial e caso queira posso te auxiliar nesse procedimento. Caso não seja possivel a Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        6
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "126",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Situação Pontual de Risco",
+      "usage_rule": "Utilize o código #126 - Situação Pontual de Risco se encontrar uma situação que comprometa sua segurança, mas que possa ser resolvida em outro momento. Isso significa que o atendimento será reagendado para uma data futura, quando a situação estiver normalizada e for seguro retornar ao local.",
+      "customer_communication": null,
+      "source_pages": [
+        6
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "127",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Área de Risco Bloqueio de Endereço",
+      "usage_rule": "O código #127 - Área de Risco Bloqueio de Endereço deve ser utilizado em casos em que o endereço é considerado uma área de risco. O líder deve ser acionado para utilização desse código para tratamento do bloqueio do endereço.",
+      "customer_communication": null,
+      "source_pages": [
+        6
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "128",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Tubulação GPON Obstruída/Soluçã o HFC",
+      "usage_rule": "Quando na instalação GPON encontrar tubulação Obstruída mas existir um cabo coaxial HFC que possa ser utilizado.",
+      "customer_communication": "Sr. (a) [Nome], não será possível realizar a instalação da fibra óptica, mas tem um cabo coaxial que pode ser utilizado. Para não deixar sem o produto da Claro, você receberá uma mensagem pelo whatsapp para liberar o instalação da internet. Um atendente lhe explicará e tirará todas as suas dúvidas.",
+      "source_pages": [
+        6
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "132",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Falta Caixa M ou Fibra",
+      "usage_rule": "O código #132 – Falta Caixa M ou Fibra deve ser utilizado em casos em que o não houver a caixa de emenda ou fibra específica para atendimento do MDU.",
+      "customer_communication": null,
+      "source_pages": [
+        7
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "134",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Adequação MDU Iniciada mas Não Terminada",
+      "usage_rule": "Quando o técnico inicia a construção do MDU e por qualquer motivo não é possível terminar no mesmo dia.",
+      "customer_communication": null,
+      "source_pages": [
+        7
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "135",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Falta Equipe MDU",
+      "usage_rule": "Utilize o código #135 – Falta Equipe MDU nos casos onde receber uma OS de HP/MDU e não haver disponibilidade da equipe de construção para atendimento conjunto.",
+      "customer_communication": null,
+      "source_pages": [
+        7
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "136",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Impedimento de Acesso Area Privativa",
+      "usage_rule": "Deve ser utilizado quando for impedido de entrar em uma área especifica do prédio para passar a fibra e continuar a construção do MDU.",
+      "customer_communication": null,
+      "source_pages": [
+        7
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "191",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "REFEITO CONECTOR NAP/DIO BACKBONE",
+      "usage_rule": "Quando o técnico vai até o MDU e soluciona o problema substituindo o conector na NAP/DIO do Backbone",
+      "customer_communication": null,
+      "source_pages": [
+        37
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "192",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "TROCA DE DIO DANIFICADO",
+      "usage_rule": "Quando o técnico vai até o MDU e soluciona o problema trocando o DIO danificado",
+      "customer_communication": null,
+      "source_pages": [
+        37
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "193",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "TROCA DE NAP MDU DANIFICADA",
+      "usage_rule": "Quando o técnico vai até o MDU e soluciona o problema trocando a NAP MDU danificada",
+      "customer_communication": null,
+      "source_pages": [
+        37
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "194",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "TROCA DE CABO LOW FRICTION – INFRA",
+      "usage_rule": "Quando o técnico vai até o MDU e soluciona o problema trocando o cabo Low Friction (entre o DIO/NAP e a NAP MDU) com defeito",
+      "customer_communication": null,
+      "source_pages": [
+        37
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "195",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "TROCA DE CABO RISER",
+      "usage_rule": "Quando o técnico vai até o MDU e soluciona o problema trocando o cabo Riser (entre o DIO/NAP e a NAP MDU) com defeito",
+      "customer_communication": null,
+      "source_pages": [
+        37
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "196",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "REALIZADO FUSÃO INTERNA DIO",
+      "usage_rule": "Quando o técnico vai até o MDU e soluciona o problema refazendo a fusão da fibra dentro da DIO",
+      "customer_communication": null,
+      "source_pages": [
+        37
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "197",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "REALIZADO FUSÃO EXTERNA",
+      "usage_rule": "Quando o técnico vai até o MDU e soluciona o problema refazendo a fusão da fibra na caixa de emenda da rede externa",
+      "customer_communication": null,
+      "source_pages": [
+        37
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "202",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Node em Outage",
+      "usage_rule": "Quando o Outage impede a execução dos serviços em campo ou são geradas visitas indevidas relacionadas a este problema",
+      "customer_communication": "Sr. (a) [Nome], não será possível realizar a instalação agora devido a um problema de sinal na região, a previsão é normalizar até as xx:xx horas [Levante o horario de reestabelecimento no app nota 10 consulta outage]. Assim que a situação for resolvida, A Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        7
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "203",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Rede Externa Com Problema",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta que só conseguirá executar o serviço após uma intervenção na Rede Externa",
+      "customer_communication": "Sr. (a) [Nome], não será possível finalizar a sua instalação neste momento devido a um problema na rede externa da Claro. O prazo estimado para solução é de até 3 dias. Assim que o problema for resolvido, a Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        8
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "204",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Backbone Com Problema",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta que só conseguirá executar o serviço após uma intervenção no Backbone",
+      "customer_communication": "Sr. (a) [Nome], não será possível finalizar a sua instalação neste momento devido a um problema na estrutura de distribuição do seu prédio. O prazo estimado para a resolução é de até 3 dias. Assim que o problema for resolvido, A Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        8
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "205",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Falta Tap Ou Passivo / Tap Ou Passivo Lotado",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta que o Tap ou Passivo que deveria estar disponível para o HP não existe ou está lotado, impedindo a execução do serviço.",
+      "customer_communication": "Sr. (a) [Nome], não será possível finalizar a sua instalação neste momento porque todas as portas na rede da Claro estão ocupadas. O prazo para disponibilizar novas portas é de até 4 dias. Assim que o problema for solucionado, a Claro entrará em contato com o titular do contrato para agendar uma nova visita.",
+      "source_pages": [
+        8
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "206",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Prédio Sem Backbone",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta que o MDU no qual o mesmo reside não possui Backbone, impedindo a execução do serviço.",
+      "customer_communication": "Sr. (a) Nome, não será possível realizar a sua instalação no momento, devido a falta de estrutura da fibra da claro em seu prédio, o prazo para solucionar é de até 7 dias. Assim que o problema estiver solucionado, a Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        8
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "207",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Prédio Sem Re Ativado",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta q etorno Backbone não possui retorno o ativado, impedindo a execução serviço.",
+      "customer_communication": "que o o o do",
+      "source_pages": [
+        9
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "208",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Problemas no",
+      "usage_rule": "Quando técnico vai a residência cliente e identifica problema d o NOW NOW e necessita de intervenção NOC",
+      "customer_communication": "a do do o do",
+      "source_pages": [
+        9
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "209",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "NAP Lotada em",
+      "usage_rule": "Quando o técnico vai até o MDU cliente e detecta que a NAP que de m MDU estar disponível para o HP não exis está lotado, impedindo a execução serviço.",
+      "customer_communication": "Sr. (a) [Nome], não será possível realizar a instalação no momento porque todas as portas da Claro no U do quadro do seu prédio estão ocupadas. O everia prazo para resolver essa situação é de ste ou até 3 dias. Assim que o problema for o do solucionado, a Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        9
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "211",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Falta NAP/NAP",
+      "usage_rule": "Quando o técnico vai até a residên do cliente e detecta que a NAP q Lotada deveria estar disponível para o HP existe ou está lotado, impedindo execução do serviço.",
+      "customer_communication": "agendamento. Sr. (a) [Nome], não será possível realizar a instalação no momento porque todas ncia as portas na rede da Claro estão que ocupadas. O prazo para resolver essa P não situação é de até 3 dias. Assim que o o a problema for solucionado, a Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        9
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "217",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "BACKBONE GPO PROBLEM",
+      "usage_rule": "Quando o técnico vai até a residên ON COM do cliente e detecta que só conseg MA executar o serviço após uma intervenção no Backbone GPON",
+      "customer_communication": "Sr. (a) [Nome], não será possível finalizar a sua instalação neste momento devido a um problema na ncia estrutura de distribuição do seu prédio. guirá O prazo estimado para a resolução é de até 2 dias. Assim que o problema for N resolvido, a Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        9
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "218",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "BAIXA POTENCIA",
+      "usage_rule": "Quando o cliente estiver distante DE SINAL rede e o sinal não for suficiente p atender todos os pontos solicitad",
+      "customer_communication": "agendamento. e da para dos.",
+      "source_pages": [
+        9
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "301",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Tipo de OS Inc",
+      "usage_rule": "Quando o técnico constata que correta operador utilizou o tipo de OS inco ao do serviço solicitado",
+      "customer_communication": "Sr. (a) [Nome], não será possível finalizar a sua instalação neste momento devido a alguma divergência identificada entre a sua solicitação e o cadastro feito no sistema.[Explique para o o cliente qual foi a divergencia] O prazo orreta estimado para a resolução é de até 1 dia. Assim que o problema for resolvido, A Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        10
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "302",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Desistência da Ass Serviço",
+      "usage_rule": "Quando o cliente desiste do pedid assinatura ou serviço. Este códig sinatura / também deve ser utilizado para b do backlog para instalação, seviço manutenção.",
+      "customer_communication": "Sr. (a) [Noamgeen],d caommeon vtoo.c ê decidiu do da cancelar o serviço, a Claro entrará em go contato com o titular do contrato via baixa telefone ou WhatsApp para o os e cancelamento da assinatura ou produto.",
+      "source_pages": [
+        10
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "303",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Inst. Modelo Cabo Aceito pelo Cl",
+      "usage_rule": "Quando o técnico vai até o o Casa não apartamento do cliente, o prédio liente tem MDU e ele não aceita a forma instalação direto da NAP.",
+      "customer_communication": "produto. não a de",
+      "source_pages": [
+        10
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "304",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Node Nao Liberad Virtua e/ou Net",
+      "usage_rule": "instalação direto da NAP. Quando o técnico vai até a residên do cliente e detecta a impossibilid do (Para de executar o serviço, pois o Node t Fone) está localizado o seu HP não est liberado para o Vírtua e/ou Net Fo",
+      "customer_communication": "Sr. (a) [Nome], não será possível realizar ncia a instalação porque a sua região não dade tem disponibilidade para ativar os onde serviços como Virtua, Fone e NOW. A tá Claro entrará em contato com o titular one do contrato via telefone ou WhatsApp para o cancelamento da assinatura.",
+      "source_pages": [
+        10
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "305",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Rua não cabe",
+      "usage_rule": "Para clientes que solicitaram prod compatíveis com a rede HFC, e vo eada identificar que não existe a nossa r HFC no local",
+      "customer_communication": "para o cancelamento da assinatura. Sr. (a) [Nome], não será possível realizar a instalação porque não há dutos cabeamento da Claro na rua onde você ocê mora. A Claro entrará em contato com rede o titular do contrato via telefone ou WhatsApp para o cancelamento da assinatura.",
+      "source_pages": [
+        10
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "306",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Não Reside No En",
+      "usage_rule": "Quando o técnico vai até a residên do cliente e detecta a impossibilid ndereço de executar o serviço, pois o mes não reside naquele endereço.",
+      "customer_communication": "assinatura. ncia dade smo .",
+      "source_pages": [
+        10
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "307",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Residência Em Con Reforma",
+      "usage_rule": "Quando o técnico vai até a residên nstrução / do cliente e detecta a impossibilid a de executar o serviço, pois a mes está em construção ou reforma",
+      "customer_communication": "Sr. (a) [Nome], não será possível executar a sua instalação devido à falta ncia de infraestrutura em sua residencia. dade Podemos agendar uma nova visita sma quando a infraestrura estiver pronta. A a. Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        10
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "308",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Instalação Não Con Padrão",
+      "usage_rule": "Quando o técnico vai até a residên do cliente e detecta a impossibilid ntemplara de executar o serviço, pois irá feri padrões técnicos determinados p Claro.",
+      "customer_communication": "Sr. (a) [Nome], não será possível realizar a instalação porque ela não atenderá ncia aos padrões técnicos necessários para dade garantir um serviço de qualidade. A ir os Claro entrará em contato com titular do pela contrato via telefone ou WhatsApp para discutir outras opções ou cancelamento da assinatura.",
+      "source_pages": [
+        11
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "309",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Computador não configuração M",
+      "usage_rule": "Quando o técnico vai até a residên do cliente e detecta a impossibilid o possui de executar o serviço, pois seu Minima computador não atende aos pré requisitos técnicos necessários",
+      "customer_communication": "Sr. (a) [Nomed],a n aãsos isneartáu prao.ssível realizar a instalação porque o seu computador ncia não atende às configurações mínimas dade necessárias, como uma placa de rede u Ethernet ou Wi-Fi. É necessário ajustar é- essas configurações para prosseguir. A s. Claro entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        11
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "312",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Cliente não solicito",
+      "usage_rule": "Quando o técnico vai até a residên ou serviço do cliente e o mesmo afirma não solicitado qualquer tipo de serviç",
+      "customer_communication": "para realizar um novo agendamento. Sr. (a) [Nome], como você não solicitou ncia o serviço, a Claro entrará em contato ter com o titular do contrato via telefone ço. ou WhatsApp para o cancelamento da assinatura ou produto.",
+      "source_pages": [
+        11
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "316",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Rua não cabeada",
+      "usage_rule": "Para clientes que solicitaram prod compatíveis com a rede GPON, e v a GPON. identificar que não existe a nossa r GPON no local.",
+      "customer_communication": "assinatura ou produto. Sr. (a) [Nome], não será possível realizar a instalação porque não há dutos cabeamento de fibra da Claro na rua você onde você mora. A Claro entrará em rede contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+      "source_pages": [
+        11
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "400",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Correção de Ca",
+      "usage_rule": "Quando o COP necessita corrigir adastro contrato através da execução de u OS com ou sem o técnico ir a cam",
+      "customer_communication": "novo agendamento. um uma mpo.",
+      "source_pages": [
+        11
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "402",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Divergência de Cadastrai",
+      "usage_rule": "Dados Quando algum dado cadastral d is cliente precisa ser atualizado",
+      "customer_communication": "Sr. (a) [Nome], não será possível realizar a sua instalação devido a divergências no endereço cadastrado. É necessário corrigir essas informações para do prosseguir com o serviço. A Claro entrará em contato via telefone ou WhatsApp com o titular do contrato para resolver a situação e agendar uma nova visita.",
+      "source_pages": [
+        11
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "404",
+      "status": "valid",
+      "category": "RETIRADA",
+      "description": "Cliente Recusa-se Devolver O Decoder / Cable Modem",
+      "usage_rule": "Quano o cliente se recusa a devolver os terminais instalados",
+      "customer_communication": null,
+      "source_pages": [
+        42
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "408",
+      "status": "valid",
+      "category": "IMPRODUTIVOS",
+      "description": "Equipamento do Cl Defeito",
+      "usage_rule": "Quando o técnico vai até a residên liente com do cliente e detecta que o proble está no equipamento ou na rede dados instalada pelo cliente. Botão de menu de três linhas horizontais | Ícone Gratis",
+      "customer_communication": "nova visita. Sr. (a) [Nome], não será possível realizar a instalação neste momento porque o seu equipamento está com defeito. É ncia necessário resolver o problema com o ema equipamento antes de prosseguir. A e de Claro entrará em contato via telefone ou WhatsApp com o titular do contrato para resolver a situação e agendar uma nova visita. 11",
+      "source_pages": [
+        11
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "409",
+      "status": "valid",
+      "category": "MESH",
+      "description": "INSTALAÇÃO EFETUADA",
+      "usage_rule": "Deve ser utilizada quando a instalação do extensor for realizada via Wi-Fi. Executando a tarefa com o código 409, será obrigatório selecionar o motivo de não ter feito o cabeamento desse extensor no campo checklist.",
+      "customer_communication": null,
+      "source_pages": [
+        40
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "428",
+      "status": "valid",
+      "category": "RETIRADA",
+      "description": "Desconexao Efetuada Com Retirada De Equipamento",
+      "usage_rule": "Quando é executada a desconexão do serviço com a retirada dos equipamentos",
+      "customer_communication": null,
+      "source_pages": [
+        42
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "429",
+      "status": "valid",
+      "category": "RETIRADA",
+      "description": "Desconexao Efetuada Sem Retirada De Equipamento",
+      "usage_rule": "Quando é executada a desconexão do serviço sem a retirada dos equipamentos",
+      "customer_communication": null,
+      "source_pages": [
+        42
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "430",
+      "status": "valid",
+      "category": "RETIRADA",
+      "description": "Equipamento Retirado",
+      "usage_rule": "Quando é retirada os equipamentos da casa do cliente",
+      "customer_communication": null,
+      "source_pages": [
+        42
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "466",
+      "status": "valid",
+      "category": "VISTORIA",
+      "description": "ORCAMENTO RETIRADO",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e resolve o problema realizando a alteração no formato de audio no equipamento do cliente.",
+      "customer_communication": null,
+      "source_pages": [
+        44
+      ],
+      "occurrences": 2
+    },
+    {
+      "code": "468",
+      "status": "valid",
+      "category": "VISTORIA",
+      "description": "CASO PROCEDENTE RESOLVIDO DURANTE A VISTORIA",
+      "usage_rule": "Quando o tecnico identifica que a reclamação de danos é procedente e consegue resolve o dano causado imediatamento",
+      "customer_communication": null,
+      "source_pages": [
+        44
+      ],
+      "occurrences": 2
+    },
+    {
+      "code": "469",
+      "status": "inconsistent",
+      "category": null,
+      "description": null,
+      "usage_rule": null,
+      "customer_communication": null,
+      "source_pages": [
+        44
+      ],
+      "occurrences": 2,
+      "variants": [
+        {
+          "category": "VISTORIA",
+          "description": "CASO INDEFINIDO",
+          "usage_rule": "Quando o tecnico identifica que a reclamação de danos é procedente porém não consegue resolver imediatamente e solicitado ao cliente o orçamento/laudo",
+          "customer_communication": null,
+          "source_pages": [
+            44
+          ],
+          "occurrences": 1
+        },
+        {
+          "category": "VISTORIA",
+          "description": "CASO INDEFINIDO",
+          "usage_rule": "Quando o tecnico identifica que a reclamaçõ de danos é procedente porém não consegue resolver imediamente e solicitado ao cliente o orçamento/laudo",
+          "customer_communication": null,
+          "source_pages": [
+            44
+          ],
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "code": "470",
+      "status": "valid",
+      "category": "VISTORIA",
+      "description": "CASO IMPROCEDENTE",
+      "usage_rule": "Quando o tecnico identifica que a reclamação de danos é improcedente",
+      "customer_communication": null,
+      "source_pages": [
+        44
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "471",
+      "status": "valid",
+      "category": "MESH",
+      "description": "RECONFIGURAÇÃO DO SSID/SENHA WIFI",
+      "usage_rule": "Quando necessário reconfigurar SSID e Senha no extensor mesh.",
+      "customer_communication": null,
+      "source_pages": [
+        40
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "472",
+      "status": "valid",
+      "category": "MESH",
+      "description": "INSTRUÇÕES DE USO DO EQUIPAMENTO - EXTENSOR",
+      "usage_rule": "Cliente instruído sobre o uso e características da tecnologia.",
+      "customer_communication": null,
+      "source_pages": [
+        40
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "473",
+      "status": "valid",
+      "category": "MESH",
+      "description": "NECESSIDADE DE INSTALAÇÃO VIA CABO ETHERNET",
+      "usage_rule": "Quando necessário instalar o extensor via cabo ethernet para melhorar a performance.",
+      "customer_communication": null,
+      "source_pages": [
+        40
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "474",
+      "status": "valid",
+      "category": "MESH",
+      "description": "REPOSICIONADO O EXTENSOR",
+      "usage_rule": "Quando reposicionado o extensor na residência para resolver o problema.",
+      "customer_communication": null,
+      "source_pages": [
+        40
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "475",
+      "status": "valid",
+      "category": "MESH",
+      "description": "VELOCIDADE DO EXTENSOR- CONFORME CONTRATADA",
+      "usage_rule": "Quando MESH está ok, velocidade conforme contratada.",
+      "customer_communication": null,
+      "source_pages": [
+        40
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "476",
+      "status": "valid",
+      "category": "MESH",
+      "description": "RECONFIGURADO / PAREAMENTO EXTENSORES",
+      "usage_rule": "Quando realizada a reconfiguração ou \"pareamento\" dos extensores.",
+      "customer_communication": null,
+      "source_pages": [
+        40
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "477",
+      "status": "valid",
+      "category": "MESH",
+      "description": "INSTALAÇÃO MESH CABEADA",
+      "usage_rule": "Deve ser utilizada quando a instalação do extensor for realizada via cabo ethernet. Caso o cliente recuse a instalação do extensor mais distante via cabo ethernet, insira essa informação na Ordem de Serviço.",
+      "customer_communication": null,
+      "source_pages": [
+        40
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "483",
+      "status": "valid",
+      "category": "MESH",
+      "description": "TROCA DE EXTENSOR MESH TRAVADO",
+      "usage_rule": "Utilize este código para substituição do extensor com falha na inicialização ou Configuração.",
+      "customer_communication": null,
+      "source_pages": [
+        40
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "484",
+      "status": "valid",
+      "category": "MESH",
+      "description": "TROCA DE EXTENSOR MESH QUEIMADO",
+      "usage_rule": "Utilize este código para substituição do extensor após identificar sua queima.",
+      "customer_communication": null,
+      "source_pages": [
+        40
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "499",
+      "status": "valid",
+      "category": "RETIRADA",
+      "description": "Desconexao por Risco de Subscricao",
+      "usage_rule": "Quando a desconexão é realizada por risco de subscrição",
+      "customer_communication": null,
+      "source_pages": [
+        42
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "500",
+      "status": "valid",
+      "category": "SINAL",
+      "description": "Readequação De Sinal - Passivos",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando o passivo de valor incorreto por outro equalizando o sinal. O mesmo não deve estar com defeito.",
+      "customer_communication": null,
+      "source_pages": [
+        13
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "501",
+      "status": "valid",
+      "category": "SINAL",
+      "description": "Amplificador Equalizado",
+      "usage_rule": "mesmo não deve estar com defeito. Quando o técnico vai até a residência do cliente e soluciona o problema com a equalização do amplificador.",
+      "customer_communication": null,
+      "source_pages": [
+        13
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "502",
+      "status": "valid",
+      "category": "SINAL",
+      "description": "Amplificador Com Defeito - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando o amplificador que está apresentando defeito relacionado a sinal.",
+      "customer_communication": null,
+      "source_pages": [
+        13
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "503",
+      "status": "valid",
+      "category": "SINAL",
+      "description": "Amplificador Queimado - Troca",
+      "usage_rule": "sinal. Quando o técnico vai até a residência do cliente e soluciona o problema trocando o amplificador que está queimado (não liga)",
+      "customer_communication": null,
+      "source_pages": [
+        13
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "504",
+      "status": "valid",
+      "category": "SINAL",
+      "description": "Instalação de Amplificador",
+      "usage_rule": "que está queimado (não liga) Quando o técnico vai até a residência do cliente e soluciona o problema instalando um amplificador",
+      "customer_communication": null,
+      "source_pages": [
+        13
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "505",
+      "status": "valid",
+      "category": "PASSIVO",
+      "description": "Passivo Interno Queim./Degrad. - Troca Q in",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando os passivos nternos coaxial que esteja Queimado/Degradado.",
+      "customer_communication": null,
+      "source_pages": [
+        15
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "506",
+      "status": "valid",
+      "category": "PASSIVO",
+      "description": "Passivo Interno Fora Do Padrão - Troca Q",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando os passivos internos coaxial não homologados.",
+      "customer_communication": null,
+      "source_pages": [
+        15
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "507",
+      "status": "valid",
+      "category": "PASSIVO",
+      "description": "Passivo MDU Queim./Degrad. - Troca Q so",
+      "usage_rule": "internos coaxial não homologados. Quando o técnico vai até a residência do cliente e oluciona o problema efetuando a manutenção no MDU e/ou Prumada trocando o passivo Queimado/Degradado",
+      "customer_communication": null,
+      "source_pages": [
+        15
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "508",
+      "status": "valid",
+      "category": "PASSIVO",
+      "description": "Passivo MDU Fora Do Padrão - Troca Q so",
+      "usage_rule": "Queimado/Degradado Quando o técnico vai até a residência do cliente e oluciona o problema efetuando a manutenção no MDU e/ou Prumada trocando o passivo não homologado.",
+      "customer_communication": null,
+      "source_pages": [
+        15
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "509",
+      "status": "valid",
+      "category": "PASSIVO",
+      "description": "Cable Isolator Danificado/Queimado - Troca Q",
+      "usage_rule": "homologado. Quando o técnico vai até a residência do cliente e soluciona o problema trocando o Cable isolator Danificado/Queimado",
+      "customer_communication": null,
+      "source_pages": [
+        15
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "510",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "Fonte Com Defeito - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando a fonte/trafo que está com defeito.",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "511",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "Controle Remoto/Danificado/Extraviado - Troca",
+      "usage_rule": "com defeito. Quando o técnico vai até a residência do cliente e realiza a entrega de controle remoto que foi extraviado/Roubado ou danificado pelo cliente. O mesmo gera cobrança do controle.",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "512",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "Controle Remoto Com Defeito - Troca",
+      "usage_rule": "mesmo gera cobrança do controle. Quando o técnico vai até a residência do cliente e soluciona o problema trocando o controle remoto que esta apresentando defeito.",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "513",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "Incompatibilidade Da Tecnologia / TV",
+      "usage_rule": "esta apresentando defeito. Quando o técnico vai até a residência do cliente e há qualquer tipo de incompatibilidade do decoder com a TV do cliente. Ex: Falha AC3, falta de entrada compatível, etc",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "514",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "Envio De Hit - Habilitar Canais",
+      "usage_rule": "compatível, etc Quando o técnico vai até a residência do cliente e soluciona o problema somente com o envio de um hit para habilitar canais do pacote.",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "515",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "Envio De Hit - Correção Do Update ID",
+      "usage_rule": "para habilitar canais do pacote. Quando o técnico vai até a residência do cliente e soluciona o problema somente com o envio de um hit para corrigir o Update ID.",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "516",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Travado",
+      "usage_rule": "para corrigir o Update ID. Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que estava travado.",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "517",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Queimado",
+      "usage_rule": "travado. Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que estava queimado",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "518",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Não Habilita / Não Sincroniza",
+      "usage_rule": "queimado Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que não habilita/Sincroniza",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "519",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Não Grava",
+      "usage_rule": "habilita/Sincroniza Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que não efetua gravação.",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "520",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Não Atualiza SW",
+      "usage_rule": "efetua gravação. Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que não atualizado o Software para a última versão.",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "521",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Intermitente",
+      "usage_rule": "atualizado o Software para a última versão. Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que não apresenta intermitência de funcionamento.",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "522",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - IN / OUT Queimadas",
+      "usage_rule": "apresenta intermitência de funcionamento. Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que está com entrada e saida queimada (exemplo: porta ethernet queimada, porta de telefone queimada). O mesmo não deve ser utilizado para porta HDMI.",
+      "customer_communication": null,
+      "source_pages": [
+        17
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "523",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Alcance Wifi",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que apresenta problemas com o alcance do WIFI",
+      "customer_communication": null,
+      "source_pages": [
+        18
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "524",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Solic. Cliente",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que não apresentou problemas e foi solicitado pelo cliente. O mesmo deve ser utilizado em casos exporádicos.",
+      "customer_communication": null,
+      "source_pages": [
+        18
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "525",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Falha em Imagem/Quadriculando",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que apresenta problema de quadricular ou falhar a imagem.",
+      "customer_communication": null,
+      "source_pages": [
+        18
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "526",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Erro de Leitura Smart",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que apresenta falha de Leitura do Smart Card",
+      "customer_communication": null,
+      "source_pages": [
+        18
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "527",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T - Não Navega",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que após testes e validação não navega",
+      "customer_communication": null,
+      "source_pages": [
+        18
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "528",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T – Problema de falha no Áudio",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que apresenta falha na saída de Audio",
+      "customer_communication": null,
+      "source_pages": [
+        18
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "529",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T – Modelo não Compatível",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando o terminal que está com a tecnologia incorreta, exemplo: Trocar o equipamento eMTA 2.0 para eMTA 3.0. O mesmo não efetua e não deve ser utilizado em mudança de pacote.",
+      "customer_communication": null,
+      "source_pages": [
+        18
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "530",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "T.T Por Outro Colocado No Mesmo Serviço",
+      "usage_rule": "o Utilizar este código na SEGUNDA TROCA - OS aberta para troca de terminal quando o primeiro equipamento trocado não funcionou no ato da mesma visita.",
+      "customer_communication": null,
+      "source_pages": [
+        18
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "531",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "Smart Que Não Habilita - Troca",
+      "usage_rule": "visita. Quando o técnico vai até a residência do cliente e soluciona o problema trocando o Smart Card que não habilitava",
+      "customer_communication": null,
+      "source_pages": [
+        18
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "532",
+      "status": "valid",
+      "category": "EQUIPAMENTO (T.T)",
+      "description": "Smart com Tela Preta - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando o Smart Card que apresentava tela preta.",
+      "customer_communication": null,
+      "source_pages": [
+        18
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "533",
+      "status": "valid",
+      "category": "RECONFIGURACAO",
+      "description": "Reset Na Config Terminal - Travado",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e resolve o problema reconfigurando a caixa digital que estava travada.",
+      "customer_communication": null,
+      "source_pages": [
+        20
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "534",
+      "status": "valid",
+      "category": "RECONFIGURACAO",
+      "description": "Reset Na Config Terminal - Solicit Senha",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e resolve o problema reconfigurando a caixa digital que estava solicitando senha.",
+      "customer_communication": null,
+      "source_pages": [
+        20
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "535",
+      "status": "valid",
+      "category": "RECONFIGURACAO",
+      "description": "Reset Na Config Terminal - Não Atualiza",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e resolve o problema reconfigurando a caixa digital que não estava atualizando.",
+      "customer_communication": null,
+      "source_pages": [
+        20
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "536",
+      "status": "valid",
+      "category": "RECONFIGURACAO",
+      "description": "Reconfigurado Roteador do cliente",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e efetua a instalação/configuração da rede de dados do cliente (roteador de propriedade do cliente)",
+      "customer_communication": null,
+      "source_pages": [
+        20
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "537",
+      "status": "valid",
+      "category": "RECONFIGURACAO",
+      "description": "Reconfigurado eMTA/Roteador NET-WIFI",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e efetua a instalação/configuração do eMTA WIFI ou roteador de propriedade NET.",
+      "customer_communication": null,
+      "source_pages": [
+        20
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "538",
+      "status": "valid",
+      "category": "RECONFIGURACAO",
+      "description": "Reconfiguração Do Formato Da Imagem",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e resolve o problema realizando a alteração no formato de imagem no equipamento do cliente. (16:9 X 4:3, 1080i x 720P, etc)",
+      "customer_communication": null,
+      "source_pages": [
+        20
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "539",
+      "status": "valid",
+      "category": "RECONFIGURACAO",
+      "description": "Reconfiguração De Audio",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e resolve o problema realizando a alteração no formato de audio no equipamento do cliente.",
+      "customer_communication": null,
+      "source_pages": [
+        20
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "540",
+      "status": "valid",
+      "category": "CONEXOES",
+      "description": "Conector Interno Oxidado - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema substituindo os conectores internos Oxidados.",
+      "customer_communication": null,
+      "source_pages": [
+        22
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "541",
+      "status": "valid",
+      "category": "CONEXOES",
+      "description": "Conector Interno Mal Feito - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema substituindo os conectores internos Mal confeccionados (malha exposta, etc).",
+      "customer_communication": null,
+      "source_pages": [
+        22
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "542",
+      "status": "valid",
+      "category": "CONEXOES",
+      "description": "Conector Interno Fora Do Padrão - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema substituindo os conectores internos fora do padrão (conectores de antena, etc).",
+      "customer_communication": null,
+      "source_pages": [
+        22
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "543",
+      "status": "valid",
+      "category": "CONEXOES",
+      "description": "Conector TAP Oxidado - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema substituindo o conector da Rede Externa(TAP) Oxidada.",
+      "customer_communication": null,
+      "source_pages": [
+        22
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "544",
+      "status": "valid",
+      "category": "CONEXOES",
+      "description": "Conector TAP Mal Feito - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema substituindo o conector da Rede Externa(TAP) mal confeccionada.",
+      "customer_communication": null,
+      "source_pages": [
+        22
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "545",
+      "status": "valid",
+      "category": "CONEXOES",
+      "description": "Conector TAP - Fora Do Padrão - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema substituindo o conector da Rede Externa(TAP) fora do padrão (conector antena, etc).",
+      "customer_communication": null,
+      "source_pages": [
+        22
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "546",
+      "status": "valid",
+      "category": "CONEXOES",
+      "description": "Conector MDU Oxidado - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema substituindo o conector do MDU oxidado.",
+      "customer_communication": null,
+      "source_pages": [
+        22
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "547",
+      "status": "valid",
+      "category": "CONEXOES",
+      "description": "Conector MDU Mal feito - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema substituindo o conector do MDU mal confeccionado.",
+      "customer_communication": null,
+      "source_pages": [
+        22
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "548",
+      "status": "valid",
+      "category": "CONEXOES",
+      "description": "Conector MDU Fora Do Padrão - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema substituindo o conector do MDU fora do padrão (conector antena, etc).",
+      "customer_communication": null,
+      "source_pages": [
+        22
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "549",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Velocidade Do Virtua Conforme Contratada",
+      "usage_rule": "Quando o cliente reclamou de lentidão e a solução do problema foi mostrar para o cliente que dentro da rede virtua a navegação está conforme velocidade contratada ou que a velocidade foi reduzida por ter excedido a franquia de consumo.",
+      "customer_communication": null,
+      "source_pages": [
+        24
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "550",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Canal Não Pertece Ao Pacote Contratado",
+      "usage_rule": "Quando a solução do problema foi a explicação ao cliente que o canal que ele reclamou ter perdido realmente não pertence ao seu pacote contratado.",
+      "customer_communication": null,
+      "source_pages": [
+        24
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "551",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Sintonia Efetuada – AV/HDMI",
+      "usage_rule": "Quando a solução do problema do cliente foi a execução de sintonia na TV para colocar a TV no canal 3-4 / AV / HDMI",
+      "customer_communication": null,
+      "source_pages": [
+        24
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "552",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Instruções Do Uso Da Interatividade",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e resolve o problema realizando a instrução de funcionamento da interatividade. (NOW, Músicas, etc).",
+      "customer_communication": null,
+      "source_pages": [
+        24
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "553",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Instruções De Uso Do Controle Remoto",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e resolve o problema informando da utilização do controle remoto, sem necessidade de troca.",
+      "customer_communication": null,
+      "source_pages": [
+        24
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "554",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Instruções Sobre Smart Card",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e resolve o problema realizando a instrução sobre o smart card, sem a necessidade de troca.",
+      "customer_communication": null,
+      "source_pages": [
+        24
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "555",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Sem Defeito No Produto Virtua Reclamado",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta que o problema do Virtua Reclamado está resolvido sem nenhuma intervenção. O mesmo deve ser utilizado apenas para problema virtua reclamado.",
+      "customer_communication": null,
+      "source_pages": [
+        24
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "556",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Sem Defeito No Produto TV Reclamado",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta que o problema de TV Reclamado está resolvido sem nenhuma intervenção. O mesmo deve ser utilizado apenas para problema de TV reclamado.",
+      "customer_communication": null,
+      "source_pages": [
+        24
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "557",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Sem Defeito No Produto Netfone Reclamado",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta que o problema do NETFONE Reclamado está resolvido sem nenhuma intervenção. O mesmo deve ser utilizado apenas para problema de NETFONE reclamado.",
+      "customer_communication": null,
+      "source_pages": [
+        24
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "558",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Boot No Terminal",
+      "usage_rule": "Quando a solução do problema foi somente realizar um boot (desligar da energia e ligar novamente). O mesmo não deve ser utilizado para reset nos terminais.",
+      "customer_communication": null,
+      "source_pages": [
+        25
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "559",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Computador Reconfigurado",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema reconfigurando o computador (exemplo: Navegação em Modo de Segurança/Conexão no WIFI, etc).",
+      "customer_communication": null,
+      "source_pages": [
+        25
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "560",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Equipamento / Rede De Dados Com Defeito",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta que o problema está no equipamento ou na rede de dados instalada pelo cliente.",
+      "customer_communication": null,
+      "source_pages": [
+        25
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "561",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Ponto Sem Cadastro Não Regularizado",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta a impossibilidade de executar o serviço, pois existe(m) ponto(s) que não possui (em) cadastro no sistema da NET e não quer regularizá-lo(s).",
+      "customer_communication": null,
+      "source_pages": [
+        25
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "562",
+      "status": "valid",
+      "category": "CABEAMENTO",
+      "description": "Cabo Reconectado/Identificado",
+      "usage_rule": "Quando o cliente é desconectado indevidamente, e o técnico vai até a residência do cliente efetuar a reconexão ou identificação dos cabos no DG ou TAP.",
+      "customer_communication": null,
+      "source_pages": [
+        27
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "563",
+      "status": "valid",
+      "category": "CABEAMENTO",
+      "description": "Reconexão Dos Cabos No Equipamento Do Cliente",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema realizando a reconexão de cabos entre o terminal NET e o equipamento do cliente, cabo solto. O mesmo não deve ser utilizado para cabos com defeito.",
+      "customer_communication": null,
+      "source_pages": [
+        27
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "564",
+      "status": "valid",
+      "category": "CABEAMENTO",
+      "description": "Cabos Especiais Com Defeito - Troca",
+      "usage_rule": "defeito. Quando o técnico vai até a residência do cliente e realiza a troca dos cabos especiais (entre o terminal NET e o equipamento do cliente) com defeito. (HDMI, AV, S-Video, etc)",
+      "customer_communication": null,
+      "source_pages": [
+        27
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "565",
+      "status": "valid",
+      "category": "CABEAMENTO",
+      "description": "Entrega De Cabos Especiais",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e realiza a entrega de cabo( S-Video, Óptico , HDMI, etc)",
+      "customer_communication": null,
+      "source_pages": [
+        27
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "566",
+      "status": "valid",
+      "category": "CABEAMENTO",
+      "description": "Drop Refeito",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema refazendo o drop de entrada.",
+      "customer_communication": null,
+      "source_pages": [
+        27
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "567",
+      "status": "valid",
+      "category": "CABEAMENTO",
+      "description": "Cabeamento Coaxial Refeito",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema refazendo o cabeamento coaxial interno ou externo.",
+      "customer_communication": null,
+      "source_pages": [
+        27
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "568",
+      "status": "valid",
+      "category": "CABEAMENTO",
+      "description": "Cabeamento Telefônico Refeito",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema refazendo o cabeamento telefônico interno.",
+      "customer_communication": null,
+      "source_pages": [
+        27
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "569",
+      "status": "valid",
+      "category": "CABEAMENTO",
+      "description": "Necessário Refazer Cabeamento Telefônico",
+      "usage_rule": "Quando o técnico entende que para a solução do problema técnico deverá ser enviada uma equipe para refazer o cabeamento de telefone atual da casa do cliente.",
+      "customer_communication": null,
+      "source_pages": [
+        27
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "570",
+      "status": "valid",
+      "category": "CABEAMENTO",
+      "description": "Necessário Refazer Cabeamento Coaxial",
+      "usage_rule": "Quando o técnico entende que para a solução do problema técnico deverá ser enviada uma equipe para refazer o cabeamento coaxial atual da casa do cliente.",
+      "customer_communication": null,
+      "source_pages": [
+        27
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "571",
+      "status": "valid",
+      "category": "INFRA-ESTRUTURA",
+      "description": "Encaminhado À Embratel",
+      "usage_rule": "Quando problemas identificados Na Embratel impedem a conclusão dos serviços em campo.",
+      "customer_communication": null,
+      "source_pages": [
+        29
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "572",
+      "status": "valid",
+      "category": "INFRA-ESTRUTURA",
+      "description": "Problema Identificado No Circuito De Video",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e detecta que o problema está no circuito interno de video (câmera de segurança).",
+      "customer_communication": null,
+      "source_pages": [
+        29
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "573",
+      "status": "valid",
+      "category": "INFRA-ESTRUTURA",
+      "description": "Data Center / Headend Com Problema",
+      "usage_rule": "Quando problemas no Datacenter ou no Headend impedem a execução dos serviços em campo.",
+      "customer_communication": null,
+      "source_pages": [
+        29
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "574",
+      "status": "valid",
+      "category": "INFRA-ESTRUTURA",
+      "description": "Correção efetuada no Data Center",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema realizando correções de sistemas através de contato com o Data Center.",
+      "customer_communication": null,
+      "source_pages": [
+        29
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "575",
+      "status": "valid",
+      "category": "TELEFONIA",
+      "description": "Tomada Telefone Com Problema - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando a tomada de telefone.",
+      "customer_communication": null,
+      "source_pages": [
+        31
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "576",
+      "status": "valid",
+      "category": "TELEFONIA",
+      "description": "Distribuidor 'T' Com Problema - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema trocando os passivos de telefone (divisor T, etc).",
+      "customer_communication": null,
+      "source_pages": [
+        31
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "577",
+      "status": "valid",
+      "category": "TELEFONIA",
+      "description": "Conector RJ11 Oxidado - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema refazendo o conector RJ11 que está oxidado.",
+      "customer_communication": null,
+      "source_pages": [
+        31
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "578",
+      "status": "valid",
+      "category": "TELEFONIA",
+      "description": "Conector RJ11 Mal Feito - Troca",
+      "usage_rule": "Quando o técnico vai até a residência do cliente e soluciona o problema refazendo o conector RJ11 que foi mal confeccionado.",
+      "customer_communication": null,
+      "source_pages": [
+        31
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "579",
+      "status": "valid",
+      "category": "MANUTENCAO MDU",
+      "description": "Limpeza De Ruído Executada",
+      "usage_rule": "Quando o técnico realiza a limpeza de ruído na residência/condomínio",
+      "customer_communication": null,
+      "source_pages": [
+        33
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "580",
+      "status": "valid",
+      "category": "SMARTHOME/CYBER-REDE/EXTENSAO WIFI",
+      "description": "Conexões De Rede De Dados Refeitas",
+      "usage_rule": "Quando a solução do problema substituir os conectores da rede de dados do cliente.",
+      "customer_communication": null,
+      "source_pages": [
+        35
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "581",
+      "status": "valid",
+      "category": "SMARTHOME/CYBER-REDE/EXTENSAO WIFI",
+      "description": "Cabeamento De Rede De Dados Refeito",
+      "usage_rule": "Quando a solução do problema foi a troca do cabeamento de dados do cliente.",
+      "customer_communication": null,
+      "source_pages": [
+        35
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "582",
+      "status": "valid",
+      "category": "SMARTHOME/CYBER-REDE/EXTENSAO WIFI",
+      "description": "Roteador Com Problema",
+      "usage_rule": "Quando o roteador está apresentando problema e necessita ser trocado (Extensão WIFI) ou sinalizado ao cliente quando o roteador for dele.",
+      "customer_communication": null,
+      "source_pages": [
+        35
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "583",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "NECESSÁRIO REFAZER CABEAMENTO ÓPTICO",
+      "usage_rule": "Ao atender um cliente que possui tecnologia GPON e identificar que será necessário realizar a troca do cabo óptico, encaminhando para equipe de refazer.",
+      "customer_communication": null,
+      "source_pages": [
+        38
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "584",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "CONECTOR ÓPTICO INTERNO DANIFICADO - TROCA",
+      "usage_rule": "Quando Técnico identifica que o conector óptico na ONT está danificado e é necessário efetuar troca para resolver o problema no cliente.",
+      "customer_communication": null,
+      "source_pages": [
+        38
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "585",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "LIMPEZA DO CONECTOR/ACOPLADOR",
+      "usage_rule": "Esse código deve ser usado sempre que a resolução do atendimento ocorrer após a limpeza de algum ponto de conexão óptica, com evidência de melhoria no nível de sinal.",
+      "customer_communication": null,
+      "source_pages": [
+        38
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "586",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "REFEITO CABEAMENTO OPTICO",
+      "usage_rule": "Quando a solução do problema é o técnico de manutenção substituir o cabeamento óptico no local de forma imediata, durante a visita inicial, eliminando a necessidade de reagendamento ou retorno.",
+      "customer_communication": null,
+      "source_pages": [
+        38
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "588",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "CONECTOR ÓPTICO MDU/DIO DANIFICADO - TROCA",
+      "usage_rule": "Quando Técnico identifica que o conector óptico no MDU/DIO está danificado e é necessário efetuar troca para resolver o problema no cliente.",
+      "customer_communication": null,
+      "source_pages": [
+        38
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "589",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "CONECTOR ÓPTICO REDE EXTERNA NAP DANIFICADO - TROCA",
+      "usage_rule": "Quando Técnico identifica que o conector óptico no Cabo Drop na rede externa está danificado e é necessário efetuar troca para resolver o problema no cliente.",
+      "customer_communication": null,
+      "source_pages": [
+        38
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "590",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "PTO COM DEFEITO TROCA",
+      "usage_rule": "Quando a solução do problema é substituir o PTO com defeito",
+      "customer_communication": null,
+      "source_pages": [
+        38
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "591",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "PATCH CORD COM DEFEITO TROCA",
+      "usage_rule": "Quando a solução do problema é substituir o Patch Cord com defeito",
+      "customer_communication": null,
+      "source_pages": [
+        38
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "594",
+      "status": "valid",
+      "category": "RECONFIGURACAO",
+      "description": "Reconfiguração Da Senha Wifi",
+      "usage_rule": "Esse código deverá ser utilizado sempre que a resolução do problema encontrado na visita técnica for a reconfiguraçãodo SSID (nomedarede) e/ou senha do Wi-Fi.",
+      "customer_communication": null,
+      "source_pages": [
+        20
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "597",
+      "status": "valid",
+      "category": "CLIENTE",
+      "description": "Troca de Pilha",
+      "usage_rule": "Quando o Cliente solicita uma visita técnica reclamando do funcionamento do controle remoto, todos os testes devem ser realizados antes de efetuar a troca. Em algumas situações, o real motivo do problema está relacionado com a vida útil das pilhas que já estão desgastada se sua troca é a única maneira de resolver o problema.",
+      "customer_communication": null,
+      "source_pages": [
+        25
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "599",
+      "status": "valid",
+      "category": "CABEAMENTO",
+      "description": "Refazer Cabeamento BSOD Botão de menu de trê",
+      "usage_rule": "Esse código deve ser utilizado em clientes BSOD nos casos em que houver a necessidade de substituir o cabo RG11 com comprimento acima de 70 metros. ês linhas horizontais | Ícone Gratis",
+      "customer_communication": null,
+      "source_pages": [
+        27
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "815",
+      "status": "valid",
+      "category": "RETIRADA",
+      "description": "ENVIO DE CHIP VIA CORREIO",
+      "usage_rule": "Quando a entrega do chip é realizada pelos correios",
+      "customer_communication": null,
+      "source_pages": [
+        42
+      ],
+      "occurrences": 1
+    },
+    {
+      "code": "910",
+      "status": "valid",
+      "category": "GPON/MDU GPON (EXCLUSIVO)",
+      "description": "MDU GPON EXISTENTE",
+      "usage_rule": "Quando você tem uma O.S de apoio para construção de MDU GPON, porém quando chega no local, ele já tá construído.",
+      "customer_communication": null,
+      "source_pages": [
+        38
+      ],
+      "occurrences": 1
+    }
+  ],
+  "warnings": [
+    {
+      "type": "duplicate_code_identical",
+      "code": "466",
+      "occurrences": 2,
+      "source_pages": [
+        44
+      ],
+      "automatic_correction": false
+    },
+    {
+      "type": "duplicate_code_identical",
+      "code": "468",
+      "occurrences": 2,
+      "source_pages": [
+        44
+      ],
+      "automatic_correction": false
+    },
+    {
+      "type": "duplicate_code_inconsistent",
+      "code": "469",
+      "occurrences": 2,
+      "source_pages": [
+        44
+      ],
+      "automatic_correction": false
+    }
+  ],
+  "aliases_created": [],
+  "equivalences_authorized": [],
+  "payload_generated": false,
+  "safety": {
+    "network_used": false,
+    "post_executed": false,
+    "datasnap_read_executed": false,
+    "datasnap_write_executed": false,
+    "stock_movement_executed": false,
+    "close_executed": false,
+    "payload_generated": false
+  }
+}

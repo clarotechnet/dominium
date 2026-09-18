@@ -1,0 +1,38 @@
+DOMINIUM FLOWSCOPE 1.0 - LEITOR DE FLUXOS IMPERIUM
+
+COMO ABRIR
+
+1. Clique duas vezes em "ABRIR LEITOR DE FLUXOS.cmd" na pasta principal.
+2. O navegador abrira em http://127.0.0.1:8787.
+3. Arraste um ZIP gerado pelo Gravador Imperium ou um PCAPNG.
+4. Clique em "Analisar captura".
+
+O QUE O LEITOR IDENTIFICA
+
+- Conexoes e mensagens TCP reconstruidas, removendo retransmissoes.
+- Metodos DataSnap preparados e executados.
+- Consultas, escritas, acoes e operacoes de sessao.
+- Base acessada pela porta do Imperium.
+- Filtros como Status e IdTipoServico.
+- Codigos de baixa conhecidos encontrados em ApplyUpdates.
+- Candidatos a numero de OS, contrato e serial.
+- Resposta, erro, volume de dados e duracao aproximada.
+- Diferencas de metodos e volumes entre duas capturas.
+- Exportacao completa do resultado em JSON.
+- Payload exato de cada requisicao em Base64, com hash SHA-256, para permitir
+  a reproducao tecnica controlada durante o desenvolvimento.
+
+SEGURANCA E PRIVACIDADE
+
+- O FlowScope e somente leitura.
+- Ele nao se conecta ao Imperium e nao executa operacoes.
+- A captura e processada localmente neste computador.
+- O arquivo recebido nao e salvo pelo leitor.
+- O resultado pode conter dados presentes na captura; compartilhe apenas pelo
+  canal autorizado.
+
+OBSERVACAO
+
+OS, contratos e seriais exibidos como "candidatos" sao evidencias encontradas
+no payload binario. Confirme o contexto antes de transformar uma evidencia em
+um novo protocolo de automacao.

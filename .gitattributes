@@ -1,0 +1,31 @@
+* text=auto
+
+# Source/config: stable LF in Git and deploys
+*.py text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.service text eol=lf
+
+# Windows launchers keep CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary protocol/assets
+*.bin binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.pdf binary
+*.docx binary
+*.pptx binary
+*.zip binary
+*.rar binary

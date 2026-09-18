@@ -1,0 +1,60 @@
+# Python / local virtualenv
+__pycache__/
+*.pyc
+.venv/
+.ruff_cache/
+
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+.secrets/
+config/*.dat
+config/*.dat.*
+
+# Runtime state and generated artifacts
+logs/
+logs-agente-local/
+tmp/
+backups/
+captures/
+diagnostics/
+output/
+reports/
+data/
+dist/
+coverage/
+.pytest_cache/
+.mypy_cache/
+.coverage
+config/toa_chrome_profile/
+config/toa_chrome_profile_backup_*/
+config/official_close_operations/
+config/official_material_catalog/
+config/official_stock_audit/
+config/toa_automation_state.json
+config/toa_contract_registry.json
+config/disconnect_automation_state.json
+
+# Dependency/build caches and local integration credentials
+**/node_modules/
+**/.wrangler/
+integrations/toa_cloud_bridge/.dev.vars
+
+# Scratch / generated inspection files
+*.log
+*.bak
+*.bak_*
+*.tmp
+*.inspect.ndjson
+tmp_*
+scratch_*
+diff_step_*
+found_step.json
+step_*.txt
+*.pcapng
+
+# Local deployment/runtime helpers
+deploy/*.local
+config/whatsapp_bridge/
+whatsapp_connector/node_modules/

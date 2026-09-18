@@ -1,0 +1,633 @@
+﻿================================================================================
+ESPECIFICAÇÃO DE REQUISITOS DE API
+Integração DOMINIUM x Imperium
+Substituição de integrações DataSnap/protocolo interno por endpoints HTTP oficiais
+Versão 1.2.1 — Refinamento de governança técnica
+================================================================================
+
+METADADOS DO DOCUMENTO:
+  * Documento:          Especificação de requisitos funcionais e de integração de API
+  * Sistema solicitante: DOMINIUM (Gestão e Despacho Operacional de Telecom)
+  * Sistema/API alvo:   Imperium / API oficial Technet
+  * Data:               11/09/2026
+  * Versão:             1.2.1 — Refinamento de governança técnica (obrigatoriedade de equipamentoId
+                        canônico, obrigatoriedade de X-Empresa-Id em multi-base sem default silencioso
+                        e apiVersion com dependencies.database em healthcheck)
+
+--------------------------------------------------------------------------------
+FINALIDADE
+--------------------------------------------------------------------------------
+Este documento apresenta os endpoints, regras de negócio e contratos mínimos necessários para que
+o sistema DOMINIUM opere utilizando exclusivamente uma API HTTP oficial (REST/JSON), eliminando
+integralmente a dependência atual de chamadas DataSnap (TCP/binário), datasets CDS/DSP, conexões
+diretas de banco de dados, parsers internos e emulações de interface do sistema Imperium.
+
+--------------------------------------------------------------------------------
+1. RESUMO EXECUTIVO
+--------------------------------------------------------------------------------
+A análise técnica e operacional do ecossistema confirma que o endpoint oficial de conclusão de
+ordem de serviço (POST /technet/ordemservico) já se encontra ativo e plenamente funcional no projeto.
+No entanto, o ciclo operacional completo do DOMINIUM ainda depende de mecanismos legados DataSnap
+para pesquisa de ordens de serviço, detalhamento de equipamentos instalados no cliente, listagem de
+técnicos, catálogos de materiais, transferências entre almoxarifados e consultas de saldos físicos de estoque.
+
+Endpoints oficiais já identificados e em uso no projeto:
+  - POST /technet/login         : Autenticação corporativa e obtenção do token JWT.
+  - POST /technet/ordemservico  : Envio da baixa produtiva/improdutiva e conclusão da OS.
+
+Principal necessidade técnica:
+Expor formalmente em padrão HTTP/JSON as operações que hoje exigem DataSnap ou leitura de datasets
+internos, garantindo isolamento de camadas, rastreabilidade transacional, consistência de estoque
+e retorno estruturado de erros.
+
+Evoluções consolidadas na Versão 1.2.1:
+  1. equipamentoId como identificador canônico obrigatório:
+     Definição estrita e sem ambiguidades de que equipamentoId é o identificador único obrigatório
+     para materiais e equipamentos em toda a API, vedando o uso de chaves genéricas como id.
+  2. Obrigatoriedade de X-Empresa-Id em multi-base:
+     Quando a credencial possuir acesso a múltiplas empresas/bases, o cabeçalho X-Empresa-Id é
+     estritamente obrigatório sempre que a empresa não puder ser determinada inequivocamente pelo
+     recurso. É vedado assumir silenciosamente base default, devendo chamadas ambíguas ou com escopo
+     inválido serem rejeitadas com erro explícito (HTTP 400 ou HTTP 403).
+  3. Healthcheck aprimorado (apiVersion e dependencies):
+     GET /technet/health retorna apiVersion e detalha o estado de conectividade estruturado em
+     dependencies.database, com previsão de segregação futura entre liveness e readiness.
+  4. Status de operação assíncrona P0:
+     GET /technet/operacoes/{operationId} é P0 condicionado a retornos assíncronos (QUEUED/ACCEPTED)
+     em operações de escrita P0 como conclusão de OS e transferências.
+  5. Equivalência oficial com auditoria bruta Atlas:
+     GET /technet/equipamentos/{codigo}/equivalentes expõe flags completas e a string bruta original
+     descricaoAtlasBruta retornada por TDtmEquipamentos/DspLoc.
+  6. Itens de estoque com flags explícitas:
+     Cada item em GET /technet/estoques/{stockId}/itens expõe explicitamente ativo, serializado
+     e identificado.
+  7. Minimização de dados (LGPD):
+     Omissão de documento civil de clientes na consulta de contrato por não ser exigido na operação.
+  8. Observação opcional na criação de OS:
+     Tratamento explícito de observacao em POST /technet/ordensservico como opcional condicionado
+     à confirmação de suporte no Imperium.
+  9. Quotas e timeouts validados em homologação:
+     Quotas e tempos limites devem ser documentados pelo fornecedor e homologados empiricamente em
+     Sandbox, priorizando HTTP 202 + operationId para operações longas.
+  10. Webhook resiliente com eventId:
+     Identificador único de evento para proteção contra replay e descarte de duplicidades.
+
+Observação sobre nomenclatura: Os nomes de endpoints propostos representam uma sugestão de contrato
+REST limpo e corporativo. A equipe fornecedora da API pode adotar convenção distinta de rotas, desde
+que sejam mantidas integralmente as capacidades funcionais, identificadores e validações descritos.
+
+--------------------------------------------------------------------------------
+2. ESCOPO FUNCIONAL NECESSÁRIO
+--------------------------------------------------------------------------------
+Função                                     | Método | Endpoint sugerido                          | Situação               | Prior.
+-----------------------------------------------------------------------------------------------------------------------------
+Autenticação com escopo                    | POST   | /technet/login                             | Já conhecido (Expandir) | P0
+Listar/pesquisar OS                        | GET    | /technet/ordensservico                     | Necessário             | P0
+Detalhe completo da OS (com equipamentos)  | GET    | /technet/ordensservico/{id}                | Necessário (Expandido) | P0
+Consultar contrato/cliente/endereço        | GET    | /technet/contratos/{contrato}              | Necessário (Minimização LGPD) | P0
+Catálogo de serviços/tipos de OS           | GET    | /technet/servicos                          | Necessário             | P1
+Listar técnicos/instaladores               | GET    | /technet/tecnicos                          | Necessário             | P0
+Criar OS manual                            | POST   | /technet/ordensservico                     | Necessário (Obs. opcional) | P0
+Criar OS em lote                           | POST   | /technet/ordensservico/lote                | Recomendado            | P1
+Reatribuir instalador                      | POST   | /technet/ordensservico/{id}/reatribuir     | Necessário             | P0
+Listar/pesquisar estoques gerais           | GET    | /technet/estoques                          | Necessário (NOVO)      | P0
+Consultar itens de estoque (com filtros)   | GET    | /technet/estoques/{stockId}/itens          | Necessário (Expandido) | P0
+Localizar proprietário de serial           | GET    | /technet/estoques/seriais/{serial}         | Necessário             | P0
+Materiais disponíveis por OS               | GET    | /technet/ordensservico/{id}/materiais      | Necessário             | P1
+Transferir equipamento serializado         | POST   | /technet/estoques/transferencias           | Necessário             | P0
+Transferir material NÃO serializado        | POST   | /technet/estoques/transferencias/materiais | Necessário (NOVO)      | P0
+Baixa avulsa/correção de material          | POST   | /technet/estoques/{stockId}/baixas         | Necessário             | P0
+Catálogo de equipamentos                   | GET    | /technet/equipamentos                      | Recomendado            | P1
+Equivalência oficial de miscelâneas        | GET    | /technet/equipamentos/{codigo}/equivalentes | Necessário (NOVO)      | P0
+Catálogo de códigos de baixa               | GET    | /technet/codigosbaixa                      | Recomendado            | P2
+Baixar/concluir OS                         | POST   | /technet/ordemservico                      | Já conhecido           | P0
+Consultar status de operação               | GET    | /technet/operacoes/{operationId}           | Necessário (Elevado para P0) | P0
+Webhook de conclusão de operação           | POST   | /api/integracoes/imperium/webhook          | Recomendado (com eventId) | P1
+Healthcheck operacional                    | GET    | /technet/health                            | Recomendado (NOVO)     | P1
+
+--------------------------------------------------------------------------------
+3. PADRÃO GERAL RECOMENDADO DA API
+--------------------------------------------------------------------------------
+  * Autenticação centralizada: Bearer Token JWT obtido via POST /technet/login.
+  * Content-Type: application/json; charset=utf-8 em todas as requisições e respostas.
+  * Idempotência obrigatória: Suporte a requestId no payload ou cabeçalho Idempotency-Key em escritas.
+  * Retenção de idempotência: Retenção mínima de 24 horas no servidor para proteção contra retries.
+  * Escopo explícito e obrigatoriedade de X-Empresa-Id: O token carrega o escopo operacional.
+    Quando a credencial possuir acesso a múltiplas empresas/bases, o envio de X-Empresa-Id é
+    estritamente obrigatório sempre que a empresa não puder ser determinada inequivocamente pelo
+    recurso. Nunca assumir silenciosamente base default. Rejeitar chamadas ambíguas sem header com
+    HTTP 400 Bad Request e escopo não autorizado com HTTP 403 Forbidden (INVALID_SCOPE_COMPANY).
+  * equipamentoId como identificador canônico obrigatório: Toda e qualquer referência a equipamentos
+    e materiais no catálogo, estoques, transferências e OS deve utilizar obrigatoriamente equipamentoId
+    como identificador canônico em toda a API, vedando o uso de id genérico para itens de estoque.
+  * Minimização de dados (LGPD): Tráfego restrito a dados estritamente necessários à operação.
+  * Respostas de erro padronizadas: Envelope JSON uniforme com code, message e details.
+  * Operações assíncronas: Retorno de HTTP 202 com operationId para acompanhamento.
+  * Formato de datas: Padrão ISO 8601 com timezone (ex.: 2026-09-11T08:30:00-03:00).
+  * Identificadores canônicos: Devolver explicitamente IDs primários, login Z... e número de OS.
+
+Exemplo de cabeçalhos para requisições de escrita:
+  Authorization: Bearer <token_jwt>
+  Content-Type: application/json; charset=utf-8
+  Idempotency-Key: 693ce889-e355-4fa8-925a-56644308e27a
+  X-Empresa-Id: 1
+
+--------------------------------------------------------------------------------
+4. CONTRATOS DE ENDPOINTS
+--------------------------------------------------------------------------------
+4.1 Autenticação [Prioridade: P0]
+POST /technet/login
+Autentica a integração e devolve token de sessão com escopo de empresas/bases.
+Em credenciais multi-base, o cliente deverá enviar obrigatoriamente X-Empresa-Id nas requisições
+subsequentes onde a empresa não puder ser inferida inequivocamente.
+Requisição:
+  POST /technet/login
+  {
+    "jwtusername": "USUARIO_API",
+    "jwtpassword": "SENHA_API"
+  }
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expiresIn": 28800,
+    "tokenType": "Bearer",
+    "escopo": {
+      "empresaId": 1,
+      "empresa": "TECHNET NATAL",
+      "base": "NATAL",
+      "basesDisponiveis": [
+        {"empresaId": 1, "nome": "NATAL"},
+        {"empresaId": 2, "nome": "MOSSORO"}
+      ]
+    }
+  }
+
+4.2 Listagem e pesquisa de ordens de serviço [Prioridade: P0]
+GET /technet/ordensservico
+Permite filtros operacionais para alimentação da grade diária do DOMINIUM.
+Em contexto multi-base, exige o cabeçalho X-Empresa-Id.
+Requisição:
+  GET /technet/ordensservico?data=2026-09-11&status=EM_CAMPO&tipo=TODOS&limit=100&offset=0
+  X-Empresa-Id: 1
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "items": [
+      {
+        "id": 987654,
+        "numero": "2646508672",
+        "contrato": "1234567",
+        "dataagendamento": "2026-09-11",
+        "status": "EM CAMPO",
+        "servico": {"id": 17, "codigo": "RET", "descricao": "RETIRADA"},
+        "tecnico": {"id": 3456, "codigo": "Z637677", "nome": "TECNICO EXEMPLO"}
+      }
+    ],
+    "total": 1,
+    "hasMore": false
+  }
+
+4.3 Detalhe completo de uma OS (com equipamentos) [Prioridade: P0]
+GET /technet/ordensservico/{id}
+Fornece dados completos da OS, cliente e inventário de equipamentos instalados/removidos,
+substituindo o dataset TDtmCadOs. Todos os itens adotam obrigatoriamente equipamentoId.
+Requisição:
+  GET /technet/ordensservico/987654
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "id": 987654,
+    "numero": "2646508672",
+    "contrato": "1234567",
+    "dataagendamento": "2026-09-11",
+    "status": "EM CAMPO",
+    "servico": {"id": 17, "codigo": "RET", "descricao": "RETIRADA"},
+    "tecnico": {"id": 3456, "codigo": "Z637677", "nome": "TECNICO EXEMPLO", "estoqueId": 9012},
+    "cliente": {
+      "id": 189368,
+      "nome": "CLIENTE EXEMPLO DA SILVA",
+      "endereco": {
+        "logradouro": "RUA DAS FLORES", "numero": "123", "complemento": "APTO 101",
+        "bairro": "CENTRO", "cidade": "NATAL", "uf": "RN", "cep": "59000000", "tipo": "APTO"
+      }
+    },
+    "equipamentosNoCliente": [
+      {
+        "serial": "ONU998877A",
+        "equipamentoId": 300123,
+        "codigo": "300123",
+        "descricao": "ONU GPON WIFI",
+        "dataInstalacao": "2024-03-15"
+      }
+    ],
+    "instaladosSerializados": [],
+    "removidosSerializados": [],
+    "materiaisAplicados": [
+      {"equipamentoId": 781, "codigo": "22012345", "descricao": "CONECTOR X", "quantidade": "2", "unidade": "UN"}
+    ]
+  }
+
+4.4 Consulta de contrato / cliente [Prioridade: P0]
+GET /technet/contratos/{contrato}
+Obtém dados cadastrais de cliente e endereço para emissão de OS. Em conformidade com a LGPD,
+documentos civis de identificação são omitidos por não serem exigidos na operação.
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "contrato": "1234567",
+    "status": "ATIVO",
+    "cliente": {"id": 189368, "nome": "CLIENTE EXEMPLO DA SILVA"},
+    "endereco": {
+      "logradouro": "RUA ABC", "numero": "123", "complemento": "AP 101",
+      "bairro": "CENTRO", "cidade": "NATAL", "uf": "RN", "cep": "59000000", "tipo": "APTO"
+    },
+    "ordensservico": [{"id": 987654, "numero": "2646508672", "status": "EM CAMPO"}]
+  }
+
+4.5 Catálogo de serviços / tipos de OS [Prioridade: P1]
+GET /technet/servicos
+
+4.6 Técnicos / instaladores [Prioridade: P0]
+GET /technet/tecnicos
+Centraliza ID interno, código operacional (login Z...), nome e estoque vinculado.
+
+4.7 Criação manual de OS [Prioridade: P0]
+POST /technet/ordensservico
+Cria OS oficial no Imperium com idempotência e geração de número pelo servidor.
+O campo observacao é estritamente opcional no contrato e condicionado à confirmação no Imperium.
+Requisição:
+  POST /technet/ordensservico
+  {
+    "requestId": "5a883978-8e8f-4633-93af-d66170863d38",
+    "contrato": "1234567",
+    "dataagendamento": "2026-09-11",
+    "servico": {"id": 17},
+    "tecnico": {"id": 3456},
+    "cliente": {"modo": "contrato"},
+    "observacao": "Ordem gerada pelo DOMINIUM (Opcional - sujeito a confirmacao no Imperium)"
+  }
+Resposta:
+  HTTP/1.1 201 Created
+  {
+    "id": 987654,
+    "numero": "2646508672",
+    "contrato": "1234567",
+    "status": "EM CAMPO",
+    "dataagendamento": "2026-09-11",
+    "created": true,
+    "requestId": "5a883978-8e8f-4633-93af-d66170863d38"
+  }
+
+4.8 Criação de OS em lote [Prioridade: P1]
+POST /technet/ordensservico/lote
+
+4.9 Reatribuição de instalador [Prioridade: P0]
+POST /technet/ordensservico/{id}/reatribuir
+
+4.10 Listagem e pesquisa de estoques gerais [Prioridade: P0 - NOVO]
+GET /technet/estoques
+Pesquisa de estoques móveis (técnicos) e centrais (ex.: ZN PRINCIPAL, almoxarifados).
+Em contexto multi-base ambíguo, exige X-Empresa-Id.
+
+4.11 Itens de estoque com filtros avançados [Prioridade: P0 - Expandido]
+GET /technet/estoques/{stockId}/itens
+Retorna insumos, miscelâneas e seriais adotando obrigatoriamente equipamentoId como identificador
+canônico e exibindo explicitamente ativo, serializado e identificado.
+Requisição:
+  GET /technet/estoques/9012/itens?seriais=true&ativo=true&limit=100
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "estoque": {
+      "id": 9012,
+      "nome": "ESTOQUE - Z637677",
+      "tecnico": {"id": 3456, "codigo": "Z637677", "nome": "TECNICO EXEMPLO"}
+    },
+    "items": [
+      {
+        "equipamentoId": 781,
+        "codigo": "22012345",
+        "descricao": "CONECTOR OPTICO SC-APC",
+        "grupo": {"id": 12, "nome": "CONECTORES"},
+        "marca": {"id": 3, "nome": "FIBERHOME"},
+        "unidade": {"id": 1, "sigla": "UN"},
+        "serializado": false,
+        "identificado": false,
+        "ativo": true,
+        "quantidade": "45.00"
+      },
+      {
+        "equipamentoId": 991,
+        "codigo": "300123",
+        "descricao": "ONU GPON WIFI DUAL BAND",
+        "grupo": {"id": 5, "nome": "EQUIPAMENTOS"},
+        "marca": {"id": 2, "nome": "HUAWEI"},
+        "unidade": {"id": 1, "sigla": "UN"},
+        "serializado": true,
+        "identificado": true,
+        "ativo": true,
+        "quantidade": "2.00",
+        "seriais": [
+          {"serial": "HWTC11223344", "status": "DISPONIVEL"},
+          {"serial": "HWTC55667788", "status": "DISPONIVEL"}
+        ]
+      }
+    ]
+  }
+
+4.12 Localização de serial [Prioridade: P0]
+GET /technet/estoques/seriais/{serial}
+Localização direta de onde um serial se encontra fisicamente.
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "found": true,
+    "serial": "HWTC11223344",
+    "equipamento": {"equipamentoId": 991, "codigo": "300123", "descricao": "ONU GPON WIFI DUAL BAND"},
+    "localizacao": "ESTOQUE_TECNICO",
+    "estoque": {"id": 9012, "nome": "ESTOQUE - Z637677"},
+    "tecnico": {"id": 3456, "codigo": "Z637677", "nome": "TECNICO EXEMPLO"}
+  }
+
+4.13 Materiais disponíveis para uma OS [Prioridade: P1]
+GET /technet/ordensservico/{id}/materiais
+
+4.14 Transferência de equipamento serializado [Prioridade: P0]
+POST /technet/estoques/transferencias
+
+4.15 Transferência de materiais NÃO serializados [Prioridade: P0 - NOVO]
+POST /technet/estoques/transferencias/materiais
+Movimentação atômica de insumos/miscelâneas entre estoques com validação rigorosa de saldo.
+Adota obrigatoriamente equipamentoId.
+Requisição:
+  POST /technet/estoques/transferencias/materiais
+  {
+    "requestId": "TRF-MAT-77a83b21-49c0-421b-8ef9-32a1040854cb",
+    "origem": {"estoqueId": 101},
+    "destino": {"estoqueId": 9012, "tecnicoId": 3456},
+    "materiais": [
+      {"equipamentoId": 781, "codigo": "22012345", "quantidade": "25.00"},
+      {"equipamentoId": 450, "codigo": "22023400", "quantidade": "100.00"}
+    ]
+  }
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "operationId": "TRF-MAT-99412",
+    "status": "CONFIRMED",
+    "origem": {"estoqueId": 101},
+    "destino": {"estoqueId": 9012},
+    "materiais": [
+      {"equipamentoId": 781, "codigo": "22012345", "quantidadeTransferida": "25.00", "saldoOrigemAtual": "150.00", "saldoDestinoAtual": "70.00"},
+      {"equipamentoId": 450, "codigo": "22023400", "quantidadeTransferida": "100.00", "saldoOrigemAtual": "850.00", "saldoDestinoAtual": "100.00"}
+    ]
+  }
+
+4.16 Baixa avulsa / correção de material [Prioridade: P0]
+POST /technet/estoques/{stockId}/baixas
+
+4.17 Catálogo de equipamentos [Prioridade: P1]
+GET /technet/equipamentos
+Adota obrigatoriamente equipamentoId como identificador canônico.
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "items": [
+      {
+        "equipamentoId": 781,
+        "codigo": "22012345",
+        "descricao": "CONECTOR OPTICO SC-APC",
+        "grupo": {"id": 12, "nome": "CONECTORES"},
+        "marca": {"id": 3, "nome": "FIBERHOME"},
+        "unidade": {"id": 1, "sigla": "UN"},
+        "serializado": false,
+        "identificado": false,
+        "ativo": true
+      }
+    ]
+  }
+
+4.18 Equivalência oficial de miscelâneas (Descrição Atlas) [Prioridade: P0 - NOVO]
+GET /technet/equipamentos/{codigo}/equivalentes
+Consulta os materiais equivalentes cadastrados no mesmo grupo oficial do Imperium (Descrição Atlas).
+Retorna a lista estruturada com flags completas, equipamentoId canônico e a string original
+descricaoAtlasBruta para auditoria.
+Requisição:
+  GET /technet/equipamentos/22023400/equivalentes
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "codigoSolicitado": "22023400",
+    "grupo": {"id": 12, "nome": "ABRACADEIRA"},
+    "descricaoAtlasBruta": "22023400_ABRACADEIRA NYLON T50R 20CM PRETA | 22056346_ABRACADEIRA HELLERMANN T50R-PT NET | 22025242_ABRACADEIRA NYLON T18R 10CM PRETA | 22025247_ABRACADEIRA NYLON T30R 15CM PRETA",
+    "equivalentes": [
+      {"equipamentoId": 450, "codigo": "22023400", "descricao": "ABRACADEIRA NYLON T50R 20CM PRETA", "marca": "HELLERMANN", "unidade": "UN", "serializado": false, "identificado": false, "ativo": true},
+      {"equipamentoId": 451, "codigo": "22056346", "descricao": "ABRACADEIRA HELLERMANN T50R-PT NET", "marca": "HELLERMANN", "unidade": "UN", "serializado": false, "identificado": false, "ativo": true},
+      {"equipamentoId": 452, "codigo": "22025242", "descricao": "ABRACADEIRA NYLON T18R 10CM PRETA", "marca": "HELLERMANN", "unidade": "UN", "serializado": false, "identificado": false, "ativo": true},
+      {"equipamentoId": 453, "codigo": "22025247", "descricao": "ABRACADEIRA NYLON T30R 15CM PRETA", "marca": "HELLERMANN", "unidade": "UN", "serializado": false, "identificado": false, "ativo": true}
+    ]
+  }
+
+4.19 Catálogo de códigos de baixa [Prioridade: P2]
+GET /technet/codigosbaixa
+
+4.20 Baixa / conclusão de OS [Prioridade: P0 - Já conhecido]
+POST /technet/ordemservico
+
+4.21 Consulta de status da operação [Prioridade: P0 - Elevado para P0]
+GET /technet/operacoes/{operationId}
+Classificado como P0 mandatório caso qualquer escrita P0 (como encerramento de OS via
+POST /technet/ordemservico) possa retornar assincronamente (QUEUED/ACCEPTED). Só poderá ser
+rebaixado para P1 se todas as escritas P0 forem estritamente síncronas no Imperium.
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "operationId": "CLS-123456",
+    "type": "ORDER_CLOSE",
+    "status": "CONFIRMED",
+    "numero": "2646508672",
+    "createdAt": "2026-09-11T08:20:11-03:00",
+    "finishedAt": "2026-09-11T08:20:14-03:00"
+  }
+
+4.22 Healthcheck operacional [Prioridade: P1 - NOVO]
+GET /technet/health
+Sonda leve e de alta disponibilidade para monitoramento contínuo. Retorna apiVersion e dependencies.database.
+Prevê separação futura recomendada entre liveness (/health/live) e readiness (/health/ready).
+Requisição:
+  GET /technet/health
+Resposta:
+  HTTP/1.1 200 OK
+  {
+    "status": "UP",
+    "apiVersion": "1.2.1",
+    "timestamp": "2026-09-11T13:57:00-03:00",
+    "dependencies": {
+      "database": {
+        "status": "UP"
+      }
+    }
+  }
+
+--------------------------------------------------------------------------------
+5. WEBHOOK RECOMENDADO
+--------------------------------------------------------------------------------
+Notificação push para o DOMINIUM sobre conclusões definitivas de operações assíncronas.
+Inclui eventId único para descarte de duplicidades e proteção contra replay:
+  POST /api/integracoes/imperium/webhook
+  X-Webhook-Signature: sha256=d5b3f71c...
+  {
+    "eventId": "EVT-789a-4bc1-9012-d66170863d38",
+    "operationId": "CLS-123456",
+    "numero": "2646508672",
+    "status": "CONFIRMED",
+    "message": "Ordem de servico baixada com sucesso no Imperium",
+    "timestamp": "2026-09-11T08:20:14-03:00"
+  }
+
+--------------------------------------------------------------------------------
+6. REGRAS DE NEGÓCIO CRÍTICAS
+--------------------------------------------------------------------------------
+  * Número da OS: O número oficial/canônico deve ser gerado e validado pelo Imperium. O cliente não deve fabricar identificadores de OS.
+  * Código do técnico: A API deve retornar o código operacional/login do técnico (ex.: Z637677) junto ao ID interno e nome, evitando associações frágeis por similaridade de texto.
+  * Estoque/serial: Operações de transferência e baixa devem validar o estado atual no servidor no momento da escrita, rejeitando movimentações sobre seriais ausentes.
+  * Concorrência: Mudanças concorrentes de técnico, estoque ou OS devem retornar HTTP 409 (Conflict) em vez de sobrescrever silenciosamente o registro.
+  * Idempotência: Toda escrita crítica deve suportar requestId ou cabeçalho Idempotency-Key com retenção mínima de 24 horas no servidor, garantindo retries seguros.
+  * Confirmação Assíncrona (P0): Diferenciar expressamente o estado de enfileiramento (QUEUED/ACCEPTED) da confirmação final (CONFIRMED/REJECTED). A consulta de status via /operacoes/{operationId} é P0 se qualquer escrita P0 for assíncrona.
+  * Auditoria: Registrar credencial de integração, data/hora ISO 8601, endpoint, requestId, entidade afetada e status do processamento.
+  * Equivalência de Miscelâneas: A substituição de materiais não serializados deve obedecer estritamente aos grupos oficiais do Imperium ('Descrição Atlas' / DspLoc), sendo vedada a inferência heurística ou por similaridade textual.
+  * Isolamento Multi-Base: Garantir segregação estrita por empresa/base operacional. Quando o token possuir múltiplas bases autorizadas, o cabeçalho X-Empresa-Id é obrigatório em recursos onde a empresa não puder ser inferida inequivocamente. É vedado assumir silenciosamente uma base default, devendo requisições ambíguas ou sem escopo autorizado serem rejeitadas com erro explícito (HTTP 400 ou HTTP 403).
+  * Atomicidade de Materiais: Transferências e baixas de materiais não serializados devem debitar da origem e creditar no destino em bloco atômico, bloqueando saldos negativos.
+
+--------------------------------------------------------------------------------
+7. PADRÃO DE RESPOSTAS E ERROS
+--------------------------------------------------------------------------------
+Envelope JSON padrão de erro funcional:
+  {
+    "success": false,
+    "code": "INSUFFICIENT_STOCK_BALANCE",
+    "message": "Saldo insuficiente do material no estoque de origem.",
+    "details": {
+      "equipamentoId": 781,
+      "codigo": "22012345",
+      "saldoDisponivel": "10.00",
+      "saldoSolicitado": "25.00",
+      "estoqueId": 101
+    },
+    "requestId": "TRF-MAT-77a83b21-49c0-421b-8ef9-32a1040854cb"
+  }
+
+Códigos HTTP:
+  * 200 OK       : Consulta realizada com sucesso ou operação síncrona executada.
+  * 201 Created  : Recurso criado com sucesso (ex.: criação de OS manual).
+  * 202 Accepted : Operação assíncrona aceita e enfileirada para processamento.
+  * 400 Bad Request : Payload malformado, cabeçalhos obrigatórios ausentes (ex.: X-Empresa-Id obrigatório em contexto multi-base ambíguo) ou tipos inválidos.
+  * 401 / 403    : Falha de autenticação (token inválido/expirado) ou escopo de empresa não autorizado (INVALID_SCOPE_COMPANY).
+  * 404 Not Found : Entidade solicitada não localizada (OS, contrato, serial ou estoque inexistente).
+  * 409 Conflict : Conflito de estado, duplicidade de chave de idempotência ou concorrência otimista.
+  * 422 Unprocessable Entity : Regra de negócio violada (saldo insuficiente, serial fora de estoque, OS já encerrada).
+  * 429 Too Many Requests : Limite de taxa de requisições (rate limit) excedido pelo cliente.
+  * 500 / 503    : Falha interna do servidor ou indisponibilidade temporária de serviço.
+
+Catálogo de códigos de erro de negócio:
+  * SERIAL_NOT_IN_SOURCE_STOCK     : O número de série informado não pertence ao estoque de origem especificado na transferência/baixa.
+  * INSUFFICIENT_STOCK_BALANCE     : O saldo físico disponível do material não serializado na origem é inferior à quantidade solicitada.
+  * ORDER_ALREADY_CLOSED           : A ordem de serviço já se encontra com status finalizado/cancelado e não aceita novas baixas ou modificações.
+  * ORDER_LOCKED_CONCURRENT        : A ordem de serviço foi modificada concorrentemente por outro operador ou processo. Recarregue os dados.
+  * EQUIPMENT_NOT_FOUND            : O equipamentoId informado não existe no catálogo oficial do Imperium.
+  * INVALID_SCOPE_COMPANY          : O cabeçalho X-Empresa-Id é obrigatório para esta credencial multi-base ou a empresa informada não está autorizada.
+  * IDEMPOTENCY_CONFLICT           : A requisição repetiu um requestId/Idempotency-Key já processado, mas com payload divergente.
+  * SERIAL_ALREADY_ASSIGNED        : O serial informado já se encontra instalado em outro contrato ativo ou alocado em transferência pendente.
+  * INVALID_TECHNICIAN             : O técnico informado não foi localizado, encontra-se inativo ou não pertence à empresa do contrato.
+  * OPERATION_FAILED               : Falha interna irrecuperável no processamento da operação assíncrona.
+
+--------------------------------------------------------------------------------
+8. PRIORIZAÇÃO PARA IMPLEMENTAÇÃO
+--------------------------------------------------------------------------------
+Fase P0 — Crítica / Imediata (Desativação do DataSnap):
+  - POST /technet/login
+  - GET /technet/ordensservico
+  - GET /technet/ordensservico/{id}
+  - GET /technet/contratos/{contrato}
+  - GET /technet/tecnicos
+  - POST /technet/ordensservico
+  - POST /technet/ordensservico/{id}/reatribuir
+  - GET /technet/estoques
+  - GET /technet/estoques/{id}/itens
+  - GET /technet/estoques/seriais/{serial}
+  - POST /technet/estoques/transferencias
+  - POST /technet/estoques/transferencias/materiais
+  - POST /technet/estoques/{id}/baixas
+  - GET /technet/equipamentos/{codigo}/equivalentes
+  - POST /technet/ordemservico (já existente)
+  - GET /technet/operacoes/{operationId} (P0 condicionado a retornos assíncronos em escritas P0)
+
+Fase P1 — Robustez, Escala e Automação:
+  - GET /technet/servicos
+  - POST /technet/ordensservico/lote
+  - GET /technet/ordensservico/{id}/materiais
+  - GET /technet/equipamentos
+  - GET /technet/health (healthcheck operacional)
+  - Webhook de notificação com eventId
+
+Fase P2 — Governança e Metadados:
+  - GET /technet/codigosbaixa
+
+--------------------------------------------------------------------------------
+9. FUNÇÕES QUE PERMANECEM NO DOMINIUM
+--------------------------------------------------------------------------------
+  - /api/imports/preview e /api/imports/commit
+  - /api/intelligence
+  - /api/close-report
+  - /api/failures e /api/logs
+  - /api/stock/pdf/batch
+  - /api/voice/*
+  - /api/whatsapp/*
+  - /api/disconnect-automation/*
+  - /api/monitor/*
+
+--------------------------------------------------------------------------------
+10. CRITÉRIOS DE ACEITE DA INTEGRAÇÃO
+--------------------------------------------------------------------------------
+  [CA-01] Autenticação e Escopo: Token JWT com indicação clara da base/empresa e renovação.
+  [CA-02] Listagem de Ordens: Listar OS do período com filtros e consistência de dados.
+  [CA-03] Detalhe Integral da OS: Retorno completo de dados cadastrais e equipamentos com equipamentoId canônico.
+  [CA-04] Cadastro de OS Manual: Criar OS e receber número canônico oficial do Imperium (observação opcional).
+  [CA-05] Reatribuição Segura: Troca de instalador com verificação de concorrência otimista.
+  [CA-06] Listagem de Estoques: Localização de estoques centrais e móveis por API.
+  [CA-07] Consulta de Saldos: Saldos e seriais físicos com flags ativo/serializado/identificado e equipamentoId.
+  [CA-08] Localização de Serial: Identificação do paradeiro do serial com uma única chamada.
+  [CA-09] Transferência Serializada: Movimentação de seriais com validação de origem e destino.
+  [CA-10] Transferência de Miscelâneas: Transferência atômica de materiais com validação de saldo e equipamentoId.
+  [CA-11] Baixa Avulsa de Material: Ajuste de saldo de insumos sem ordens fictícias.
+  [CA-12] Equivalência Oficial de Materiais: Consulta à regra Descrição Atlas com auditoria bruta e equipamentoId.
+  [CA-13] Conclusão de OS: Baixa pelo endpoint oficial com persistência comprovada.
+  [CA-14] Tolerância a Retries: Repetição segura após timeout sem duplicação de dados.
+  [CA-15] Erros Estruturados: Envelopes de erro JSON padronizados com códigos de negócio.
+  [CA-16] Segregação Multi-Base Estrita: Isolamento de dados entre praças com X-Empresa-Id obrigatório em contexto ambíguo.
+  [CA-17] Healthcheck Operacional: Monitoramento contínuo de status, apiVersion e dependencies.database via /technet/health.
+
+--------------------------------------------------------------------------------
+11. REQUISITOS DE ENTREGA TÉCNICA E GOVERNANÇA
+--------------------------------------------------------------------------------
+  * Documentação OpenAPI 3.0 / Swagger interativo.
+  * Ambiente de Homologação (Sandbox) com base dedicada para testes integrados.
+  * Credenciais M2M exclusivas de serviço com capacidade de rotação.
+  * Ciclo de vida determinístico de tokens com expiração declarada.
+  * Quotas, Rate Limits e Timeouts: Não arbitrar valores fixos; documentar e homologar empiricamente
+    em Sandbox. Priorizar HTTP 202 + operationId para operações longas.
+  * Versionamento semântico de endpoints (ex.: /technet/v1/...).
+  * Retenção de chaves de idempotência por no mínimo 24 horas no servidor.
+
+--------------------------------------------------------------------------------
+12. CONCLUSÃO
+--------------------------------------------------------------------------------
+A evolução da integração DOMINIUM x Imperium para uma arquitetura HTTP/REST oficial elimina
+definitivamente os gargalos, falhas de concorrência e riscos de quebra decorrentes de chamadas
+DataSnap legadas. Com os refinamentos da Versão 1.2.1 (obrigatoriedade de equipamentoId canônico,
+obrigatoriedade de X-Empresa-Id em credenciais multi-base sem default silencioso, healthcheck estruturado
+com apiVersion e dependencies.database, status P0 e equivalência Atlas com auditoria bruta), a especificação
+atinge plena maturidade técnica para implementação imediata.
+
+--- Fim da Especificação de Requisitos v1.2.1 ---

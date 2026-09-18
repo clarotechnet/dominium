@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DOMINIUM FlowScope</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="DOMINIUM FlowScope">
+      <span class="brand-mark"><i></i><i></i><i></i></span>
+      <span>
+        <strong>DOMINIUM</strong>
+        <small>FLOWSCOPE</small>
+      </span>
+    </a>
+    <div class="topbar-status">
+      <span class="pulse"></span>
+      <span>ANÁLISE LOCAL</span>
+      <b>SOMENTE LEITURA</b>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="uploadView">
+      <div class="hero-copy">
+        <p class="eyebrow">LEITOR DE FLUXOS IMPERIUM</p>
+        <h1>Do pacote bruto ao fluxo <span>que faz sentido.</span></h1>
+        <p class="hero-description">
+          Reconstrói TCP, entende DataSnap e aponta consultas, escritas, filtros,
+          códigos de baixa, seriais e diferenças entre capturas — sem transmitir
+          nem alterar qualquer informação no Imperium.
+        </p>
+        <div class="hero-features">
+          <span><i>01</i> Reconstrução TCP</span>
+          <span><i>02</i> Detecção DataSnap</span>
+          <span><i>03</i> Comparação A × B</span>
+        </div>
+      </div>
+
+      <div class="upload-panel">
+        <div class="upload-heading">
+          <div>
+            <span class="step">CAPTURA A</span>
+            <h2>Selecione o fluxo principal</h2>
+          </div>
+          <span class="format">ZIP · PCAPNG</span>
+        </div>
+        <label class="dropzone" id="dropzoneA" for="fileA">
+          <input id="fileA" type="file" accept=".zip,.pcapng">
+          <span class="drop-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+          </span>
+          <strong>Arraste a captura aqui</strong>
+          <small>ou clique para procurar no computador</small>
+          <span class="file-pill hidden" id="fileNameA"></span>
+        </label>
+
+        <button class="compare-toggle" id="compareToggle" type="button">
+          <span class="plus">+</span>
+          <span><strong>Comparar com outra captura</strong><small>Descubra exatamente o que mudou no fluxo</small></span>
+          <span class="chevron">⌄</span>
+        </button>
+
+        <div class="secondary-upload hidden" id="secondaryUpload">
+          <div class="upload-heading compact">
+            <div><span class="step purple">CAPTURA B</span><h2>Fluxo para comparação</h2></div>
+          </div>
+          <label class="dropzone compact" id="dropzoneB" for="fileB">
+            <input id="fileB" type="file" accept=".zip,.pcapng">
+            <strong>Solte a segunda captura</strong>
+            <small>ZIP ou PCAPNG</small>
+            <span class="file-pill hidden" id="fileNameB"></span>
+          </label>
+        </div>
+
+        <button class="analyze-button" id="analyzeButton" type="button" disabled>
+          <span class="button-label">Analisar captura</span>
+          <span class="button-arrow">→</span>
+        </button>
+        <p class="privacy-note"><span>◆</span> O arquivo fica neste computador e não é enviado para a internet.</p>
+      </div>
+    </section>
+
+    <section class="loading-view hidden" id="loadingView" aria-live="polite">
+      <div class="scanner">
+        <div class="scanner-grid"></div>
+        <div class="scanner-line"></div>
+        <span class="scanner-core"></span>
+      </div>
+      <p class="eyebrow">RECONSTRUINDO O TRÁFEGO</p>
+      <h2 id="loadingTitle">Lendo pacotes e conexões TCP...</h2>
+      <div class="loading-steps">
+        <span class="active">PCAPNG</span><i></i><span>TCP</span><i></i><span>DATASNAP</span><i></i><span>FLUXOS</span>
+      </div>
+    </section>
+
+    <section class="results hidden" id="resultsView">
+      <div class="results-heading">
+        <div>
+          <button class="back-button" id="newAnalysisButton" type="button">← Nova análise</button>
+          <p class="eyebrow">CAPTURA PROCESSADA</p>
+          <h1 id="captureTitle">Fluxos identificados</h1>
+          <p id="captureMeta"></p>
+        </div>
+        <div class="heading-actions">
+          <button class="ghost-button" id="exportButton" type="button">Exportar JSON</button>
+          <span class="integrity"><i></i><span>Integridade verificada<small id="captureHash"></small></span></span>
+        </div>
+      </div>
+
+      <div class="metrics" id="metrics"></div>
+
+      <section class="comparison hidden" id="comparisonSection">
+        <div class="section-heading">
+          <div><p class="eyebrow">COMPARAÇÃO A × B</p><h2>O que apareceu, sumiu ou mudou</h2></div>
+          <span class="comparison-badge" id="comparisonBadge"></span>
+        </div>
+        <div class="comparison-grid" id="comparisonGrid"></div>
+      </section>
+
+      <section class="method-map">
+        <div class="section-heading">
+          <div><p class="eyebrow">MAPA DE MÉTODOS</p><h2>Chamadas mais presentes na captura</h2></div>
+          <span id="methodCount"></span>
+        </div>
+        <div class="method-bars" id="methodBars"></div>
+      </section>
+
+      <section class="timeline-section">
+        <div class="section-heading timeline-heading">
+          <div><p class="eyebrow">LINHA DO TEMPO</p><h2>Fluxos reconhecidos</h2></div>
+          <span class="visible-count" id="visibleCount"></span>
+        </div>
+        <div class="filters">
+          <label class="search-control">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
+            <input type="search" id="searchFilter" placeholder="Método, código, OS, serial, filtro...">
+          </label>
+          <select id="categoryFilter" aria-label="Categoria">
+            <option value="">Todas as categorias</option>
+            <option value="write">Escritas</option>
+            <option value="action">Ações</option>
+            <option value="query">Consultas</option>
+            <option value="prepare">Preparações</option>
+            <option value="session">Sessão</option>
+            <option value="transport">Transporte</option>
+          </select>
+          <select id="portFilter" aria-label="Base"><option value="">Todas as bases</option></select>
+          <label class="switch-control"><input type="checkbox" id="interestingOnly"><span></span> Só importantes</label>
+        </div>
+
+        <div class="table-shell">
+          <table>
+            <thead><tr><th>Horário</th><th>Base</th><th>Tipo</th><th>Fluxo / método</th><th>Evidências</th><th>Resposta</th><th></th></tr></thead>
+            <tbody id="flowBody"></tbody>
+          </table>
+          <div class="empty-state hidden" id="emptyState"><strong>Nenhum fluxo encontrado</strong><span>Ajuste os filtros para ampliar a busca.</span></div>
+        </div>
+        <button class="load-more hidden" id="loadMoreButton" type="button">Mostrar mais fluxos</button>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="flowDialog">
+    <div class="dialog-topline"></div>
+    <header>
+      <div><span class="dialog-category" id="dialogCategory"></span><h2 id="dialogTitle"></h2><p id="dialogSubtitle"></p></div>
+      <button class="dialog-close" id="dialogClose" type="button" aria-label="Fechar">×</button>
+    </header>
+    <div class="dialog-content" id="dialogContent"></div>
+  </dialog>
+
+  <div class="toast hidden" id="toast" role="status"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

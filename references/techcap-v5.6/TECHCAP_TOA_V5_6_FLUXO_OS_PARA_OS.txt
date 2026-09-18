@@ -1,0 +1,3962 @@
+(() => {
+  "use strict";
+
+  const GLOBAL_KEY = "__TECHNET_TOA_CAPTURE_V5_QUEUE__";
+  const PREVIOUS_KEYS = ["__TECHNET_TOA_CAPTURE_V1__", "__TECHNET_TOA_CAPTURE_V2__", "__TECHNET_TOA_CAPTURE_V3__", "__TECHNET_TOA_CAPTURE_V3_1__", "__TECHNET_TOA_CAPTURE_V4_BATCH__", GLOBAL_KEY];
+
+  for (const key of PREVIOUS_KEYS) {
+    const previous = window[key];
+    if (previous?.active && typeof previous.stop === "function") {
+      try {
+        previous.stop();
+      } catch (error) {
+        console.warn(`Não foi possível parar o coletor anterior (${key}).`, error);
+      }
+    }
+  }
+
+  const config = {
+    maxEvents: 1500,
+    maxResponseBytes: 2_000_000,
+    maxRequestBytes: 500_000,
+    maxStringLength: 200_000,
+    maxArrayItems: 5000,
+    maxObjectKeys: 5000,
+    maxDepth: 18,
+    captureFetch: true,
+    captureXHR: true,
+    captureNavigation: true,
+    capturePostMessage: false,
+    captureConsoleSummary: false,
+  };
+
+  const state = {
+    version: "5.6-queue",
+    active: true,
+    startedAt: new Date().toISOString(),
+    startedUrl: location.href,
+    sequence: 0,
+    currentFlow: null,
+    events: [],
+    marks: [],
+  };
+
+  const originals = {
+    fetch: window.fetch,
+    XMLHttpRequest: window.XMLHttpRequest,
+    xhrOpen: window.XMLHttpRequest?.prototype?.open,
+    xhrSend: window.XMLHttpRequest?.prototype?.send,
+    xhrSetRequestHeader: window.XMLHttpRequest?.prototype?.setRequestHeader,
+    pushState: history.pushState,
+    replaceState: history.replaceState,
+  };
+
+  const xhrMetadata = new WeakMap();
+  const cleanupCallbacks = [];
+
+  const BATCH_STORAGE_KEY = "technet_toa_batch_v4";
+  const KNOWN_PRODUCTIVE_CODES = new Set(["409", "430"]);
+  const KNOWN_IMPRODUCTIVE_CODES = new Set(["103", "105", "106", "107", "125", "305"]);
+
+  /* TECHCAP_V56_CORE_START */
+  const V56Core = (() => {
+    const PRODUCTIVE_CODES = new Set(["409", "430"]);
+    const IMPRODUCTIVE_CODES = new Set(["103", "105", "106", "107", "125", "305"]);
+    const MAX_HISTORY = 25;
+
+    const text = (value) => String(value ?? "").trim();
+    const clone = (value) =>
+      value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+    const normalizedText = (value) =>
+      text(value)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+
+    function isEmpty(value) {
+      if (value === null || value === undefined) return true;
+      if (typeof value === "string") return !value.trim();
+      if (Array.isArray(value)) return value.length === 0;
+      if (typeof value === "object") return Object.keys(value).length === 0;
+      return false;
+    }
+
+    function mergeNonEmptyObject(previous = {}, next = {}) {
+      const output = { ...(previous || {}) };
+      for (const [key, value] of Object.entries(next || {})) {
+        if (isEmpty(value)) continue;
+        output[key] = clone(value);
+      }
+      return output;
+    }
+
+    function mergeArrayByKey(previous, next, keyFn) {
+      const map = new Map();
+      const add = (item) => {
+        const rawKey = text(keyFn(item));
+        const key = rawKey || JSON.stringify(item);
+        const existing = map.get(key);
+        map.set(
+          key,
+          existing && item && typeof item === "object"
+            ? mergeNonEmptyObject(existing, item)
+            : clone(item)
+        );
+      };
+      for (const item of previous || []) add(item);
+      for (const item of next || []) add(item);
+      return [...map.values()];
+    }
+
+    const taskKey = (item) => {
+      const index = text(item?.index);
+      const osNumber = text(item?.os_number);
+      return index || osNumber
+        ? `${index}|${osNumber}`
+        : `${text(item?.status)}|${text(item?.close_code)}`;
+    };
+
+    const inventoryKey = (item) =>
+      text(item?.invid) ||
+      `${text(item?.serial)}|${text(item?.material_code)}|${text(item?.action_code)}|${text(item?.pool)}`;
+
+    function inventoryQuantities(
+      rawUsedQuantity,
+      explicitAvailableStock,
+      displayedAvailableStock
+    ) {
+      return {
+        used_quantity: text(rawUsedQuantity),
+        available_stock:
+          text(displayedAvailableStock) || text(explicitAvailableStock),
+      };
+    }
+
+    const formKey = (item) =>
+      text(item?.form_data_id) ||
+      `${text(item?.activity_id)}|${text(item?.label)}|${text(item?.created_at)}`;
+
+    function associateLegacyForms(forms, aid) {
+      const activityAid = text(aid);
+      return (forms || []).map((form) => {
+        const output = clone(form) || {};
+        if (!text(output.activity_id) && activityAid) {
+          output.activity_id = activityAid;
+          output.association_source =
+            text(output.association_source) || "legacy_batch_scope";
+        }
+        return output;
+      });
+    }
+
+    function sanitizeRoute(route, aid) {
+      const source = route && typeof route === "object" ? route : {};
+      const expectedAid = text(aid);
+      const observedAid = text(source.aid);
+      const mismatch = Boolean(observedAid && expectedAid && observedAid !== expectedAid);
+      if (mismatch) {
+        return {
+          route: { path: "view_activities", aid: "", pid: "", date: "" },
+          validation: {
+            status: "mismatch",
+            expected_aid: expectedAid,
+            observed_aid: observedAid,
+          },
+        };
+      }
+      return {
+        route: {
+          path: text(source.path),
+          aid: observedAid,
+          pid: text(source.pid),
+          date: text(source.date),
+        },
+        validation: {
+          status: observedAid ? "compatible" : "missing",
+          expected_aid: expectedAid,
+          observed_aid: observedAid,
+        },
+      };
+    }
+
+    function classifyOperational(os) {
+      const tasks = Array.isArray(os?.tasks) ? os.tasks : [];
+      const codes = [...new Set(tasks.map((task) => text(task?.close_code)).filter(Boolean))];
+      const statuses = [...new Set(tasks.map((task) => text(task?.status)).filter(Boolean))];
+      const knownProductive = codes.filter((code) => PRODUCTIVE_CODES.has(code));
+      const knownImproductive = codes.filter((code) => IMPRODUCTIVE_CODES.has(code));
+      const unknown = codes.filter(
+        (code) => !PRODUCTIVE_CODES.has(code) && !IMPRODUCTIVE_CODES.has(code)
+      );
+      let category = "nao-mapeada";
+      if (!codes.length) category = "sem-codigo";
+      else if (knownProductive.length && !knownImproductive.length && !unknown.length) {
+        category = "produtiva";
+      } else if (knownImproductive.length && !knownProductive.length && !unknown.length) {
+        category = "improdutiva";
+      } else if (
+        (knownProductive.length && knownImproductive.length) ||
+        (unknown.length && (knownProductive.length || knownImproductive.length))
+      ) {
+        category = "mista";
+      }
+      const workType = text(os?.activity?.work_type);
+      return {
+        category,
+        codes,
+        statuses,
+        knownProductive,
+        knownImproductive,
+        unknown,
+        work_type: workType,
+        is_disconnection: normalizedText(workType).includes("desconex"),
+      };
+    }
+
+    function captureQuality(os) {
+      const aid = text(os?.activity?.aid);
+      const contract = text(os?.activity?.contract);
+      const tasks = Array.isArray(os?.tasks) ? os.tasks : [];
+      const inventory = Array.isArray(os?.inventory) ? os.inventory : [];
+      const forms = Array.isArray(os?.forms) ? os.forms : [];
+      const formSubmitters = Array.isArray(os?.responsibility?.form_submitters)
+        ? os.responsibility.form_submitters
+        : [];
+      const route = sanitizeRoute(os?.route, aid);
+      const missing = [];
+      if (!aid) missing.push("activity.aid");
+      if (!contract) missing.push("activity.contract");
+      if (!text(os?.activity?.work_type)) missing.push("activity.work_type");
+      if (!text(os?.activity?.status)) missing.push("activity.status");
+      if (!tasks.length) missing.push("tasks");
+      if (tasks.some((task) => !text(task?.os_number))) missing.push("tasks.os_number");
+      if (tasks.some((task) => !text(task?.status))) missing.push("tasks.status");
+      if (tasks.some((task) => !text(task?.close_code))) missing.push("tasks.close_code");
+      if (route.validation.status === "mismatch") missing.push("route_compatible");
+      if (route.validation.status === "missing") missing.push("route.aid");
+      if (!text(os?.responsibility?.assigned_technician?.id)) {
+        missing.push("responsibility.assigned_technician.id");
+      }
+      if (!forms.length && !formSubmitters.length) missing.push("forms");
+
+      const score =
+        (aid ? 20 : 0) +
+        (contract ? 20 : 0) +
+        (text(os?.activity?.work_type) ? 10 : 0) +
+        (text(os?.activity?.status) ? 5 : 0) +
+        tasks.length * 15 +
+        tasks.filter((task) => text(task?.close_code)).length * 10 +
+        inventory.length * 2 +
+        forms.length * 2 +
+        formSubmitters.length * 2 +
+        (route.validation.status === "compatible" ? 10 : 0);
+
+      return {
+        score,
+        grade: missing.length ? "incomplete" : "complete",
+        missing: [...new Set(missing)],
+        counts: {
+          tasks: tasks.length,
+          inventory: inventory.length,
+          forms: forms.length,
+        },
+        route_status: route.validation.status,
+      };
+    }
+
+    function evaluateAutomation(os, classification = classifyOperational(os)) {
+      const reasons = [];
+      const quality = captureQuality(os);
+      const tasks = Array.isArray(os?.tasks) ? os.tasks : [];
+      const inventory = Array.isArray(os?.inventory) ? os.inventory : [];
+      const formSubmitters = Array.isArray(os?.responsibility?.form_submitters)
+        ? os.responsibility.form_submitters
+        : [];
+      const forms = Array.isArray(os?.forms) ? os.forms : [];
+      const status = normalizedText(os?.activity?.status);
+      const completeStatus = ["complete", "completed", "concluida", "concluido"].includes(status);
+      const productiveStatuses = tasks.every(
+        (task) => normalizedText(task?.status) === "e"
+      );
+
+      let decision = "manual_review";
+      let futureCandidate = false;
+
+      if (classification.is_disconnection) {
+        decision = "blocked_manual_review";
+        reasons.push("disconnect_automation_blocked");
+      } else if (classification.category === "improdutiva") {
+        decision = "no_inventory_movement";
+        reasons.push("improductive_inventory_movement_blocked");
+      } else if (classification.category === "produtiva") {
+        if (!completeStatus) reasons.push("activity_not_complete");
+        if (!productiveStatuses) reasons.push("task_status_not_productive");
+        if (quality.route_status !== "compatible") reasons.push("route_not_confirmed");
+        if (!text(os?.responsibility?.assigned_technician?.id)) {
+          reasons.push("assigned_technician_missing");
+        }
+        if (!inventory.length) reasons.push("inventory_missing");
+        if (!forms.length && !formSubmitters.length) reasons.push("forms_missing");
+        if (!reasons.length) {
+          decision = "candidate_after_validation";
+          futureCandidate = true;
+          reasons.push("imperium_payload_validation_required");
+        }
+      } else {
+        reasons.push(
+          classification.category === "sem-codigo"
+            ? "close_code_missing"
+            : "operational_classification_requires_review"
+        );
+      }
+
+      return {
+        decision,
+        future_candidate: futureCandidate,
+        imperium_write_enabled: false,
+        reasons: [...new Set(reasons)],
+      };
+    }
+
+    function mergeSnapshots(previous, next) {
+      if (!next || typeof next !== "object") {
+        return { accepted: false, reason: "next_snapshot_missing", os: clone(previous) };
+      }
+
+      const previousAid = text(previous?.activity?.aid);
+      const nextAid = text(next?.activity?.aid);
+      const aid = nextAid || previousAid;
+      if (previousAid && nextAid && previousAid !== nextAid) {
+        return {
+          accepted: false,
+          reason: "aid_conflict",
+          details: { previous_aid: previousAid, next_aid: nextAid },
+          os: clone(previous),
+        };
+      }
+
+      const previousContract = text(previous?.activity?.contract);
+      const nextContract = text(next?.activity?.contract);
+      if (previousContract && nextContract && previousContract !== nextContract) {
+        return {
+          accepted: false,
+          reason: "contract_conflict",
+          details: {
+            aid,
+            previous_contract: previousContract,
+            next_contract: nextContract,
+          },
+          os: clone(previous),
+        };
+      }
+
+      const issues = [];
+      const previousRoute = sanitizeRoute(previous?.route, aid);
+      const nextRoute = sanitizeRoute(next?.route, aid);
+      const nextMarkedMismatch = next?.route_validation?.status === "mismatch";
+      if (previousRoute.validation.status === "mismatch") {
+        issues.push({
+          code: "stale_previous_route_cleared",
+          ...previousRoute.validation,
+        });
+      }
+      if (nextRoute.validation.status === "mismatch" || nextMarkedMismatch) {
+        issues.push({
+          code: "incoming_route_mismatch_cleared",
+          ...(nextMarkedMismatch ? next.route_validation : nextRoute.validation),
+        });
+      }
+
+      let route;
+      let routeValidation;
+      const incomingRouteMismatch =
+        nextRoute.validation.status === "mismatch" || nextMarkedMismatch;
+      const hasCompatiblePreviousRoute =
+        previousRoute.validation.status === "compatible";
+      if (incomingRouteMismatch) {
+        if (hasCompatiblePreviousRoute) {
+          route = clone(previousRoute.route);
+          routeValidation = clone(previousRoute.validation);
+          issues[issues.length - 1].preserved_previous_compatible_route = true;
+        } else {
+          route = { path: "view_activities", aid: "", pid: "", date: "" };
+          routeValidation = nextMarkedMismatch
+            ? clone(next.route_validation)
+            : nextRoute.validation;
+        }
+      } else if (nextRoute.validation.status === "compatible") {
+        route = mergeNonEmptyObject(previousRoute.route, nextRoute.route);
+        routeValidation = nextRoute.validation;
+      } else {
+        route = previousRoute.route;
+        routeValidation = previousRoute.validation;
+      }
+
+      const keepAssociated = (items, field, issueCode) =>
+        (items || []).filter((item) => {
+          const itemAid = text(item?.[field]);
+          const valid = !itemAid || !aid || itemAid === aid;
+          if (!valid) {
+            issues.push({ code: issueCode, expected_aid: aid, observed_aid: itemAid });
+          }
+          return valid;
+        });
+
+      const inventory = mergeArrayByKey(
+        keepAssociated(previous?.inventory, "activity_id", "foreign_inventory_removed"),
+        keepAssociated(next?.inventory, "activity_id", "foreign_inventory_removed"),
+        inventoryKey
+      );
+      const forms = mergeArrayByKey(
+        keepAssociated(previous?.forms, "activity_id", "foreign_form_removed"),
+        keepAssociated(next?.forms, "activity_id", "foreign_form_removed"),
+        formKey
+      );
+      const tasks = mergeArrayByKey(previous?.tasks, next?.tasks, taskKey);
+      const explicitRouteReset =
+        (incomingRouteMismatch && !hasCompatiblePreviousRoute) ||
+        routeValidation?.status === "mismatch";
+      const emptyProvider = { id: "", external_id: "", name: "" };
+
+      const merged = {
+        ...(previous || {}),
+        ...clone(next),
+        route,
+        route_validation: clone(routeValidation),
+        activity: mergeNonEmptyObject(previous?.activity, next?.activity),
+        responsibility: {
+          assigned_technician: mergeNonEmptyObject(
+            previous?.responsibility?.assigned_technician,
+            next?.responsibility?.assigned_technician
+          ),
+          route_provider:
+            incomingRouteMismatch && hasCompatiblePreviousRoute
+              ? clone(previous?.responsibility?.route_provider || emptyProvider)
+              : explicitRouteReset
+                ? emptyProvider
+                : mergeNonEmptyObject(
+                previous?.responsibility?.route_provider,
+                next?.responsibility?.route_provider
+                  ),
+          inventory_providers: mergeArrayByKey(
+            previous?.responsibility?.inventory_providers,
+            next?.responsibility?.inventory_providers,
+            (item) => text(item?.id)
+          ),
+          form_submitters: mergeArrayByKey(
+            previous?.responsibility?.form_submitters,
+            next?.responsibility?.form_submitters,
+            (item) => `${text(item?.provider_id)}|${text(item?.user_id)}|${text(item?.user_name)}`
+          ),
+        },
+        tasks,
+        inventory,
+        equipment: inventory.filter((item) => item?.kind === "equipment").map(clone),
+        materials: inventory.filter((item) => item?.kind === "material").map(clone),
+        forms,
+      };
+      merged.activity.aid = aid;
+      merged.activity.contract = nextContract || previousContract;
+
+      return {
+        accepted: true,
+        reason: issues.length ? "merged_with_issues" : previous ? "merged" : "created",
+        issues,
+        quality_before: captureQuality(previous),
+        quality_after: captureQuality(merged),
+        os: merged,
+      };
+    }
+
+    function historyRecord(os, mergeResult, seenAt) {
+      return {
+        seenAt,
+        eventId: Number(os?.source_event_id || 0),
+        mode: text(os?.source_delta_mode),
+        decision: text(mergeResult?.reason),
+        quality: Number(mergeResult?.quality_after?.score || 0),
+        routeStatus: text(os?.route_validation?.status),
+        tasks: Array.isArray(os?.tasks) ? os.tasks.length : 0,
+        inventory: Array.isArray(os?.inventory) ? os.inventory.length : 0,
+        forms: Array.isArray(os?.forms) ? os.forms.length : 0,
+        issues: (mergeResult?.issues || []).map((item) => text(item?.code)).filter(Boolean),
+      };
+    }
+
+    function appendHistory(history, record) {
+      const output = Array.isArray(history) ? history.map(clone) : [];
+      output.push(clone(record));
+      return output.slice(-MAX_HISTORY);
+    }
+
+    return {
+      associateLegacyForms,
+      appendHistory,
+      captureQuality,
+      classifyOperational,
+      evaluateAutomation,
+      formKey,
+      historyRecord,
+      inventoryQuantities,
+      inventoryKey,
+      mergeArrayByKey,
+      mergeNonEmptyObject,
+      mergeSnapshots,
+      sanitizeRoute,
+      taskKey,
+    };
+  })();
+  /* TECHCAP_V56_CORE_END */
+
+  function migrateStoredEntry(aid, entry) {
+    const source = entry && typeof entry === "object" ? entry : {};
+    const result = V56Core.mergeSnapshots(null, source.os || {});
+    const os = result.accepted ? result.os : source.os || {};
+    os.forms = V56Core.associateLegacyForms(os.forms, os?.activity?.aid || aid);
+    const classification = V56Core.classifyOperational(os);
+    const quality = V56Core.captureQuality(os);
+    const automation = V56Core.evaluateAutomation(os, classification);
+    const firstSeenAt = source.firstSeenAt || new Date().toISOString();
+    const history = Array.isArray(source.history) && source.history.length
+      ? source.history.slice(-25)
+      : [
+          {
+            seenAt: firstSeenAt,
+            eventId: Number(os?.source_event_id || 0),
+            mode: String(os?.source_delta_mode || ""),
+            decision: "legacy_snapshot_migrated",
+            quality: quality.score,
+            routeStatus: String(os?.route_validation?.status || ""),
+            tasks: Array.isArray(os?.tasks) ? os.tasks.length : 0,
+            inventory: Array.isArray(os?.inventory) ? os.inventory.length : 0,
+            forms: Array.isArray(os?.forms) ? os.forms.length : 0,
+            issues: (result.issues || []).map((item) => item.code).filter(Boolean),
+          },
+        ];
+    return {
+      ...source,
+      aid: String(aid),
+      contract: String(os?.activity?.contract || source.contract || "").trim(),
+      firstSeenAt,
+      lastSeenAt: source.lastSeenAt || firstSeenAt,
+      captureCount: Number(source.captureCount || 1),
+      classification,
+      automation,
+      quality,
+      history,
+      os,
+    };
+  }
+
+  function emptyBatchState() {
+    const now = new Date().toISOString();
+    return {
+      version: "5.6-queue",
+      createdAt: now,
+      updatedAt: now,
+      order: [],
+      items: {},
+      rejections: [],
+    };
+  }
+
+  function loadBatchState() {
+    try {
+      const raw = localStorage.getItem(BATCH_STORAGE_KEY);
+      if (!raw) return emptyBatchState();
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return emptyBatchState();
+      const order = Array.isArray(parsed.order) ? parsed.order.map(String) : [];
+      const rawItems = parsed.items && typeof parsed.items === "object" ? parsed.items : {};
+      const items = {};
+      for (const aid of order) {
+        if (rawItems[aid]) items[aid] = migrateStoredEntry(aid, rawItems[aid]);
+      }
+      for (const [aid, entry] of Object.entries(rawItems)) {
+        if (!items[aid]) {
+          order.push(String(aid));
+          items[aid] = migrateStoredEntry(aid, entry);
+        }
+      }
+      return {
+        version: "5.6-queue",
+        createdAt: parsed.createdAt || new Date().toISOString(),
+        updatedAt: parsed.updatedAt || new Date().toISOString(),
+        order: [...new Set(order)],
+        items,
+        rejections: Array.isArray(parsed.rejections) ? parsed.rejections.slice(-100) : [],
+      };
+    } catch (error) {
+      console.warn("Não foi possível carregar o lote salvo. Um lote novo será iniciado.", error);
+      return emptyBatchState();
+    }
+  }
+
+  const batchState = loadBatchState();
+  let batchSaveTimer = null;
+
+  function saveBatchStateNow() {
+    batchState.updatedAt = new Date().toISOString();
+    try {
+      localStorage.setItem(BATCH_STORAGE_KEY, JSON.stringify(batchState));
+      return true;
+    } catch (error) {
+      console.error(
+        "Não foi possível salvar o lote no navegador. Exporte o lote agora com TECHCAP.downloadBatch().",
+        error
+      );
+      return false;
+    }
+  }
+
+  function scheduleBatchSave() {
+    if (batchSaveTimer) clearTimeout(batchSaveTimer);
+    batchSaveTimer = setTimeout(() => {
+      batchSaveTimer = null;
+      saveBatchStateNow();
+    }, 250);
+  }
+
+  // Persiste a migração defensiva dos snapshots legados nas mesmas chaves.
+  // O histórico registra a migração, sem fabricar eventos brutos antigos.
+  scheduleBatchSave();
+
+  const normalizeSecretKey = (key) =>
+    String(key ?? "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toLowerCase();
+
+  const SECRET_KEYS = new Set([
+    "authorization",
+    "proxyauthorization",
+    "cookie",
+    "setcookie",
+    "password",
+    "passwd",
+    "pwd",
+    "secret",
+    "token",
+    "accesstoken",
+    "refreshtoken",
+    "idtoken",
+    "jwt",
+    "apikey",
+    "clientsecret",
+    "csrf",
+    "xsrf",
+    "xofscsrfsecure",
+    "authticket",
+    "connectionsessionkey",
+    "sessionhash",
+    "sessionid",
+    "trust",
+  ]);
+
+  const isSecretKey = (key) => {
+    const normalized = normalizeSecretKey(key);
+    if (SECRET_KEYS.has(normalized)) {
+      return true;
+    }
+
+    return (
+      normalized.endsWith("accesstoken") ||
+      normalized.endsWith("refreshtoken") ||
+      normalized.endsWith("idtoken") ||
+      normalized.endsWith("authticket") ||
+      normalized.endsWith("sessionhash") ||
+      normalized.endsWith("sessionkey") ||
+      normalized.endsWith("clientsecret") ||
+      normalized.endsWith("apikey") ||
+      normalized.endsWith("csrf") ||
+      normalized.endsWith("xsrf")
+    );
+  };
+
+  const inlineSecretPattern =
+    /\b(authorization|proxy-authorization|password|passwd|pwd|secret|access[_-]?token|refresh[_-]?token|id[_-]?token|csrf|xsrf|session(?:id|hash|key)?|jwt|api[_-]?key|client[_-]?secret|auth[_-]?ticket|trust)\b(\s*[:=]\s*)(["']?)[^&,\s"'<>]+/gi;
+
+  const truncate = (value, limit = config.maxStringLength) => {
+    const text = String(value ?? "");
+    if (text.length <= limit) {
+      return text;
+    }
+    return `${text.slice(0, limit)}\n...[TRUNCADO: ${text.length - limit} caracteres]`;
+  };
+
+  const sanitizeInlineSecrets = (value) =>
+    String(value ?? "").replace(
+      inlineSecretPattern,
+      (_, key, separator) => `${key}${separator}[REDACTED]`
+    );
+
+  function sanitize(value, depth = 0, seen = new WeakSet()) {
+    if (value === null || value === undefined) {
+      return value;
+    }
+
+    if (depth > config.maxDepth) {
+      return "[MAX_DEPTH]";
+    }
+
+    const valueType = typeof value;
+
+    if (valueType === "string") {
+      return truncate(sanitizeInlineSecrets(value));
+    }
+
+    if (
+      valueType === "number" ||
+      valueType === "boolean"
+    ) {
+      return value;
+    }
+
+    if (valueType === "bigint") {
+      return value.toString();
+    }
+
+    if (valueType === "function") {
+      return `[Function ${value.name || "anonymous"}]`;
+    }
+
+    if (value instanceof Error) {
+      return {
+        name: value.name,
+        message: truncate(value.message, 20_000),
+        stack: truncate(value.stack || "", 50_000),
+      };
+    }
+
+    if (value instanceof Headers) {
+      return headersToObject(value);
+    }
+
+    if (value instanceof URLSearchParams) {
+      return formToObject(value);
+    }
+
+    if (value instanceof FormData) {
+      const output = {};
+      let index = 0;
+
+      for (const [key, item] of value.entries()) {
+        if (index++ >= config.maxObjectKeys) {
+          output.__truncated__ = true;
+          break;
+        }
+
+        const sanitizedValue = isSecretKey(key)
+          ? "[REDACTED]"
+          : item instanceof File
+            ? {
+                type: "File",
+                name: item.name,
+                mimeType: item.type,
+                size: item.size,
+              }
+            : sanitize(item, depth + 1, seen);
+
+        if (Object.prototype.hasOwnProperty.call(output, key)) {
+          output[key] = Array.isArray(output[key])
+            ? [...output[key], sanitizedValue]
+            : [output[key], sanitizedValue];
+        } else {
+          output[key] = sanitizedValue;
+        }
+      }
+
+      return output;
+    }
+
+    if (value instanceof Blob) {
+      return {
+        type: value.constructor.name,
+        mimeType: value.type,
+        size: value.size,
+      };
+    }
+
+    if (value instanceof ArrayBuffer) {
+      return {
+        type: "ArrayBuffer",
+        byteLength: value.byteLength,
+      };
+    }
+
+    if (ArrayBuffer.isView(value)) {
+      return {
+        type: value.constructor.name,
+        byteLength: value.byteLength,
+      };
+    }
+
+    if (value instanceof Node) {
+      return {
+        node: value.nodeName,
+        id: value.id || "",
+        className:
+          typeof value.className === "string" ? value.className : "",
+        text: truncate(value.textContent || "", 5000),
+      };
+    }
+
+    if (valueType === "object") {
+      if (seen.has(value)) {
+        return "[CIRCULAR]";
+      }
+      seen.add(value);
+
+      if (Array.isArray(value)) {
+        const output = value
+          .slice(0, config.maxArrayItems)
+          .map((item) => sanitize(item, depth + 1, seen));
+
+        if (value.length > config.maxArrayItems) {
+          output.push(`[TRUNCADO: ${value.length - config.maxArrayItems} itens]`);
+        }
+
+        return output;
+      }
+
+      const output = {};
+      let count = 0;
+
+      for (const [key, item] of Object.entries(value)) {
+        if (count++ >= config.maxObjectKeys) {
+          output.__truncated__ = true;
+          break;
+        }
+
+        output[key] = isSecretKey(key)
+          ? "[REDACTED]"
+          : sanitize(item, depth + 1, seen);
+      }
+
+      return output;
+    }
+
+    return truncate(value);
+  }
+
+  function formToObject(input) {
+    const params =
+      input instanceof URLSearchParams
+        ? input
+        : new URLSearchParams(String(input ?? ""));
+
+    const output = {};
+
+    for (const [key, value] of params.entries()) {
+      const sanitizedValue = isSecretKey(key)
+        ? "[REDACTED]"
+        : sanitizeInlineSecrets(value);
+
+      if (Object.prototype.hasOwnProperty.call(output, key)) {
+        output[key] = Array.isArray(output[key])
+          ? [...output[key], sanitizedValue]
+          : [output[key], sanitizedValue];
+      } else {
+        output[key] = sanitizedValue;
+      }
+    }
+
+    return output;
+  }
+
+  function headersToObject(headers) {
+    const output = {};
+
+    if (!headers) {
+      return output;
+    }
+
+    try {
+      new Headers(headers).forEach((value, key) => {
+        output[key] = isSecretKey(key)
+          ? "[REDACTED]"
+          : truncate(sanitizeInlineSecrets(value), 20_000);
+      });
+    } catch (error) {
+      output.__error__ =
+        error instanceof Error ? error.message : String(error);
+    }
+
+    return output;
+  }
+
+  function parseXHRHeaders(rawHeaders) {
+    const output = {};
+
+    for (const line of String(rawHeaders || "").trim().split(/[\r\n]+/)) {
+      if (!line) {
+        continue;
+      }
+
+      const separator = line.indexOf(":");
+      if (separator < 0) {
+        continue;
+      }
+
+      const key = line.slice(0, separator).trim();
+      const value = line.slice(separator + 1).trim();
+
+      output[key] = isSecretKey(key)
+        ? "[REDACTED]"
+        : truncate(sanitizeInlineSecrets(value), 20_000);
+    }
+
+    return output;
+  }
+
+  function contentTypeFromHeaders(headers) {
+    for (const [key, value] of Object.entries(headers || {})) {
+      if (String(key).toLowerCase() === "content-type") {
+        return String(value || "").toLowerCase();
+      }
+    }
+    return "";
+  }
+
+  function parseTextPayload(text, contentType = "", byteLimit = config.maxResponseBytes) {
+    const source = String(text ?? "");
+    const length = new Blob([source]).size;
+
+    if (length > byteLimit) {
+      return {
+        __truncated__: true,
+        originalBytes: length,
+        preview: truncate(sanitizeInlineSecrets(source), byteLimit),
+      };
+    }
+
+    const trimmed = source.trim();
+    const looksLikeJSON =
+      trimmed.startsWith("{") ||
+      trimmed.startsWith("[") ||
+      contentType.includes("json");
+
+    if (looksLikeJSON) {
+      try {
+        return sanitize(JSON.parse(trimmed));
+      } catch {
+        // Alguns endpoints declaram JSON, mas retornam texto parcial ou HTML.
+      }
+    }
+
+    return truncate(sanitizeInlineSecrets(source));
+  }
+
+  function normalizeRequestBody(body, headers = {}) {
+    if (body === null || body === undefined) {
+      return null;
+    }
+
+    if (
+      body instanceof FormData ||
+      body instanceof URLSearchParams ||
+      body instanceof Blob ||
+      body instanceof ArrayBuffer ||
+      ArrayBuffer.isView(body)
+    ) {
+      return sanitize(body);
+    }
+
+    if (typeof body !== "string") {
+      return sanitize(body);
+    }
+
+    const contentType = contentTypeFromHeaders(headers);
+    const source = String(body);
+    const sourceBytes = new Blob([source]).size;
+
+    if (sourceBytes > config.maxRequestBytes) {
+      return {
+        __truncated__: true,
+        originalBytes: sourceBytes,
+        preview: truncate(sanitizeInlineSecrets(source), config.maxRequestBytes),
+      };
+    }
+
+    if (contentType.includes("application/x-www-form-urlencoded")) {
+      return formToObject(source);
+    }
+
+    const trimmed = source.trim();
+    if (contentType.includes("json") || trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        return sanitize(JSON.parse(trimmed));
+      } catch {
+        return truncate(sanitizeInlineSecrets(source));
+      }
+    }
+
+    return truncate(sanitizeInlineSecrets(source));
+  }
+
+  function addEvent(type, payload = {}) {
+    if (!state.active) {
+      return null;
+    }
+
+    const event = {
+      id: ++state.sequence,
+      timestamp: new Date().toISOString(),
+      elapsedMs: Math.round(performance.now()),
+      flow: state.currentFlow,
+      type,
+      pageUrl: location.href,
+      route:
+        history.state && typeof history.state === "object"
+          ? sanitize(history.state)
+          : history.state,
+      payload: sanitize(payload),
+    };
+
+    state.events.push(event);
+
+    if (state.events.length > config.maxEvents) {
+      state.events.splice(0, state.events.length - config.maxEvents);
+    }
+
+    if (config.captureConsoleSummary) {
+      console.debug(`[TECHCAP:${type}]`, event);
+    }
+
+    if (type === "xhr" || type === "fetch") {
+      try {
+        captureBatchFromEvent(event);
+      } catch (error) {
+        console.warn("Falha ao adicionar resposta ao lote automático.", error);
+      }
+    }
+
+    return event;
+  }
+
+  async function parseFetchResponse(response) {
+    const responseHeaders = headersToObject(response.headers);
+    const contentType = contentTypeFromHeaders(responseHeaders);
+
+    try {
+      const text = await response.clone().text();
+      return {
+        responseHeaders,
+        responseBody: parseTextPayload(text, contentType),
+      };
+    } catch (error) {
+      return {
+        responseHeaders,
+        responseBody: {
+          __error__:
+            error instanceof Error ? error.message : String(error),
+        },
+      };
+    }
+  }
+
+  if (config.captureFetch && typeof originals.fetch === "function") {
+    window.fetch = async function patchedFetch(input, init = {}) {
+      const startedAt = performance.now();
+
+      let url = "";
+      let method = "GET";
+      let requestHeaders = {};
+      let requestBody = null;
+
+      try {
+        if (input instanceof Request) {
+          url = input.url;
+          method = String(init.method || input.method || "GET").toUpperCase();
+          requestHeaders = {
+            ...headersToObject(input.headers),
+            ...headersToObject(init.headers),
+          };
+          requestBody =
+            init.body !== undefined
+              ? normalizeRequestBody(init.body, requestHeaders)
+              : "[Body no objeto Request não lido para não consumir o stream]";
+        } else {
+          url = String(input);
+          method = String(init.method || "GET").toUpperCase();
+          requestHeaders = headersToObject(init.headers);
+          requestBody = normalizeRequestBody(init.body, requestHeaders);
+        }
+      } catch (error) {
+        addEvent("fetch-parse-error", { error });
+      }
+
+      try {
+        const response = await originals.fetch.apply(this, arguments);
+
+        void parseFetchResponse(response).then(
+          ({ responseHeaders, responseBody }) => {
+            addEvent("fetch", {
+              method,
+              url,
+              requestHeaders,
+              requestBody,
+              status: response.status,
+              statusText: response.statusText,
+              ok: response.ok,
+              redirected: response.redirected,
+              responseUrl: response.url,
+              responseHeaders,
+              responseBody,
+              durationMs: Math.round(performance.now() - startedAt),
+            });
+          }
+        );
+
+        return response;
+      } catch (error) {
+        addEvent("fetch-error", {
+          method,
+          url,
+          requestHeaders,
+          requestBody,
+          durationMs: Math.round(performance.now() - startedAt),
+          error,
+        });
+        throw error;
+      }
+    };
+  }
+
+  if (
+    config.captureXHR &&
+    originals.XMLHttpRequest &&
+    originals.xhrOpen &&
+    originals.xhrSend &&
+    originals.xhrSetRequestHeader
+  ) {
+    const NativeXHR = originals.XMLHttpRequest;
+
+    NativeXHR.prototype.open = function patchedOpen(
+      method,
+      url,
+      async = true,
+      username,
+      password
+    ) {
+      xhrMetadata.set(this, {
+        method: String(method || "GET").toUpperCase(),
+        url: String(url || ""),
+        async: async !== false,
+        requestHeaders: {},
+        requestBody: null,
+        startedAt: null,
+      });
+
+      return originals.xhrOpen.call(
+        this,
+        method,
+        url,
+        async,
+        username,
+        password
+      );
+    };
+
+    NativeXHR.prototype.setRequestHeader =
+      function patchedSetRequestHeader(name, value) {
+        const metadata = xhrMetadata.get(this) || {
+          method: "GET",
+          url: "",
+          async: true,
+          requestHeaders: {},
+          requestBody: null,
+          startedAt: null,
+        };
+
+        metadata.requestHeaders[name] = isSecretKey(name)
+          ? "[REDACTED]"
+          : truncate(sanitizeInlineSecrets(value), 20_000);
+
+        xhrMetadata.set(this, metadata);
+        return originals.xhrSetRequestHeader.call(this, name, value);
+      };
+
+    NativeXHR.prototype.send = function patchedSend(body) {
+      const metadata = xhrMetadata.get(this) || {
+        method: "GET",
+        url: "",
+        async: true,
+        requestHeaders: {},
+      };
+
+      metadata.requestBody = normalizeRequestBody(
+        body,
+        metadata.requestHeaders
+      );
+      metadata.startedAt = performance.now();
+      xhrMetadata.set(this, metadata);
+
+      const onLoadEnd = () => {
+        const responseHeaders = parseXHRHeaders(
+          this.getAllResponseHeaders()
+        );
+        const contentType = contentTypeFromHeaders(responseHeaders);
+
+        let responseBody;
+
+        try {
+          if (this.responseType === "json") {
+            responseBody = sanitize(this.response);
+          } else if (
+            this.responseType === "" ||
+            this.responseType === "text"
+          ) {
+            responseBody = parseTextPayload(
+              this.responseText || "",
+              contentType
+            );
+          } else {
+            responseBody = sanitize(this.response);
+          }
+        } catch (error) {
+          responseBody = {
+            __error__:
+              error instanceof Error ? error.message : String(error),
+          };
+        }
+
+        addEvent("xhr", {
+          method: metadata.method,
+          url: metadata.url,
+          async: metadata.async,
+          requestHeaders: metadata.requestHeaders,
+          requestBody: metadata.requestBody,
+          status: this.status,
+          statusText: this.statusText,
+          responseUrl: this.responseURL,
+          responseType: this.responseType || "text",
+          responseHeaders,
+          responseBody,
+          durationMs:
+            metadata.startedAt === null
+              ? null
+              : Math.round(performance.now() - metadata.startedAt),
+        });
+      };
+
+      this.addEventListener("loadend", onLoadEnd, { once: true });
+      return originals.xhrSend.call(this, body);
+    };
+  }
+
+  if (config.captureNavigation) {
+    history.pushState = function patchedPushState(stateValue, title, url) {
+      const result = originals.pushState.apply(this, arguments);
+      addEvent("navigation", {
+        action: "pushState",
+        state: stateValue,
+        title,
+        url: url === undefined ? location.href : String(url),
+      });
+      return result;
+    };
+
+    history.replaceState = function patchedReplaceState(stateValue, title, url) {
+      const result = originals.replaceState.apply(this, arguments);
+      addEvent("navigation", {
+        action: "replaceState",
+        state: stateValue,
+        title,
+        url: url === undefined ? location.href : String(url),
+      });
+      return result;
+    };
+
+    const popStateListener = (event) => {
+      addEvent("navigation", {
+        action: "popstate",
+        state: event.state,
+        url: location.href,
+      });
+    };
+
+    window.addEventListener("popstate", popStateListener);
+    cleanupCallbacks.push(() =>
+      window.removeEventListener("popstate", popStateListener)
+    );
+  }
+
+  if (config.capturePostMessage) {
+    const messageListener = (event) => {
+      const data = event.data;
+
+      if (
+        data?.message === "oj-setImmediate" ||
+        data?.__TN__ === true
+      ) {
+        return;
+      }
+
+      addEvent("post-message", {
+        origin: event.origin,
+        sourceIsSelf: event.source === window,
+        data,
+      });
+    };
+
+    window.addEventListener("message", messageListener, true);
+    cleanupCallbacks.push(() =>
+      window.removeEventListener("message", messageListener, true)
+    );
+  }
+
+  function collectSearchResults() {
+    const rows = [];
+
+    for (const event of state.events) {
+      if (event.type !== "xhr" && event.type !== "fetch") {
+        continue;
+      }
+
+      const payload = event.payload || {};
+      const url = String(payload.url || "");
+      if (!url.includes("m=search") && !url.includes("a=search")) {
+        continue;
+      }
+
+      const body = payload.responseBody;
+      if (!Array.isArray(body)) {
+        continue;
+      }
+
+      for (const group of body) {
+        const key = group?.key;
+        const values = group?.value?.rows;
+
+        if (!Array.isArray(values)) {
+          continue;
+        }
+
+        for (const row of values) {
+          rows.push({
+            eventId: event.id,
+            searchedValue: payload.requestBody?.searchValue || "",
+            matchedField: key,
+            ...sanitize(row),
+          });
+        }
+      }
+    }
+
+    return rows;
+  }
+
+  function collectRoutes() {
+    const rows = [];
+
+    for (const event of state.events) {
+      if (event.type !== "navigation") {
+        continue;
+      }
+
+      const payload = event.payload || {};
+      const routeState = payload.state;
+      const path =
+        routeState && typeof routeState === "object"
+          ? routeState.path || ""
+          : "";
+
+      rows.push({
+        eventId: event.id,
+        timestamp: event.timestamp,
+        action: payload.action,
+        path,
+        title: routeState?.data?.title || "",
+      });
+    }
+
+    return rows;
+  }
+
+  function walk(value, visitor, path = "$", seen = new WeakSet()) {
+    if (value === null || value === undefined) {
+      return;
+    }
+
+    if (typeof value !== "object") {
+      visitor(value, path, null);
+      return;
+    }
+
+    if (seen.has(value)) {
+      return;
+    }
+    seen.add(value);
+
+    if (Array.isArray(value)) {
+      value.forEach((item, index) =>
+        walk(item, visitor, `${path}[${index}]`, seen)
+      );
+      return;
+    }
+
+    for (const [key, item] of Object.entries(value)) {
+      visitor(item, `${path}.${key}`, key);
+      walk(item, visitor, `${path}.${key}`, seen);
+    }
+  }
+
+  function collectNamedArrays(names) {
+    const wanted = new Set(names.map((name) => String(name).toLowerCase()));
+    const output = [];
+
+    for (const event of state.events) {
+      const body = event.payload?.responseBody;
+      walk(body, (value, path, key) => {
+        if (
+          key &&
+          wanted.has(String(key).toLowerCase()) &&
+          Array.isArray(value) &&
+          value.length
+        ) {
+          output.push({
+            eventId: event.id,
+            key,
+            path,
+            count: value.length,
+            values: value,
+          });
+        }
+      });
+    }
+
+    return output;
+  }
+
+
+  function collectionEntries(value) {
+    if (!value || typeof value !== "object") {
+      return [];
+    }
+
+    if (Array.isArray(value)) {
+      return value.map((item, index) => [String(index), item]);
+    }
+
+    return Object.entries(value);
+  }
+
+  function collectNamedCollections(names) {
+    const wanted = new Set(names.map((name) => String(name).toLowerCase()));
+    const output = [];
+
+    for (const event of state.events) {
+      const body = event.payload?.responseBody;
+      walk(body, (value, path, key) => {
+        if (!key || !wanted.has(String(key).toLowerCase())) {
+          return;
+        }
+
+        const entries = collectionEntries(value);
+        if (!entries.length) {
+          return;
+        }
+
+        output.push({
+          eventId: event.id,
+          key,
+          path,
+          count: entries.length,
+          values: value,
+        });
+      });
+    }
+
+    return output;
+  }
+
+  function responseDelta(event) {
+    const body = event?.payload?.responseBody;
+    if (!body || typeof body !== "object") {
+      return null;
+    }
+
+    const delta = body.delta || body.data?.delta;
+    return delta && typeof delta === "object" ? delta : null;
+  }
+
+  function routeIdentity() {
+    const path = String(history.state?.path || "");
+    const aidMatch = path.match(/(?:^|\/)aid=(\d+)/i);
+    const pidMatch = path.match(/(?:^|\/)__pid=(\d+)/i);
+    const dateMatch = path.match(/(?:^|\/)__date=(\d{4}-\d{2}-\d{2})/i);
+
+    return {
+      path,
+      aid: aidMatch?.[1] || "",
+      pid: pidMatch?.[1] || "",
+      date: dateMatch?.[1] || "",
+    };
+  }
+
+  function cleanDigits(value) {
+    return String(value ?? "").replace(/\D+/g, "");
+  }
+
+  function readableIdentifierPart(item, key) {
+    const value = item?._identifier_structure?.[key]?.text;
+    return value === undefined || value === null ? "" : String(value).trim();
+  }
+
+  function normalizeTOAInventory(item, fallbackId) {
+    const invid = String(item?.invid ?? fallbackId ?? "").trim();
+    const serial = String(item?.invsn ?? "").trim();
+    const materialCode = String(item?.["192"] ?? "").trim();
+    const typeText =
+      readableIdentifierPart(item, "invtype") ||
+      String(item?.invtype ?? "").trim();
+    const materialText =
+      readableIdentifierPart(item, "192") ||
+      materialCode;
+    const actionText =
+      readableIdentifierPart(item, "419") ||
+      String(item?.["419"] ?? "").trim();
+    const pointText =
+      readableIdentifierPart(item, "335") ||
+      String(item?.["335"] ?? "").trim();
+    const locationText =
+      readableIdentifierPart(item, "307") ||
+      String(item?.["307"] ?? "").trim();
+    const quantities = V56Core.inventoryQuantities(
+      item?.quantity ??
+        item?.used_quantity ??
+        item?.usedQuantity ??
+        item?.quantity_used,
+      item?.quantidade_estoque ??
+        item?.stock_quantity ??
+        item?.quantity_stock,
+      readableIdentifierPart(item, "quantidade_estoque") ||
+        readableIdentifierPart(item, "stock_quantity") ||
+        readableIdentifierPart(item, "quantity_stock")
+    );
+
+    const isEquipment = Boolean(serial) || !materialCode;
+
+    return {
+      invid,
+      activity_id: String(item?.inv_aid ?? "").trim(),
+      provider_id: String(item?.inv_pid ?? "").trim(),
+      pool: String(item?.invpool ?? "").trim(),
+      raw_type: item?.invtype ?? "",
+      type: typeText,
+      kind: isEquipment ? "equipment" : "material",
+      serial,
+      material_code: materialCode,
+      description: materialText,
+      action_code: String(item?.["419"] ?? "").trim(),
+      action: actionText,
+      point: pointText,
+      location: locationText,
+      used_quantity: quantities.used_quantity,
+      available_stock: quantities.available_stock,
+      // Compatibilidade: quantity agora significa uso, nunca saldo disponivel.
+      quantity: quantities.used_quantity,
+      identifier: String(item?._identifier ?? "").trim(),
+    };
+  }
+
+  function activityTasks(activity) {
+    const layouts = [
+      { osField: "193", statusField: "194", codeField: "195", index: 1 },
+      { osField: "196", statusField: "197", codeField: "198", index: 2 },
+    ];
+
+    return layouts
+      .map((layout) => ({
+        index: layout.index,
+        os_number: String(activity?.[layout.osField] ?? "").trim(),
+        status: String(activity?.[layout.statusField] ?? "").trim(),
+        close_code: String(activity?.[layout.codeField] ?? "").trim(),
+        source_fields: {
+          os: layout.osField,
+          status: layout.statusField,
+          close_code: layout.codeField,
+        },
+      }))
+      .filter((task) => task.os_number || task.status || task.close_code);
+  }
+
+  function selectLatestOS(reference = "") {
+    const route = routeIdentity();
+    const normalizedReference = cleanDigits(reference);
+    const wantedAid =
+      /^\d{6,}$/.test(String(reference).trim())
+        ? String(reference).trim()
+        : route.aid;
+    const wantedContract =
+      normalizedReference && normalizedReference !== wantedAid
+        ? normalizedReference
+        : "";
+
+    for (let index = state.events.length - 1; index >= 0; index -= 1) {
+      const event = state.events[index];
+      const delta = responseDelta(event);
+      if (!delta) {
+        continue;
+      }
+
+      const activities = delta.Activity;
+      const activityEntries = collectionEntries(activities);
+      if (!activityEntries.length) {
+        continue;
+      }
+
+      let selected = null;
+
+      if (wantedAid) {
+        selected = activityEntries.find(
+          ([key, item]) =>
+            String(item?.aid ?? key).trim() === String(wantedAid).trim()
+        );
+      }
+
+      if (!selected && wantedContract) {
+        selected = activityEntries.find(([, item]) => {
+          const contract = cleanDigits(item?.customer_number);
+          const appointment = cleanDigits(item?.appt_number);
+          return (
+            contract === wantedContract ||
+            appointment.includes(wantedContract)
+          );
+        });
+      }
+
+      if (!selected && route.aid) {
+        selected = activityEntries.find(
+          ([key, item]) =>
+            String(item?.aid ?? key).trim() === String(route.aid).trim()
+        );
+      }
+
+      if (!selected && activityEntries.length === 1) {
+        selected = activityEntries[0];
+      }
+
+      if (!selected) {
+        continue;
+      }
+
+      const [activityKey, activity] = selected;
+      return normalizeOSFromEvent(event, activityKey, activity);
+    }
+
+    return null;
+  }
+
+  function compactSnapshots() {
+    const snapshots = [];
+    const seen = new Set();
+
+    for (const event of state.events) {
+      const delta = responseDelta(event);
+      if (!delta) {
+        continue;
+      }
+
+      for (const [activityKey, activity] of collectionEntries(delta.Activity)) {
+        const aid = String(activity?.aid ?? activityKey).trim();
+        if (!aid) {
+          continue;
+        }
+
+        const inventory = collectionEntries(delta.Inventory)
+          .filter(([, item]) => String(item?.inv_aid ?? "").trim() === aid)
+          .map(([key, item]) => normalizeTOAInventory(item, key));
+
+        const signature = JSON.stringify({
+          aid,
+          contract: activity?.customer_number ?? "",
+          tasks: activityTasks(activity),
+          inventory,
+        });
+
+        const hash = `${aid}|${signature}`;
+        if (seen.has(hash)) {
+          continue;
+        }
+        seen.add(hash);
+
+        snapshots.push({
+          event_id: event.id,
+          timestamp: event.timestamp,
+          delta_mode: delta.mode || "",
+          aid,
+          contract: String(activity?.customer_number ?? "").trim(),
+          customer_name: String(activity?.cname ?? "").trim(),
+          tasks: activityTasks(activity),
+          inventory,
+        });
+      }
+    }
+
+    return snapshots;
+  }
+
+  function routeIdentityFromEvent(event) {
+    const path = String(event?.route?.path || "");
+    const aidMatch = path.match(/(?:^|\/)aid=(\d+)/i);
+    const pidMatch = path.match(/(?:^|\/)__pid=(\d+)/i);
+    const dateMatch = path.match(/(?:^|\/)__date=(\d{4}-\d{2}-\d{2})/i);
+    return {
+      path,
+      aid: aidMatch?.[1] || "",
+      pid: pidMatch?.[1] || "",
+      date: dateMatch?.[1] || "",
+    };
+  }
+
+  function providerFromDelta(delta, providerId) {
+    const wanted = String(providerId || "").trim();
+    if (!wanted) return null;
+    return (
+      delta?.Provider?.[wanted] ||
+      collectionEntries(delta?.Provider).find(
+        ([key, item]) => String(item?.pid ?? key).trim() === wanted
+      )?.[1] ||
+      null
+    );
+  }
+
+  function providerSummary(delta, providerId) {
+    const id = String(providerId || "").trim();
+    const provider = providerFromDelta(delta, id);
+    return {
+      id,
+      external_id: String(provider?.external_id ?? "").trim(),
+      name: String(provider?.pname ?? "").trim(),
+    };
+  }
+
+  function uniqueBy(items, keyFn) {
+    const map = new Map();
+    for (const item of items || []) {
+      const key = String(keyFn(item) || "").trim();
+      if (!key) continue;
+      map.set(key, item);
+    }
+    return [...map.values()];
+  }
+
+  function normalizeOSFromEvent(event, activityKey, activity) {
+    const delta = responseDelta(event);
+    if (!delta || !activity) return null;
+
+    const rawRoute = routeIdentityFromEvent(event);
+    const aid = String(activity?.aid ?? activityKey).trim();
+    if (!aid) return null;
+
+    // Respostas de pesquisa podem chegar enquanto a URL ainda aponta para a
+    // atividade anterior. Não associa PID/data de outra OS ao AID atual.
+    const routeCheck = V56Core.sanitizeRoute(rawRoute, aid);
+    const route = routeCheck.route;
+
+    const inventory = collectionEntries(delta.Inventory)
+      .filter(([, item]) => String(item?.inv_aid ?? "").trim() === aid)
+      .map(([key, item]) => normalizeTOAInventory(item, key));
+
+    const forms = collectionEntries(delta.FormData)
+      .filter(([, item]) => String(item?.activity_id ?? "").trim() === aid)
+      .map(([, item]) => ({
+        form_data_id: item?.form_data_id ?? "",
+        activity_id: String(item?.activity_id ?? "").trim(),
+        label: item?.form_label ?? "",
+        provider_id: String(item?.provider_id ?? "").trim(),
+        user_id: String(item?.user_id ?? "").trim(),
+        user_name: String(item?.user_name ?? "").trim(),
+        submitted_at: item?.submitted_at ?? "",
+        created_at: item?.created_at ?? "",
+      }));
+
+    const assignedProviderId = String(activity?.auto_routed_to_provider_id ?? "").trim();
+    const routeProviderId = String(route.pid || "").trim();
+    const inventoryProviderIds = [...new Set(inventory.map((item) => item.provider_id).filter(Boolean))];
+    const formSubmitters = uniqueBy(
+      forms.map((form) => ({
+        provider_id: form.provider_id,
+        user_id: form.user_id,
+        user_name: form.user_name,
+      })),
+      (item) => `${item.provider_id}|${item.user_id}|${item.user_name}`
+    );
+
+    const assignedProvider = providerSummary(delta, assignedProviderId);
+    if (!assignedProvider.name) {
+      assignedProvider.name = String(activity?.auto_routed_to_provider_name ?? "").trim();
+    }
+    if (!assignedProvider.external_id) {
+      assignedProvider.external_id = String(activity?.["466"] ?? "").trim();
+    }
+
+    const routeProvider = providerSummary(delta, routeProviderId);
+    const inventoryProviders = inventoryProviderIds.map((id) => providerSummary(delta, id));
+
+    const tasks = activityTasks(activity);
+    const equipment = inventory.filter((item) => item.kind === "equipment").map((item) => ({ ...item }));
+    const materials = inventory.filter((item) => item.kind === "material").map((item) => ({ ...item }));
+
+    return {
+      source_event_id: event.id,
+      source_event_timestamp: event.timestamp,
+      source_delta_mode: delta.mode || "",
+      route,
+      route_validation: routeCheck.validation,
+      activity: {
+        aid,
+        contract: String(activity?.customer_number ?? "").trim(),
+        appointment_number: String(activity?.appt_number ?? "").trim(),
+        customer_name: String(activity?.cname ?? "").trim(),
+        phone: String(activity?.cphone ?? "").trim(),
+        mobile: String(activity?.ccell ?? "").trim(),
+        email: String(activity?.cemail ?? "").trim(),
+        address: String(activity?.caddress ?? "").trim(),
+        city: String(activity?.ccity ?? "").trim(),
+        state: String(activity?.cstate ?? "").trim(),
+        zip_code: String(activity?.czip ?? "").trim(),
+        status: String(activity?.astatus ?? "").trim(),
+        work_type_id: activity?.aworktype ?? "",
+        work_type:
+          readableIdentifierPart(activity, "aworktype") ||
+          String(activity?._identifier_structure?.aworktype?.text ?? "").trim(),
+        date: route.date || String(activity?.auto_routed_to_date ?? "").trim(),
+        time_slot: String(activity?.service_window ?? activity?.time_slot ?? "").trim(),
+        start_time: String(activity?.activity_start_time ?? activity?.ETA ?? "").trim(),
+        end_time: String(activity?.activity_end_time ?? activity?.end_time ?? "").trim(),
+        technician_id: assignedProvider.id,
+        technician_external_id: assignedProvider.external_id,
+        technician_name: assignedProvider.name,
+        observation:
+          String(activity?.["187"] ?? "").trim() ||
+          String(activity?.["699"] ?? "").trim() ||
+          String(activity?.["369"] ?? "").trim(),
+        completion_summary: String(activity?.["155"] ?? "").trim(),
+      },
+      responsibility: {
+        assigned_technician: assignedProvider,
+        route_provider: routeProvider,
+        inventory_providers: inventoryProviders,
+        form_submitters: formSubmitters,
+      },
+      tasks,
+      inventory,
+      equipment,
+      materials,
+      forms,
+    };
+  }
+
+  function mergeArrayByKey(previous, next, keyFn) {
+    return V56Core.mergeArrayByKey(previous, next, keyFn);
+  }
+
+  function mergeNonEmptyObject(previous = {}, next = {}) {
+    return V56Core.mergeNonEmptyObject(previous, next);
+  }
+
+  function classifyCodes(tasks) {
+    return V56Core.classifyOperational({ tasks, activity: {} });
+  }
+
+  function mergeBatchOS(previous, next) {
+    return V56Core.mergeSnapshots(previous, next);
+  }
+
+  function upsertBatchOS(osData, options = {}) {
+    const aid = String(osData?.activity?.aid || "").trim();
+    if (!aid) return null;
+
+    const previousEntry = batchState.items[aid] || null;
+    const mergeResult = mergeBatchOS(previousEntry?.os, osData);
+    const now = new Date().toISOString();
+
+    if (!mergeResult.accepted) {
+      const rejection = {
+        seenAt: now,
+        eventId: Number(osData?.source_event_id || 0),
+        aid,
+        contract: String(osData?.activity?.contract || "").trim(),
+        reason: mergeResult.reason,
+        details: mergeResult.details || {},
+      };
+      batchState.rejections = [...(batchState.rejections || []), rejection].slice(-100);
+      scheduleBatchSave();
+      console.error(
+        `[TECHCAP V5.6] Captura rejeitada para AID ${aid}: ${mergeResult.reason}`,
+        rejection
+      );
+      return null;
+    }
+
+    const mergedOS = mergeResult.os;
+    const classification = V56Core.classifyOperational(mergedOS);
+    const automation = V56Core.evaluateAutomation(mergedOS, classification);
+    const quality = V56Core.captureQuality(mergedOS);
+    const history = V56Core.appendHistory(
+      previousEntry?.history,
+      V56Core.historyRecord(mergedOS, mergeResult, now)
+    );
+
+    batchState.items[aid] = {
+      aid,
+      contract: String(mergedOS.activity?.contract || "").trim(),
+      firstSeenAt: previousEntry?.firstSeenAt || now,
+      lastSeenAt: now,
+      captureCount: Number(previousEntry?.captureCount || 0) + 1,
+      classification,
+      automation,
+      quality,
+      history,
+      os: mergedOS,
+    };
+
+    if (!batchState.order.includes(aid)) batchState.order.push(aid);
+    scheduleBatchSave();
+
+    if (!previousEntry && !options.silent) {
+      console.info(
+        `📦 OS adicionada ao lote: contrato ${batchState.items[aid].contract || "-"} | AID ${aid} | códigos ${classification.codes.join(", ") || "-"}`
+      );
+    } else if (mergeResult.issues.length) {
+      console.warn(
+        `[TECHCAP V5.6] AID ${aid} mesclado com alertas:`,
+        mergeResult.issues
+      );
+    }
+
+    return batchState.items[aid];
+  }
+
+  function captureBatchFromEvent(event) {
+    const delta = responseDelta(event);
+    if (!delta) return [];
+
+    const added = [];
+    for (const [activityKey, activity] of collectionEntries(delta.Activity)) {
+      const normalized = normalizeOSFromEvent(event, activityKey, activity);
+      if (!normalized) continue;
+      const hasUsefulData =
+        normalized.tasks.length ||
+        normalized.inventory.length ||
+        normalized.activity.contract ||
+        normalized.activity.customer_name;
+      if (!hasUsefulData) continue;
+      added.push(upsertBatchOS(normalized));
+    }
+    return added.filter(Boolean);
+  }
+
+  function batchRows() {
+    return batchState.order
+      .map((aid, index) => {
+        const entry = batchState.items[aid];
+        if (!entry) return null;
+        const os = entry.os;
+        return {
+          index: index + 1,
+          contract: os.activity?.contract || "",
+          aid,
+          city: os.activity?.city || "",
+          date: os.activity?.date || "",
+          status: os.activity?.status || "",
+          codes: entry.classification?.codes?.join(", ") || "",
+          category: entry.classification?.category || "",
+          decision: entry.automation?.decision || "manual_review",
+          quality: entry.quality?.grade || "incomplete",
+          tasks: os.tasks?.length || 0,
+          equipment: os.equipment?.length || 0,
+          materials: os.materials?.length || 0,
+          deltaMode: os.source_delta_mode || "",
+          lastSeenAt: entry.lastSeenAt,
+        };
+      })
+      .filter(Boolean);
+  }
+
+  function batchPayload() {
+    const rows = batchRows();
+    const summary = rows.reduce(
+      (acc, row) => {
+        acc.total += 1;
+        acc.byCategory[row.category] = (acc.byCategory[row.category] || 0) + 1;
+        acc.byCity[row.city || "SEM_CIDADE"] = (acc.byCity[row.city || "SEM_CIDADE"] || 0) + 1;
+        acc.byDecision[row.decision] = (acc.byDecision[row.decision] || 0) + 1;
+        return acc;
+      },
+      { total: 0, byCategory: {}, byCity: {}, byDecision: {} }
+    );
+
+    return sanitize({
+      metadata: {
+        version: "5.6-queue",
+        exportedAt: new Date().toISOString(),
+        createdAt: batchState.createdAt,
+        updatedAt: batchState.updatedAt,
+        source: "TECHCAP V5.6 fluxo OS para OS",
+        hostname: location.hostname,
+        count: rows.length,
+        rejectionCount: batchState.rejections.length,
+      },
+      summary,
+      rejections: batchState.rejections,
+      os_list: batchState.order
+        .map((aid) => batchState.items[aid])
+        .filter(Boolean),
+    });
+  }
+
+  function riskCheck() {
+    const hits = [];
+    const patterns = [
+      /x-ofs-csrf-secure/i,
+      /auth_ticket/i,
+      /connectionSessionKey/i,
+      /sessionHash/i,
+      /"trust"\s*:/i,
+      /authorization/i,
+      /access[_-]?token/i,
+      /refresh[_-]?token/i,
+      /password/i,
+    ];
+
+    for (const event of state.events) {
+      const text = JSON.stringify(event);
+      for (const pattern of patterns) {
+        if (pattern.test(text) && !text.includes("[REDACTED]")) {
+          hits.push({
+            eventId: event.id,
+            pattern: String(pattern),
+          });
+        }
+      }
+    }
+
+    return hits;
+  }
+
+  // ==========================================================
+  // V5.4 — VARREDURA ESTÁVEL DE CONTRATOS PELA INTERFACE
+  // ==========================================================
+  const AUTO_STORAGE_KEY = "technet_toa_auto_queue_v5";
+  const PANEL_ID = "technet-toa-auto-panel-v5";
+
+  function emptyAutomationState() {
+    return {
+      version: "5.6-queue",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      cityLabel: "NATAL",
+      delayMs: 12000,
+      timeoutMs: 30000,
+      items: [],
+      currentIndex: -1,
+      running: false,
+      paused: true,
+      lastMessage: "Fila pronta.",
+    };
+  }
+
+  function loadAutomationState() {
+    try {
+      const raw = localStorage.getItem(AUTO_STORAGE_KEY);
+      if (!raw) return emptyAutomationState();
+      const parsed = JSON.parse(raw);
+      const base = emptyAutomationState();
+      const items = Array.isArray(parsed?.items)
+        ? parsed.items.map((item, index) => ({
+            id: String(item?.id || `item-${Date.now()}-${index}`),
+            contract: cleanDigits(item?.contract),
+            cityLabel: String(item?.cityLabel || parsed?.cityLabel || "").trim(),
+            status: ["done", "not-found", "error"].includes(item?.status)
+              ? item.status
+              : "pending",
+            attempts: Number(item?.attempts || 0),
+            aid: String(item?.aid || ""),
+            detectedCity: String(item?.detectedCity || ""),
+            codes: Array.isArray(item?.codes) ? item.codes.map(String) : [],
+            category: String(item?.category || ""),
+            decision: String(item?.decision || ""),
+            message: String(item?.message || ""),
+            startedAt: item?.startedAt || null,
+            finishedAt: item?.finishedAt || null,
+          })).filter((item) => item.contract)
+        : [];
+
+      return {
+        ...base,
+        ...parsed,
+        version: "5.6-queue",
+        items,
+        running: false,
+        paused: true,
+        currentIndex: -1,
+      };
+    } catch (error) {
+      console.warn("Não foi possível recuperar a fila automática.", error);
+      return emptyAutomationState();
+    }
+  }
+
+  const automationState = loadAutomationState();
+  let automationRunId = 0;
+  let automationPanel = null;
+  let automationRenderTimer = null;
+
+  function saveAutomationState() {
+    automationState.updatedAt = new Date().toISOString();
+    try {
+      localStorage.setItem(
+        AUTO_STORAGE_KEY,
+        JSON.stringify({
+          ...automationState,
+          running: false,
+          paused: true,
+          currentIndex: -1,
+        })
+      );
+      return true;
+    } catch (error) {
+      console.error("Não foi possível salvar a fila automática.", error);
+      return false;
+    }
+  }
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, Math.max(0, Number(ms) || 0)));
+  }
+
+  async function waitFor(predicate, options = {}) {
+    const timeoutMs = Number(options.timeoutMs || automationState.timeoutMs || 30000);
+    const intervalMs = Number(options.intervalMs || 250);
+    const started = Date.now();
+    let lastError = null;
+
+    while (Date.now() - started < timeoutMs) {
+      if (options.runId !== undefined && options.runId !== automationRunId) {
+        throw new Error("Execução cancelada.");
+      }
+      try {
+        const value = await predicate();
+        if (value) return value;
+      } catch (error) {
+        lastError = error;
+      }
+      await sleep(intervalMs);
+    }
+
+    if (lastError) throw lastError;
+    throw new Error(options.message || `Tempo limite de ${timeoutMs} ms excedido.`);
+  }
+
+  function isVisible(element) {
+    if (!(element instanceof Element)) return false;
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return (
+      style.display !== "none" &&
+      style.visibility !== "hidden" &&
+      Number(style.opacity || 1) > 0 &&
+      rect.width > 3 &&
+      rect.height > 3
+    );
+  }
+
+  function textOf(element) {
+    return String(
+      element?.innerText ||
+      element?.textContent ||
+      element?.getAttribute?.("aria-label") ||
+      element?.getAttribute?.("title") ||
+      ""
+    ).replace(/\s+/g, " ").trim();
+  }
+
+  function setNativeInputValue(input, value) {
+    const prototype = input instanceof HTMLTextAreaElement
+      ? HTMLTextAreaElement.prototype
+      : HTMLInputElement.prototype;
+    const descriptor = Object.getOwnPropertyDescriptor(prototype, "value");
+    if (descriptor?.set) descriptor.set.call(input, value);
+    else input.value = value;
+
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
+    input.dispatchEvent(new Event("propertychange", { bubbles: true, composed: true }));
+  }
+
+  function getKnockoutSearchViewModel(input) {
+    try {
+      if (!window.ko || typeof window.ko.dataFor !== "function") return null;
+      return window.ko.dataFor(input) || window.ko.contextFor?.(input)?.$data || null;
+    } catch {
+      return null;
+    }
+  }
+
+  function setKnockoutSearchValue(input, value) {
+    const vm = getKnockoutSearchViewModel(input);
+    if (!vm) return false;
+
+    try {
+      if (typeof vm.searchValue === "function") {
+        vm.searchValue(String(value ?? ""));
+        return true;
+      }
+    } catch {}
+    return false;
+  }
+
+  function invokeKnockoutSearch(input) {
+    const vm = getKnockoutSearchViewModel(input);
+    if (!vm) return false;
+
+    const eventLike = {
+      key: "Enter",
+      code: "Enter",
+      keyCode: 13,
+      which: 13,
+      target: input,
+      currentTarget: input,
+      preventDefault() {},
+      stopPropagation() {},
+    };
+
+    // Chama apenas um caminho por tentativa. A versão anterior chamava
+    // onKeyPressSearch + performImmediateSearch em sequência e podia gerar
+    // duas sincronizações concorrentes no OFS.
+    try {
+      if (typeof vm.performImmediateSearch === "function") {
+        vm.performImmediateSearch();
+        return true;
+      }
+    } catch (error) {
+      console.debug("[TECHCAP V5.6] performImmediateSearch falhou:", error);
+    }
+
+    try {
+      if (typeof vm.onKeyPressSearch === "function") {
+        vm.onKeyPressSearch(eventLike);
+        return true;
+      }
+    } catch (error) {
+      console.debug("[TECHCAP V5.6] onKeyPressSearch falhou:", error);
+    }
+
+    return false;
+  }
+
+  async function humanTypeInSearch(input, contract, runId) {
+    const target = cleanDigits(contract);
+    if (!target) throw new Error("Contrato inválido para digitação.");
+
+    input.scrollIntoView?.({ block: "center", inline: "center" });
+    input.focus();
+    await sleep(180);
+
+    try {
+      input.select?.();
+      input.setSelectionRange?.(0, String(input.value || "").length);
+    } catch {}
+
+    setNativeInputValue(input, "");
+    setKnockoutSearchValue(input, "");
+    await sleep(180);
+
+    let typed = "";
+    for (const char of target) {
+      if (runId !== automationRunId) throw new Error("Execução cancelada.");
+
+      input.dispatchEvent(new KeyboardEvent("keydown", {
+        key: char,
+        code: `Digit${char}`,
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      }));
+
+      typed += char;
+      setNativeInputValue(input, typed);
+      setKnockoutSearchValue(input, typed);
+
+      input.dispatchEvent(new KeyboardEvent("keyup", {
+        key: char,
+        code: `Digit${char}`,
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+      }));
+
+      await sleep(70 + Math.random() * 55);
+    }
+
+    setNativeInputValue(input, target);
+    setKnockoutSearchValue(input, target);
+
+    // O TOA possui busca automática após alteração do tamanho do campo.
+    // Primeiro deixa esse debounce trabalhar; não dispara Enter e Knockout
+    // simultaneamente.
+    await sleep(950);
+
+    console.log(
+      `[TECHCAP V5.6] Contrato preparado: ${target} | campo=${String(input.value || "")}`
+    );
+  }
+
+  function sendKey(element, key, code = key) {
+    const base = {
+      key,
+      code,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      keyCode: key === "Enter" ? 13 : key === "ArrowDown" ? 40 : 0,
+      which: key === "Enter" ? 13 : key === "ArrowDown" ? 40 : 0,
+    };
+    element.dispatchEvent(new KeyboardEvent("keydown", base));
+    element.dispatchEvent(new KeyboardEvent("keypress", base));
+    element.dispatchEvent(new KeyboardEvent("keyup", base));
+  }
+
+  function findSearchInputs() {
+    const selectors = [
+      "div#search-bar-container input.search-bar-input[type='search'][data-bind*='searchValue']",
+      "div#search-bar-container input.search-bar-input[type='search'][aria-label*='Pesquisa' i]",
+      "div#search-bar-container input.search-bar-input[type='search']",
+      "input.search-bar-input[type='search'][data-bind*='searchValue']",
+      "input.search-bar-input[type='search'][aria-label*='Pesquisa' i]",
+      "input.search-bar-input[type='search']",
+      "input.search-bar-input:not(.icon):not(.global-search-bar-input-button)[data-bind*='searchValue']",
+      "input.search-bar-input:not(.icon):not(.global-search-bar-input-button)",
+      ".global-search-window input[type='search']",
+      ".global-search-window input[type='text']",
+      ".global-search-window input:not([type])",
+      "input[placeholder*='Pesquisar' i]",
+      "input[placeholder*='Buscar' i]",
+      "input[placeholder*='Search' i]",
+    ];
+
+    const all = [...new Set(
+      selectors.flatMap((selector) => [...document.querySelectorAll(selector)])
+    )];
+
+    // Exclui o botão em formato de input e os campos do próprio painel.
+    return all.filter((input) =>
+      !input.closest(`#${PANEL_ID}`) &&
+      !(input.classList?.contains("icon") &&
+        input.classList?.contains("global-search-bar-input-button"))
+    );
+  }
+
+  function findVisibleSearchInput() {
+    return findSearchInputs().find(isVisible) || null;
+  }
+
+  function findSearchToggle() {
+    const exactSelectors = [
+      ".action-global-search-icon",
+      "global-services\\:global-search\\:global-search-button",
+      "input.search-bar-input.icon.global-search-bar-input-button",
+      "input.search-bar-input.icon",
+      ".global-search-bar-input-button",
+      ".search-bar-input[tabindex='0']",
+    ];
+
+    for (const selector of exactSelectors) {
+      const element = document.querySelector(selector);
+      if (element && isVisible(element) && !element.closest(`#${PANEL_ID}`)) {
+        return element;
+      }
+    }
+
+    const candidates = [...document.querySelectorAll(
+      "button, a, [role='button'], [tabindex]:not(textarea)"
+    )].filter((element) => isVisible(element) && !element.closest(`#${PANEL_ID}`));
+
+    const scored = candidates.map((element) => {
+      const haystack = [
+        textOf(element),
+        element.getAttribute("aria-label"),
+        element.getAttribute("title"),
+        element.id,
+        typeof element.className === "string" ? element.className : "",
+        element.getAttribute("data-testid"),
+      ].filter(Boolean).join(" ").toLowerCase();
+
+      let score = 0;
+      if (/pesquisar|buscar|busca global|global search|search/.test(haystack)) score += 12;
+      if (/lupa|magnif/.test(haystack)) score += 8;
+      if (/search/.test(String(element.className || "").toLowerCase())) score += 5;
+      if (element.querySelector?.("svg, i, .icon")) score += 1;
+      return { element, score };
+    }).filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    return scored[0]?.element || null;
+  }
+
+  async function ensureSearchInput(runId) {
+    let input = findVisibleSearchInput();
+    if (input) return input;
+
+    const toggle = findSearchToggle();
+    if (toggle) {
+      toggle.click();
+      await sleep(400);
+      input = findVisibleSearchInput();
+      if (input) return input;
+    }
+
+    setAutomationMessage(
+      "Não achei a lupa automaticamente. Abra a pesquisa global do TOA uma vez; vou continuar assim que a caixa aparecer."
+    );
+
+    return waitFor(() => findVisibleSearchInput(), {
+      timeoutMs: 45000,
+      intervalMs: 300,
+      runId,
+      message: "A caixa de pesquisa global não apareceu. Abra a lupa do TOA e tente novamente.",
+    });
+  }
+
+  function resultRowsForContract(contract, afterEventId = 0) {
+    const wanted = cleanDigits(contract);
+    return collectSearchResults()
+      .filter((row) => row.eventId > afterEventId && cleanDigits(row.searchedValue) === wanted)
+      .filter((row) => String(row.matchedField || "") === "customer_number")
+      .sort((a, b) => {
+        const dateCompare = String(b.date || "").localeCompare(String(a.date || ""));
+        if (dateCompare) return dateCompare;
+        const endCompare = String(b.end_time || "").localeCompare(String(a.end_time || ""));
+        if (endCompare) return endCompare;
+        return Number(b.aid || 0) - Number(a.aid || 0);
+      });
+  }
+
+  async function searchContract(contract, runId) {
+    const input = await ensureSearchInput(runId);
+    const baselineEventId = state.sequence;
+
+    await humanTypeInSearch(input, contract, runId);
+
+    const readMatches = () => {
+      const found = resultRowsForContract(contract, baselineEventId);
+      return found.length ? found : null;
+    };
+
+    // 1) Aguarda a busca automática por alteração do campo.
+    try {
+      const matches = await waitFor(readMatches, {
+        timeoutMs: 10000,
+        intervalMs: 250,
+        runId,
+        message: `A busca automática do contrato ${contract} ainda não respondeu.`,
+      });
+      return { input, rows: matches, selected: matches[0] };
+    } catch {}
+
+    // 2) Dispara apenas um método do view model Knockout.
+    console.warn(
+      `[TECHCAP V5.6] Sem resposta automática para ${contract}; ` +
+      `tentando o método interno uma única vez.`
+    );
+    input.focus();
+    setNativeInputValue(input, cleanDigits(contract));
+    setKnockoutSearchValue(input, cleanDigits(contract));
+    invokeKnockoutSearch(input);
+
+    try {
+      const matches = await waitFor(readMatches, {
+        timeoutMs: 14000,
+        intervalMs: 300,
+        runId,
+        message: `O método interno não retornou o contrato ${contract}.`,
+      });
+      return { input, rows: matches, selected: matches[0] };
+    } catch {}
+
+    // 3) Último recurso: um único Enter, sem chamar outro método junto.
+    console.warn(
+      `[TECHCAP V5.6] Último recurso para ${contract}: enviando um Enter.`
+    );
+    input.focus();
+    sendKey(input, "Enter", "Enter");
+
+    const matches = await waitFor(readMatches, {
+      timeoutMs: 16000,
+      intervalMs: 350,
+      runId,
+      message: `A busca do contrato ${contract} não retornou resposta após três tentativas espaçadas.`,
+    });
+
+    return { input, rows: matches, selected: matches[0] };
+  }
+
+  function searchResultItems() {
+    const selectors = [
+      "div.found-item-activity",
+      "div.global-search-found-item",
+      ".search-result-item",
+      "[class*='search-found-item']",
+      "[class*='global-search-found-item']",
+    ];
+
+    const items = [...new Set(
+      selectors.flatMap((selector) => [...document.querySelectorAll(selector)])
+    )];
+
+    return items.filter((item) =>
+      isVisible(item) &&
+      !item.closest(`#${PANEL_ID}`)
+    );
+  }
+
+  function findExactActivityTitle(item) {
+    if (!item) return null;
+
+    const activityContainer = item.matches?.("div.found-item-activity")
+      ? item
+      : item.querySelector?.("div.found-item-activity");
+
+    // Estrutura confirmada no DOM real do TOA:
+    // div.found-item-activity > div.activity-title[tabindex="0"]
+    const nestedTitle =
+      activityContainer?.querySelector?.(':scope > div.activity-title[tabindex="0"]') ||
+      activityContainer?.querySelector?.(':scope > div.activity-title') ||
+      item.querySelector?.('div.found-item-activity > div.activity-title[tabindex="0"]') ||
+      item.querySelector?.('div.found-item-activity > div.activity-title');
+
+    if (nestedTitle) return nestedTitle;
+    if (item.matches?.('div.activity-title[tabindex="0"], div.activity-title')) return item;
+    return null;
+  }
+
+  function resultClickTarget(item) {
+    // Não clicar mais no quadrado azul .activity-icon[aid].
+    // O alvo correto é exclusivamente o texto/título da OS.
+    return findExactActivityTitle(item);
+  }
+
+  async function realClickResult(element) {
+    if (!element) return false;
+
+    // Remove o foco do campo de pesquisa antes de ocultar o popup. Isso evita
+    // o aviso de aria-hidden e reduz disparos tardios do input.
+    try { document.activeElement?.blur?.(); } catch {}
+
+    try {
+      element.scrollIntoView({ block: "center", inline: "center" });
+    } catch {}
+
+    try {
+      element.focus?.({ preventScroll: true });
+    } catch {
+      try { element.focus?.(); } catch {}
+    }
+
+    const rect = element.getBoundingClientRect();
+    const clientX = rect.left + Math.max(2, Math.min(rect.width / 2, rect.width - 2));
+    const clientY = rect.top + Math.max(2, Math.min(rect.height / 2, rect.height - 2));
+
+    const common = {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      view: window,
+      clientX,
+      clientY,
+      button: 0,
+      buttons: 1,
+    };
+
+    // A V5.3 emitia um evento "click" manual e depois chamava .click(),
+    // gerando dois cliques. Aqui existe somente um clique final.
+    try {
+      if (window.PointerEvent) {
+        element.dispatchEvent(new PointerEvent("pointerdown", {
+          ...common,
+          pointerId: 1,
+          pointerType: "mouse",
+          isPrimary: true,
+        }));
+      }
+    } catch {}
+
+    try { element.dispatchEvent(new MouseEvent("mousedown", common)); } catch {}
+    await sleep(70);
+    try { element.dispatchEvent(new MouseEvent("mouseup", { ...common, buttons: 0 })); } catch {}
+    await sleep(60);
+    try { element.click(); } catch {}
+
+    return true;
+  }
+
+  function findResultItem(contract, row) {
+    const items = searchResultItems();
+    if (!items.length) return null;
+
+    const contractDigits = cleanDigits(contract);
+    const targetAid = String(row?.aid || "").trim();
+
+    // 1. Melhor caso: o AID está em um atributo do resultado.
+    if (targetAid) {
+      const byAid = items.find((item) =>
+        String(item.getAttribute?.("aid") || "") === targetAid ||
+        Boolean(item.querySelector?.(`[aid="${window.CSS?.escape ? CSS.escape(targetAid) : targetAid}"]`))
+      );
+      if (byAid) return byAid;
+    }
+
+    // 2. Algumas versões exibem o contrato no texto do item.
+    const byContract = items.find((item) =>
+      contractDigits &&
+      cleanDigits(item.textContent || "").includes(contractDigits)
+    );
+    if (byContract) return byContract;
+
+    // 3. Compara endereço/título retornado pela própria busca.
+    const identifier = String(row?.identifier || "");
+    const addressParts = identifier
+      .split(/\s+-\s+/)
+      .slice(3)
+      .map((value) => normalizeText(value))
+      .filter((value) => value.length >= 4);
+
+    const byIdentifier = items.find((item) => {
+      const normalized = normalizeText(item.textContent || "");
+      return addressParts.length && addressParts.every((part) => normalized.includes(part));
+    });
+    if (byIdentifier) return byIdentifier;
+
+    // 4. Quando há exatamente um resultado, ele é a OS pesquisada.
+    if (items.length === 1) return items[0];
+
+    // 5. Fallback: primeiro item com estrutura real de atividade.
+    return items.find((item) =>
+      item.querySelector?.("div.activity-title, div.activity-icon[aid], [aid]")
+    ) || items[0];
+  }
+
+  async function waitForOpenedActivity(targetAid, previousCaptureCount, runId, timeoutMs = 22000) {
+    return waitFor(() => {
+      const route = routeIdentity();
+      if (targetAid && route.aid === targetAid) return route;
+
+      if (
+        targetAid &&
+        Number(batchState.items[targetAid]?.captureCount || 0) > previousCaptureCount
+      ) {
+        return route;
+      }
+
+      // Algumas versões do TOA atualizam a tela antes de atualizar history.state.
+      // A página de detalhes exibe o ID da atividade em texto.
+      const bodyText = String(document.body?.innerText || "");
+      if (
+        targetAid &&
+        /Detalhes da atividade/i.test(bodyText) &&
+        bodyText.includes(targetAid)
+      ) {
+        return { ...route, aid: targetAid, detectedFromDom: true };
+      }
+
+      return null;
+    }, {
+      timeoutMs,
+      intervalMs: 300,
+      runId,
+    });
+  }
+
+  async function openSearchResult(contract, searchData, runId) {
+    const targetAid = String(searchData.selected?.aid || "").trim();
+    const previousCaptureCount = Number(batchState.items[targetAid]?.captureCount || 0);
+
+    // Em vários casos o próprio retorno da pesquisa já trouxe tarefas,
+    // inventário e resumo completos. Evita abrir a tela desnecessariamente.
+    const existing = targetAid ? batchState.items[targetAid] : null;
+    if (entryHasClosedData(existing, contract)) {
+      console.log(
+        `[TECHCAP V5.6] ${contract}: dados completos vieram na própria pesquisa; ` +
+        `clique dispensado.`
+      );
+      return { aid: targetAid, fromSearchResponse: true };
+    }
+
+    const item = await waitFor(
+      () => findResultItem(contract, searchData.selected),
+      {
+        timeoutMs: 15000,
+        intervalMs: 250,
+        runId,
+        message: `A resposta do contrato ${contract} chegou, mas o item visual da OS não apareceu.`,
+      }
+    );
+
+    const exactTitle = resultClickTarget(item);
+    if (!exactTitle) {
+      throw new Error(
+        `O resultado do contrato ${contract} apareceu, mas não encontrei ` +
+        `div.found-item-activity > div.activity-title.`
+      );
+    }
+
+    try { searchData.input?.blur?.(); } catch {}
+    await sleep(650);
+
+    console.log(
+      `[TECHCAP V5.6] Abrindo ${contract} pelo título exato. ` +
+      `AID=${targetAid || "-"}`
+    );
+
+    await realClickResult(exactTitle);
+
+    try {
+      return await waitForOpenedActivity(
+        targetAid,
+        previousCaptureCount,
+        runId,
+        22000
+      );
+    } catch (firstError) {
+      // A resposta pode ter chegado após o clique mesmo sem mudança de rota.
+      const captured = targetAid ? batchState.items[targetAid] : null;
+      if (entryHasUsefulData(captured, contract)) {
+        console.warn(
+          `[TECHCAP V5.6] ${contract}: a tela não confirmou a navegação, ` +
+          `mas os dados chegaram ao lote.`
+        );
+        return { aid: targetAid, capturedWithoutRoute: true };
+      }
+
+      // Uma repetição isolada, somente depois de 22 s, e apenas se o mesmo
+      // título ainda estiver visível. Não há clique duplo imediato.
+      const retryItem = findResultItem(contract, searchData.selected);
+      const retryTitle = resultClickTarget(retryItem);
+      if (retryTitle && isVisible(retryTitle)) {
+        console.warn(
+          `[TECHCAP V5.6] ${contract}: primeira abertura não confirmou; ` +
+          `repetindo um único clique após espera.`
+        );
+        await sleep(1800);
+        await realClickResult(retryTitle);
+        return waitForOpenedActivity(
+          targetAid,
+          previousCaptureCount,
+          runId,
+          22000
+        );
+      }
+
+      throw firstError;
+    }
+  }
+
+  function osQuality(entry) {
+    return V56Core.captureQuality(entry?.os || {}).score;
+  }
+
+  function entryHasClosedData(entry, expectedContract = "") {
+    if (!entry?.os) return false;
+    if (!entryHasUsefulData(entry, expectedContract)) return false;
+    const quality = V56Core.captureQuality(entry.os);
+    const classification = V56Core.classifyOperational(entry.os);
+    const mapped = ["produtiva", "improdutiva"].includes(classification.category);
+    const hasSummary = Boolean(
+      String(entry.os.activity?.completion_summary || "").trim()
+    );
+    return quality.grade === "complete" && mapped && hasSummary;
+  }
+
+  function entryHasUsefulData(entry, expectedContract = "") {
+    if (!entry?.os) return false;
+    const os = entry.os;
+    const contract = cleanDigits(os.activity?.contract);
+    const wanted = cleanDigits(expectedContract);
+    if (wanted && contract !== wanted) return false;
+    return Boolean(
+      String(os.activity?.aid || "").trim() &&
+      contract &&
+      (
+        (Array.isArray(os.tasks) && os.tasks.length) ||
+        (Array.isArray(os.inventory) && os.inventory.length) ||
+        String(os.activity?.completion_summary || "").trim() ||
+        String(os.activity?.customer_name || "").trim()
+      )
+    );
+  }
+
+  function applyCapturedEntryToItem(item, entry) {
+    item.detectedCity = String(entry?.os?.activity?.city || "").trim();
+    item.codes = [...(entry?.classification?.codes || [])];
+    item.category = String(entry?.classification?.category || "");
+    item.decision = String(entry?.automation?.decision || "manual_review");
+    item.status = "done";
+    item.message =
+      `Capturada: ${item.codes.join(", ") || "sem código"} | ` +
+      `${entry?.os?.equipment?.length || 0} equip. | ` +
+      `${entry?.os?.materials?.length || 0} materiais | ${item.decision}`;
+  }
+
+
+  async function waitForStableCapture(aid, contract, runId) {
+    let lastSignature = "";
+    let stableSince = 0;
+
+    return waitFor(() => {
+      const entry = aid ? batchState.items[aid] : null;
+      if (!entry || !entryHasUsefulData(entry, contract)) return null;
+
+      const signature = JSON.stringify({
+        score: osQuality(entry),
+        tasks: entry.os?.tasks,
+        inventory: entry.os?.inventory?.length,
+        forms: entry.os?.forms?.length,
+        summary: entry.os?.activity?.completion_summary,
+      });
+
+      if (signature !== lastSignature) {
+        lastSignature = signature;
+        stableSince = Date.now();
+        return null;
+      }
+
+      const requiredStableMs = entryHasClosedData(entry, contract) ? 3200 : 6000;
+      if (Date.now() - stableSince >= requiredStableMs) return entry;
+      return null;
+    }, {
+      timeoutMs: Math.max(45000, Number(automationState.timeoutMs || 45000)),
+      intervalMs: 400,
+      runId,
+      message: `A atividade do contrato ${contract} abriu, mas os dados não estabilizaram em 45 segundos.`,
+    });
+  }
+
+  async function returnToActivityList(runId) {
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      const route = routeIdentity();
+      if (!route.aid) return true;
+      history.back();
+      try {
+        await waitFor(() => {
+          const current = routeIdentity();
+          return (!current.aid && /view_activities/i.test(current.path || "")) || findVisibleSearchInput();
+        }, {
+          timeoutMs: 7000,
+          intervalMs: 250,
+          runId,
+        });
+        return true;
+      } catch (_) {
+        // Tenta voltar novamente.
+      }
+    }
+
+    const backCandidates = [...document.querySelectorAll("button, [role='button'], a")]
+      .filter(isVisible)
+      .filter((element) => /voltar|back/i.test([
+        textOf(element),
+        element.getAttribute("aria-label"),
+        element.getAttribute("title"),
+      ].filter(Boolean).join(" ")));
+    if (backCandidates[0]) {
+      backCandidates[0].click();
+      await sleep(1200);
+      return true;
+    }
+    return false;
+  }
+
+  async function prepareNextContractFromCurrentOS(runId) {
+    if (runId !== automationRunId) throw new Error("Execução cancelada.");
+
+    // Retira o foco de qualquer campo antigo para evitar o aviso aria-hidden
+    // e impedir que o Enter da próxima pesquisa atue na tela anterior.
+    try {
+      const active = document.activeElement;
+      if (active && active !== document.body) active.blur?.();
+    } catch {}
+
+    // Espera a última sincronização da OS atual respirar antes de abrir a busca.
+    await sleep(900);
+
+    // Caso a pesquisa ainda esteja aberta, reaproveita o mesmo input.
+    const visibleInput = findVisibleSearchInput();
+    if (visibleInput) {
+      setNativeInputValue(visibleInput, "");
+      setKnockoutSearchValue(visibleInput, "");
+      return true;
+    }
+
+    // Fluxo principal: OS atual -> lupa global -> próxima OS.
+    const toggle = findSearchToggle();
+    if (toggle) {
+      console.log("[TECHCAP V5.6] Abrindo pesquisa global sobre a OS atual.");
+      toggle.click();
+
+      try {
+        await waitFor(() => findVisibleSearchInput(), {
+          timeoutMs: 6000,
+          intervalMs: 180,
+          runId,
+          message: "A pesquisa global não abriu sobre a OS atual.",
+        });
+        return true;
+      } catch (error) {
+        console.warn(
+          "[TECHCAP V5.6] A lupa foi acionada, mas o campo não apareceu; " +
+          "vou usar o fallback pela lista inicial.",
+          error
+        );
+      }
+    }
+
+    // Fallback de segurança. Só volta à tela inicial quando o TOA realmente
+    // não disponibiliza a busca global dentro da atividade.
+    console.warn(
+      "[TECHCAP V5.6] Busca global indisponível na OS atual; " +
+      "retornando à lista apenas neste contrato."
+    );
+    await returnToActivityList(runId);
+    await sleep(800);
+    return true;
+  }
+
+  function setAutomationMessage(message) {
+    automationState.lastMessage = String(message || "");
+    scheduleAutomationRender();
+  }
+
+  function scheduleAutomationRender() {
+    if (automationRenderTimer) clearTimeout(automationRenderTimer);
+    automationRenderTimer = setTimeout(() => {
+      automationRenderTimer = null;
+      renderAutomationPanel();
+    }, 80);
+  }
+
+  function queueSummary() {
+    const counts = {};
+    for (const item of automationState.items) {
+      counts[item.status] = (counts[item.status] || 0) + 1;
+    }
+    return {
+      total: automationState.items.length,
+      pending: counts.pending || 0,
+      searching: counts.searching || 0,
+      opening: counts.opening || 0,
+      capturing: counts.capturing || 0,
+      done: counts.done || 0,
+      notFound: counts["not-found"] || 0,
+      error: counts.error || 0,
+    };
+  }
+
+  function normalizeContractList(text) {
+    const matches = String(text || "").match(/\d{5,18}/g) || [];
+    return [...new Set(matches.map(cleanDigits).filter((value) => value.length >= 5))];
+  }
+
+  function addContractsToQueue(text, cityLabel = automationState.cityLabel) {
+    const contracts = normalizeContractList(text);
+    const existingPending = new Set(
+      automationState.items
+        .filter((item) => !["done", "not-found", "error"].includes(item.status))
+        .map((item) => item.contract)
+    );
+    let added = 0;
+    for (const contract of contracts) {
+      if (existingPending.has(contract)) continue;
+      automationState.items.push({
+        id: `contract-${contract}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        contract,
+        cityLabel: String(cityLabel || "").trim(),
+        status: "pending",
+        attempts: 0,
+        aid: "",
+        detectedCity: "",
+        codes: [],
+        category: "",
+        decision: "",
+        message: "Aguardando",
+        startedAt: null,
+        finishedAt: null,
+      });
+      existingPending.add(contract);
+      added += 1;
+    }
+    saveAutomationState();
+    setAutomationMessage(`${added} contrato(s) adicionado(s) à fila.`);
+    return added;
+  }
+
+  function resetQueueFailures() {
+    for (const item of automationState.items) {
+      if (["not-found", "error"].includes(item.status)) {
+        item.status = "pending";
+        item.message = "Aguardando nova tentativa";
+        item.finishedAt = null;
+      }
+    }
+    saveAutomationState();
+    scheduleAutomationRender();
+  }
+
+  async function processAutomationItem(item, index, runId) {
+    automationState.currentIndex = index;
+    item.startedAt = new Date().toISOString();
+    item.finishedAt = null;
+
+    const maxLocalAttempts = 3;
+    let lastError = null;
+
+    try {
+      for (let localAttempt = 1; localAttempt <= maxLocalAttempts; localAttempt += 1) {
+        if (runId !== automationRunId) throw new Error("Execução cancelada.");
+
+        item.attempts += 1;
+        item.status = "searching";
+        item.message =
+          localAttempt === 1
+            ? "Pesquisando contrato"
+            : `Repetindo automaticamente (${localAttempt}/${maxLocalAttempts})`;
+        saveAutomationState();
+        scheduleAutomationRender();
+
+        try {
+          // V5.6: não volta mais para a página inicial entre contratos.
+          // A pesquisa global é aberta por cima da OS atual e a próxima
+          // atividade substitui diretamente a anterior.
+          await prepareNextContractFromCurrentOS(runId);
+
+          const searchData = await searchContract(item.contract, runId);
+          if (!searchData.rows.length) {
+            item.status = "not-found";
+            item.message = "Contrato não encontrado na resposta do TOA";
+            return;
+          }
+
+          const selectedAid = String(searchData.selected?.aid || "").trim();
+          item.aid = selectedAid;
+
+          const alreadyCaptured = selectedAid ? batchState.items[selectedAid] : null;
+          if (entryHasClosedData(alreadyCaptured, item.contract)) {
+            item.status = "capturing";
+            item.message = "Dados completos vieram na pesquisa; confirmando estabilidade";
+            scheduleAutomationRender();
+
+            const entry = await waitForStableCapture(selectedAid, item.contract, runId);
+            applyCapturedEntryToItem(item, entry);
+            return;
+          }
+
+          item.status = "opening";
+          item.message = searchData.rows.length > 1
+            ? `${searchData.rows.length} atividades encontradas; abrindo a mais recente`
+            : "Abrindo atividade";
+          scheduleAutomationRender();
+
+          await openSearchResult(item.contract, searchData, runId);
+
+          item.status = "capturing";
+          item.message = "Esperando dados estabilizarem";
+          scheduleAutomationRender();
+
+          const entry = await waitForStableCapture(selectedAid, item.contract, runId);
+          applyCapturedEntryToItem(item, entry);
+          return;
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          lastError = error;
+
+          if (/cancelada/i.test(message)) {
+            item.status = "pending";
+            item.message = "Interrompida; continuará depois";
+            return;
+          }
+
+          const transient = /não retornou resposta|não respondeu|não apareceu|não abriu|não confirmou|não estabilizaram|ajax request|synchronization session|abort|timeout|rede|offline/i.test(message);
+
+          if (transient && localAttempt < maxLocalAttempts) {
+            item.status = "searching";
+            item.message =
+              `Falha temporária: ${message}. Nova tentativa em ${localAttempt * 5}s`;
+            saveAutomationState();
+            scheduleAutomationRender();
+            console.warn(
+              `[TECHCAP V5.6] Falha temporária no contrato ${item.contract}; ` +
+              `tentativa ${localAttempt}/${maxLocalAttempts}:`,
+              error
+            );
+            await sleep(localAttempt * 5000);
+            continue;
+          }
+
+          if (/contrato não encontrado na resposta/i.test(message)) {
+            item.status = "not-found";
+          } else {
+            item.status = "error";
+          }
+          item.message = message;
+          console.warn(`Falha no contrato ${item.contract}:`, error);
+          return;
+        }
+      }
+
+      item.status = "error";
+      item.message = lastError instanceof Error
+        ? lastError.message
+        : String(lastError || "Falha após três tentativas");
+    } finally {
+      item.finishedAt = new Date().toISOString();
+      saveAutomationState();
+      scheduleAutomationRender();
+    }
+  }
+
+  async function runAutomationQueue() {
+    if (automationState.running) return false;
+    automationState.running = true;
+    automationState.paused = false;
+    const runId = ++automationRunId;
+    setAutomationMessage("Varredura iniciada no modo OS → OS.");
+
+    try {
+      for (let index = 0; index < automationState.items.length; index += 1) {
+        if (runId !== automationRunId || automationState.paused) break;
+        const item = automationState.items[index];
+        if (item.status !== "pending") continue;
+        await processAutomationItem(item, index, runId);
+        if (runId !== automationRunId || automationState.paused) break;
+        setAutomationMessage(`Intervalo de ${Math.round(automationState.delayMs / 1000)}s antes do próximo contrato.`);
+        await sleep(automationState.delayMs);
+      }
+    } finally {
+      if (runId === automationRunId) {
+        automationState.running = false;
+        automationState.paused = true;
+        automationState.currentIndex = -1;
+        const summary = queueSummary();
+        setAutomationMessage(
+          summary.pending
+            ? `Pausado. Restam ${summary.pending} contrato(s).`
+            : `Fila encerrada. ${summary.done} capturada(s), ${summary.notFound} não encontrada(s), ${summary.error} erro(s).`
+        );
+        saveAutomationState();
+        scheduleAutomationRender();
+      }
+    }
+    return true;
+  }
+
+  function pauseAutomationQueue() {
+    automationState.paused = true;
+    automationState.running = false;
+    automationRunId += 1;
+    setAutomationMessage("Pausa solicitada. O item atual será interrompido com segurança.");
+    saveAutomationState();
+    return true;
+  }
+
+  function clearAutomationQueue(confirmText = "") {
+    if (String(confirmText).toUpperCase() !== "APAGAR") {
+      console.warn('Para apagar a fila, use TECHCAP.clearQueue("APAGAR").');
+      return false;
+    }
+    pauseAutomationQueue();
+    automationState.items = [];
+    automationState.currentIndex = -1;
+    automationState.lastMessage = "Fila apagada.";
+    saveAutomationState();
+    scheduleAutomationRender();
+    return true;
+  }
+
+  function removeQueueItem(idOrContract) {
+    const value = String(idOrContract || "").trim();
+    const digits = cleanDigits(value);
+    const before = automationState.items.length;
+    automationState.items = automationState.items.filter(
+      (item) => item.id !== value && item.contract !== digits
+    );
+    const removed = before - automationState.items.length;
+    saveAutomationState();
+    scheduleAutomationRender();
+    return removed;
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function statusLabel(status) {
+    return ({
+      pending: "Aguardando",
+      searching: "Pesquisando",
+      opening: "Abrindo",
+      capturing: "Capturando",
+      done: "Concluída",
+      "not-found": "Não encontrada",
+      error: "Erro",
+    })[status] || status;
+  }
+
+  function createAutomationPanel() {
+    const previous = document.getElementById(PANEL_ID);
+    if (previous) previous.remove();
+
+    const panel = document.createElement("section");
+    panel.id = PANEL_ID;
+    panel.innerHTML = `
+      <style>
+        #${PANEL_ID}{position:fixed;right:16px;top:16px;width:430px;max-height:calc(100vh - 32px);z-index:2147483647;background:#0b0b0d;color:#f5f5f5;border:1px solid #333;border-top:3px solid #e30613;border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.5);font:12px/1.4 Arial,sans-serif;overflow:hidden}
+        #${PANEL_ID} *{box-sizing:border-box}
+        #${PANEL_ID} .tn-head{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#141416;border-bottom:1px solid #29292d;cursor:move}
+        #${PANEL_ID} .tn-title{font-size:13px;font-weight:700;flex:1}
+        #${PANEL_ID} .tn-dot{width:9px;height:9px;border-radius:50%;background:#e30613}
+        #${PANEL_ID} .tn-icon{border:0;background:#29292d;color:#fff;border-radius:5px;width:27px;height:25px;cursor:pointer}
+        #${PANEL_ID} .tn-body{padding:10px;overflow:auto;max-height:calc(100vh - 78px)}
+        #${PANEL_ID} label{display:block;color:#b9b9bf;margin-bottom:4px;font-weight:600}
+        #${PANEL_ID} textarea,#${PANEL_ID} input{width:100%;background:#111114;color:#fff;border:1px solid #38383e;border-radius:6px;padding:7px;outline:none}
+        #${PANEL_ID} textarea{height:92px;resize:vertical;font-family:Consolas,monospace}
+        #${PANEL_ID} textarea:focus,#${PANEL_ID} input:focus{border-color:#e30613}
+        #${PANEL_ID} .tn-grid{display:grid;grid-template-columns:1fr 110px;gap:8px;margin-bottom:8px}
+        #${PANEL_ID} .tn-actions{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+        #${PANEL_ID} button.tn-btn{border:1px solid #3a3a40;background:#222228;color:#fff;padding:7px 9px;border-radius:6px;cursor:pointer;font-weight:600}
+        #${PANEL_ID} button.tn-btn:hover{background:#2d2d34}
+        #${PANEL_ID} button.tn-primary{background:#e30613;border-color:#e30613}
+        #${PANEL_ID} button.tn-primary:hover{background:#bd0711}
+        #${PANEL_ID} button.tn-warn{background:#4b3512;border-color:#77541b}
+        #${PANEL_ID} .tn-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0}
+        #${PANEL_ID} .tn-card{background:#151518;border:1px solid #29292e;border-radius:6px;padding:6px;text-align:center}
+        #${PANEL_ID} .tn-card b{display:block;font-size:15px;color:#fff}
+        #${PANEL_ID} .tn-card span{color:#97979f;font-size:10px}
+        #${PANEL_ID} .tn-message{padding:7px;background:#151518;border-left:3px solid #e30613;border-radius:4px;margin:7px 0;color:#d5d5d8;word-break:break-word}
+        #${PANEL_ID} .tn-list{border:1px solid #29292e;border-radius:6px;overflow:auto;max-height:230px;background:#101012}
+        #${PANEL_ID} table{width:100%;border-collapse:collapse;font-size:10px}
+        #${PANEL_ID} th,#${PANEL_ID} td{padding:5px;border-bottom:1px solid #242429;text-align:left;vertical-align:top}
+        #${PANEL_ID} th{position:sticky;top:0;background:#1a1a1e;color:#bcbcc3;z-index:1}
+        #${PANEL_ID} tr[data-status='done'] td:nth-child(2){color:#79d58b}
+        #${PANEL_ID} tr[data-status='error'] td:nth-child(2),#${PANEL_ID} tr[data-status='not-found'] td:nth-child(2){color:#ff8d8d}
+        #${PANEL_ID} tr[data-status='searching'] td:nth-child(2),#${PANEL_ID} tr[data-status='opening'] td:nth-child(2),#${PANEL_ID} tr[data-status='capturing'] td:nth-child(2){color:#ffd06a}
+        #${PANEL_ID} .tn-small{font-size:10px;color:#898991;margin-top:6px}
+        #${PANEL_ID}.tn-min .tn-body{display:none}
+      </style>
+      <div class="tn-head">
+        <span class="tn-dot"></span>
+        <div class="tn-title">TECHCAP V5.6 — Fluxo OS → OS</div>
+        <button class="tn-icon" data-action="minimize" title="Minimizar">—</button>
+        <button class="tn-icon" data-action="close" title="Fechar painel">×</button>
+      </div>
+      <div class="tn-body">
+        <div class="tn-grid">
+          <div><label>Cidade/lote (apenas identificação)</label><input data-field="city" value="${escapeHTML(automationState.cityLabel)}"></div>
+          <div><label>Intervalo (s)</label><input data-field="delay" type="number" min="4" max="60" value="${Math.round(automationState.delayMs/1000)}"></div>
+        </div>
+        <label>Contratos — um por linha, espaço, vírgula ou texto colado</label>
+        <textarea data-field="contracts" placeholder="4231016\n4223374\n..."></textarea>
+        <div class="tn-actions">
+          <button class="tn-btn" data-action="add">Adicionar à fila</button>
+          <button class="tn-btn tn-primary" data-action="start">Iniciar/continuar</button>
+          <button class="tn-btn tn-warn" data-action="pause">Pausar</button>
+          <button class="tn-btn" data-action="download">Baixar lote JSON</button>
+          <button class="tn-btn" data-action="retry">Repetir falhas</button>
+          <button class="tn-btn" data-action="clear">Limpar fila</button>
+        </div>
+        <div class="tn-summary"></div>
+        <div class="tn-message"></div>
+        <div class="tn-list"><table><thead><tr><th>#</th><th>Status</th><th>Contrato</th><th>Cidade</th><th>Código</th></tr></thead><tbody></tbody></table></div>
+        <div class="tn-small">Processa uma OS por vez, evita cliques desnecessários e repete falhas temporárias até 3 vezes. O lote e a fila permanecem salvos.</div>
+      </div>
+    `;
+    document.documentElement.appendChild(panel);
+    automationPanel = panel;
+
+    panel.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const action = button.dataset.action;
+      if (action === "minimize") panel.classList.toggle("tn-min");
+      if (action === "close") panel.remove();
+      if (action === "add") {
+        const city = panel.querySelector("[data-field='city']").value.trim();
+        const delay = Number(panel.querySelector("[data-field='delay']").value || 6.5);
+        automationState.cityLabel = city || "SEM_IDENTIFICACAO";
+        automationState.delayMs = Math.max(10000, Math.min(60000, delay * 1000));
+        const textarea = panel.querySelector("[data-field='contracts']");
+        addContractsToQueue(textarea.value, automationState.cityLabel);
+        textarea.value = "";
+      }
+      if (action === "start") {
+        const city = panel.querySelector("[data-field='city']").value.trim();
+        const delay = Number(panel.querySelector("[data-field='delay']").value || 6.5);
+        automationState.cityLabel = city || automationState.cityLabel;
+        automationState.delayMs = Math.max(10000, Math.min(60000, delay * 1000));
+        saveAutomationState();
+        void runAutomationQueue();
+      }
+      if (action === "pause") pauseAutomationQueue();
+      if (action === "download") API.downloadBatch();
+      if (action === "retry") resetQueueFailures();
+      if (action === "clear") {
+        if (confirm("Apagar somente a fila de contratos? O lote de OS já capturado será preservado.")) {
+          clearAutomationQueue("APAGAR");
+        }
+      }
+    });
+
+    let dragging = null;
+    const head = panel.querySelector(".tn-head");
+    head.addEventListener("mousedown", (event) => {
+      if (event.target.closest("button")) return;
+      const rect = panel.getBoundingClientRect();
+      dragging = { dx: event.clientX - rect.left, dy: event.clientY - rect.top };
+      event.preventDefault();
+    });
+    document.addEventListener("mousemove", (event) => {
+      if (!dragging || !document.contains(panel)) return;
+      panel.style.left = `${Math.max(0, event.clientX - dragging.dx)}px`;
+      panel.style.top = `${Math.max(0, event.clientY - dragging.dy)}px`;
+      panel.style.right = "auto";
+    });
+    document.addEventListener("mouseup", () => { dragging = null; });
+
+    renderAutomationPanel();
+    return panel;
+  }
+
+  function renderAutomationPanel() {
+    const panel = automationPanel && document.contains(automationPanel)
+      ? automationPanel
+      : document.getElementById(PANEL_ID);
+    if (!panel) return;
+    automationPanel = panel;
+    const summary = queueSummary();
+    const summaryElement = panel.querySelector(".tn-summary");
+    summaryElement.innerHTML = `
+      <div class="tn-card"><b>${summary.total}</b><span>Total</span></div>
+      <div class="tn-card"><b>${summary.pending}</b><span>Pendentes</span></div>
+      <div class="tn-card"><b>${summary.done}</b><span>Capturadas</span></div>
+      <div class="tn-card"><b>${summary.notFound + summary.error}</b><span>Falhas</span></div>
+    `;
+    panel.querySelector(".tn-message").textContent = automationState.lastMessage || "";
+    const tbody = panel.querySelector("tbody");
+    tbody.innerHTML = automationState.items.map((item, index) => `
+      <tr data-status="${escapeHTML(item.status)}" title="${escapeHTML(item.message)}">
+        <td>${index + 1}</td>
+        <td>${escapeHTML(statusLabel(item.status))}</td>
+        <td>${escapeHTML(item.contract)}</td>
+        <td>${escapeHTML(item.detectedCity || item.cityLabel || "-")}</td>
+        <td>${escapeHTML(item.codes.join(", ") || "-")}</td>
+      </tr>
+    `).join("");
+  }
+
+
+  const API = {
+    active: true,
+    config,
+    state,
+    automationState,
+
+    showPanel() {
+      return createAutomationPanel();
+    },
+
+    addContracts(text, cityLabel = automationState.cityLabel) {
+      return addContractsToQueue(text, cityLabel);
+    },
+
+    startQueue() {
+      return runAutomationQueue();
+    },
+
+    pauseQueue() {
+      return pauseAutomationQueue();
+    },
+
+    queueList() {
+      const rows = automationState.items.map((item, index) => ({
+        index: index + 1,
+        contract: item.contract,
+        status: item.status,
+        city: item.detectedCity || item.cityLabel,
+        aid: item.aid,
+        codes: item.codes.join(", "),
+        category: item.category,
+        decision: item.decision || "",
+        attempts: item.attempts,
+        message: item.message,
+      }));
+      console.table(rows);
+      return rows;
+    },
+
+    retryQueueFailures() {
+      return resetQueueFailures();
+    },
+
+    removeQueueItem(reference) {
+      return removeQueueItem(reference);
+    },
+
+    clearQueue(confirmText = "") {
+      return clearAutomationQueue(confirmText);
+    },
+
+    clear() {
+      state.events.length = 0;
+      state.marks.length = 0;
+      state.sequence = 0;
+      console.info("TECHCAP V5: eventos temporários limpos; o lote salvo foi preservado.");
+    },
+
+    startFlow(name) {
+      const flowName = String(name || "").trim();
+      if (!flowName) {
+        throw new Error("Informe o nome do fluxo.");
+      }
+
+      state.currentFlow = flowName;
+      const mark = {
+        name: flowName,
+        action: "start",
+        timestamp: new Date().toISOString(),
+        eventId: state.sequence + 1,
+      };
+      state.marks.push(mark);
+      addEvent("flow-start", mark);
+      console.info(`Fluxo iniciado: ${flowName}`);
+      return mark;
+    },
+
+    endFlow() {
+      if (!state.currentFlow) {
+        console.warn("Nenhum fluxo está ativo.");
+        return null;
+      }
+
+      const flowName = state.currentFlow;
+      const mark = {
+        name: flowName,
+        action: "end",
+        timestamp: new Date().toISOString(),
+        eventId: state.sequence + 1,
+      };
+      addEvent("flow-end", mark);
+      state.marks.push(mark);
+      state.currentFlow = null;
+      console.info(`Fluxo encerrado: ${flowName}`);
+      return mark;
+    },
+
+    mark(label, details = {}) {
+      const mark = {
+        label: String(label || "marca"),
+        details: sanitize(details),
+        timestamp: new Date().toISOString(),
+        eventId: state.sequence + 1,
+      };
+      state.marks.push(mark);
+      addEvent("manual-mark", mark);
+      console.info(`Marca registrada: ${mark.label}`);
+      return mark;
+    },
+
+    stats() {
+      const counts = {};
+      for (const event of state.events) {
+        counts[event.type] = (counts[event.type] || 0) + 1;
+      }
+
+      const result = {
+        version: state.version,
+        active: state.active,
+        startedAt: state.startedAt,
+        currentFlow: state.currentFlow,
+        currentUrl: location.href,
+        totalEvents: state.events.length,
+        counts,
+      };
+
+      console.table(
+        Object.entries(counts).map(([type, count]) => ({
+          type,
+          count,
+        }))
+      );
+
+      return result;
+    },
+
+    endpoints() {
+      const endpoints = new Map();
+
+      for (const event of state.events) {
+        if (!["xhr", "fetch", "fetch-error"].includes(event.type)) {
+          continue;
+        }
+
+        const payload = event.payload || {};
+        const method = payload.method || event.type;
+        const url = payload.url || payload.responseUrl || "";
+        const key = `${method} ${url}`;
+
+        const item = endpoints.get(key) || {
+          method,
+          url,
+          count: 0,
+          statuses: new Set(),
+          durations: [],
+        };
+
+        item.count += 1;
+        if (payload.status !== undefined && payload.status !== null) {
+          item.statuses.add(payload.status);
+        }
+        if (Number.isFinite(payload.durationMs)) {
+          item.durations.push(payload.durationMs);
+        }
+
+        endpoints.set(key, item);
+      }
+
+      const result = [...endpoints.values()]
+        .map((item) => ({
+          method: item.method,
+          url: item.url,
+          count: item.count,
+          statuses: [...item.statuses].join(", "),
+          avgDurationMs: item.durations.length
+            ? Math.round(
+                item.durations.reduce((sum, value) => sum + value, 0) /
+                  item.durations.length
+              )
+            : null,
+        }))
+        .sort((a, b) => b.count - a.count);
+
+      console.table(result);
+      return result;
+    },
+
+    searches() {
+      const rows = collectSearchResults();
+      console.table(rows);
+      return rows;
+    },
+
+    routes() {
+      const rows = collectRoutes();
+      console.table(rows);
+      return rows;
+    },
+
+    activities() {
+      const result = collectNamedCollections([
+        "Activity",
+        "ActivityOrders",
+        "MissingActivityProperties",
+      ]);
+      console.log(result);
+      return result;
+    },
+
+    inventories() {
+      const result = collectNamedCollections([
+        "Inventory",
+        "RequiredInventory",
+        "MissingInventoryProperties",
+      ]);
+      console.log(result);
+      return result;
+    },
+
+    forms() {
+      const result = collectNamedCollections([
+        "FormData",
+        "DynamicForm",
+        "_PropertyToTransform",
+      ]);
+      console.log(result);
+      return result;
+    },
+
+    currentOS(reference = "") {
+      const result = selectLatestOS(reference);
+      if (!result) {
+        console.warn(
+          "Nenhuma atividade completa foi encontrada. Pesquise o contrato e abra a OS."
+        );
+        return null;
+      }
+
+      console.log("TECHCAP V5 — OS normalizada:", result);
+      console.table(result.tasks);
+      console.table(result.equipment);
+      console.table(result.materials);
+      return result;
+    },
+
+    snapshots() {
+      const result = compactSnapshots();
+      console.log("TECHCAP V5 — snapshots únicos:", result);
+      return result;
+    },
+
+    downloadCompact(filename, reference = "") {
+      const current = selectLatestOS(reference);
+      if (!current) {
+        throw new Error(
+          "Nenhuma atividade completa encontrada para exportação."
+        );
+      }
+
+      const safeHost = location.hostname.replace(/[^\w.-]+/g, "_");
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[:.]/g, "-");
+      const finalFilename =
+        filename ||
+        `technet-toa-os-${current.activity.contract || current.activity.aid}-${safeHost}-${timestamp}.json`;
+
+      const payload = sanitize({
+        metadata: {
+          version: state.version,
+          exportedAt: new Date().toISOString(),
+          source: "TECHCAP V5 compact",
+        },
+        os: current,
+      });
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json;charset=utf-8",
+      });
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = finalFilename;
+      anchor.style.display = "none";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+      console.info(`Arquivo compacto gerado: ${finalFilename}`);
+      return finalFilename;
+    },
+
+    batchList() {
+      const rows = batchRows();
+      console.table(rows);
+      console.info(`Total de OS únicas no lote: ${rows.length}`);
+      return rows;
+    },
+
+    batchInfo() {
+      const raw = JSON.stringify(batchState);
+      const result = {
+        storageKey: BATCH_STORAGE_KEY,
+        createdAt: batchState.createdAt,
+        updatedAt: batchState.updatedAt,
+        uniqueOS: batchRows().length,
+        rejections: batchState.rejections?.length || 0,
+        approximateBytes: new Blob([raw]).size,
+        persisted: Boolean(localStorage.getItem(BATCH_STORAGE_KEY)),
+      };
+      console.table(result);
+      return result;
+    },
+
+    captureCurrent(reference = "") {
+      const current = selectLatestOS(reference);
+      if (!current) {
+        console.warn("Nenhuma OS completa encontrada para adicionar manualmente ao lote.");
+        return null;
+      }
+      return upsertBatchOS(current);
+    },
+
+    removeOS(reference) {
+      const value = String(reference || "").trim();
+      if (!value) throw new Error("Informe o AID ou contrato da OS a remover.");
+      const digits = cleanDigits(value);
+      const matches = batchState.order.filter((aid) => {
+        const entry = batchState.items[aid];
+        return aid === value || aid === digits || cleanDigits(entry?.contract) === digits;
+      });
+      for (const aid of matches) {
+        delete batchState.items[aid];
+        batchState.order = batchState.order.filter((item) => item !== aid);
+      }
+      saveBatchStateNow();
+      console.info(`${matches.length} OS removida(s) do lote.`);
+      return matches;
+    },
+
+    clearBatch(confirmText = "") {
+      if (String(confirmText).toUpperCase() !== "APAGAR") {
+        console.warn('Para apagar o lote inteiro, execute TECHCAP.clearBatch("APAGAR").');
+        return false;
+      }
+      const fresh = emptyBatchState();
+      batchState.createdAt = fresh.createdAt;
+      batchState.updatedAt = fresh.updatedAt;
+      batchState.order = [];
+      batchState.items = {};
+      batchState.rejections = [];
+      saveBatchStateNow();
+      console.info("Lote inteiro apagado.");
+      return true;
+    },
+
+    downloadBatch(filename) {
+      saveBatchStateNow();
+      const payload = batchPayload();
+      if (!payload.os_list.length) throw new Error("O lote ainda não contém nenhuma OS.");
+
+      const safeHost = location.hostname.replace(/[^\w.-]+/g, "_");
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const finalFilename =
+        filename ||
+        `technet-toa-lote-${payload.os_list.length}-os-${safeHost}-${timestamp}.json`;
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json;charset=utf-8",
+      });
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = finalFilename;
+      anchor.style.display = "none";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+      console.info(`Lote exportado: ${finalFilename}`);
+      return finalFilename;
+    },
+
+    find(term) {
+      const normalized = String(term || "").toLowerCase();
+      if (!normalized) {
+        throw new Error("Informe um termo.");
+      }
+
+      const result = state.events.filter((event) =>
+        JSON.stringify(event).toLowerCase().includes(normalized)
+      );
+      console.log(
+        `TECHCAP.find("${term}") encontrou ${result.length} evento(s).`,
+        result
+      );
+      return result;
+    },
+
+    last(amount = 20) {
+      const result = state.events.slice(
+        -Math.max(1, Number(amount) || 20)
+      );
+      console.log(result);
+      return result;
+    },
+
+    snapshot(selector = "body", options = {}) {
+      const element = document.querySelector(selector);
+      if (!element) {
+        throw new Error(`Elemento não encontrado: ${selector}`);
+      }
+
+      const maxHTML = Number(options.maxHTML) || 500_000;
+      const maxText = Number(options.maxText) || 200_000;
+
+      const snapshot = {
+        selector,
+        title: document.title,
+        route: sanitize(history.state),
+        tagName: element.tagName,
+        id: element.id,
+        className:
+          typeof element.className === "string" ? element.className : "",
+        attributes: Object.fromEntries(
+          [...element.attributes].map((attribute) => [
+            attribute.name,
+            isSecretKey(attribute.name)
+              ? "[REDACTED]"
+              : sanitizeInlineSecrets(attribute.value),
+          ])
+        ),
+        text: truncate(
+          element.innerText || element.textContent || "",
+          maxText
+        ),
+        html: truncate(element.outerHTML, maxHTML),
+      };
+
+      addEvent("dom-snapshot", snapshot);
+      console.log(snapshot);
+      return snapshot;
+    },
+
+    riskCheck() {
+      const hits = riskCheck();
+      if (hits.length) {
+        console.warn(
+          "Possíveis dados sensíveis não redigidos encontrados:",
+          hits
+        );
+      } else {
+        console.info("Nenhum segredo conhecido foi encontrado no relatório.");
+      }
+      return hits;
+    },
+
+    download(filename) {
+      const safeHost = location.hostname.replace(/[^\w.-]+/g, "_");
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[:.]/g, "-");
+
+      const finalFilename =
+        filename ||
+        `technet-toa-capture-v3-${safeHost}-${timestamp}.json`;
+
+      const payload = sanitize({
+        metadata: {
+          version: state.version,
+          exportedAt: new Date().toISOString(),
+          startedAt: state.startedAt,
+          startedUrl: state.startedUrl,
+          currentUrl: location.href,
+          userAgent: navigator.userAgent,
+          eventCount: state.events.length,
+          currentFlow: state.currentFlow,
+        },
+        marks: state.marks,
+        summaries: {
+          searches: collectSearchResults(),
+          routes: collectRoutes(),
+          osSnapshots: compactSnapshots(),
+        },
+        events: state.events,
+      });
+
+      const riskHits = riskCheck();
+      if (riskHits.length) {
+        console.warn(
+          "O download foi bloqueado porque o verificador encontrou possíveis segredos.",
+          riskHits
+        );
+        throw new Error(
+          "Possíveis dados sensíveis encontrados. Execute TECHCAP.riskCheck()."
+        );
+      }
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json;charset=utf-8",
+      });
+
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = finalFilename;
+      anchor.style.display = "none";
+
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+      console.info(`Arquivo gerado: ${finalFilename}`);
+      return finalFilename;
+    },
+
+    stop() {
+      if (!state.active) {
+        console.warn("TECHCAP V5 já estava parado.");
+        return;
+      }
+
+      state.active = false;
+      API.active = false;
+
+      if (originals.fetch) {
+        window.fetch = originals.fetch;
+      }
+
+      if (
+        originals.XMLHttpRequest &&
+        originals.xhrOpen &&
+        originals.xhrSend &&
+        originals.xhrSetRequestHeader
+      ) {
+        originals.XMLHttpRequest.prototype.open = originals.xhrOpen;
+        originals.XMLHttpRequest.prototype.send = originals.xhrSend;
+        originals.XMLHttpRequest.prototype.setRequestHeader =
+          originals.xhrSetRequestHeader;
+        window.XMLHttpRequest = originals.XMLHttpRequest;
+      }
+
+      history.pushState = originals.pushState;
+      history.replaceState = originals.replaceState;
+
+      for (const cleanup of cleanupCallbacks) {
+        try {
+          cleanup();
+        } catch {
+          // Ignora erro de limpeza.
+        }
+      }
+
+      console.info(
+        "TECHCAP V5 parado. Os eventos continuam disponíveis em TECHCAP.state.events."
+      );
+    },
+  };
+
+  window[GLOBAL_KEY] = API;
+  window.TECHCAP = API;
+
+  setTimeout(() => {
+    try { createAutomationPanel(); } catch (error) { console.warn("Falha ao abrir painel V5.", error); }
+  }, 0);
+
+  addEvent("capture-started", {
+    url: location.href,
+    title: document.title,
+    route: history.state,
+  });
+
+  console.info(
+    [
+      "✅ TECHNET TOA Capture V5.4 — VARREDURA ESTÁVEL ativo.",
+      "",
+      `Lote recuperado: ${batchRows().length} OS única(s).`,
+      `Fila recuperada: ${automationState.items.length} contrato(s).`,
+      "",
+      "Use o painel vermelho/preto no canto da tela.",
+      "Cole contratos, adicione à fila e clique em Iniciar/continuar.",
+      "",
+      "Comandos alternativos:",
+      "TECHCAP.showPanel()",
+      'TECHCAP.addContracts("4231016\n4223374", "NATAL")',
+      "TECHCAP.startQueue()",
+      "TECHCAP.pauseQueue()",
+      "TECHCAP.queueList()",
+      "TECHCAP.batchList()",
+      "TECHCAP.downloadBatch()",
+      'TECHCAP.clearQueue("APAGAR")',
+      'TECHCAP.clearBatch("APAGAR")',
+    ].join("\n")
+  );
+
+  return API;
+})();

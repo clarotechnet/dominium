@@ -1,0 +1,552 @@
+{
+  "schema": "dominium_official_stock_remediation_plan_v1",
+  "mode": "offline_stock_remediation_plan",
+  "contract": "2221170",
+  "activity_aid": "194300555",
+  "material_os": "2646508672",
+  "installer_id": 328898,
+  "stock_id": 276,
+  "profile": "TECHNET NATAL",
+  "source_stock_read_at": "2026-07-23T16:40:39-03:00",
+  "evidence_files": [
+    {
+      "path": "INSPECAO_2221170.json",
+      "sha256": "9adff81ad42b6e27ca88e41005731441c0a8c3122e3477b4ef746ddb77c70de3"
+    },
+    {
+      "path": "logs/toa-captures/live/20260722/toa-live-2221170-194300555-150749.json",
+      "sha256": "c6d7489e74128530d1c5aaa19aca90e1ab15961263abc510514608b46a3f7b2a"
+    },
+    {
+      "path": "reports/official_material_catalog/RELATORIO_CATALOGO_2221170.json",
+      "sha256": "54d99460dd970a50e7437791cce42d1ffd36c762f497ecf07ca652be52c06d37"
+    },
+    {
+      "path": "reports/official_stock_audit/RELATORIO_ESTOQUE_2221170.json",
+      "sha256": "08d3150ddad31d100e19a5c379f767905910a2c38765c80a4ae18e811af77e9b"
+    },
+    {
+      "path": "reports/official_stock_blocker_review/REVISAO_BLOCKERS_2221170.json",
+      "sha256": "c8d87d49c692e1e1db5c9828766f5840bd7758a3edc5748b616f4777fc9555ce"
+    },
+    {
+      "path": "config/official_close_code_catalog/Tabela_codigo_baixa0711.catalog.json",
+      "sha256": "1f98a2d59129879c8ea4e0c609e3b1761499eb0a758961b208a656cd2ad622b8"
+    }
+  ],
+  "materials": [
+    {
+      "code": "22025072",
+      "description": "FITA ISOLANTE 3M 33+",
+      "official_material_id": "4898",
+      "invid": "497450948",
+      "activity_aid": "194300555",
+      "material_os": "2646508672",
+      "required_quantity": "1",
+      "available_quantity": "0",
+      "deficit_quantity": "1",
+      "deficit_basis": "required_quantity_minus_audited_balance",
+      "unit_evidence": {
+        "unit": "M",
+        "unit_source": "official_stock_audit.stock_row",
+        "toa_unit": null,
+        "stock_unit": "M",
+        "status": "unidade_nao_comprovada"
+      },
+      "current_state": "sem_saldo",
+      "actions": {
+        "external_action": "repor_saldo",
+        "description": "Disponibilizar saldo do mesmo codigo concreto no estoque auditado do tecnico, mediante procedimento externo autorizado.",
+        "required_controls": [
+          "exigir_confirmacao_manual",
+          "nenhuma_acao_automatica"
+        ],
+        "executed": false
+      },
+      "evidence": {
+        "toa": {
+          "code": "22025072",
+          "invid": "497450948",
+          "quantity": "1",
+          "description": "22025072_FITA ISOLANTE 3M 33+"
+        },
+        "inspection": {
+          "code": "22025072",
+          "invid": "497450948",
+          "inv_aid": "194300555",
+          "used_quantity": "1"
+        },
+        "catalog": {
+          "code": "22025072",
+          "official_material_id": "4898",
+          "descriptions": [
+            "FITA ISOLANTE 3M 33+"
+          ]
+        },
+        "stock_audit": {
+          "installer_id": 328898,
+          "stock_id": 276,
+          "status": "sem_saldo",
+          "available_quantity": "0",
+          "unit": "M",
+          "source": "Imperium DataSnap read / TDtmEquipamentos.AS_GetRecords / DspListaEquiEstoque",
+          "read_at": "2026-07-23T16:40:39-03:00"
+        },
+        "blocker_review": {
+          "matching_incorreto": false,
+          "keep_blocked": true
+        }
+      },
+      "rejected_candidates": [
+        {
+          "code": "22056696",
+          "sources": [
+            "official_catalog_exact_normalized_description"
+          ],
+          "equivalence_authorized": false
+        },
+        {
+          "code": "22064608",
+          "sources": [
+            "desktop_description_exact_normalized_catalog_lookup",
+            "previous_stock_audit_context_only_not_equivalence"
+          ],
+          "equivalence_authorized": false
+        }
+      ],
+      "regularization_evidence_required": [
+        "nova_leitura_somente_de_estoque",
+        "installer_id_exato:328898",
+        "stock_id_exato:276",
+        "codigo_concreto_exato:22025072",
+        "saldo_disponivel_maior_ou_igual:1",
+        "unidade_exposta_e_confirmada_manualmente"
+      ],
+      "expected_after_future_read": {
+        "status": "encontrado",
+        "minimum_available_quantity": "1",
+        "blocker_expected_absent": "stock_audit_sem_saldo:22025072",
+        "requires_new_read": true,
+        "automatically_assumed": false
+      },
+      "risks_and_ambiguities": [
+        "unidade_nao_comprovada",
+        "procedimento_externo_nao_autorizado",
+        "candidatos_nao_sao_equivalencias",
+        "saldo_insuficiente_no_snapshot_auditado"
+      ],
+      "blocker_active": true,
+      "automatic_action_authorized": false
+    },
+    {
+      "code": "22056343",
+      "description": "MARCADOR CASA PTO NR 1",
+      "official_material_id": "300",
+      "invid": "497450950",
+      "activity_aid": "194300555",
+      "material_os": "2646508672",
+      "required_quantity": "1",
+      "available_quantity": null,
+      "deficit_quantity": "1",
+      "deficit_basis": "minimum_required_quantity_because_exact_code_is_absent_from_audited_stock",
+      "unit_evidence": {
+        "unit": null,
+        "unit_source": null,
+        "toa_unit": null,
+        "stock_unit": null,
+        "status": "unidade_nao_comprovada"
+      },
+      "current_state": "ausente",
+      "actions": {
+        "external_action": "cadastrar_ou_disponibilizar_no_estoque",
+        "description": "Cadastrar ou disponibilizar o mesmo codigo concreto no estoque auditado do tecnico, mediante procedimento externo autorizado.",
+        "required_controls": [
+          "exigir_confirmacao_manual",
+          "nenhuma_acao_automatica"
+        ],
+        "executed": false
+      },
+      "evidence": {
+        "toa": {
+          "code": "22056343",
+          "invid": "497450950",
+          "quantity": "1",
+          "description": "22056343_MARCADOR CASA PTO NR 1"
+        },
+        "inspection": {
+          "code": "22056343",
+          "invid": "497450950",
+          "inv_aid": "194300555",
+          "used_quantity": "1"
+        },
+        "catalog": {
+          "code": "22056343",
+          "official_material_id": "300",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 1"
+          ]
+        },
+        "stock_audit": {
+          "installer_id": 328898,
+          "stock_id": 276,
+          "status": "ausente",
+          "available_quantity": null,
+          "unit": null,
+          "source": "Imperium DataSnap read / TDtmEquipamentos.AS_GetRecords / DspListaEquiEstoque",
+          "read_at": "2026-07-23T16:40:39-03:00"
+        },
+        "blocker_review": {
+          "matching_incorreto": false,
+          "keep_blocked": true
+        }
+      },
+      "rejected_candidates": [
+        {
+          "code": "22055830",
+          "sources": [
+            "desktop_description_exact_normalized_catalog_lookup",
+            "official_catalog_exact_normalized_description"
+          ],
+          "equivalence_authorized": false
+        },
+        {
+          "code": "22056846",
+          "sources": [
+            "desktop_description_exact_normalized_catalog_lookup",
+            "official_catalog_exact_normalized_description"
+          ],
+          "equivalence_authorized": false
+        },
+        {
+          "code": "22065719",
+          "sources": [
+            "previous_stock_audit_context_only_not_equivalence"
+          ],
+          "equivalence_authorized": false
+        }
+      ],
+      "regularization_evidence_required": [
+        "nova_leitura_somente_de_estoque",
+        "installer_id_exato:328898",
+        "stock_id_exato:276",
+        "codigo_concreto_exato:22056343",
+        "saldo_disponivel_maior_ou_igual:1",
+        "unidade_exposta_e_confirmada_manualmente"
+      ],
+      "expected_after_future_read": {
+        "status": "encontrado",
+        "minimum_available_quantity": "1",
+        "blocker_expected_absent": "stock_audit_ausente:22056343",
+        "requires_new_read": true,
+        "automatically_assumed": false
+      },
+      "risks_and_ambiguities": [
+        "unidade_nao_comprovada",
+        "procedimento_externo_nao_autorizado",
+        "candidatos_nao_sao_equivalencias",
+        "codigo_ausente_sem_linha_de_estoque"
+      ],
+      "blocker_active": true,
+      "automatic_action_authorized": false
+    },
+    {
+      "code": "22056341",
+      "description": "MARCADOR CASA PTO NR 7",
+      "official_material_id": "354",
+      "invid": "497450951",
+      "activity_aid": "194300555",
+      "material_os": "2646508672",
+      "required_quantity": "1",
+      "available_quantity": null,
+      "deficit_quantity": "1",
+      "deficit_basis": "minimum_required_quantity_because_exact_code_is_absent_from_audited_stock",
+      "unit_evidence": {
+        "unit": null,
+        "unit_source": null,
+        "toa_unit": null,
+        "stock_unit": null,
+        "status": "unidade_nao_comprovada"
+      },
+      "current_state": "ausente",
+      "actions": {
+        "external_action": "cadastrar_ou_disponibilizar_no_estoque",
+        "description": "Cadastrar ou disponibilizar o mesmo codigo concreto no estoque auditado do tecnico, mediante procedimento externo autorizado.",
+        "required_controls": [
+          "exigir_confirmacao_manual",
+          "nenhuma_acao_automatica"
+        ],
+        "executed": false
+      },
+      "evidence": {
+        "toa": {
+          "code": "22056341",
+          "invid": "497450951",
+          "quantity": "1",
+          "description": "22056341_MARCADOR CASA PTO NR 7"
+        },
+        "inspection": {
+          "code": "22056341",
+          "invid": "497450951",
+          "inv_aid": "194300555",
+          "used_quantity": "1"
+        },
+        "catalog": {
+          "code": "22056341",
+          "official_material_id": "354",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 7"
+          ]
+        },
+        "stock_audit": {
+          "installer_id": 328898,
+          "stock_id": 276,
+          "status": "ausente",
+          "available_quantity": null,
+          "unit": null,
+          "source": "Imperium DataSnap read / TDtmEquipamentos.AS_GetRecords / DspListaEquiEstoque",
+          "read_at": "2026-07-23T16:40:39-03:00"
+        },
+        "blocker_review": {
+          "matching_incorreto": false,
+          "keep_blocked": true
+        }
+      },
+      "rejected_candidates": [
+        {
+          "code": "22055827",
+          "sources": [
+            "desktop_description_exact_normalized_catalog_lookup",
+            "official_catalog_exact_normalized_description"
+          ],
+          "equivalence_authorized": false
+        },
+        {
+          "code": "22056844",
+          "sources": [
+            "desktop_description_exact_normalized_catalog_lookup",
+            "official_catalog_exact_normalized_description"
+          ],
+          "equivalence_authorized": false
+        },
+        {
+          "code": "22065725",
+          "sources": [
+            "previous_stock_audit_context_only_not_equivalence"
+          ],
+          "equivalence_authorized": false
+        }
+      ],
+      "regularization_evidence_required": [
+        "nova_leitura_somente_de_estoque",
+        "installer_id_exato:328898",
+        "stock_id_exato:276",
+        "codigo_concreto_exato:22056341",
+        "saldo_disponivel_maior_ou_igual:1",
+        "unidade_exposta_e_confirmada_manualmente"
+      ],
+      "expected_after_future_read": {
+        "status": "encontrado",
+        "minimum_available_quantity": "1",
+        "blocker_expected_absent": "stock_audit_ausente:22056341",
+        "requires_new_read": true,
+        "automatically_assumed": false
+      },
+      "risks_and_ambiguities": [
+        "unidade_nao_comprovada",
+        "procedimento_externo_nao_autorizado",
+        "candidatos_nao_sao_equivalencias",
+        "codigo_ausente_sem_linha_de_estoque"
+      ],
+      "blocker_active": true,
+      "automatic_action_authorized": false
+    },
+    {
+      "code": "22056344",
+      "description": "MARCADOR CASA PTO NR 2",
+      "official_material_id": "324",
+      "invid": "497450952",
+      "activity_aid": "194300555",
+      "material_os": "2646508672",
+      "required_quantity": "1",
+      "available_quantity": null,
+      "deficit_quantity": "1",
+      "deficit_basis": "minimum_required_quantity_because_exact_code_is_absent_from_audited_stock",
+      "unit_evidence": {
+        "unit": null,
+        "unit_source": null,
+        "toa_unit": null,
+        "stock_unit": null,
+        "status": "unidade_nao_comprovada"
+      },
+      "current_state": "ausente",
+      "actions": {
+        "external_action": "cadastrar_ou_disponibilizar_no_estoque",
+        "description": "Cadastrar ou disponibilizar o mesmo codigo concreto no estoque auditado do tecnico, mediante procedimento externo autorizado.",
+        "required_controls": [
+          "exigir_confirmacao_manual",
+          "nenhuma_acao_automatica"
+        ],
+        "executed": false
+      },
+      "evidence": {
+        "toa": {
+          "code": "22056344",
+          "invid": "497450952",
+          "quantity": "1",
+          "description": "22056344_MARCADOR CASA PTO NR 2"
+        },
+        "inspection": {
+          "code": "22056344",
+          "invid": "497450952",
+          "inv_aid": "194300555",
+          "used_quantity": "1"
+        },
+        "catalog": {
+          "code": "22056344",
+          "official_material_id": "324",
+          "descriptions": [
+            "MARCADOR CASA PTO NR 2"
+          ]
+        },
+        "stock_audit": {
+          "installer_id": 328898,
+          "stock_id": 276,
+          "status": "ausente",
+          "available_quantity": null,
+          "unit": null,
+          "source": "Imperium DataSnap read / TDtmEquipamentos.AS_GetRecords / DspListaEquiEstoque",
+          "read_at": "2026-07-23T16:40:39-03:00"
+        },
+        "blocker_review": {
+          "matching_incorreto": false,
+          "keep_blocked": true
+        }
+      },
+      "rejected_candidates": [
+        {
+          "code": "22055831",
+          "sources": [
+            "desktop_description_exact_normalized_catalog_lookup",
+            "official_catalog_exact_normalized_description"
+          ],
+          "equivalence_authorized": false
+        },
+        {
+          "code": "22056847",
+          "sources": [
+            "desktop_description_exact_normalized_catalog_lookup",
+            "official_catalog_exact_normalized_description"
+          ],
+          "equivalence_authorized": false
+        },
+        {
+          "code": "22065720",
+          "sources": [
+            "previous_stock_audit_context_only_not_equivalence"
+          ],
+          "equivalence_authorized": false
+        }
+      ],
+      "regularization_evidence_required": [
+        "nova_leitura_somente_de_estoque",
+        "installer_id_exato:328898",
+        "stock_id_exato:276",
+        "codigo_concreto_exato:22056344",
+        "saldo_disponivel_maior_ou_igual:1",
+        "unidade_exposta_e_confirmada_manualmente"
+      ],
+      "expected_after_future_read": {
+        "status": "encontrado",
+        "minimum_available_quantity": "1",
+        "blocker_expected_absent": "stock_audit_ausente:22056344",
+        "requires_new_read": true,
+        "automatically_assumed": false
+      },
+      "risks_and_ambiguities": [
+        "unidade_nao_comprovada",
+        "procedimento_externo_nao_autorizado",
+        "candidatos_nao_sao_equivalencias",
+        "codigo_ausente_sem_linha_de_estoque"
+      ],
+      "blocker_active": true,
+      "automatic_action_authorized": false
+    }
+  ],
+  "blockers_before": [
+    "stock_audit_sem_saldo:22025072",
+    "stock_audit_ausente:22056343",
+    "stock_audit_ausente:22056341",
+    "stock_audit_ausente:22056344"
+  ],
+  "blockers_active": [
+    "stock_audit_sem_saldo:22025072",
+    "stock_audit_ausente:22056343",
+    "stock_audit_ausente:22056341",
+    "stock_audit_ausente:22056344"
+  ],
+  "blockers_removable": [],
+  "new_stock_read_required_after_regularization": true,
+  "external_actions_executed": [],
+  "aliases_created": [],
+  "equivalences_authorized": [],
+  "operational_close_code_context": {
+    "code": "104",
+    "category": "IMPRODUTIVOS",
+    "description": "Falta de Material",
+    "usage_rule": "Quando o técnico vai até a residência do cliente e não consegue executar o serviço, devido à falta de material ou equipamento.",
+    "customer_communication": "Sr. (a) [Nome], infelizmente, não será possível realizar a sua instalação neste momento devido a um imprevisto com o material necessário. A Claro já está trabalhando para resolver essa situação o mais rápido possível e entrará em contato com o titular do contrato via telefone ou WhatsApp para realizar um novo agendamento.",
+    "source": {
+      "file_name": "Tabela_codigo_baixa0711.pdf",
+      "sha256": "383d785ad2fb624994ace1eb3a2681d7dceb9800d663710fab646ee5ab46772c",
+      "page": 4
+    },
+    "catalog_warnings_unrelated": [
+      {
+        "type": "duplicate_code_identical",
+        "code": "466",
+        "occurrences": 2,
+        "source_pages": [
+          44
+        ],
+        "automatic_correction": false
+      },
+      {
+        "type": "duplicate_code_identical",
+        "code": "468",
+        "occurrences": 2,
+        "source_pages": [
+          44
+        ],
+        "automatic_correction": false
+      },
+      {
+        "type": "duplicate_code_inconsistent",
+        "code": "469",
+        "occurrences": 2,
+        "source_pages": [
+          44
+        ],
+        "automatic_correction": false
+      }
+    ],
+    "selection_authorized": false,
+    "application_authorized": false,
+    "stock_blocker_alone_authorizes_code": false,
+    "conditions_required": [
+      "visita_ao_cliente_confirmada",
+      "falta_de_material_ou_equipamento_impediu_o_servico_confirmada",
+      "confirmacao_humana_explicita"
+    ],
+    "payload_generated": false,
+    "close_executed": false
+  },
+  "payload_generated": false,
+  "safety": {
+    "datasnap_read_executed": false,
+    "datasnap_write_executed": false,
+    "post_executed": false,
+    "stock_movement_executed": false,
+    "close_executed": false,
+    "payload_generated": false
+  }
+}

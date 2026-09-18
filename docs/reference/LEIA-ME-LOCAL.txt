@@ -1,0 +1,93 @@
+PAINEL DIRETO DE BAIXA DE OS - IMPERIUM
+
+Como abrir
+1. Execute apenas "Abrir Painel.cmd".
+2. O painel abre em http://127.0.0.1:8765.
+3. Escolha a base no cabecalho: Natal/Parnamirim, Fortaleza, Mossoro ou Recife.
+4. Escolha o codigo de baixa: 106, 0, 409 ou 430.
+5. Para 106/0, selecione as OS e clique em "Baixar selecionadas".
+6. Para 409/430, use o botao da propria OS e informe os seriais.
+7. Para importar a rota do TOA, abra "Importacao de OS", escolha o destino,
+   selecione o CSV, confira a previa e clique em "Importar OS".
+8. Deixe a janela do painel aberta enquanto o lote estiver em execucao.
+
+Funcionamento
+- Consulta diretamente o servidor do Imperium; o aplicativo Imperium pode ficar fechado.
+- Usa um unico processo, um unico site e uma fila de operacao compartilhada.
+- Lista somente as OS de hoje com status EM CAMPO, incluindo TODOS os tipos de servico.
+- O filtro Servico permite exibir qualquer tipo retornado pela base selecionada.
+- Natal e Parnamirim usam a mesma base do Imperium.
+- Cache, auditoria e falhas ficam separados por base.
+- Natal/Parnamirim, Fortaleza, Mossoro e Recife estao habilitados para consulta,
+  baixa e importacao.
+- Permite baixar com 106 - CLIENTE AUSENTE e 0 - CANCELAMENTO em lote.
+- Permite baixar individualmente com 409 - INSTALACAO CONCLUIDA e
+  430 - EQUIPAMENTO RETIRADO.
+- No 409, consulta o serial instalado no estoque do instalador e usa o modelo
+  real devolvido pelo Imperium.
+- No 409 de instalacao, permite adicionar miscelaneas do catalogo do tecnico,
+  com quantidade e saldo atual. Em Natal, a falta de saldo pode ser completada
+  automaticamente pelo estoque principal, como no cliente oficial.
+- A Colagem TOA reconhece equipamentos e miscelaneas copiados em conjunto.
+  Quando uma atividade possui duas OS, os seriais podem ser usados na OS
+  compativel, mas o conjunto de miscelaneas fica vinculado a somente uma OS.
+- Se um serial estiver no estoque de outro tecnico, o painel bloqueia a baixa.
+  Em Natal, a tela permite mover somente as OS daquele contrato para o dono
+  atual do serial, com previa e confirmacao. A transferencia fisica do
+  equipamento entre tecnicos ainda depende de captura oficial em Natal.
+- OS de TROCA exige um serial instalado e outro retirado no mesmo envio.
+- MUDANCA DE PACOTE foi validada somente com equipamento instalado.
+- No 430, somente equipamento retirado e permitido.
+- Para retirada manual, os modelos disponiveis sao Decoder DCR7121 e
+  EMTA WIFI SVG1202.
+- Uma baixa pode conter varios equipamentos removidos; o pacote foi validado
+  contra uma captura oficial com dez equipamentos na mesma OS.
+- A importacao TOA de RN, FTZ, MRO e JCR envia o CSV diretamente ao DataSnap.
+- A aba "Tecnicos" lista nome, login TOA, placa e equipes. O cadastro local
+  guarda somente esses dados operacionais; senhas e contatos da planilha nao
+  sao importados nem expostos pela API.
+- Na previa da importacao, o painel resolve o login Z para o nome completo,
+  mas preserva o login original no pacote enviado ao Imperium.
+- A tabela de importacao mostra o retorno individual de cada OS, inclusive
+  "OS JA CADASTRADA" e "SERVICO NAO ENCONTRADO".
+- Cada importacao confirmada ou interrompida fica registrada em
+  logs\importacoes-AAAAMMDD.jsonl, incluindo o status devolvido para cada OS.
+- Se o retorno final expirar, o lote nao e repetido automaticamente: timeout
+  nao prova que o servidor deixou de processar a importacao.
+- No lote, processa uma OS por vez e espera 1 segundo entre elas.
+- Falhas individuais ficam selecionadas para nova tentativa e o lote segue adiante.
+- A aba "Nao baixadas" mostra categoria, erro, tentativas e permite repetir uma OS.
+- Falhas que o Imperium concluir com atraso sao removidas automaticamente dessa aba.
+- Durante uma baixa, novas abas usam a ultima lista valida em vez de falhar com erro 409.
+- O lote para se a conexao cair ou se ocorrerem cinco falhas consecutivas.
+- Cada tentativa fica registrada na pasta de logs da base em formato CSV.
+- O terminal mostra cada etapa, timeout e traceback completo em tempo real.
+- O mesmo diagnostico fica salvo em logs\painel.log.
+
+Seguranca
+- A senha fica no arquivo config\credentials.dat protegida pelo Windows DPAPI.
+- O painel atende apenas neste computador, pelo endereco 127.0.0.1.
+- O servidor confirma cada baixa antes de o painel marcar a OS como concluida.
+- Somente os codigos 106, 0, 409 e 430 sao aceitos.
+- Combinacoes de equipamento incompativeis com o codigo/servico sao bloqueadas.
+
+API local do painel
+- GET  /api/profiles
+- GET  /api/status?profile=BASE
+- GET  /api/orders?date=AAAA-MM-DD&profile=BASE
+- GET  /api/failures?profile=BASE
+- GET  /api/orders/ID_DA_OS/material-inventory?profile=BASE
+- POST /api/orders/ID_DA_OS/material-paste?profile=BASE
+- GET  /api/orders/ID_DA_OS/installer-change-preview?serial=SERIAL&profile=natal
+- POST /api/orders/ID_DA_OS/move-installer?profile=natal
+- POST /api/orders/ID_DA_OS/close?profile=BASE
+- GET  /api/import-targets
+- GET  /api/technicians
+- POST /api/imports/preview
+- POST /api/imports/commit
+
+As bases aceitas sao natal, fortaleza, mossoro e recife. O endpoint de baixa recebe
+JSON com "num_os" e "code". Para 409/430, tambem aceita "installed_serial",
+"removed_serial" e "removed_type" (decoder ou emta). O formato novo aceita as
+listas "installed_equipment" e "removed_equipment", com "serial" e "type". O
+409 tambem aceita "materials", uma lista com "code" e "quantity".

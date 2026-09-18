@@ -1,0 +1,788 @@
+GUIA OPERACIONAL - APIs OFICIAIS DO TOA E DO IMPERIUM
+Versao: 1.0
+Data: 04/08/2026
+
+IMPORTANTE
+==========
+
+Neste projeto, a expressao "API oficial" pode significar duas integracoes
+diferentes. Misturar as duas causa boa parte da confusao:
+
+1. API oficial do Imperium
+   - Recebe uma solicitacao de baixa de OS.
+   - Pode movimentar equipamentos e materiais no banco real.
+   - E uma integracao de ESCRITA.
+
+2. API oficial do Oracle Field Service, chamado aqui de TOA
+   - Consulta atividades, recursos, inventario e eventos.
+   - E a fonte ideal para monitoramento e captura dos dados da atividade.
+   - No desenho do DOMINIUM, deve ser usada inicialmente somente para LEITURA.
+
+Fluxo recomendado:
+
+  TOA/Oracle (leitura)
+        |
+        v
+  DOMINIUM (validacao, roteamento, estoque e auditoria)
+        |
+        v
+  Imperium HTTP (uma solicitacao de baixa)
+        |
+        v
+  Fila do Imperium -> webhook -> confirmacao por releitura
+
+O status "concluido" no TOA NAO prova que a OS foi baixada no Imperium.
+Para saber se uma OS ainda pode ser enviada, o estado atual do Imperium e a
+fonte de verdade.
+
+
+PARTE 1 - API OFICIAL DO IMPERIUM
+================================
+
+1.1 Endpoints confirmados
+-------------------------
+
+Base:
+  https://www.sistemaimperium.com.br
+
+Login:
+  POST /technet/login
+
+Baixa:
+  POST /technet/ordemservico
+
+O login recebe credenciais JWT do Imperium, e nao o login do TOA:
+
+  {
+    "jwtusername": "USUARIO_DA_API",
+    "jwtpassword": "SENHA_DA_API"
+  }
+
+O retorno contem um token. Nas chamadas seguintes:
+
+  Authorization: Bearer <token>
+  Content-Type: application/json
+
+Nunca colocar o token no codigo, em print, no navegador, em workflow exportado
+ou em arquivo de log. Um token ja foi exposto durante os testes anteriores e
+deve ser revogado/rotacionado. Nao reutilize o token que apareceu em conversas.
+
+
+1.2 Formato oficial da baixa
+----------------------------
+
+O corpo possui exatamente uma ordem de servico:
+
+  {
+    "ordemservico": {
+      "numero": "2646508672",
+      "dataagendamento": "2026-07-22",
+      "codigotecnico": "Z637677",
+      "codigobaixa": 409,
+      "instaladosserializados": [],
+      "instaladosmiscelaneas": [],
+      "removidosserializados": []
+    }
+  }
+
+Campos:
+
+numero
+  Numero visivel da OS no Imperium. Deve ser texto numerico.
+
+dataagendamento
+  Data EXATA da OS no Imperium, em YYYY-MM-DD.
+  A localizacao da OS usa numero + data. Uma data errada normalmente retorna
+  "Ordem de servico nao encontrada", mesmo que a OS exista em outro dia.
+
+codigotecnico
+  Login/external_id reconhecido pelo Imperium, por exemplo Z637677.
+  Nao usar nome exibido como chave. "DENIS NUNES" e "DENNIS NUNES" podem ser a
+  mesma pessoa, mas isso so pode ser confirmado pelo identificador.
+
+codigobaixa
+  Codigo VISIVEL: 409, 430, 106, 404 etc.
+  O HTTP nao recebe o IdCodigoBaixa interno do DataSnap, como 44.
+
+instaladosserializados
+  Equipamentos que entram. Cada item possui somente serialnumber.
+
+instaladosmiscelaneas
+  Materiais consumidos. Cada item possui codigo concreto e quantidade como
+  string decimal positiva.
+
+removidosserializados
+  Equipamentos que saem. Cada item exige codigo concreto do equipamento e
+  serialnumber.
+
+
+1.3 Exemplos seguros de payload
+-------------------------------
+
+A) Baixa sem movimentacao de estoque
+
+Usada quando a OS recebe apenas o codigo e o servico nao movimenta inventario:
+
+  {
+    "ordemservico": {
+      "numero": "2640000001",
+      "dataagendamento": "2026-08-04",
+      "codigotecnico": "Z000001",
+      "codigobaixa": 106,
+      "instaladosserializados": [],
+      "instaladosmiscelaneas": [],
+      "removidosserializados": []
+    }
+  }
+
+B) Codigo 430 - somente retirada
+
+  {
+    "ordemservico": {
+      "numero": "2640000002",
+      "dataagendamento": "2026-08-04",
+      "codigotecnico": "Z000001",
+      "codigobaixa": 430,
+      "instaladosserializados": [],
+      "instaladosmiscelaneas": [],
+      "removidosserializados": [
+        {
+          "codigoequipamento": "41001485",
+          "serialnumber": "ABCDEF123456"
+        }
+      ]
+    }
+  }
+
+C) Codigo 409 - somente equipamento entrando
+
+  {
+    "ordemservico": {
+      "numero": "2640000003",
+      "dataagendamento": "2026-08-04",
+      "codigotecnico": "Z000001",
+      "codigobaixa": 409,
+      "instaladosserializados": [
+        {"serialnumber": "123456ABCDEF"}
+      ],
+      "instaladosmiscelaneas": [],
+      "removidosserializados": []
+    }
+  }
+
+D) Codigo 409 - troca
+
+  {
+    "ordemservico": {
+      "numero": "2640000004",
+      "dataagendamento": "2026-08-04",
+      "codigotecnico": "Z000001",
+      "codigobaixa": 409,
+      "instaladosserializados": [
+        {"serialnumber": "123456ABCDEF"}
+      ],
+      "instaladosmiscelaneas": [],
+      "removidosserializados": [
+        {
+          "codigoequipamento": "41001485",
+          "serialnumber": "ABCDEF123456"
+        }
+      ]
+    }
+  }
+
+E) Codigo 409 com miscelaneas
+
+  {
+    "ordemservico": {
+      "numero": "2640000005",
+      "dataagendamento": "2026-08-04",
+      "codigotecnico": "Z000001",
+      "codigobaixa": 409,
+      "instaladosserializados": [
+        {"serialnumber": "123456ABCDEF"}
+      ],
+      "instaladosmiscelaneas": [
+        {"codigoequipamento": "22069613", "qtd": "2"},
+        {"codigoequipamento": "22061736", "qtd": "39"},
+        {"codigoequipamento": "22000001", "qtd": "100.5"}
+      ],
+      "removidosserializados": []
+    }
+  }
+
+Quantidade deve ser string, inclusive quando inteira. Decimais usam ponto.
+
+
+1.4 Regras de desconexao confirmadas pelo operador
+---------------------------------------------------
+
+Desconexao nao usa miscelaneas.
+
+Classificacao deterministica:
+
+  entrada > 0 e saida = 0 e sem miscelanea  -> 409
+  entrada > 0 e saida > 0 e sem miscelanea  -> 409 (troca)
+  entrada = 0 e saida > 0 e sem miscelanea  -> 430
+  qualquer outro cenario                     -> bloquear
+
+Portanto:
+
+- 430 nunca recebe equipamento entrando.
+- 409 de desconexao precisa de pelo menos um equipamento entrando.
+- 409 pode receber todos os equipamentos da troca na unica OS alvo.
+- Se houver varias OS de entrega/troca, o DOMINIUM precisa escolher uma unica
+  OS material_capable de forma comprovada. Nunca replicar inventario em todas.
+- OS companheiras close_only recebem as tres listas vazias.
+- Chip fica sozinho na OS 706.
+
+Essas sao regras operacionais do DOMINIUM. A API apenas valida o JSON recebido;
+ela nao conhece toda a intencao operacional do contrato.
+
+
+1.5 Miscelaneas, codigos e grupos
+---------------------------------
+
+A API recebe codigo CONCRETO:
+
+  {"codigoequipamento": "22069613", "qtd": "2"}
+
+Ela nao recebe o nome do grupo, por exemplo "CONECTOR FIBRA".
+
+Quando o estoque possui varios codigos no mesmo grupo, o DOMINIUM deve fazer o
+planejamento antes do envio:
+
+1. Tentar o codigo exato vindo do TOA.
+2. Validar o codigo no catalogo oficial.
+3. Consultar o saldo concreto do tecnico.
+4. Se a regra operacional permitir distribuicao por grupo, repartir a
+   quantidade entre codigos concretos do mesmo grupo.
+5. Produzir uma linha por codigo concreto no JSON.
+6. Bloquear se o grupo for ambiguo ou o saldo total for insuficiente.
+
+Exemplo: grupo ANEL DE VEDACAO com dois codigos de saldo 6 cada e consumo 10.
+O payload pode ser planejado como 6 de um codigo e 4 do outro, desde que:
+
+- os dois codigos estejam comprovadamente no mesmo grupo;
+- a unidade seja a mesma;
+- a politica de substituicao do grupo esteja autorizada;
+- o planejamento preserve a quantidade total.
+
+Nao usar fuzzy matching. Nao escolher o primeiro nome parecido. Nao criar alias
+automatico. Pontuacao diferente em descricao pode ser normalizada apenas para
+validacao; codigo concreto identico sempre tem prioridade.
+
+
+1.6 Estoque do tecnico, estoque virtual e RETORNO
+-------------------------------------------------
+
+O responsavel pelo Imperium confirmou que a API consulta o estoque do tecnico
+enviado em codigotecnico.
+
+A API oficial nao reproduz automaticamente toda a logica do desktop que pode
+complementar material pelo estoque principal, virtual ou RETORNO. Portanto:
+
+- saldo zero no tecnico pode retornar "quantidade insuficiente";
+- nao assuma que a API puxara do estoque virtual;
+- qualquer transferencia deve acontecer em etapa separada, confirmada e
+  auditada ANTES da baixa;
+- transferencia incerta deve bloquear nova tentativa automatica;
+- nunca usar HTTP -> DataSnap como fallback automatico.
+
+Se o tecnico nao possui um serial, o erro esperado e semelhante a:
+
+  Equipamento serial X nao pertence ao estoque do instalador responsavel.
+
+A tratativa correta e localizar o proprietario real, conferir a OS e escolher
+explicitamente entre:
+
+- corrigir o instalador da OS; ou
+- transferir o equipamento ao tecnico correto.
+
+Depois, releia o Imperium antes de enviar. Nao reenvie o mesmo pedido apenas
+porque uma transferencia parece ter terminado.
+
+
+1.7 Observacao / OBS
+--------------------
+
+O contrato JSON confirmado da API NAO possui campo de observacao.
+
+Nao adicionar "observacao", "obs" ou outro campo inventado. Pode ser ignorado
+ou rejeitado pelo servidor e, pior, o operador pode acreditar que a observacao
+foi registrada quando nao foi.
+
+Consequencias:
+
+- codigos que exigem observacao, como alguns usos do 404, devem continuar no
+  fluxo manual ou protocolo direto ate o Imperium documentar um campo oficial;
+- a observacao pode ser mantida no relatorio interno do DOMINIUM, mas isso nao
+  significa que foi gravada na OS;
+- so habilitar OBS na API depois de receber especificacao escrita do endpoint,
+  nome do campo, tamanho, codificacao e exemplo aceito.
+
+O codigo 104, "Falta de Material", e apenas referencia operacional. Um blocker
+de estoque sozinho nao autoriza 104. E necessario confirmar que houve visita e
+que a falta de material impediu o servico.
+
+
+1.8 HTTP 200 NAO significa baixa concluida
+-------------------------------------------
+
+Este e o ponto mais importante da integracao.
+
+POST /technet/ordemservico pode retornar HTTP 200 quando a solicitacao foi
+recebida e colocada em uma fila. A validacao real acontece depois.
+
+Estados corretos:
+
+prepared
+  Payload validado e registrado localmente, ainda nao enviado.
+
+sending
+  Chamada iniciada. O estado foi persistido antes de abrir a conexao.
+
+queued
+  O servidor respondeu 2xx. Significa "recebido pela fila", nao "baixado".
+
+rejected
+  O servidor respondeu HTTP nao 2xx ou o webhook informou rejeicao definitiva.
+
+uncertain
+  Timeout, conexao encerrada ou resposta ambigua. Pode ter sido recebido.
+  Nunca repetir automaticamente.
+
+confirmed
+  O webhook e/ou uma releitura atual do Imperium comprovou que a OS foi
+  finalizada com o codigo esperado.
+
+Fluxo:
+
+1. Validar payload.
+2. Calcular fingerprint SHA-256 do JSON canonico.
+3. Registrar prepared atomicamente.
+4. Registrar sending imediatamente antes da chamada.
+5. Fazer no maximo um POST.
+6. Resposta 2xx -> queued.
+7. Esperar webhook por numOS.
+8. Reconsultar a OS no Imperium.
+9. Somente entao marcar confirmed e registrar a confirmacao no diario operacional.
+
+Nao reagir como concluida somente pelo HTTP 200.
+
+
+1.9 Webhook de retorno
+----------------------
+
+Formato observado:
+
+  {
+    "numOS": "2640000001",
+    "mensagem": "texto retornado pelo Imperium"
+  }
+
+O webhook deve:
+
+- salvar o evento bruto sanitizado;
+- localizar a operacao por numOS e, quando disponivel, operation_id/fingerprint;
+- nao depender de a linha principal ja existir;
+- usar upsert ou diario separado para nao perder callback;
+- classificar a mensagem;
+- reconsultar o Imperium;
+- nunca reenviar automaticamente.
+
+O erro do n8n "The row you are trying to update doesn't exist" significa que o
+callback chegou, mas a tabela local nao possuia a linha esperada. E falha do
+registro da integracao, nao prova que a API do Imperium falhou.
+
+
+1.10 Falhas conhecidas e tratativas
+-----------------------------------
+
+"Ordem de servico nao encontrada"
+  Causas comuns:
+  - dataagendamento diferente da data atual no Imperium;
+  - numero de OS incorreto;
+  - OS ainda nao importada;
+  - empresa/cidade/perfil errado.
+  Acao: reler numero, data e perfil. Nao repetir no escuro.
+
+"Tecnico nao encontrado: Z..."
+  O login enviado nao existe ou nao esta vinculado naquela empresa.
+  Acao: resolver por login/external_id oficial. Nao substituir pelo nome.
+
+"Equipamento serial ... nao pertence ao estoque do instalador"
+  Serial esta em outro estoque ou a OS esta no tecnico errado.
+  Acao: localizar proprietario, corrigir tecnico ou transferir explicitamente.
+
+"Equipamento XXXXX nao possui quantidade suficiente em estoque"
+  Codigo/quantidade nao existe no saldo do tecnico considerado pela API.
+  Acao: revisar codigo concreto, quantidade, grupo e estoque; nao confiar em
+  complemento virtual automatico.
+
+"A subconsulta retornou mais de 1 valor"
+  Ambiguidade/duplicidade no backend do Imperium.
+  Acao: preservar JSON, horario e numOS; enviar ao responsavel do Imperium.
+  Nao tentar corrigir escolhendo um registro localmente e nao repetir.
+
+HTTP 400
+  Payload invalido, regra operacional rejeitada ou dados inconsistentes.
+  Acao: registrar corpo sanitizado e classificar como rejected.
+
+HTTP 401/403
+  Token invalido, expirado ou sem permissao.
+  Acao: renovar token somente quando a rejeicao de autenticacao for definitiva.
+  O cliente pode relogar e repetir uma unica vez nesse caso especifico.
+
+HTTP 200/202 com corpo vazio
+  Solicitacao enfileirada. Estado queued.
+
+Timeout ou conexao encerrada
+  Resultado incerto. Estado uncertain. Nao repetir automaticamente.
+
+OS continua EM CAMPO apos 1 minuto
+  Isso nao e motivo para novo POST. Consultar webhook, diario e Imperium.
+
+
+1.11 Idempotencia e seguranca contra baixa duplicada
+-----------------------------------------------------
+
+Antes de qualquer envio, o DOMINIUM deve bloquear a mesma OS/fingerprint se
+existir operacao em:
+
+- prepared;
+- sending;
+- queued;
+- confirmed;
+- uncertain.
+
+Uma rejeicao tambem nao deve liberar automaticamente nova tentativa. Exigir
+autorizacao humana separada e um novo operation_id.
+
+O sender endurecido do projeto exige simultaneamente:
+
+- uma unica OS;
+- payload valido;
+- fingerprint exato;
+- operation_id novo;
+- confirmacao literal ENVIAR-OS-<numero>;
+- token somente em variavel de ambiente;
+- no maximo uma chamada ao transporte;
+- nenhum retry;
+- nenhum fallback DataSnap.
+
+
+1.12 Checklist antes do POST
+----------------------------
+
+[ ] A OS esta EM CAMPO no Imperium agora.
+[ ] numero e dataagendamento correspondem exatamente ao Imperium.
+[ ] codigotecnico e login/external_id comprovado.
+[ ] codigo visivel de baixa corresponde ao movimento do TOA.
+[ ] atividade/AID e tarefa correspondem a esta OS.
+[ ] equipamento entrando pertence ao tecnico.
+[ ] equipamento saindo possui codigo concreto comprovado.
+[ ] cada material possui codigo concreto, unidade e saldo suficientes.
+[ ] quantidade de material e positiva e esta como string decimal.
+[ ] nenhuma miscelanea foi adicionada a desconexao.
+[ ] OS close_only possui todas as listas vazias.
+[ ] nao existe operacao pendente ou incerta para a mesma OS.
+[ ] payload e fingerprint foram mostrados ao operador.
+[ ] ha confirmacao humana explicita quando o modo nao e automatizado aprovado.
+
+
+PARTE 2 - API OFICIAL DO TOA / ORACLE FIELD SERVICE
+===================================================
+
+2.1 Para que serve
+------------------
+
+A API oficial do Oracle Field Service pode fornecer, conforme as permissoes:
+
+- atividades e seus status;
+- recursos/tecnicos;
+- agenda e janela de servico;
+- inventario instalado, retirado e do cliente;
+- propriedades personalizadas;
+- eventos de alteracao, conclusao e movimento de inventario.
+
+Ela e a melhor fonte para alimentar Monitor de OS, TEC1, equipes, rotas e a
+captura dos dados necessarios ao planejamento da baixa.
+
+Ela nao deve ser usada como prova de que o Imperium baixou a OS.
+
+
+2.2 O que e necessario para usar legitimamente
+-----------------------------------------------
+
+O administrador do ambiente Oracle Field Service precisa criar uma aplicacao
+em Configuration > Applications e liberar os recursos necessarios.
+
+Normalmente sao fornecidos:
+
+- nome da instancia;
+- client ID;
+- client secret;
+- escopos/permissoes;
+- URL base apropriada ao tenant.
+
+Login e senha de um usuario comum do TOA nao substituem essas credenciais de
+aplicacao. Tambem nao existe contorno legitimo para criar a aplicacao sem a
+permissao do administrador do tenant.
+
+Para o DOMINIUM, solicitar inicialmente somente leitura:
+
+- Core API: Activities;
+- Core API: Resources;
+- Core API: Inventories;
+- Metadata API: propriedades customizadas;
+- Events API: eventos incrementais, se disponivel/licenciada.
+
+Aplicar menor privilegio possivel, auditoria, retencao curta e acesso limitado
+as cidades/equipes necessarias.
+
+
+2.3 Autenticacao Oracle
+-----------------------
+
+A documentacao oficial admite OAuth 2.0 e credenciais de aplicacao. A forma
+exata depende da configuracao criada no tenant.
+
+Na autenticacao por client ID/secret descrita pela Oracle, a identidade inclui
+client ID e nome da instancia. Nao copie cookies da sessao do navegador para
+simular uma credencial oficial.
+
+Segredos devem permanecer no backend. Nunca enviar client secret ao JavaScript
+do navegador.
+
+
+2.4 Atualizacao do Monitor
+--------------------------
+
+Melhor arquitetura, quando a Events API estiver liberada:
+
+1. Criar/renovar uma subscription de eventos.
+2. Ler somente eventos novos.
+3. Para cada activityChanged/activityCompleted/inventoryInstalled etc., atualizar
+   apenas a OS afetada.
+4. Persistir cursor e deduplicar o event ID.
+5. Periodicamente reconciliar com uma leitura completa controlada.
+
+Isso e melhor do que consultar todos os tecnicos a cada 20 ou 30 segundos.
+
+Cuidados documentados pela Oracle:
+
+- subscriptions expiram e precisam ser renovadas;
+- eventos possuem janela limitada de retencao;
+- existem limites de quantidade de subscriptions e de uso;
+- a visibilidade dos recursos depende da arvore associada ao usuario da API.
+
+
+2.5 Enquanto nao existe credencial oficial
+-------------------------------------------
+
+O DOMINIUM hoje usa uma ponte provisoria baseada na sessao ja autenticada do
+navegador. Isso NAO e a API oficial. Ela e fragil porque depende de:
+
+- sessao e MFA/DUO;
+- endpoints internos do frontend;
+- formato de deltas que pode mudar;
+- navegador e extensao ativos;
+- permissao do usuario logado.
+
+Uso conservador dessa ponte:
+
+- somente uma sessao autorizada;
+- somente leitura;
+- parar imediatamente no logout;
+- cache e deduplicacao;
+- evitar extracoes macicas a cada 20/30 segundos;
+- consultar apenas contratos/atividades necessarios;
+- manter o ultimo retrato quando desconectar, marcando-o como desatualizado;
+- nunca contornar MFA, bloqueio, permissao ou limite do Oracle;
+- nao armazenar dados pessoais alem do necessario.
+
+A verificacao de 20 segundos pode servir para saber se a sessao continua viva,
+mas nao deve significar uma extracao completa de toda a operacao a cada ciclo.
+
+
+2.6 LGPD, auditoria e risco operacional
+---------------------------------------
+
+O TOA contem nome, endereco, telefone, localizacao, agenda e historico. Isso e
+dado operacional e, em varios casos, dado pessoal.
+
+Regras recomendadas:
+
+- coletar somente campos necessarios;
+- restringir acesso por cidade e funcao;
+- registrar quem consultou e por que;
+- criptografar segredos e dados sensiveis;
+- definir prazo de retencao;
+- evitar copiar telas e respostas brutas indefinidamente;
+- sanitizar capturas usadas em testes;
+- nunca compartilhar cookies, tokens ou Authorization;
+- obter autorizacao formal antes de monitoramento amplo.
+
+O fato de um endpoint interno ser visivel no DevTools nao o transforma em API
+publica nem autoriza automacao irrestrita.
+
+
+PARTE 3 - COMO AS DUAS APIs DEVEM TRABALHAR JUNTAS
+=================================================
+
+3.1 Captura
+-----------
+
+TOA fornece:
+
+- contrato;
+- AID/activity_id;
+- tarefas e numeros de OS;
+- codigo de baixa por tarefa;
+- tecnico por external_id/login;
+- equipamentos entrando, saindo e customer;
+- materiais, inv_aid, ponto e quantidade;
+- status e agenda.
+
+
+3.2 Roteamento
+--------------
+
+O DOMINIUM relaciona usando evidencias fortes:
+
+- task.os_number == order.num_os;
+- item.inv_aid == activity.aid;
+- item.point == ponto da tarefa/OS.
+
+Nao usar como vinculo unico:
+
+- primeira OS da lista;
+- ordem visual;
+- contrato;
+- servico;
+- codigo 409;
+- nome do tecnico.
+
+Se nao houver uma unica OS correta, bloquear e pedir revisao humana.
+
+
+3.3 Capacidade da OS
+--------------------
+
+material_capable
+  Pode receber equipamentos e materiais, conforme o servico e o movimento.
+
+close_only
+  Recebe codigo de baixa, mas as tres listas precisam ficar vazias.
+
+Essa classificacao deve vir de mapa de servicos aprovado e ser confirmada pelas
+tarefas/pontos, nunca apenas pelo texto do servico.
+
+
+3.4 Planejamento de inventario
+------------------------------
+
+1. Excluir itens operacionais que a politica manda nao subir, como fonte, cabo
+   de forca, HDMI e pilha, quando essa regra estiver formalmente aplicavel.
+2. Resolver codigo concreto.
+3. Conferir catalogo, grupo, unidade e saldo.
+4. Distribuir por grupo somente quando autorizado e inequivoco.
+5. Conservar quantidades com Decimal.
+6. Validar seriais e propriedade atual.
+7. Gerar payload para uma unica OS material_capable.
+
+
+3.5 Envio e confirmacao
+-----------------------
+
+1. Preflight no Imperium.
+2. Fingerprint e diario local.
+3. Um POST oficial.
+4. Estado queued.
+5. Webhook.
+6. Releitura do Imperium.
+7. confirmed.
+8. Registro da confirmacao no diario operacional.
+
+Se qualquer etapa ficar incerta, parar para tratativa humana.
+
+
+PARTE 4 - O QUE ESTA CONFIRMADO E O QUE AINDA PRECISA SER DOCUMENTADO
+====================================================================
+
+Confirmado:
+
+- endpoint de login e baixa do Imperium;
+- formato das tres listas;
+- codigo visivel de baixa;
+- numero + data como verificacao essencial;
+- quantidade de miscelanea como string decimal;
+- resposta 2xx como fila, nao confirmacao;
+- webhook com numOS e mensagem;
+- estoque validado pelo tecnico do JSON;
+- ausencia de complemento virtual automatico na API oficial;
+- TOA concluido nao significa Imperium concluido;
+- API Oracle exige aplicacao e permissoes do tenant.
+
+Precisa de especificacao formal do Imperium:
+
+- campo oficial para observacao/OBS;
+- formato de webhook de sucesso, nao apenas erro;
+- identificador de operacao devolvido no POST;
+- politica exata de idempotencia no servidor;
+- prazo normal da fila;
+- lista completa de mensagens e codigos HTTP;
+- suporte futuro a estoque RETORNO/virtual;
+- regras oficiais para servicos com varias OS.
+
+Precisa de liberacao do Oracle/Claro:
+
+- aplicacao REST;
+- client ID/secret;
+- escopos de leitura;
+- arvore de recursos/cidades;
+- Events API e limites;
+- politica de retencao e auditoria.
+
+
+PARTE 5 - REFERENCIAS OFICIAIS ORACLE
+=====================================
+
+Autenticacao e autorizacao:
+https://docs.oracle.com/en/cloud/saas/field-service/cxfsc/OFSC_Authenticate_and_Authorize.html
+
+Lista de endpoints REST:
+https://docs.oracle.com/en/cloud/saas/field-service/cxfsc/rest-endpoints.html
+
+Events API:
+https://docs.oracle.com/en/cloud/saas/field-service/cxfsc/api-core-events.html
+
+Tipos de eventos suportados:
+https://docs.oracle.com/en/cloud/saas/field-service/cxfsc/OFSC_Supported_Events_Types.html
+
+Leitura de eventos:
+https://docs.oracle.com/en/cloud/saas/field-service/cxfsc/op-rest-ofsccore-v1-events-get.html
+
+Metadata de propriedades:
+https://docs.oracle.com/en/cloud/saas/field-service/cxfsc/api-metadata-properties.html
+
+Recursos:
+https://docs.oracle.com/en/cloud/saas/field-service/cxfsc/op-rest-ofsccore-v1-resources-get.html
+
+
+RESUMO FINAL
+============
+
+- TOA/Oracle diz o que aconteceu na atividade.
+- DOMINIUM decide, valida e registra o que pode ser enviado.
+- Imperium recebe uma solicitacao de baixa.
+- HTTP 200 significa fila, nao conclusao.
+- Webhook + releitura do Imperium confirmam o resultado.
+- Miscelanea exige codigo concreto e saldo do tecnico.
+- Grupo precisa ser convertido em codigos concretos antes do payload.
+- A API nao possui OBS documentada.
+- Timeout nunca autoriza repeticao.
+- Nunca fazer fallback automatico para DataSnap.
+- Nunca duplicar inventario entre OSs.
+- Na duvida, bloquear e encaminhar para tratativa humana.

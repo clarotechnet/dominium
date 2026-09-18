@@ -1,0 +1,40 @@
+{
+  "schema": "dominium.toa.datalake.v1",
+  "source": "n8n-toa-datalake",
+  "collector_id": "toa-atividades-os",
+  "observed_at": "2026-08-12T18:00:00-03:00",
+  "profile": "natal",
+  "activities": [
+    {
+      "activity_id": "19591114",
+      "contract": "4253672",
+      "bucket": "NTL-DMV",
+      "technician_login": "Z000000",
+      "technician_name": "TECNICO EXEMPLO",
+      "status": "iniciado",
+      "scheduled_date": "2026-08-12",
+      "service_window": "08:00 - 11:00",
+      "description": "INSTALACAO",
+      "orders": [{ "os_number": "2650833229" }]
+    }
+  ],
+  "details": [
+    {
+      "activity_id": "19591114",
+      "contract": "4253672",
+      "observation": "Sinal normalizado e atendimento concluido.",
+      "orders": [
+        { "os_number": "2650833229", "close_code": "409" }
+      ],
+      "installed_equipment": [
+        { "inventory_id": "INV-1", "description": "EMTA", "serial": "SERIAL-INSTALADO" }
+      ],
+      "removed_equipment": [
+        { "inventory_id": "INV-2", "description": "DECODER", "serial": "SERIAL-RETIRADO" }
+      ],
+      "materials": [
+        { "code": "22056332", "description": "FITA ISOLANTE", "quantity": 1, "unit": "M" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "profile": "natal",
+  "server_method": "TDtmOrdemServico.AS_Execute",
+  "query": "NkRzcEFsdGVyYXJJbnN0YWxhZG9yT1MgEAEJAgwgAAABAAAAAAAAAAIAAAAMIAAAAQAAAAAAAAAGAAAACAAAAAwAAABJAGQASQBuAHMAdABhAGwAYQBkAG8AcgADAAAAgTsEABAAAAADEAAAAAEDAAAAAAAAAAMAAAAAAAAAAwAAAAAAAAAMIAAAAQAAAAAAAAAGAAAACAAAAAkAAABJAEQAVQBTAFUAQQBSAEkATwADAAAADccEABAAAAADEAAAAAEDAAAAAAAAAAMAAAAAAAAAAwAAAAAAAAAMIAAAAQAAAAAAAAAGAAAACAAAAAQAAABJAGQATwBzAAMAAADJASEAEAAAAAMQAAAAAQMAAAAAAAAAAwAAAAAAAAADAAAAAAAAABAABQIAAAAA",
+  "installer_id_offset": 96,
+  "controller_id_offset": 180,
+  "order_id_offset": 254,
+  "captured_installer_id": 277377,
+  "captured_controller_id": 313101,
+  "captured_order_id": 2163145,
+  "success_response": "wMDAEAAFAgAAAAA=",
+  "source": {
+    "capture": "imperium-20260718-105646-DESKTOP-R285TSA-Dalton-NATAL.pcapng",
+    "capture_sha256": "c5e5e21d80559dba88452328169fe26141a12081c98b6cce0a7c71662bda4875",
+    "request_sha256": "4dfb9a2e50e484b18f60ab7d4e7853a5168e31f42d97c4150086f71e64cc1bae",
+    "validated_requests": 3,
+    "scope": "one explicit IdOS per request"
+  }
+}

@@ -1,0 +1,10 @@
+project_id = "dominium-hosted-auth-config"
+
+# Configuracao remota minima. O `supabase config push` altera somente
+# propriedades declaradas neste arquivo.
+[auth]
+enable_signup = false
+minimum_password_length = 10
+
+[auth.email]
+enable_signup = false

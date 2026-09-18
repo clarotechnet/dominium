@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "profile": "natal",
+  "apply_method": "TDtmMovEstoque.AS_ApplyUpdates",
+  "finalize_method": "TDtmMovEstoque.AS_Execute",
+  "template_file": "serialized_transfer_apply_template.bin",
+  "template_sha256": "233f7484910f7091a3129927b49b39774ef56585fac216f0d6e827dbd7b675fb",
+  "finalize_blob": "NkRzcFNldERhdGVNb3ZJbXBvcnRhZG8gEAEjAgwgAAABAAAAAAAAAAIAAAAMIAAAAQAAAAAAAAAGAAAACAAAAA0AAABAAFIARQBUAFUAUgBOAF8AVgBBAEwAVQBFAAAAAAAQAAAAAxAAAAAEAwAAAAAAAAADAAAAAAAAAAMAAAAAAAAADCAAAAEAAAAAAAAABgAAAAgAAAAJAAAAQABDAGgAYQB2AGUATgBGAGUACAAAAAAAAAAQAAAAARAAAAABAwAAACwAAAADAAAAAAAAAAMAAAAAAAAADCAAAAEAAAAAAAAABgAAAAgAAAASAAAAQABCAGEAbgBjAG8ARABpAHMAdAByAGkAYgB1AGkAZABvAHIACAAAAAAAAAAQAAAAARAAAAABAwAAADIAAAADAAAAAAAAAAMAAAAAAAAAEAAFAgAAAAA=",
+  "timestamp": {
+    "captured": "2026-07-18T11:58:21.848",
+    "year": 8627,
+    "month": 8629,
+    "day": 8631,
+    "hour": 8633,
+    "minute": 8635,
+    "second": 8637,
+    "millisecond": 8639
+  },
+  "markers": {
+    "controller_id": {"kind": "u32", "captured": 313101, "offsets": [8643]},
+    "source_stock_id": {"kind": "u32", "captured": 174, "offsets": [8666, 9248]},
+    "source_stock_name": {"kind": "short", "captured": "GABRIEL SENA  DESC", "offsets": [8670, 8693]},
+    "source_installer_id": {"kind": "u32", "captured": 188944, "offsets": [8689]},
+    "source_technician_name": {"kind": "short", "captured": "GABRIEL LUCAS AGOSTINHO SENA", "offsets": [9031]},
+    "target_stock_id": {"kind": "u32", "captured": 219, "offsets": [8712, 9252]},
+    "target_stock_name": {"kind": "short", "captured": "GABRIEL BRITO DESC", "offsets": [8716, 8739]},
+    "target_installer_id": {"kind": "u32", "captured": 277376, "offsets": [8735]},
+    "target_technician_name": {"kind": "short", "captured": "GABRIEL DE MORAIS BRITO", "offsets": [9064]},
+    "equipment_id": {"kind": "u32", "captured": 5241, "offsets": [9166]},
+    "equipment_code": {"kind": "short", "captured": "41001620", "offsets": [9170]},
+    "equipment_name": {"kind": "short", "captured": "DECODER 4K UHD FULL IP S4KW5", "offsets": [9179]},
+    "brand_id": {"kind": "u32", "captured": 6, "offsets": [9208]},
+    "brand": {"kind": "short", "captured": "DIVERSOS", "offsets": [9212]},
+    "unit_id": {"kind": "u32", "captured": 2, "offsets": [9221]},
+    "unit": {"kind": "short", "captured": "UN", "offsets": [9225]},
+    "identified": {"kind": "short", "captured": "S", "offsets": [9228, 9818]},
+    "serial": {"kind": "short", "captured": "241786018496", "offsets": [9839]}
+  }
+}

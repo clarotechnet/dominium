@@ -1,0 +1,1913 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DOMINIUM</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
+  <script src="/theme-init.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
+    <div class="auth-ambient" aria-hidden="true"></div>
+    <div class="auth-card">
+      <div class="auth-brand">
+        <img src="/assets/brands/technet-rings.svg" alt="">
+        <div><strong>TECHNET · DOMINIUM</strong><span>Identidade operacional</span></div>
+      </div>
+      <div class="auth-mascots" id="authMascots" aria-hidden="true">
+        <span class="auth-mascot auth-mascot-tall"><i></i><i></i></span>
+        <span class="auth-mascot auth-mascot-round"><i></i><i></i></span>
+        <span class="auth-mascot auth-mascot-small"><i></i><i></i></span>
+      </div>
+      <header class="auth-heading">
+        <p id="authEyebrow">ACESSO CONTROLADO</p>
+        <h1 id="authTitle">Entre no DOMINIUM</h1>
+        <span id="authSubtitle">Cada operacao fica vinculada ao controlador que a executou.</span>
+      </header>
+      <div class="auth-tabs" role="tablist" aria-label="Acesso">
+        <button class="active" id="authLoginTab" type="button" role="tab" aria-selected="true">Entrar</button>
+        <button id="authRegisterTab" type="button" role="tab" aria-selected="false">Cadastrar</button>
+      </div>
+      <form class="auth-form" id="authLoginForm">
+        <label><span>Usuario</span><input id="authLoginUsername" autocomplete="username" required minlength="3"></label>
+        <label><span>Senha</span><div class="auth-password-field"><input id="authLoginPassword" type="password" autocomplete="current-password" required minlength="4" maxlength="128"><button class="auth-password-toggle" type="button" data-password-toggle="#authLoginPassword" aria-pressed="false">Mostrar</button></div><small class="auth-field-hint">Acesso seguro</small></label>
+        <div class="auth-submit-track">
+          <span class="auth-submit-lock" aria-hidden="true"><i data-lucide="lock-keyhole"></i></span>
+          <button id="authLoginSubmit" type="submit" disabled>
+            <span>Entrar com seguranca</span><i data-lucide="arrow-right"></i>
+          </button>
+        </div>
+      </form>
+      <form class="auth-form hidden" id="authRegisterForm">
+        <div class="auth-name-row">
+          <label><span>Nome</span><input id="authRegisterFirstName" autocomplete="given-name" required minlength="2"></label>
+          <label><span>Sobrenome</span><input id="authRegisterLastName" autocomplete="family-name" required minlength="2"></label>
+        </div>
+        <label><span>Usuario Dominium</span><input id="authRegisterUsername" autocomplete="username" required minlength="3"></label>
+        <label><span>Senha Dominium</span><div class="auth-password-field"><input id="authRegisterPassword" type="password" autocomplete="new-password" required minlength="10" maxlength="128"><button class="auth-password-toggle" type="button" data-password-toggle="#authRegisterPassword" aria-pressed="false">Mostrar</button></div><small class="auth-field-hint">De 10 a 128 caracteres</small></label>
+        <label><span>E-mail de contato <small class="auth-field-hint">(opcional)</small></span><input id="authRegisterEmail" type="email" autocomplete="email" maxlength="254" placeholder="apenas para contato do admin"></label>
+        <button class="auth-register-submit" id="authRegisterSubmit" type="submit" disabled>
+          <span>Solicitar cadastro</span><i data-lucide="user-plus"></i>
+        </button>
+      </form>
+      <p class="auth-message hidden" id="authMessage" role="alert"></p>
+      <footer><i data-lucide="shield-check"></i><span>Senha Dominium protegida por hash; credenciais externas nao sao salvas aqui.</span></footer>
+    </div>
+  </section>
+  <header class="app-header">
+    <div class="brand-block">
+      <div class="brand-mark" aria-hidden="true">
+        <img class="brand-asset" src="/assets/brands/technet-rings.svg" alt="">
+      </div>
+      <div class="brand-copy">
+      <p class="product" id="productName">TECHNET - DOMINIUM</p>
+      <p class="product-tagline">Toda a operação sob um só comando.</p>
+      <h1>Baixa de ordens de serviço</h1>
+      </div>
+      <img class="header-partner-logo brand-asset" src="/assets/brands/claro-orb.png" alt="Claro">
+      <button class="sidebar-toggle" id="sidebarToggle" type="button"
+        aria-controls="primarySidebar" aria-expanded="true" aria-label="Recolher menu lateral"
+        title="Recolher menu lateral">
+        <i data-lucide="panel-left-close" aria-hidden="true"></i>
+      </button>
+    </div>
+    <nav class="profile-tabs" id="profileTabs" aria-label="Base do Imperium"></nav>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" data-theme-toggle type="button"
+        aria-label="Alternar para tema claro" title="Alternar para tema claro">
+        <i data-lucide="sun-moon" aria-hidden="true"></i>
+        <span data-theme-label>Tema escuro</span>
+      </button>
+      <button class="header-toa-button hidden" id="headerToaOpen" type="button" aria-hidden="true" tabindex="-1">
+        <i data-lucide="external-link" aria-hidden="true"></i>
+        <span>Abrir TOA</span>
+      </button>
+      <button class="notification-bell hidden" id="notificationBell" type="button"
+        aria-label="Solicitacoes de cadastro pendentes" title="Solicitacoes de cadastro pendentes"
+        aria-hidden="true" tabindex="-1">
+        <i data-lucide="bell" aria-hidden="true"></i>
+        <span class="notification-badge hidden" id="notificationBadge" aria-live="polite">0</span>
+      </button>
+      <button class="operator operator-button" id="operatorButton" type="button" aria-label="Conta do operador atual">
+        <span id="operatorName">OPERADOR</span>
+        <small id="operatorRole">Sessao Dominium</small>
+      </button>
+      <div class="operator-avatar" id="operatorAvatar" aria-hidden="true">OP</div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="side-nav" id="primarySidebar" aria-label="Modulos">
+      <div class="side-nav-scroll">
+      <p class="side-nav-label">Operacao</p>
+      <button class="side-nav-item active" id="dashboardModule" type="button">
+        <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+        <span><strong>Visao geral</strong><small>Operacao</small></span>
+      </button>
+      <button class="side-nav-item" id="ordersModule" type="button">
+        <i data-lucide="clipboard-check" aria-hidden="true"></i>
+        <span><strong>Ordens de servico</strong><small>Consulta</small></span>
+      </button>
+      <p class="side-nav-label side-nav-section">Producao</p>
+      <button class="side-nav-item" id="importsModule" type="button">
+        <i data-lucide="upload" aria-hidden="true"></i>
+        <span><strong>Importar CSV</strong><small>TOA</small></span>
+      </button>
+      <button class="side-nav-item hidden" id="automationTestModule" type="button" aria-hidden="true" tabindex="-1">
+        <i data-lucide="scan-search" aria-hidden="true"></i>
+        <span><strong>Teste de automacao</strong><small>Dry-run</small></span>
+      </button>
+      <button class="side-nav-item" id="bulkCreateModule" type="button">
+        <i data-lucide="layers" aria-hidden="true"></i>
+        <span><strong>Criar OS Manual</strong><small>Cadastro</small></span>
+      </button>
+      <button class="side-nav-item" id="closeModule" type="button">
+        <i data-lucide="square-check-big" aria-hidden="true"></i>
+        <span><strong>Baixar OS</strong><small id="closeQueueBadge">0 aguardando</small></span>
+      </button>
+      <p class="side-nav-label side-nav-section">Recursos</p>
+      <button class="side-nav-item" id="stockModule" type="button">
+        <i data-lucide="boxes" aria-hidden="true"></i>
+        <span><strong>Estoque</strong><small>Por tecnico</small></span>
+      </button>
+      <button class="side-nav-item" id="techniciansModule" type="button">
+        <i data-lucide="users-round" aria-hidden="true"></i>
+        <span><strong>Tecnicos</strong><small>Equipe DMV</small></span>
+      </button>
+      <button class="side-nav-item" id="intelligenceModule" type="button">
+        <i data-lucide="activity" aria-hidden="true"></i>
+        <span><strong>Central inteligente</strong><small id="healthNavStatus">Bases e produtividade</small></span>
+      </button>
+      <button class="side-nav-item" id="reportModule" type="button">
+        <i data-lucide="file-chart-column" aria-hidden="true"></i>
+        <span><strong>Relatorio</strong><small>Baixas e erros</small></span>
+      </button>
+      <button class="side-nav-item" id="databaseModule" type="button">
+        <i data-lucide="database" aria-hidden="true"></i>
+        <span><strong>Base operacional</strong><small>Contratos e equipamentos</small></span>
+      </button>
+      <button class="side-nav-item" id="historyModule" type="button">
+        <i data-lucide="history" aria-hidden="true"></i>
+        <span><strong>Historico</strong><small>Auditoria</small></span>
+      </button>
+      </div>
+      <div class="side-nav-footer">
+        <div class="side-brand-lockup" aria-label="TechNet, agente autorizado Claro">
+          <img class="side-brand-technet brand-asset" src="/assets/brands/technet-rings.svg" alt="TechNet">
+          <span aria-hidden="true"></span>
+          <img class="side-brand-claro brand-asset" src="/assets/brands/claro-wordmark.png" alt="Claro">
+        </div>
+        <div class="side-nav-footer-meta">
+          <div class="side-nav-assurance">
+            <i data-lucide="shield-check" aria-hidden="true"></i>
+            <span>Dominio operacional</span>
+          </div>
+          <button class="side-nav-legal" id="termsOpenButton" type="button">
+            <i data-lucide="file-text" aria-hidden="true"></i>
+            <span>Termos de uso</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+  <main>
+    <section class="dashboard-workspace" id="dashboardWorkspace" aria-label="Visao geral">
+      <header class="workspace-heading dashboard-heading">
+        <div>
+          <p class="section-label">PAINEL OPERACIONAL EM TEMPO REAL</p>
+          <h2>Visao geral</h2>
+        </div>
+        <span class="dashboard-updated" id="dashboardUpdated">Atualizando agora</span>
+      </header>
+
+      <section class="dashboard-metrics" aria-label="Indicadores da operacao">
+        <article class="dashboard-metric">
+          <div><span>OS abertas</span><i data-lucide="clipboard-list" aria-hidden="true"></i></div>
+          <strong id="dashboardOpenCount">0</strong>
+          <small>Lista atual do Imperium</small>
+        </article>
+        <article class="dashboard-metric warning">
+          <div><span>Em campo</span><i data-lucide="truck" aria-hidden="true"></i></div>
+          <strong id="dashboardFieldCount">0</strong>
+          <small>Prontas para tratativa</small>
+        </article>
+        <article class="dashboard-metric success">
+          <div><span>Baixadas na sessao</span><i data-lucide="circle-check-big" aria-hidden="true"></i></div>
+          <strong id="dashboardCompletedCount">0</strong>
+          <small>Confirmadas pelo servidor</small>
+        </article>
+        <article class="dashboard-metric danger">
+          <div><span>Nao baixadas</span><i data-lucide="triangle-alert" aria-hidden="true"></i></div>
+          <strong id="dashboardFailureCount">0</strong>
+          <small>Exigem nova tentativa</small>
+        </article>
+      </section>
+
+      <div class="dashboard-grid">
+        <section class="dashboard-panel status-panel">
+          <header><h3>Distribuicao da operacao</h3><span id="dashboardTotalLabel">0 OS</span></header>
+          <div class="status-distribution">
+            <div><span>Em campo</span><div class="distribution-track"><i id="dashboardFieldBar"></i></div><strong id="dashboardFieldLabel">0</strong></div>
+            <div><span>Selecionadas</span><div class="distribution-track"><i class="selected-bar" id="dashboardSelectedBar"></i></div><strong id="dashboardSelectedLabel">0</strong></div>
+            <div><span>Nao baixadas</span><div class="distribution-track"><i class="failure-bar" id="dashboardFailureBar"></i></div><strong id="dashboardFailureLabel">0</strong></div>
+            <div><span>Baixadas</span><div class="distribution-track"><i class="completed-bar" id="dashboardCompletedBar"></i></div><strong id="dashboardCompletedLabel">0</strong></div>
+          </div>
+        </section>
+
+        <section class="dashboard-panel city-panel">
+          <header><h3>Volume por cidade</h3><span>Lista atual</span></header>
+          <div class="city-bars" id="dashboardCityBars"></div>
+        </section>
+
+        <section class="dashboard-panel attention-panel">
+          <header><h3>Atencao operacional</h3><span class="danger-text" id="dashboardAttentionCount">0 pendencias</span></header>
+          <div class="attention-list" id="dashboardAttentionList"></div>
+        </section>
+      </div>
+
+      <section class="dashboard-panel recent-panel">
+        <header><h3>Ordens recentes</h3><button class="text-button" id="dashboardOpenOrders" type="button">Ver todas</button></header>
+        <div class="table-scroll dashboard-table-scroll">
+          <table>
+            <thead><tr><th>OS</th><th>Contrato</th><th>Servico</th><th>Cidade</th><th>Tecnico</th><th>Status</th></tr></thead>
+            <tbody id="dashboardRecentBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section class="monitor-workspace hidden" id="monitorWorkspace" aria-label="Monitor de ordens de servico">
+      <header class="workspace-heading monitor-heading">
+        <div>
+          <p class="section-label">MONITORAMENTO</p>
+          <h2>Monitor de O.S.</h2>
+          <p>Acompanhamento da operacao com os dados disponiveis no DOMINIUM.</p>
+          <p class="monitor-freshness" id="monitorFreshness" role="status" aria-live="polite">
+            Aguardando a primeira atualizacao.
+          </p>
+        </div>
+        <div class="monitor-actions">
+          <input class="hidden" id="monitorCsvInput" type="file" accept=".csv,text/csv" multiple>
+          <button class="button monitor-tv-button" id="monitorTvOpen" type="button">
+            <i data-lucide="monitor-play" aria-hidden="true"></i><span>Modo TV</span>
+          </button>
+          <button class="button primary monitor-csv-button" id="monitorCsvOpen" type="button">
+            <i data-lucide="file-up" aria-hidden="true"></i><span>Carregar CSV do TOA</span>
+          </button>
+          <button class="button secondary monitor-demo-toggle" id="monitorDemo" type="button" aria-pressed="false">
+            <i data-lucide="presentation" aria-hidden="true"></i><span>Cenarios de exemplo</span>
+          </button>
+          <button class="button secondary" id="monitorNotify" type="button" title="Ativar alertas locais">
+            <i data-lucide="bell" aria-hidden="true"></i><span>Alertas</span>
+          </button>
+          <button class="button secondary" id="monitorVoice" type="button" title="Ativar voz gratuita para os alertas de TEC1" aria-pressed="false">
+            <i data-lucide="volume-2" aria-hidden="true"></i><span>Voz TEC1</span>
+          </button>
+          <button class="button secondary" id="monitorExport" type="button">
+            <i data-lucide="download" aria-hidden="true"></i><span>Exportar</span>
+          </button>
+          <button class="button secondary" id="monitorRefresh" type="button">
+            <i data-lucide="refresh-cw" aria-hidden="true"></i><span>Atualizar</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="monitor-demo-banner hidden" id="monitorDemoBanner" role="status">
+        <div><strong>Modo demonstracao</strong><span>OS ficticias e isoladas da operacao real.</span></div>
+        <small>Nao baixa, nao notifica e nao exporta dados.</small>
+      </div>
+
+      <section class="monitor-source-card hidden" id="monitorCsvSource" aria-label="Fonte CSV ativa">
+        <div class="monitor-source-icon"><i data-lucide="file-check-2" aria-hidden="true"></i></div>
+        <div class="monitor-source-copy">
+          <strong>Fotografia do TOA carregada</strong>
+          <span id="monitorCsvSourceTitle">Arquivo CSV</span>
+          <small id="monitorCsvSourceDetail">Dados operacionais em modo somente leitura.</small>
+        </div>
+        <button class="button secondary" id="monitorCsvReplace" type="button">
+          <i data-lucide="refresh-cw" aria-hidden="true"></i><span>Trocar CSV</span>
+        </button>
+        <button class="button ghost danger" id="monitorCsvClear" type="button">
+          <i data-lucide="database" aria-hidden="true"></i><span>Usar lista do Imperium</span>
+        </button>
+      </section>
+
+      <section class="monitor-attention-stage" id="monitorAttentionStage" aria-label="Central visual de alertas" aria-live="polite"></section>
+
+      <section class="monitor-kpis" aria-label="Indicadores do monitor">
+        <article><span>Total de OS</span><strong id="monitorTotal">0</strong><small>Lista consultada</small></article>
+        <article class="warning"><span>Em campo</span><strong id="monitorField">0</strong><small>Em execucao</small></article>
+        <article class="completed"><span>Concluidas</span><strong id="monitorCompleted">0</strong><small>Na lista atual</small></article>
+        <article><span>Pendentes</span><strong id="monitorPending">0</strong><small>Aguardando acao</small></article>
+        <article class="warning"><span>Revisitas</span><strong id="monitorRevisits">0</strong><small>Pelo historico do contrato</small></article>
+        <article><span>Com codigo de baixa</span><strong id="monitorClosedWithCode">0</strong><small>Desfecho identificado</small></article>
+        <article class="danger"><span>Alertas de rota</span><strong id="monitorRouteAlerts">0</strong><small>Janela em risco ou perdida</small></article>
+      </section>
+
+      <nav class="monitor-tabs" id="monitorTabs" aria-label="Visoes do monitor"></nav>
+
+      <section class="monitor-panel">
+        <header class="monitor-panel-head">
+          <div>
+            <h3 id="monitorViewTitle">Monitor de O.S.</h3>
+            <p id="monitorViewSubtitle"></p>
+          </div>
+          <div class="monitor-toolbar">
+            <label class="monitor-search">
+              <i data-lucide="search" aria-hidden="true"></i>
+              <input id="monitorSearch" type="search" placeholder="OS, contrato, tecnico, servico ou bucket" autocomplete="off">
+            </label>
+            <select class="monitor-bucket-filter" id="monitorBucket" aria-label="Filtrar bucket">
+              <option value="all">Todos os buckets</option>
+            </select>
+            <select id="monitorStatus" aria-label="Filtrar situacao">
+              <option value="all">Todos os status</option>
+              <option value="field">Iniciadas / em rota</option>
+              <option value="pending">Pendentes</option>
+              <option value="completed">Concluidas</option>
+              <option value="suspended">Suspensas / realocadas</option>
+              <option value="canceled">Canceladas</option>
+            </select>
+          </div>
+        </header>
+        <div class="monitor-notice hidden" id="monitorNotice"></div>
+        <div class="route-console hidden" id="monitorRouteConsole"></div>
+        <div class="monitor-table-wrap" id="monitorTableWrap">
+          <table class="monitor-table">
+            <thead id="monitorTableHead"></thead>
+            <tbody id="monitorTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section class="monitor-tv hidden" id="monitorTv" aria-label="DOMINIUM em modo TV"></section>
+
+    <div class="hidden" id="ordersWorkspace">
+    <header class="workspace-heading orders-heading">
+      <div>
+        <p class="section-label">CONTROLE OPERACIONAL</p>
+        <h2>Ordens de servico</h2>
+      </div>
+    </header>
+    <section class="summary" aria-label="Resumo">
+      <div class="metric">
+        <span id="pendingLabel">Em campo</span>
+        <strong id="pendingCount">0</strong>
+      </div>
+      <div class="metric">
+        <span>Selecionadas</span>
+        <strong id="selectedCount">0</strong>
+      </div>
+      <div class="metric success-metric">
+        <span>Baixadas nesta sessão</span>
+        <strong id="completedCount">0</strong>
+      </div>
+      <div class="fixed-code">
+        <span>Código de baixa</span>
+        <div class="code-options" role="radiogroup" aria-label="Código de baixa">
+          <button class="code-option active" type="button" data-close-code="106" aria-pressed="true">
+            <strong>106</strong>
+            <b>CLIENTE AUSENTE</b>
+          </button>
+          <button class="code-option" type="button" data-close-code="0" aria-pressed="false">
+            <strong>0</strong>
+            <b>CANCELAMENTO</b>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Filtros e ações">
+      <label class="field date-field">
+        <span>Data</span>
+        <input type="date" id="dateFilter">
+      </label>
+      <label class="field search-field">
+        <span>Pesquisar</span>
+        <input type="search" id="searchFilter" placeholder="OS, contrato ou serviço">
+      </label>
+      <label class="field service-field">
+        <span>Status</span>
+        <select id="statusFilter">
+          <option value="all">Todos</option>
+          <option value="field" selected>Em campo</option>
+          <option value="completed">Concluída</option>
+          <option value="canceled">Cancelada</option>
+          <option value="rescheduled">Reagendada</option>
+        </select>
+      </label>
+      <label class="field service-field">
+        <span>Tipo Serviço</span>
+        <select id="serviceFilter">
+          <option value="all">Todos</option>
+          <option value="installation">Instalação / alteração</option>
+          <option value="technical">Visita técnica / manutenção</option>
+          <option value="disconnection">Desconexão / retirada</option>
+          <option value="stock">Correção de estoque</option>
+        </select>
+      </label>
+      <label class="field service-field">
+        <span>Canal de baixa</span>
+        <select id="transportFilter">
+          <option value="datasnap" selected>DataSnap (direto)</option>
+          <option value="official_http">API oficial IMPERIUM</option>
+        </select>
+      </label>
+      <button class="button secondary" id="refreshButton" type="button"><i data-lucide="rotate-cw" aria-hidden="true"></i><span>Atualizar</span></button>
+      <button class="button primary" id="batchButton" type="button" disabled><i data-lucide="check-circle-2" aria-hidden="true"></i><span>Baixar selecionadas</span></button>
+    </section>
+
+    <section class="runbar hidden" id="runbar" aria-live="polite">
+      <div class="run-copy">
+        <strong id="runTitle">Processando</strong>
+        <span id="runDetail"></span>
+      </div>
+      <div class="progress-track" aria-hidden="true">
+        <span id="progressFill"></span>
+      </div>
+      <button class="button secondary compact" id="pauseButton" type="button">Pausar</button>
+      <button class="button danger compact" id="stopButton" type="button">Parar</button>
+    </section>
+
+    <nav class="view-tabs" aria-label="Visualização">
+      <button class="view-tab active" id="ordersTab" type="button">Ordens de serviço</button>
+      <button class="view-tab" id="failuresTab" type="button">
+        Não baixadas <span id="failureCount">0</span>
+      </button>
+    </nav>
+
+    <section class="table-section" id="ordersSection" aria-label="Ordens de serviço">
+      <div class="table-scroll">
+        <table>
+          <colgroup>
+            <col class="select-column">
+            <col class="os-column">
+            <col class="contract-column">
+            <col class="service-column">
+            <col class="city-column">
+            <col class="technician-column">
+            <col class="status-column">
+            <col class="action-column">
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="check-cell"><input type="checkbox" id="selectAll" aria-label="Selecionar todas as OS visíveis"></th>
+              <th>Número da OS</th>
+              <th>Contrato</th>
+              <th>Servico</th>
+              <th>Cidade</th>
+              <th>Tecnico</th>
+              <th>Status</th>
+              <th class="action-cell">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state hidden" id="emptyState">Nenhuma OS encontrada.</div>
+      <div class="loading-state" id="loadingState">Consultando o servidor...</div>
+    </section>
+
+    <section class="table-section hidden" id="failuresSection" aria-label="Ordens não baixadas">
+      <div class="table-scroll">
+        <table class="failures-table">
+          <colgroup>
+            <col class="os-column">
+            <col class="failure-service-column">
+            <col class="failure-code-column">
+            <col class="failure-category-column">
+            <col class="failure-attempts-column">
+            <col class="failure-time-column">
+            <col class="failure-error-column">
+            <col class="action-column">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Número da OS</th>
+              <th>Serviço</th>
+              <th>Código</th>
+              <th>Categoria</th>
+              <th>Tentativas</th>
+              <th>Última tentativa</th>
+              <th>Erro</th>
+              <th class="action-cell">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="failuresBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="failuresEmpty">Nenhuma falha pendente.</div>
+    </section>
+    </div>
+
+    <section class="stock-workspace hidden" id="stockWorkspace" aria-label="Estoque do tecnico">
+      <header class="workspace-heading">
+        <div>
+          <p class="section-label">CONSULTA E MOVIMENTACAO</p>
+          <h2>Estoque do tecnico</h2>
+          <p class="workspace-description">Consulte o saldo, gere relatorios e faca a baixa rapida de materiais sem serial.</p>
+        </div>
+        <div class="stock-heading-actions">
+          <button class="button secondary" id="stockWriteoffOpen" type="button" disabled>
+            <i data-lucide="list-plus" aria-hidden="true"></i>
+            <span>Baixar selecionados</span>
+            <strong id="stockWriteoffCount">0</strong>
+          </button>
+          <button class="button secondary" id="stockPdfButton" type="button" disabled>PDF deste tecnico</button>
+          <button class="button primary" id="stockBatchButton" type="button" disabled>Impressao em massa</button>
+        </div>
+      </header>
+
+      <div class="stock-toolbar">
+        <label class="field service-field">
+          <span>Fonte</span>
+          <select id="stockSource">
+            <option value="datasnap">Operacional</option>
+            <option value="official">API oficial</option>
+          </select>
+        </label>
+        <label class="field stock-technician-search">
+          <span>Localizar tecnico</span>
+          <input type="search" id="stockTechnicianSearch" placeholder="Digite o nome do tecnico">
+        </label>
+        <label class="field stock-technician-field">
+          <span>Tecnico / estoque</span>
+          <select id="stockTechnicianSelect">
+            <option value="">Carregando tecnicos...</option>
+          </select>
+        </label>
+        <button class="button primary" id="stockConsultButton" type="button" disabled>Consultar estoque</button>
+        <label class="stock-zero-toggle">
+          <input type="checkbox" id="stockShowZero">
+          <span>Mostrar itens zerados</span>
+        </label>
+      </div>
+
+      <section class="stock-summary" aria-label="Resumo do estoque">
+        <div class="metric">
+          <span>Tecnico</span>
+          <strong id="stockTechnicianName">-</strong>
+        </div>
+        <div class="metric">
+          <span>Itens com saldo</span>
+          <strong id="stockPositiveCount">0</strong>
+        </div>
+        <div class="metric">
+          <span>Quantidade total</span>
+          <strong id="stockQuantityTotal">0</strong>
+        </div>
+        <div class="metric success-metric">
+          <span id="stockSerialLabel">Seriais</span>
+          <strong id="stockSerialCount">0</strong>
+        </div>
+      </section>
+
+      <div class="stock-filters">
+        <label class="field search-field">
+          <span>Pesquisar item</span>
+          <input type="search" id="stockItemSearch" placeholder="Codigo, equipamento, grupo ou serial">
+        </label>
+        <label class="field service-field">
+          <span>Grupo</span>
+          <select id="stockGroupFilter">
+            <option value="">Todos</option>
+          </select>
+        </label>
+      </div>
+
+      <section class="table-section stock-table-section" aria-label="Itens do estoque">
+        <div class="table-scroll">
+          <table class="stock-table">
+            <thead>
+              <tr>
+                <th>Grupo</th>
+                <th>Codigo</th>
+                <th>Equipamento</th>
+                <th>Marca</th>
+                <th>Saldo</th>
+                <th>Seriais</th>
+                <th class="action-cell">Acao</th>
+              </tr>
+            </thead>
+            <tbody id="stockBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="stockEmpty">Selecione um tecnico e consulte o estoque.</div>
+        <div class="loading-state hidden" id="stockLoading">Consultando estoque no Imperium...</div>
+      </section>
+    </section>
+
+    <section class="technicians-workspace hidden" id="techniciansWorkspace" aria-label="Cadastro de tecnicos">
+      <header class="workspace-heading">
+        <div>
+          <p class="section-label">EQUIPE DMV TECHNET</p>
+          <h2>Tecnicos</h2>
+          <p class="workspace-description">Localize rapidamente nome, login TOA, cidade, bucket, placa e equipes associadas.</p>
+        </div>
+        <span class="directory-source" id="technicianSource">Carregando cadastro</span>
+      </header>
+
+      <section class="technician-metrics" aria-label="Resumo do cadastro de tecnicos">
+        <article><span>Tecnicos unicos</span><strong id="technicianCount">0</strong><small>Logins consolidados</small></article>
+        <article><span>Com placa</span><strong id="technicianPlateCount">0</strong><small>Veiculos identificados</small></article>
+        <article><span>Equipes</span><strong id="technicianTeamCount">0</strong><small>Frentes operacionais</small></article>
+        <article><span>Visiveis</span><strong id="technicianVisibleCount">0</strong><small>Resultado da pesquisa</small></article>
+      </section>
+
+      <div class="technician-toolbar">
+        <label class="field search-field">
+          <span>Pesquisar tecnico</span>
+          <div class="directory-search-control">
+            <i data-lucide="search" aria-hidden="true"></i>
+            <input type="search" id="technicianSearch" placeholder="Nome, login, cidade, bucket, placa ou equipe">
+          </div>
+        </label>
+        <label class="field service-field">
+          <span>Equipe</span>
+          <select id="technicianTeamFilter"><option value="">Todas</option></select>
+        </label>
+      </div>
+
+      <section class="table-section technician-table-section" aria-label="Lista de tecnicos">
+        <div class="table-scroll technician-table-scroll">
+          <table class="technician-table">
+            <thead>
+              <tr>
+                <th>Tecnico</th>
+                <th>Login TOA</th>
+                <th>Placa</th>
+                <th>Equipe</th>
+                <th class="action-cell">Acao</th>
+              </tr>
+            </thead>
+            <tbody id="technicianBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="technicianEmpty">Nenhum tecnico encontrado.</div>
+        <div class="loading-state hidden" id="technicianLoading">Carregando cadastro sanitizado...</div>
+      </section>
+    </section>
+
+    <section class="bulk-create-workspace hidden" id="bulkCreateWorkspace" aria-label="Criacao manual de ordens de servico">
+      <header class="workspace-heading">
+        <div>
+          <p class="section-label">CADASTRO</p>
+          <h2>Criar OS Manual</h2>
+        </div>
+      </header>
+
+      <section class="manual-create-card">
+        <header>
+          <div>
+            <h3>Uma ordem de servico</h3>
+            <p>Cadastro direto no Imperium para um contrato.</p>
+          </div>
+          <span class="manual-step">01</span>
+        </header>
+        <div class="manual-create-grid">
+          <label class="field">
+            <span>Localizar tecnico</span>
+            <input type="search" id="manualTechnicianSearch" placeholder="Nome, login ou estoque">
+          </label>
+          <label class="field">
+            <span>Tecnico</span>
+            <select id="manualTechnicianSelect"><option value="">Carregando tecnicos...</option></select>
+          </label>
+          <label class="field">
+            <span>Tipo da OS</span>
+            <select id="manualService">
+              <option value="">Carregando servicos...</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Contrato</span>
+            <input id="manualContract" inputmode="numeric" maxlength="7" placeholder="Contrato real">
+          </label>
+          <label class="field">
+            <span>Codigo de baixa</span>
+            <select id="manualCloseCode"></select>
+          </label>
+          <button class="button primary" id="manualCreateReview" type="button" disabled>
+            <i data-lucide="plus" aria-hidden="true"></i><span>Revisar OS</span>
+          </button>
+        </div>
+        <p class="manual-create-note">
+          Em Natal, a OS usa o cadastro fixo CLIENTE 123. Contrato, tecnico,
+          servico e codigo de baixa permanecem definidos por voce.
+        </p>
+      </section>
+
+      <div class="workspace-divider"><span>Criacao em massa</span></div>
+
+      <div class="bulk-create-form">
+        <label class="field bulk-technician-search">
+          <span>Localizar tecnico</span>
+          <input type="search" id="bulkTechnicianSearch" placeholder="Nome do tecnico ou estoque">
+        </label>
+        <label class="field bulk-technician-field">
+          <span>Tecnico</span>
+          <select id="bulkTechnicianSelect">
+            <option value="">Carregando tecnicos...</option>
+          </select>
+        </label>
+        <label class="field bulk-service-field">
+          <span>Tipo da OS</span>
+          <select id="bulkService">
+            <option value="">Carregando servicos...</option>
+          </select>
+        </label>
+        <label class="field bulk-date-field">
+          <span>Data</span>
+          <input id="bulkCreateDate" type="date" readonly>
+        </label>
+        <label class="field bulk-close-code-field">
+          <span>Codigo de baixa apos criar</span>
+          <select id="bulkCloseCode"></select>
+        </label>
+        <label class="field bulk-contracts-field">
+          <span>Contratos</span>
+          <textarea id="bulkContracts" rows="10" spellcheck="false" placeholder="3185231&#10;4228619&#10;2615003"></textarea>
+        </label>
+        <div class="bulk-create-actions">
+          <div class="bulk-contract-count">
+            <span>Contratos validos</span>
+            <strong id="bulkContractCount">0</strong>
+          </div>
+          <button class="button primary" id="bulkCreateReview" type="button" disabled>Revisar criacao</button>
+        </div>
+      </div>
+
+      <div class="bulk-create-result hidden" id="bulkCreateResult" aria-live="polite">
+        <strong id="bulkCreateResultTitle">Criacao finalizada</strong>
+        <span id="bulkCreateResultDetail"></span>
+      </div>
+
+      <section class="table-section bulk-create-table-section" aria-label="Resultado da criacao em massa">
+        <div class="table-scroll">
+          <table class="bulk-create-table">
+            <thead>
+              <tr>
+                <th>Contrato</th>
+                <th>Numero da OS</th>
+                <th>Tecnico</th>
+                <th>Servico</th>
+                <th>Resultado Imperium</th>
+                <th class="action-cell">Acao</th>
+              </tr>
+            </thead>
+            <tbody id="bulkCreateBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="bulkCreateEmpty">Nenhuma criacao executada.</div>
+        <div class="loading-state hidden" id="bulkCreateLoading">Criando ordens no Imperium...</div>
+      </section>
+    </section>
+
+    <section class="import-workspace hidden" id="importWorkspace" aria-label="Importacao de ordens de servico">
+      <header class="workspace-heading">
+        <div>
+          <p class="section-label">SERVICO</p>
+          <h2>Importacao de OS</h2>
+        </div>
+        <div class="import-targets" id="importTargets" role="radiogroup" aria-label="Destino da importacao"></div>
+      </header>
+
+      <section class="toa-automation" id="toaAutomationPanel" aria-label="Importacao automatica do TOA">
+        <div class="toa-automation-heading">
+          <div>
+            <div class="toa-automation-title-row">
+              <h3>Importacao automatica</h3>
+              <span class="toa-automation-state" id="toaAutomationStatus">
+                <span class="toa-status-dot" aria-hidden="true"></span>
+                <span id="toaAutomationStatusText">Carregando</span>
+              </span>
+            </div>
+            <p>Exporta as rotas do TOA e importa cada cidade no Imperium.</p>
+          </div>
+          <button class="button primary" id="toaAutomationRun" type="button">
+            <i data-lucide="play" aria-hidden="true"></i>
+            Executar agora
+          </button>
+        </div>
+
+        <div class="toa-automation-metrics">
+          <div>
+            <span>Agenda diaria</span>
+            <strong id="toaAutomationSchedule">09:00 / 14:00 / 17:20</strong>
+          </div>
+          <div>
+            <span>Proxima execucao</span>
+            <strong id="toaAutomationNext">-</strong>
+          </div>
+          <div>
+            <span>Rota atual</span>
+            <strong id="toaAutomationCurrent">Aguardando</strong>
+          </div>
+          <div>
+            <span>Ultima rodada</span>
+            <strong id="toaAutomationLast">Ainda nao executada</strong>
+          </div>
+        </div>
+
+        <div class="toa-automation-content">
+          <div>
+            <h4>Rotas monitoradas</h4>
+            <div class="toa-route-list" id="toaAutomationRoutes"></div>
+          </div>
+          <div>
+            <h4>Historico recente</h4>
+            <div class="toa-history-list" id="toaAutomationHistory"></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="import-layout">
+      <section class="import-drop-card">
+        <input id="importFile" type="file" accept=".csv,text/csv,.zip,application/zip,application/x-zip-compressed" hidden>
+        <div class="import-dropzone" id="importDropzone" tabindex="0" role="button" aria-label="Selecionar arquivo CSV ou ZIP">
+          <div class="dropzone-icon"><i data-lucide="cloud-upload" aria-hidden="true"></i></div>
+          <strong>Arraste o arquivo CSV ou ZIP</strong>
+          <span>ou selecione manualmente</span>
+          <button class="button primary" id="chooseImportFile" type="button">Selecionar arquivo</button>
+        </div>
+        <div class="import-selected-file" id="importSelectedFile">
+          <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
+          <span class="import-file-name" id="importFileName">Nenhum arquivo selecionado</span>
+        </div>
+        <button class="button primary import-submit" id="commitImport" type="button" disabled>Processar ordens</button>
+      </section>
+
+      <div class="import-summary" aria-label="Resumo da importacao">
+        <div><span>Linhas do arquivo</span><strong id="importSourceRows">0</strong></div>
+        <div><span>Ordens encontradas</span><strong id="importOrderCount">0</strong></div>
+        <div><span>Cidades</span><strong id="importCities">0</strong></div>
+        <div><span>Destino</span><strong id="importTargetLabel">RN</strong></div>
+      </div>
+      </div>
+
+      <div class="import-result hidden" id="importResult" aria-live="polite">
+        <strong id="importResultTitle">Importacao finalizada</strong>
+        <span id="importResultDetail"></span>
+      </div>
+
+      <section class="table-section import-preview-section" aria-label="Previa da importacao">
+        <div class="table-scroll import-table-scroll">
+          <table class="import-table">
+            <thead>
+              <tr>
+                <th style="width: 44px; text-align: center;"><input type="checkbox" id="importSelectAll" checked title="Selecionar todas as OS"></th>
+                <th>Numero da OS</th>
+                <th>Contrato</th>
+                <th>Cidade</th>
+                <th>Tecnico</th>
+                <th>Tipo da OS</th>
+                <th>Status TOA</th>
+                <th>Resultado Imperium</th>
+              </tr>
+            </thead>
+            <tbody id="importPreviewBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="importEmpty">Selecione um CSV ou ZIP do TOA.</div>
+        <div class="loading-state hidden" id="importLoading">Lendo arquivo...</div>
+      </section>
+    </section>
+
+    <section class="automation-test-workspace hidden" id="automationTestWorkspace" aria-label="Teste de automacao somente leitura">
+      <header class="workspace-heading automation-test-heading">
+        <div>
+          <p class="section-label">VALIDACAO TECHCAP</p>
+          <h2>Teste de automacao</h2>
+        </div>
+        <span class="automation-readonly-badge"><i data-lucide="shield-check" aria-hidden="true"></i> Somente leitura</span>
+      </header>
+
+      <div class="automation-test-banner" role="status">
+        <i data-lucide="flask-conical" aria-hidden="true"></i>
+        <div>
+          <strong>Modo de teste: nenhuma operacao sera enviada ao Imperium.</strong>
+          <span>O lote salvo sera validado e apresentado sem baixa ou movimentacao de estoque.</span>
+        </div>
+      </div>
+
+      <div class="automation-test-layout">
+        <section class="automation-test-controls">
+          <header><h3>Contratos para revisar</h3><span id="automationTestContractCount">0 contratos</span></header>
+          <label class="field">
+            <span>Lote TECHCAP salvo</span>
+            <select id="automationTestLot"></select>
+          </label>
+          <label class="field">
+            <span>Contratos</span>
+            <textarea id="automationTestContracts" rows="8" placeholder="Cole contratos separados por virgula, espaco ou quebra de linha"></textarea>
+          </label>
+          <div class="automation-window-picker" aria-label="Contratos registrados por janela">
+            <span>Carregar janela importada</span>
+            <div>
+              <button type="button" data-automation-slot="09:00"><strong>09:00</strong><small id="automationSlot0900">0</small></button>
+              <button type="button" data-automation-slot="14:00"><strong>14:00</strong><small id="automationSlot1400">0</small></button>
+              <button type="button" data-automation-slot="17:20"><strong>17:20</strong><small id="automationSlot1720">0</small></button>
+            </div>
+          </div>
+          <button class="button primary automation-test-submit" id="automationTestAnalyze" type="button" disabled>
+            <i data-lucide="search-check" aria-hidden="true"></i>
+            Analisar
+          </button>
+          <p class="automation-test-message" id="automationTestMessage"></p>
+        </section>
+
+        <section class="automation-test-review">
+          <header>
+            <div><h3>Revisao das OS</h3><span id="automationTestLotMeta">Selecione um lote salvo</span></div>
+            <div class="automation-test-summary" id="automationTestSummary"></div>
+          </header>
+          <div class="automation-test-results" id="automationTestResults"></div>
+          <div class="automation-test-empty" id="automationTestEmpty">
+            <i data-lucide="file-search" aria-hidden="true"></i>
+            <strong>Nenhuma analise executada</strong>
+            <span>Informe os contratos ou carregue uma janela importada.</span>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="close-workspace hidden" id="closeWorkspace" aria-label="Baixar ordem de servico">
+      <header class="workspace-heading">
+        <div>
+          <p class="section-label">FINALIZACAO</p>
+          <h2>Baixar OS</h2>
+        </div>
+      </header>
+      <section class="disconnect-automation hidden" id="disconnectAutomation" aria-label="Automacao de desconexao" aria-hidden="true" hidden>
+        <header class="disconnect-automation-header">
+          <div>
+            <span class="disconnect-kicker">NTL + PWM / DMV_ADM</span>
+            <h3>Baixa de desconexao</h3>
+            <p id="disconnectAutomationMessage">Somente NTL-DMV_ADM e PWM-DMV_ADM; outros buckets nao entram na fila.</p>
+          </div>
+          <div class="disconnect-automation-actions">
+            <span class="toa-live-session checking" id="disconnectToaStatus">
+              <span aria-hidden="true"></span>
+              <strong id="disconnectToaStatusText">Verificando TOA</strong>
+            </span>
+            <button class="button secondary" id="disconnectPrepare" type="button">
+              <i data-lucide="list-restart" aria-hidden="true"></i>
+              <span>Preparar fila</span>
+            </button>
+            <button class="button primary" id="disconnectStart" type="button" disabled>
+              <i data-lucide="play" aria-hidden="true"></i>
+              <span>Baixar desconexao</span>
+            </button>
+            <button class="icon-button disconnect-control" id="disconnectPause" type="button" title="Pausar e salvar" disabled>
+              <i data-lucide="pause" aria-hidden="true"></i>
+            </button>
+            <button class="icon-button disconnect-control" id="disconnectResume" type="button" title="Continuar" disabled>
+              <i data-lucide="step-forward" aria-hidden="true"></i>
+            </button>
+            <button class="icon-button disconnect-control danger" id="disconnectStop" type="button" title="Parar" disabled>
+              <i data-lucide="square" aria-hidden="true"></i>
+            </button>
+          </div>
+        </header>
+        <div class="disconnect-metrics">
+          <div><span>Fila</span><strong id="disconnectQueueCount">0</strong><small id="disconnectQueueStatus">Nao preparada</small></div>
+          <div><span>Aguardando TOA</span><strong id="disconnectWaitingCount">0</strong><small>Nova consulta em 30s</small></div>
+          <div><span>Concluidas / enviadas</span><strong id="disconnectCompletedCount">0</strong><small>Sem repeticao automatica</small></div>
+          <div><span>Tratativa</span><strong id="disconnectReviewCount">0</strong><small>Revisao humana</small></div>
+        </div>
+        <div class="disconnect-current">
+          <header>
+            <div>
+              <span>EXECUCAO ATUAL</span>
+              <strong id="disconnectCurrentStage">Aguardando inicio</strong>
+            </div>
+            <span class="disconnect-window" id="disconnectCurrentWindow">Sem janela</span>
+          </header>
+          <div class="disconnect-current-grid">
+            <div><span>Contrato</span><strong id="disconnectCurrentContract">-</strong></div>
+            <div><span>OS</span><strong id="disconnectCurrentOs">-</strong></div>
+            <div><span>Tecnico</span><strong id="disconnectCurrentTechnician">-</strong></div>
+            <div><span>Agenda</span><strong id="disconnectCurrentAppointment">-</strong></div>
+            <div><span>Codigo</span><strong id="disconnectCurrentCode">-</strong></div>
+            <div><span>Servico</span><strong id="disconnectCurrentService">-</strong></div>
+          </div>
+          <div class="disconnect-inventory">
+            <div><i data-lucide="package-plus" aria-hidden="true"></i><span>Entrando</span><strong id="disconnectCurrentInstalled">Nenhum</strong></div>
+            <div><i data-lucide="package-minus" aria-hidden="true"></i><span>Saindo</span><strong id="disconnectCurrentRemoved">Nenhum</strong></div>
+            <div><i data-lucide="cable" aria-hidden="true"></i><span>Miscelaneas</span><strong id="disconnectCurrentMaterials">Nao se aplica</strong></div>
+          </div>
+          <p class="disconnect-current-result" id="disconnectCurrentResult">Nenhuma operacao em andamento.</p>
+        </div>
+        <div class="disconnect-queue-preview" id="disconnectQueuePreview"></div>
+      </section>
+      <section class="semi-auto-agenda" aria-label="Agenda da esteira semiautomatica">
+        <div class="semi-auto-agenda-copy">
+          <span class="toa-live-kicker">AGENDA DA ESTEIRA</span>
+          <h3>Carregar contratos e janelas do TOA</h3>
+          <p>Importe o CSV ou XLSX. O DOMINIUM lê <strong>Intervalo de Tempo</strong> e <strong>Contrato</strong>, ignora linhas sem contrato e consulta primeiro o Imperium. A ponte TOA só recebe contratos que ainda possuam alguma O.S. em campo.</p>
+        </div>
+        <div class="semi-auto-agenda-actions">
+          <input class="hidden" id="semiAutoAgendaFile" type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+          <button class="button primary" id="semiAutoAgendaChoose" type="button">
+            <i data-lucide="file-up" aria-hidden="true"></i>
+            <span>Carregar agenda CSV/XLSX</span>
+          </button>
+          <strong id="semiAutoAgendaName">Nenhuma agenda carregada</strong>
+        </div>
+        <div class="semi-auto-agenda-stats" aria-live="polite">
+          <div><span>Contratos válidos</span><strong id="semiAutoAgendaContracts">0</strong></div>
+          <div><span>Linhas sem contrato</span><strong id="semiAutoAgendaBlank">0</strong></div>
+          <div><span>Sem janela válida</span><strong id="semiAutoAgendaNoWindow">0</strong></div>
+          <div><span>Duplicidades unificadas</span><strong id="semiAutoAgendaDuplicates">0</strong></div>
+        </div>
+        <p class="semi-auto-agenda-message" id="semiAutoAgendaMessage">Selecione a fotografia de atividades do dia para montar a ordem das pesquisas.</p>
+      </section>
+      <section class="toa-live-lookup" aria-label="Consulta ao vivo no TOA">
+        <header>
+          <div>
+            <span class="toa-live-kicker">TOA AO VIVO</span>
+            <h3>Consultar contrato ou O.S.</h3>
+          </div>
+          <div class="toa-live-session-actions">
+            <span class="toa-live-session checking" id="toaLiveSession">
+              <span aria-hidden="true"></span>
+              <strong id="toaLiveSessionText">TOA fechado</strong>
+            </span>
+            <button class="button secondary" id="semiAutoStart" type="button" disabled>
+              <i data-lucide="list-checks" aria-hidden="true"></i>
+              <span>Baixa semiautomatica</span>
+            </button>
+            <button class="button primary" id="autoCloseStart" type="button" disabled title="Executar baixa automatica direta das OS aptas">
+              <i data-lucide="zap" aria-hidden="true"></i>
+              <span>Baixa Automatica (100%)</span>
+            </button>
+            <button class="button secondary hidden" id="toaLiveOpen" type="button" aria-hidden="true" tabindex="-1">
+              <i data-lucide="external-link" aria-hidden="true"></i>
+              <span>Abrir TOA</span>
+            </button>
+          </div>
+        </header>
+        <section class="semi-auto-panel hidden" id="semiAutoPanel" aria-label="Fila de baixa de ordens">
+          <header class="semi-auto-head">
+            <div>
+              <span>ESTEIRA DE PREPARACAO E BAIXA</span>
+              <strong id="semiAutoHeadline">Aguardando inicio</strong>
+              <small>Agenda ordenada pelo fim e início da janela. Cada contrato é conferido primeiro no Imperium. OSs de assinatura e serviços sem equipamento baixam limpos; OSs com materiais utilizam estoque do técnico + RETORNO automático. Casos com mais de 5 faltas de materiais ficam para tratativa humana.</small>
+            </div>
+            <div class="semi-auto-actions">
+              <button class="button secondary" id="semiAutoPause" type="button">Pausar</button>
+              <button class="button secondary" id="semiAutoStop" type="button">Encerrar</button>
+            </div>
+          </header>
+          <div class="semi-auto-metrics">
+            <div data-tone="neutral"><span>Na agenda</span><strong id="semiAutoProcessed">0</strong></div>
+            <div data-tone="info"><span>Em aberto no Imperium</span><strong id="semiAutoImperiumOpenCount">0</strong></div>
+            <div data-tone="muted"><span>Fora do Imperium</span><strong id="semiAutoImperiumClosedCount">0</strong></div>
+            <div data-tone="info"><span>Consultados no TOA</span><strong id="semiAutoToaConsultedCount">0</strong></div>
+            <div data-tone="success"><span>Baixadas Auto</span><strong id="semiAutoClosedCount">0</strong></div>
+            <div><span>Prontos para revisar</span><strong id="semiAutoReady">0</strong></div>
+            <div data-tone="warning"><span>Tratativa Humana</span><strong id="semiAutoHumanCount">0</strong></div>
+            <div data-tone="info"><span>Pendente no TOA</span><strong id="semiAutoToaPendingCount">0</strong></div>
+            <div data-tone="info"><span>Aguardando Imperium</span><strong id="semiAutoAwaitingImperiumCount">0</strong></div>
+            <div class="clickable" id="semiAutoSkippedCard" role="button" tabindex="0" title="Clique para auditar contratos ignorados, nao localizados ou com erro">
+              <span>Ignorados / erros</span>
+              <strong id="semiAutoSkipped">0</strong>
+              <small class="metric-link-hint"><i data-lucide="list-filter" aria-hidden="true"></i> Auditar</small>
+            </div>
+            <div><span>Restantes</span><strong id="semiAutoPending">0</strong></div>
+          </div>
+          <div class="semi-auto-current" id="semiAutoCurrent">Nenhum contrato em consulta.</div>
+          <section class="semi-auto-window-control" id="semiAutoWindowControl" aria-label="Controle de janelas operacionais">
+            <header>
+              <div>
+                <span>JANELAS OPERACIONAIS</span>
+                <strong id="semiAutoWindowStatus">Aguardando fila</strong>
+              </div>
+              <small>A janela original é preservada. “Atuar agora” apenas prioriza o grupo na esteira atual.</small>
+            </header>
+            <div class="semi-auto-window-list" id="semiAutoWindowList"></div>
+          </section>
+          <div class="semi-auto-ready-list" id="semiAutoReadyList"></div>
+        </section>
+        <div class="toa-live-search-row">
+          <label class="field">
+            <span>Contrato ou número da O.S.</span>
+            <input id="toaLiveContract" inputmode="numeric" maxlength="18" placeholder="Digite o contrato ou a O.S.">
+          </label>
+          <button class="button primary" id="toaLiveLookup" type="button" disabled>
+            <i data-lucide="scan-search" aria-hidden="true"></i>
+            <span>Buscar no TOA</span>
+          </button>
+          <p id="toaLiveLookupMessage" role="status" aria-live="polite">Abra o TOA para consultar um contrato ou uma O.S.</p>
+        </div>
+        <div class="toa-live-result hidden" id="toaLiveResult" aria-live="polite"></div>
+      </section>
+      <div class="close-layout">
+        <aside class="close-queue-panel">
+          <header>
+            <div><h3>Aguardando baixa</h3><span id="closeQueueCount">0</span></div>
+            <label class="compact-search"><i data-lucide="search" aria-hidden="true"></i><input id="closeQueueSearch" type="search" placeholder="OS, contrato ou tecnico"></label>
+          </header>
+          <div class="close-queue" id="closeQueue"></div>
+        </aside>
+
+        <section class="close-detail-panel">
+          <header class="close-detail-header">
+            <div>
+              <p id="closeDetailEyebrow">Selecione uma ordem</p>
+              <h3 id="closeDetailTitle">Baixa de OS</h3>
+            </div>
+            <span class="status-badge" id="closeDetailStatus">AGUARDANDO</span>
+          </header>
+          <div class="close-identity-grid">
+            <div><i data-lucide="user" aria-hidden="true"></i><span>Cliente</span><strong id="closeDetailClient">-</strong></div>
+            <div><i data-lucide="map-pin" aria-hidden="true"></i><span>Local</span><strong id="closeDetailLocation">-</strong></div>
+            <div><i data-lucide="wrench" aria-hidden="true"></i><span>Tecnico</span><strong id="closeDetailTechnician">-</strong></div>
+          </div>
+          <div class="close-form-grid">
+            <label class="field">
+              <span>Codigo de baixa</span>
+              <input id="closeWorkspaceCode" inputmode="numeric" maxlength="4" placeholder="Ex.: 430">
+            </label>
+            <label class="field">
+              <span>Descricao</span>
+              <input id="closeWorkspaceDescription" readonly placeholder="Digite um codigo valido">
+            </label>
+            <label class="field close-transport-field">
+              <span>Modelo de baixa</span>
+              <select id="closeTransport" aria-label="Modelo de baixa">
+                <option value="official_http" selected>API oficial IMPERIUM (padrão)</option>
+                <option value="datasnap">DataSnap (protocolo direto)</option>
+              </select>
+            </label>
+          </div>
+          <label class="field close-observation hidden" id="closeObservationField">
+            <span>Observacao obrigatoria</span>
+            <textarea id="closeWorkspaceObservation" rows="3" maxlength="1000" placeholder="Descreva a tratativa registrada para esta baixa"></textarea>
+          </label>
+          <section class="close-equipment-summary" id="closeEquipmentSummary">
+            <header><h4>Movimentacao e materiais</h4><span id="closeMovementRule">Aguardando codigo</span></header>
+            <div class="close-equipment-columns">
+              <div id="closeInstalledSummary"><i data-lucide="package-plus" aria-hidden="true"></i><span>Equipamento instalado</span><strong>Editor completo</strong></div>
+              <div id="closeRemovedSummary"><i data-lucide="package-minus" aria-hidden="true"></i><span>Equipamento retirado</span><strong>Editor completo</strong></div>
+              <div><i data-lucide="cable" aria-hidden="true"></i><span>Miscelaneas</span><strong>Colagem TOA</strong></div>
+            </div>
+          </section>
+          <div class="close-detail-actions">
+            <button class="button secondary" id="closeOpenOrders" type="button">Voltar para ordens</button>
+            <button class="button primary" id="closeWorkspaceContinue" type="button" disabled>
+              <i data-lucide="circle-check-big" aria-hidden="true"></i><span>Continuar baixa</span>
+            </button>
+          </div>
+          <div class="close-empty-overlay" id="closeDetailEmpty">
+            <i data-lucide="clipboard-check" aria-hidden="true"></i>
+            <strong>Nenhuma OS selecionada</strong>
+            <span>Escolha uma ordem na fila ao lado.</span>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="intelligence-workspace hidden" id="intelligenceWorkspace" aria-label="Central inteligente da operacao">
+      <header class="workspace-heading intelligence-heading">
+        <div>
+          <p class="section-label">INTELIGENCIA OPERACIONAL</p>
+          <h2>Central inteligente</h2>
+          <p class="workspace-description">Produtividade, saude das quatro bases e divergencias de serial em uma unica visao.</p>
+        </div>
+        <div class="intelligence-actions">
+          <label class="field compact-field">
+            <span>Data final</span>
+            <input type="date" id="intelligenceDate">
+          </label>
+          <label class="field compact-field">
+            <span>Periodo</span>
+            <select id="intelligenceDays">
+              <option value="1">Hoje</option>
+              <option value="7" selected>7 dias</option>
+              <option value="15">15 dias</option>
+              <option value="30">30 dias</option>
+            </select>
+          </label>
+          <button class="button secondary" id="intelligenceRefresh" type="button">
+            <i data-lucide="refresh-cw" aria-hidden="true"></i><span>Atualizar</span>
+          </button>
+          <button class="button primary" id="intelligencePdf" type="button">
+            <i data-lucide="file-down" aria-hidden="true"></i><span>Relatorio diario</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="intelligence-hero" aria-label="Resumo consolidado">
+        <article class="intelligence-score">
+          <div class="score-ring" id="intelligenceScoreRing"><strong id="intelligenceSuccessRate">0%</strong><span>sucesso</span></div>
+          <div><small>EFICIENCIA CONSOLIDADA</small><h3 id="intelligencePeriodLabel">Ultimos 7 dias</h3><p id="intelligenceGenerated">Aguardando atualizacao</p></div>
+        </article>
+        <article><span>Baixas confirmadas</span><strong id="intelligenceConfirmed">0</strong><small>Leitura final no Imperium</small></article>
+        <article class="danger"><span>Falhas + incertas</span><strong id="intelligenceProblems">0</strong><small>Exigem acompanhamento</small></article>
+        <article><span>Tempo medio</span><strong id="intelligenceAverageTime">0s</strong><small>Da solicitacao a confirmacao</small></article>
+      </section>
+
+      <div class="intelligence-grid">
+        <section class="intelligence-panel health-panel">
+          <header>
+            <div><span class="panel-kicker">INFRAESTRUTURA</span><h3>Saude das bases</h3></div>
+            <button class="icon-button" id="healthRefresh" type="button" title="Testar todas as bases" aria-label="Testar todas as bases"><i data-lucide="radio-tower" aria-hidden="true"></i></button>
+          </header>
+          <div class="health-base-grid" id="healthBaseGrid">
+            <div class="intelligence-empty">Testando conectividade...</div>
+          </div>
+          <p class="panel-footnote" id="healthCheckedAt">Teste ainda nao concluido</p>
+        </section>
+
+        <section class="intelligence-panel base-performance-panel">
+          <header><div><span class="panel-kicker">FECHAMENTO</span><h3>Desempenho por base</h3></div></header>
+          <div class="base-performance-list" id="basePerformanceList"></div>
+        </section>
+      </div>
+
+      <section class="intelligence-panel productivity-panel">
+        <header>
+          <div><span class="panel-kicker">PRODUTIVIDADE</span><h3>Ranking de tecnicos</h3></div>
+          <label class="intelligence-search"><i data-lucide="search" aria-hidden="true"></i><input type="search" id="intelligenceTechnicianSearch" placeholder="Localizar tecnico"></label>
+        </header>
+        <div class="table-scroll">
+          <table class="intelligence-table">
+            <thead><tr><th>#</th><th>Tecnico</th><th>Bases</th><th>Confirmadas</th><th>Falhas</th><th>Taxa de sucesso</th><th>Codigo principal</th></tr></thead>
+            <tbody id="intelligenceTechnicianBody"></tbody>
+          </table>
+        </div>
+        <div class="intelligence-empty hidden" id="intelligenceTechnicianEmpty">Nenhuma baixa encontrada neste periodo.</div>
+      </section>
+
+      <section class="intelligence-panel serial-audit-panel">
+        <header>
+          <div>
+            <span class="panel-kicker">RASTREAMENTO DE EQUIPAMENTO</span>
+            <h3>Serial no tecnico errado</h3>
+            <p>Compara os seriais instalados capturados no TOA com o estoque atual do tecnico responsavel pela OS.</p>
+          </div>
+          <button class="button secondary" id="serialAuditRun" type="button"><i data-lucide="scan-line" aria-hidden="true"></i><span>Auditar seriais</span></button>
+        </header>
+        <div class="serial-audit-summary hidden" id="serialAuditSummary"></div>
+        <div class="table-scroll">
+          <table class="intelligence-table serial-audit-table">
+            <thead><tr><th>Situacao</th><th>Serial</th><th>OS / contrato</th><th>Tecnico esperado</th><th>Estoque atual</th><th>Equipamento</th></tr></thead>
+            <tbody id="serialAuditBody"></tbody>
+          </table>
+        </div>
+        <div class="intelligence-empty" id="serialAuditEmpty">Execute a auditoria para cruzar o ultimo retrato do TOA com o estoque do Imperium.</div>
+      </section>
+    </section>
+
+    <section class="report-workspace hidden" id="reportWorkspace" aria-label="Relatorio de baixas">
+      <header class="workspace-heading">
+        <div>
+          <p class="section-label">AUDITORIA DE FINALIZACAO</p>
+          <h2>OS ja baixadas</h2>
+          <p class="workspace-description">Confirmacoes, processamentos pendentes e erros registrados por canal.</p>
+        </div>
+      </header>
+      <section class="report-metrics" aria-label="Resumo das baixas">
+        <article><span>Confirmadas</span><strong id="reportConfirmedCount">0</strong><small>Baixa lida no Imperium</small></article>
+        <article class="warning"><span>Processando</span><strong id="reportPendingCount">0</strong><small>Aguardando confirmacao</small></article>
+        <article class="uncertain"><span>Incertas</span><strong id="reportUncertainCount">0</strong><small>Nao repetir automaticamente</small></article>
+        <article class="danger"><span>Falhas</span><strong id="reportFailedCount">0</strong><small>Exigem tratativa</small></article>
+      </section>
+      <section class="report-panel">
+        <div class="report-toolbar">
+          <label class="field">
+            <span>Data</span>
+            <input type="date" id="reportDate">
+          </label>
+          <label class="field report-search-field">
+            <span>Pesquisar</span>
+            <input type="search" id="reportSearch" placeholder="OS, contrato, servico ou erro">
+          </label>
+          <label class="field">
+            <span>Resultado</span>
+            <select id="reportState">
+              <option value="">Todos</option>
+              <option value="confirmed">Confirmadas</option>
+              <option value="pending">Processando</option>
+              <option value="uncertain">Incertas</option>
+              <option value="failed">Falhas</option>
+            </select>
+          </label>
+          <button class="button secondary" id="reportRefresh" type="button">
+            <i data-lucide="refresh-cw" aria-hidden="true"></i><span>Atualizar</span>
+          </button>
+          <button class="button secondary" id="reportExportXlsx" type="button" title="Baixar relatório em Excel (.xlsx)">
+            <i data-lucide="file-spreadsheet" aria-hidden="true"></i><span>Baixar XLSX</span>
+          </button>
+        </div>
+        <div class="report-table-scroll">
+          <table class="report-table">
+            <thead>
+              <tr><th>OS</th><th>Contrato</th><th>Servico</th><th>Codigo</th><th>Resultado</th><th>Tipo / erro</th><th>Horario</th><th>Canal</th></tr>
+            </thead>
+            <tbody id="reportBody"></tbody>
+          </table>
+          <div class="report-empty hidden" id="reportEmpty">Nenhum registro encontrado para os filtros selecionados.</div>
+          <div class="report-loading hidden" id="reportLoading">Carregando relatorio...</div>
+        </div>
+      </section>
+    </section>
+
+    <section class="database-workspace hidden" id="databaseWorkspace" aria-label="Base operacional">
+      <header class="workspace-heading database-heading">
+        <div>
+          <p class="section-label">MEMORIA OPERACIONAL</p>
+          <h2>Base operacional</h2>
+          <p class="workspace-description">Contratos, tarefas, equipamentos, materiais e tentativas de baixa reunidos em um unico historico.</p>
+        </div>
+        <a class="button secondary" id="databaseExport" href="/api/operational/export.json" download>
+          <i data-lucide="file-json-2" aria-hidden="true"></i><span>Baixar JSON</span>
+        </a>
+      </header>
+      <section class="database-metrics" aria-label="Resumo da base operacional">
+        <article><span>Contratos encontrados</span><strong id="databaseContractCount">0</strong><small>Resultado dos filtros</small></article>
+        <article><span>OS do contrato</span><strong id="databaseOsCount">0</strong><small>Contrato selecionado</small></article>
+        <article><span>Equipamentos</span><strong id="databaseEquipmentCount">0</strong><small>Instalados e retirados</small></article>
+        <article><span>Materiais</span><strong id="databaseMaterialCount">0</strong><small>Miscelaneas registradas</small></article>
+      </section>
+      <section class="database-panel">
+        <div class="database-toolbar">
+          <label class="field database-search-field">
+            <span>Pesquisar</span>
+            <input type="search" id="databaseSearch" placeholder="Contrato, OS, tecnico, cliente ou serial" autocomplete="off">
+          </label>
+          <label class="field">
+            <span>Data agendada</span>
+            <input type="date" id="databaseDate">
+          </label>
+          <button class="button secondary" id="databaseRefresh" type="button">
+            <i data-lucide="refresh-cw" aria-hidden="true"></i><span>Atualizar</span>
+          </button>
+        </div>
+        <div class="database-layout">
+          <div class="database-list" id="databaseList"></div>
+          <article class="database-detail" id="databaseDetail">
+            <div class="database-empty">Selecione um contrato para ver a ficha completa.</div>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <section class="history-workspace hidden" id="historyWorkspace" aria-label="Historico de operacoes">
+      <header class="workspace-heading">
+        <div>
+          <p class="section-label">AUDITORIA</p>
+          <h2>Historico</h2>
+        </div>
+      </header>
+      <div class="history-layout">
+        <section class="history-panel">
+          <header><h3>Registro de atividades</h3><span id="historyDateLabel">Hoje</span></header>
+          <div class="history-list" id="historyList"></div>
+        </section>
+        <aside class="history-sidebar">
+          <section class="history-summary-card">
+            <header><h3>Resumo da sessao</h3></header>
+            <div><span>Ordens carregadas</span><strong id="historyLoadedCount">0</strong></div>
+            <div><span>Baixas concluidas</span><strong id="historyCompletedCount">0</strong></div>
+            <div><span>Falhas pendentes</span><strong id="historyFailureCount">0</strong></div>
+            <div><span>Importacoes TOA</span><strong id="historyImportCount">0</strong></div>
+          </section>
+          <section class="history-import-audit">
+            <header>
+              <div><strong>Importacoes persistentes</strong><span id="historyImportAuditStatus">Historico gravado em disco</span></div>
+              <button class="icon-button" id="historyImportAuditRefresh" type="button" title="Atualizar auditoria" aria-label="Atualizar auditoria">
+                <i data-lucide="refresh-cw" aria-hidden="true"></i>
+              </button>
+            </header>
+            <label class="field history-audit-date">
+              <span>Data da auditoria</span>
+              <input type="date" id="historyImportAuditDate">
+            </label>
+            <div class="history-import-audit-list" id="historyImportAuditList">
+              <div class="history-audit-empty">Nenhuma leitura executada.</div>
+            </div>
+          </section>
+        </aside>
+      </div>
+      <section class="server-log-panel">
+        <header>
+          <div>
+            <h3>Log do servidor</h3>
+            <span id="serverLogStatus">Aguardando leitura</span>
+          </div>
+          <button class="button secondary compact" id="refreshServerLog" type="button">
+            <i data-lucide="refresh-cw" aria-hidden="true"></i><span>Atualizar</span>
+          </button>
+        </header>
+        <pre id="serverLogOutput">Carregando log...</pre>
+      </section>
+    </section>
+  </main>
+  </div>
+
+  <dialog id="stockBatchDialog" class="stock-batch-dialog">
+    <form method="dialog" id="stockBatchForm">
+      <h2>Impressao em massa do estoque</h2>
+      <p>Selecione os tecnicos. O painel consulta cada estoque e monta um unico relatorio, com uma secao separada para cada tecnico.</p>
+      <label class="field stock-batch-search">
+        <span>Localizar tecnico</span>
+        <input type="search" id="stockBatchSearch" placeholder="Nome do tecnico ou estoque">
+      </label>
+      <div class="stock-batch-tools">
+        <strong id="stockBatchCount">0 selecionados</strong>
+        <div>
+          <button class="button secondary compact" id="stockBatchSelectVisible" type="button">Selecionar visiveis</button>
+          <button class="button secondary compact" id="stockBatchClear" type="button">Limpar</button>
+        </div>
+      </div>
+      <div class="stock-batch-list" id="stockBatchList" aria-label="Tecnicos disponiveis"></div>
+      <div class="stock-batch-options">
+        <label>
+          <input type="checkbox" id="stockBatchIncludeZero">
+          <span>Incluir itens zerados</span>
+        </label>
+        <label>
+          <input type="checkbox" id="stockBatchIncludeSerials" checked>
+          <span>Incluir seriais</span>
+        </label>
+      </div>
+      <p class="stock-batch-status hidden" id="stockBatchStatus"></p>
+      <div class="dialog-actions">
+        <button class="button secondary" value="cancel">Cancelar</button>
+        <button class="button secondary" id="stockBatchPrint" type="button" disabled>Imprimir selecionados</button>
+        <button class="button primary" id="stockBatchPdf" type="button" disabled>Gerar PDF unico</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="stockWriteoffDialog" class="stock-writeoff-dialog">
+    <form id="stockWriteoffForm">
+      <h2>Baixa de materiais selecionados</h2>
+      <p>Uma unica OS de <strong>CORRECAO ESTOQUE</strong> sera criada para baixar todos os itens abaixo com o codigo <strong>400</strong>.</p>
+      <div class="stock-writeoff-summary">
+        <dl>
+          <div><dt>Tecnico</dt><dd id="stockWriteoffTechnician">-</dd></div>
+          <div><dt>Materiais</dt><dd id="stockWriteoffDialogCount">0 selecionados</dd></div>
+        </dl>
+      </div>
+      <div class="stock-writeoff-items" id="stockWriteoffItems"></div>
+      <p class="stock-writeoff-warning">Confira o tecnico, o material e a quantidade. Depois que o Imperium confirmar a movimentacao, ela nao podera ser desfeita por este painel.</p>
+      <p class="stock-writeoff-status hidden" id="stockWriteoffStatus"></p>
+      <div class="dialog-actions">
+        <button class="button secondary" id="stockWriteoffCancel" type="button">Cancelar</button>
+        <button class="button primary" id="stockWriteoffConfirm" type="submit">Criar OS e baixar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="bulkCreateDialog" class="bulk-create-dialog">
+    <form method="dialog">
+      <h2>Confirmar criacao em massa</h2>
+      <dl class="bulk-create-confirmation">
+        <div><dt>Tecnico</dt><dd id="bulkConfirmTechnician">-</dd></div>
+        <div><dt>Cliente</dt><dd id="bulkConfirmClient">-</dd></div>
+        <div><dt>Ordens</dt><dd id="bulkConfirmCount">0</dd></div>
+        <div><dt>Servico</dt><dd id="bulkConfirmService">-</dd></div>
+        <div><dt>Baixa preparada</dt><dd id="bulkConfirmCloseCode">-</dd></div>
+        <div><dt>Numero da OS</dt><dd>Contrato + espaco + contrato</dd></div>
+      </dl>
+      <div class="dialog-actions">
+        <button class="button secondary" value="cancel">Cancelar</button>
+        <button class="button primary" value="confirm">Criar ordens</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="semiAutoContractDialog" class="semi-auto-contract-dialog" aria-labelledby="semiAutoContractTitle">
+    <form method="dialog">
+      <header class="semi-auto-contract-heading">
+        <div>
+          <span>REVISAO SEMIAUTOMATICA</span>
+          <h2 id="semiAutoContractTitle">Contrato</h2>
+          <p id="semiAutoContractMeta">Confira todas as O.S. antes de preparar a baixa.</p>
+        </div>
+        <button class="icon-button" id="semiAutoContractClose" value="cancel" title="Fechar" aria-label="Fechar">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </header>
+      <div class="semi-auto-contract-activities" id="semiAutoContractActivities"></div>
+      <p class="semi-auto-contract-safety">Nenhuma baixa e enviada nesta tela. A confirmacao humana continua obrigatoria para cada O.S.</p>
+      <div class="dialog-actions">
+        <button class="button secondary" value="cancel">Voltar para a fila</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="semiAutoSkippedDialog" class="semi-auto-skipped-dialog" aria-labelledby="semiAutoSkippedTitle">
+    <form method="dialog">
+      <header class="semi-auto-skipped-header">
+        <div>
+          <span>AUDITORIA DA ESTEIRA</span>
+          <h2 id="semiAutoSkippedTitle">Contratos Não Localizados ou Ignorados</h2>
+          <p id="semiAutoSkippedSubtitle">Lista completa dos contratos da agenda que não puderam ser baixados e o motivo detalhado.</p>
+        </div>
+        <button class="icon-button" id="semiAutoSkippedClose" value="cancel" type="button" title="Fechar" aria-label="Fechar">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </header>
+      <div class="semi-auto-skipped-toolbar">
+        <input type="search" id="semiAutoSkippedSearch" placeholder="Buscar por contrato, OS ou motivo..." autocomplete="off">
+        <div class="semi-auto-skipped-filters" id="semiAutoSkippedFilters">
+          <button type="button" class="chip active" data-filter="all">Todos (<span id="countSkippedAll">0</span>)</button>
+          <button type="button" class="chip" data-filter="imperium_no_os">Sem OS no Imperium (<span id="countSkippedImperium">0</span>)</button>
+          <button type="button" class="chip" data-filter="toa_not_found">Não Achou no TOA (<span id="countSkippedToaNotFound">0</span>)</button>
+          <button type="button" class="chip" data-filter="other">Outros / Erros (<span id="countSkippedOther">0</span>)</button>
+        </div>
+        <button class="button secondary compact" id="semiAutoSkippedCopyBtn" type="button" title="Copiar contratos filtrados para a área de transferência">
+          <i data-lucide="copy" aria-hidden="true"></i>
+          <span>Copiar Contratos</span>
+        </button>
+      </div>
+      <div class="semi-auto-skipped-list" id="semiAutoSkippedList">
+        <div class="semi-auto-empty">Nenhum contrato ignorado na esteira até o momento.</div>
+      </div>
+      <div class="dialog-actions semi-auto-skipped-actions">
+        <span id="semiAutoSkippedCount" class="semi-auto-skipped-count">0 contratos exibidos</span>
+        <button class="button secondary" value="cancel" type="button" id="semiAutoSkippedBottomClose">Voltar para a esteira</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="closePickerDialog">
+    <form method="dialog">
+      <h2>Baixar ordem de servico</h2>
+      <p id="closePickerOrder"></p>
+      <label class="field">
+        <span>Codigo de baixa</span>
+        <select id="rowCloseCode"></select>
+      </label>
+      <div class="dialog-actions">
+        <button class="button secondary" value="cancel">Cancelar</button>
+        <button class="button primary" value="confirm">Continuar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="confirmDialog">
+    <form method="dialog">
+      <h2>Confirmar baixa</h2>
+      <p id="confirmMessage"></p>
+      <div class="confirm-code">
+        <strong id="confirmCode">106</strong>
+        <span id="confirmDescription">CLIENTE AUSENTE</span>
+      </div>
+      <div class="dialog-actions">
+        <button class="button secondary" value="cancel">Cancelar</button>
+        <button class="button primary" id="confirmButton" value="confirm">Confirmar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="serialOwnerDialog" class="serial-owner-dialog">
+    <form method="dialog">
+      <div class="serial-owner-heading">
+        <div>
+          <span>Equipamento em outro estoque</span>
+          <h2>Localizar proprietario do serial</h2>
+        </div>
+        <button class="icon-button" value="cancel" title="Fechar" aria-label="Fechar"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <div class="serial-owner-serial">
+        <span>Serial</span>
+        <strong id="serialOwnerSerial">-</strong>
+      </div>
+      <div class="serial-owner-loading" id="serialOwnerLoading">
+        <i data-lucide="loader-circle" aria-hidden="true"></i>
+        <div>
+          <strong>Consultando os estoques dos tecnicos</strong>
+          <span>Isso costuma levar alguns segundos.</span>
+        </div>
+      </div>
+      <div class="serial-owner-result hidden" id="serialOwnerResult">
+        <div class="serial-owner-route">
+          <div>
+            <span>Estoque atual</span>
+            <strong id="serialOwnerCurrent">-</strong>
+          </div>
+          <i data-lucide="arrow-right" aria-hidden="true"></i>
+          <div>
+            <span>Destino da OS</span>
+            <strong id="serialOwnerExpected">-</strong>
+          </div>
+        </div>
+        <dl class="serial-owner-details">
+          <div><dt>Equipamento</dt><dd id="serialOwnerEquipment">-</dd></div>
+          <div><dt>Codigo</dt><dd id="serialOwnerCode">-</dd></div>
+          <div><dt>Consulta</dt><dd id="serialOwnerScan">-</dd></div>
+        </dl>
+        <p class="serial-owner-warning" id="serialOwnerWarning">Confira primeiro se a OS foi importada antes da movimentacao de rota. Se o tecnico atual for o executor correto, atualize a OS em vez de transferir o estoque.</p>
+      </div>
+      <p class="serial-owner-error hidden" id="serialOwnerError"></p>
+      <div class="dialog-actions">
+        <button class="button secondary hidden" id="serialOwnerViewStock" type="button"><i data-lucide="boxes" aria-hidden="true"></i><span>Ver estoque atual</span></button>
+        <button class="button secondary" id="serialOwnerTransfer" type="button" disabled title="Aguardando captura oficial da transferencia de equipamento em Natal"><i data-lucide="package-open" aria-hidden="true"></i><span>Transferir equipamento</span></button>
+        <button class="button primary" id="serialOwnerMoveOrder" type="button"><i data-lucide="user-round-cog" aria-hidden="true"></i><span>Mover OS para o dono do serial</span></button>
+        <button class="button secondary" value="cancel">Fechar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="installerMoveDialog" class="installer-move-dialog">
+    <form method="dialog">
+      <div class="serial-owner-heading">
+        <div>
+          <span>Alteracao de rota</span>
+          <h2>Tem certeza?</h2>
+        </div>
+        <button class="icon-button" value="cancel" title="Fechar" aria-label="Fechar"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <p id="installerMoveMessage">Revise as ordens antes de confirmar.</p>
+      <dl class="installer-move-summary">
+        <div><dt>Contrato</dt><dd id="installerMoveContract">-</dd></div>
+        <div><dt>Novo tecnico</dt><dd id="installerMoveTarget">-</dd></div>
+        <div><dt>Ordens afetadas</dt><dd id="installerMoveCount">0</dd></div>
+      </dl>
+      <div class="installer-move-orders" id="installerMoveOrders"></div>
+      <p class="installer-move-warning">Somente as OS deste contrato serao alteradas. Nenhuma outra OS da lista sera movimentada.</p>
+      <p class="serial-owner-error hidden" id="installerMoveError"></p>
+      <div class="dialog-actions">
+        <button class="button secondary" id="installerMoveCancel" value="cancel">Nao</button>
+        <button class="button primary" id="installerMoveConfirm" type="button"><i data-lucide="user-round-check" aria-hidden="true"></i><span>Sim, mover OS</span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="serializedTransferDialog" class="installer-move-dialog">
+    <form method="dialog">
+      <div class="serial-owner-heading">
+        <div>
+          <span>Movimentacao de estoque</span>
+          <h2>Tem certeza?</h2>
+        </div>
+        <button class="icon-button" value="cancel" title="Fechar" aria-label="Fechar"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <p id="serializedTransferMessage">Revise a origem e o destino antes de confirmar.</p>
+      <dl class="installer-move-summary">
+        <div><dt>Serial</dt><dd id="serializedTransferSerial">-</dd></div>
+        <div><dt>Origem</dt><dd id="serializedTransferSource">-</dd></div>
+        <div><dt>Destino</dt><dd id="serializedTransferTarget">-</dd></div>
+      </dl>
+      <div class="serialized-transfer-equipment">
+        <span>Equipamento</span>
+        <strong id="serializedTransferEquipment">-</strong>
+        <code id="serializedTransferCode">-</code>
+      </div>
+      <p class="installer-move-warning">A operacao movimenta somente este equipamento. Se a conexao cair depois do envio, o painel consultara os dois estoques e nao repetira a gravacao.</p>
+      <p class="serial-owner-error hidden" id="serializedTransferError"></p>
+      <div class="dialog-actions">
+        <button class="button secondary" id="serializedTransferCancel" value="cancel">Nao</button>
+        <button class="button primary" id="serializedTransferConfirm" type="button"><i data-lucide="package-check" aria-hidden="true"></i><span>Sim, transferir equipamento</span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="equipmentDialog" class="equipment-dialog">
+    <form method="dialog" id="equipmentForm">
+      <h2>Baixa produtiva</h2>
+      <p id="equipmentOrder"></p>
+      <div class="confirm-code equipment-code">
+        <strong id="equipmentCode">409</strong>
+        <span id="equipmentDescription">INSTALACAO CONCLUIDA</span>
+      </div>
+      <label class="field" id="movementField">
+        <span>Movimentacao</span>
+        <select id="movementType">
+          <option value="install">Instalacao</option>
+          <option value="swap">Troca</option>
+          <option value="remove">Retirada</option>
+        </select>
+      </label>
+      <div class="equipment-lists">
+        <section class="equipment-list" id="installedEquipmentSection">
+          <div class="equipment-list-heading">
+            <strong>Equipamento instalado</strong>
+            <button class="icon-button" id="addInstalledEquipment" type="button" title="Adicionar equipamento instalado" aria-label="Adicionar equipamento instalado"><i data-lucide="plus" aria-hidden="true"></i></button>
+          </div>
+          <div class="equipment-rows" id="installedEquipmentRows"></div>
+        </section>
+        <section class="equipment-list" id="removedEquipmentSection">
+          <div class="equipment-list-heading">
+            <strong>Equipamento removido</strong>
+            <button class="icon-button" id="addRemovedEquipment" type="button" title="Adicionar equipamento removido" aria-label="Adicionar equipamento removido"><i data-lucide="plus" aria-hidden="true"></i></button>
+          </div>
+          <div class="equipment-rows" id="removedEquipmentRows"></div>
+        </section>
+        <section class="equipment-list material-list" id="materialSection">
+          <div class="equipment-list-heading">
+            <div>
+              <strong>Miscelaneas</strong>
+              <span class="material-status" id="materialStatus">Consultando estoque</span>
+            </div>
+            <button class="icon-button" id="addMaterial" type="button" title="Adicionar miscelanea" aria-label="Adicionar miscelanea"><i data-lucide="plus" aria-hidden="true"></i></button>
+          </div>
+          <div class="toa-paste">
+            <label for="materialPaste">Colagem TOA</label>
+            <textarea id="materialPaste" rows="4" spellcheck="false"></textarea>
+            <button class="button secondary" id="processMaterialPaste" type="button">Processar</button>
+          </div>
+          <div class="equipment-rows" id="materialRows"></div>
+          <div class="material-equivalence-review hidden" id="materialEquivalenceReview">
+            <strong>Substituicoes encontradas</strong>
+            <div id="materialEquivalenceSummary"></div>
+            <label>
+              <input id="materialEquivalenceConfirm" type="checkbox">
+              <span>Confirmo os codigos equivalentes indicados acima</span>
+            </label>
+          </div>
+        </section>
+      </div>
+      <div class="dialog-actions">
+        <button class="button secondary" value="cancel">Cancelar</button>
+        <button class="button primary" id="equipmentConfirm" value="confirm">Confirmar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="toaLoginDialog" class="toa-login-dialog">
+    <form id="toaLoginForm">
+      <div class="toa-login-heading">
+        <div>
+          <span>SESSAO SOB DEMANDA</span>
+          <h2>Abrir TOA</h2>
+        </div>
+        <button class="icon-button" id="toaLoginClose" type="button" title="Fechar" aria-label="Fechar">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <p>As credenciais serao usadas somente nesta tentativa e nao serao salvas.</p>
+      <fieldset class="toa-access-picker">
+        <legend>Como deseja abrir?</legend>
+        <label class="toa-access-option">
+          <input type="radio" name="toa_access_mode" value="direct" checked>
+          <span class="toa-access-icon"><i data-lucide="key-round" aria-hidden="true"></i></span>
+          <span class="toa-access-copy">
+            <strong>Token / acesso direto</strong>
+            <small>Com token ou sem token e sem DUO</small>
+          </span>
+          <span class="toa-access-check"><i data-lucide="check" aria-hidden="true"></i></span>
+        </label>
+        <label class="toa-access-option">
+          <input type="radio" name="toa_access_mode" value="duo">
+          <span class="toa-access-icon"><i data-lucide="shield-check" aria-hidden="true"></i></span>
+          <span class="toa-access-copy">
+            <strong>Acesso com DUO</strong>
+            <small>Abre o portal principal e aguarda a aprovacao</small>
+          </span>
+          <span class="toa-access-check"><i data-lucide="check" aria-hidden="true"></i></span>
+        </label>
+      </fieldset>
+      <label class="field">
+        <span>Usuario</span>
+        <input id="toaLoginUsername" name="username" autocomplete="username" required>
+      </label>
+      <label class="field">
+        <span>Senha</span>
+        <input id="toaLoginPassword" name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <p class="toa-login-error hidden" id="toaLoginError" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="button secondary" id="toaLoginCancel" type="button">Cancelar</button>
+        <button class="button primary" id="toaLoginSubmit" type="submit">
+          <i data-lucide="log-in" aria-hidden="true"></i>
+          <span>Abrir e entrar</span>
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="termsDialog" class="terms-dialog" aria-labelledby="termsTitle">
+    <div class="terms-shell">
+      <header class="terms-heading">
+        <div class="terms-heading-copy">
+          <span class="terms-kicker">CIENCIA OPERACIONAL</span>
+          <h2 id="termsTitle">Termos de uso do DOMINIUM</h2>
+          <p>Versao 1.0 · vigente desde 28/07/2026</p>
+        </div>
+        <button class="icon-button" id="termsCloseButton" type="button" title="Fechar" aria-label="Fechar termos de uso">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="terms-intro">
+        <i data-lucide="shield-check" aria-hidden="true"></i>
+        <p>O DOMINIUM e uma ferramenta operacional interna. Suas acoes podem consultar e alterar dados reais nos sistemas integrados.</p>
+      </div>
+
+      <div class="terms-content">
+        <section>
+          <h3>1. Uso autorizado</h3>
+          <p>O acesso e destinado somente a profissionais autorizados pela Technet, dentro das atribuicoes do seu trabalho. E proibido compartilhar acesso, utilizar credenciais de terceiros ou operar fora do escopo autorizado.</p>
+        </section>
+        <section>
+          <h3>2. Conferencia antes da execucao</h3>
+          <p>Antes de confirmar qualquer acao, confira cidade e perfil, numero e data da OS, tecnico, codigo de baixa, seriais, equipamentos e miscelaneas. A confirmacao do operador declara que esses dados foram revisados.</p>
+        </section>
+        <section>
+          <h3>3. Resultado e nova tentativa</h3>
+          <p>Solicitacoes recebidas, enfileiradas ou com resultado incerto nao equivalem a baixa confirmada. Em caso de falha, lentidao ou perda de conexao, consulte o Relatorio e o Imperium antes de tentar novamente.</p>
+        </section>
+        <section>
+          <h3>4. Dados, credenciais e auditoria</h3>
+          <p>Credenciais devem ser usadas apenas no fluxo indicado e nunca compartilhadas. O sistema pode manter registros locais de operacoes, erros e confirmacoes para rastreabilidade e suporte operacional.</p>
+        </section>
+        <section>
+          <h3>5. Responsabilidade operacional</h3>
+          <p>Automacoes auxiliam a execucao, mas nao substituem a validacao humana quando houver divergencia, bloqueio ou informacao incompleta. Nenhuma trava deve ser contornada sem autorizacao e evidencia verificavel.</p>
+        </section>
+      </div>
+
+      <footer class="terms-actions">
+        <p>Ao continuar, voce confirma que leu e compreendeu estas condicoes.</p>
+        <div>
+          <button class="button secondary" id="termsDismissButton" type="button">Fechar</button>
+          <button class="button primary" id="termsAcceptButton" type="button">
+            <i data-lucide="check" aria-hidden="true"></i>
+            <span>Li e entendi</span>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog id="accountDialog" class="account-dialog" aria-labelledby="accountTitle">
+    <div class="account-shell">
+      <header>
+        <div><span>IDENTIDADE OPERACIONAL</span><h2 id="accountTitle">Minha conta</h2></div>
+        <button class="icon-button" id="accountClose" type="button" aria-label="Fechar"><i data-lucide="x"></i></button>
+      </header>
+      <section class="account-current">
+        <div class="operator-avatar" id="accountAvatar">OP</div>
+        <div><strong id="accountName">Operador</strong><span id="accountMeta">-</span></div>
+      </section>
+      <section class="account-attribution">
+        <h3>Como a autoria aparece</h3>
+        <div><span>Integracao IMPERIUM</span><strong>Tecnico da OS</strong><small>O Imperium registra o tecnico como autor externo.</small></div>
+        <div><span>Identidade Imperium</span><strong id="accountDatasnapActor">Nao vinculado</strong><small>Vinculo operacional validado separadamente para cada base.</small></div>
+        <div><span>Auditoria Dominium</span><strong id="accountAuditActor">Operador atual</strong><small>Registra quem clicou, canal, tecnico, contrato, OS e resultado.</small></div>
+      </section>
+      <section class="account-admin hidden" id="accountAdminSection">
+        <div class="account-admin-heading"><h3>Cadastros</h3><button class="button secondary" id="accountUsersRefresh" type="button">Atualizar</button></div>
+        <div id="accountUsersList"></div>
+      </section>
+      <footer><button class="button secondary" id="accountLogout" type="button"><i data-lucide="log-out"></i><span>Sair</span></button></footer>
+    </div>
+  </dialog>
+
+  <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Modal: aprovação de cadastro com seleção de papel -->
+  <dialog class="dominium-dialog" id="approveUserDialog" aria-labelledby="approveUserDialogTitle">
+    <div class="dialog-content">
+      <h2 id="approveUserDialogTitle"><i data-lucide="user-check" aria-hidden="true"></i> Aprovar cadastro</h2>
+      <p id="approveUserDialogDesc">Selecione o papel que sera atribuido ao usuario.</p>
+      <form method="dialog" id="approveUserForm">
+        <label>
+          <span>Papel no DOMINIUM</span>
+          <select id="approveRoleSelect">
+            <option value="viewer">Visualizador (padrao)</option>
+            <option value="controller">Controlador</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </label>
+        <div class="dialog-actions">
+          <button type="button" class="button secondary" id="approveUserCancel">Cancelar</button>
+          <button type="submit" class="button primary" id="approveUserConfirm" value="confirm">Confirmar aprovacao</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Modal: rejeição de cadastro com motivo opcional -->
+  <dialog class="dominium-dialog" id="rejectUserDialog" aria-labelledby="rejectUserDialogTitle">
+    <div class="dialog-content">
+      <h2 id="rejectUserDialogTitle"><i data-lucide="user-x" aria-hidden="true"></i> Recusar cadastro</h2>
+      <p id="rejectUserDialogDesc">O usuario sera notificado da recusa.</p>
+      <form method="dialog" id="rejectUserForm">
+        <label>
+          <span>Motivo da recusa <small class="auth-field-hint">(opcional)</small></span>
+          <textarea id="rejectReasonInput" rows="3" maxlength="500" placeholder="Deixe em branco para nao informar motivo"></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button type="button" class="button secondary" id="rejectUserCancel">Cancelar</button>
+          <button type="submit" class="button danger" id="rejectUserConfirm" value="confirm">Confirmar recusa</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <script src="/lucide.min.js"></script>
+  <script src="/operations-monitor.js"></script>
+  <script src="/app.js"></script>
+  <script type="module" src="/motion-ui.js"></script>
+</body>
+</html>

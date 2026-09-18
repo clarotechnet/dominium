@@ -1,0 +1,4 @@
+# Use apenas valores de desenvolvimento neste arquivo de exemplo.
+# Em producao, cadastre cada valor com `wrangler secret put`.
+DOMINIUM_PRIMARY_TOKEN=troque-por-token-longo-do-primario
+DOMINIUM_COLLECTOR_TOKEN=troque-por-token-longo-do-coletor

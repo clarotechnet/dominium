@@ -1,0 +1,79 @@
+PLANO OFFLINE DE REGULARIZACAO DE ESTOQUE
+
+Contrato: 2221170
+AID: 194300555
+OS de materiais: 2646508672
+Installer ID: 328898
+Stock ID: 276
+Perfil: TECHNET NATAL
+Leitura de origem: 2026-07-23T16:40:39-03:00
+
+22025072 | SEM_SALDO
+  Descricao: FITA ISOLANTE 3M 33+
+  ID oficial: 4898
+  INVID: 497450948
+  Quantidade exigida: 1
+  Quantidade disponivel: 0
+  Deficit: 1
+  Unidade: M (unidade_nao_comprovada)
+  Acao externa necessaria: repor_saldo
+  Acao executada: nao
+  Evidencia futura: nova leitura do mesmo installer_id, stock_id e codigo concreto com saldo suficiente.
+  Blocker ativo: sim
+
+22056343 | AUSENTE
+  Descricao: MARCADOR CASA PTO NR 1
+  ID oficial: 300
+  INVID: 497450950
+  Quantidade exigida: 1
+  Quantidade disponivel: ausente
+  Deficit: 1
+  Unidade: null (unidade_nao_comprovada)
+  Acao externa necessaria: cadastrar_ou_disponibilizar_no_estoque
+  Acao executada: nao
+  Evidencia futura: nova leitura do mesmo installer_id, stock_id e codigo concreto com saldo suficiente.
+  Blocker ativo: sim
+
+22056341 | AUSENTE
+  Descricao: MARCADOR CASA PTO NR 7
+  ID oficial: 354
+  INVID: 497450951
+  Quantidade exigida: 1
+  Quantidade disponivel: ausente
+  Deficit: 1
+  Unidade: null (unidade_nao_comprovada)
+  Acao externa necessaria: cadastrar_ou_disponibilizar_no_estoque
+  Acao executada: nao
+  Evidencia futura: nova leitura do mesmo installer_id, stock_id e codigo concreto com saldo suficiente.
+  Blocker ativo: sim
+
+22056344 | AUSENTE
+  Descricao: MARCADOR CASA PTO NR 2
+  ID oficial: 324
+  INVID: 497450952
+  Quantidade exigida: 1
+  Quantidade disponivel: ausente
+  Deficit: 1
+  Unidade: null (unidade_nao_comprovada)
+  Acao externa necessaria: cadastrar_ou_disponibilizar_no_estoque
+  Acao executada: nao
+  Evidencia futura: nova leitura do mesmo installer_id, stock_id e codigo concreto com saldo suficiente.
+  Blocker ativo: sim
+
+BLOCKERS ATIVOS
+- stock_audit_sem_saldo:22025072
+- stock_audit_ausente:22056343
+- stock_audit_ausente:22056341
+- stock_audit_ausente:22056344
+
+REFERENCIA OPERACIONAL CONDICIONADA
+- Codigo 104 | Falta de Material | pagina 4
+- Uso somente se a visita ocorreu e a falta de material ou equipamento impediu efetivamente o servico.
+- Selecao automatica autorizada: nao
+- Blocker de estoque isolado autoriza o codigo: nao
+
+Nenhum blocker foi removido.
+Nenhuma acao externa foi executada.
+Nenhum encerramento de OS foi executado.
+Nenhum payload operacional foi gerado.
+Uma nova leitura sera necessaria depois da regularizacao.

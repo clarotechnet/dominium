@@ -1,0 +1,68 @@
+REVISAO OFFLINE DOS BLOCKERS DE ESTOQUE
+
+Contrato: 2221170
+AID: 194300555
+OS de materiais: 2646508672
+Installer ID: 328898
+Stock ID: 276
+Leitura original: 2026-07-23T16:40:39-03:00
+
+22025072 | SEM_SALDO
+  Origem: inventario normalizado da atividade TOA
+  Invid: 497450948
+  Quantidade usada: 1
+  Catalogo: FITA ISOLANTE 3M 33+
+  Estoque: 0 M
+  Unidade: nao_comparavel
+  Candidatos recusados: 22056696[estoque=nao_auditado;equivalencia=nao], 22064608[estoque=encontrado;equivalencia=nao]
+  Decisao: manter_bloqueado
+  Motivo: O codigo exato do contrato e oficial e obrigatorio, mas o saldo auditado do tecnico e zero.
+  Alias automatico: nao
+
+22056343 | AUSENTE
+  Origem: inventario normalizado da atividade TOA
+  Invid: 497450950
+  Quantidade usada: 1
+  Catalogo: MARCADOR CASA PTO NR 1
+  Estoque: -
+  Unidade: nao_comparavel
+  Candidatos recusados: 22055830[estoque=nao_auditado;equivalencia=nao], 22056846[estoque=nao_auditado;equivalencia=nao], 22065719[estoque=encontrado;equivalencia=nao]
+  Decisao: manter_bloqueado
+  Motivo: O codigo exato do contrato e oficial e obrigatorio, mas esta ausente do estoque auditado do tecnico.
+  Alias automatico: nao
+
+22056341 | AUSENTE
+  Origem: inventario normalizado da atividade TOA
+  Invid: 497450951
+  Quantidade usada: 1
+  Catalogo: MARCADOR CASA PTO NR 7
+  Estoque: -
+  Unidade: nao_comparavel
+  Candidatos recusados: 22055827[estoque=nao_auditado;equivalencia=nao], 22056844[estoque=nao_auditado;equivalencia=nao], 22065725[estoque=encontrado;equivalencia=nao]
+  Decisao: manter_bloqueado
+  Motivo: O codigo exato do contrato e oficial e obrigatorio, mas esta ausente do estoque auditado do tecnico.
+  Alias automatico: nao
+
+22056344 | AUSENTE
+  Origem: inventario normalizado da atividade TOA
+  Invid: 497450952
+  Quantidade usada: 1
+  Catalogo: MARCADOR CASA PTO NR 2
+  Estoque: -
+  Unidade: nao_comparavel
+  Candidatos recusados: 22055831[estoque=nao_auditado;equivalencia=nao], 22056847[estoque=nao_auditado;equivalencia=nao], 22065720[estoque=encontrado;equivalencia=nao]
+  Decisao: manter_bloqueado
+  Motivo: O codigo exato do contrato e oficial e obrigatorio, mas esta ausente do estoque auditado do tecnico.
+  Alias automatico: nao
+
+BLOCKERS QUE PERMANECEM
+- stock_audit_sem_saldo:22025072
+- stock_audit_ausente:22056343
+- stock_audit_ausente:22056341
+- stock_audit_ausente:22056344
+
+BLOCKERS REMOVIVEIS
+- nenhum
+
+Nenhum payload foi gerado.
+Nenhuma consulta, escrita ou movimentacao foi executada.

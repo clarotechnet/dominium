@@ -1,0 +1,624 @@
+﻿===== official_close_dry_run.py =====
+import argparse
+import datetime as dt
+import json
+import re
+import unicodedata
+from decimal import Decimal, InvalidOperation
+from pathlib import Path
+from typing import Any
+
+from imperium_http_plan import build_contract_official_plans
+
+
+class ControlledDryRunError(ValueError):
+    pass
+
+
+def _text(value: Any) -> str:
+    return str(value or "").strip()
+
+
+def _normalized(value: Any) -> str:
+    text = unicodedata.normalize("NFKD", _text(value))
+    return "".join(char for char in text if not unicodedata.combining(char)).upper()
+
+
+def _service_role(service: Any) -> str:
+    normalized = _normalized(service)
+    if "PONTO VIRTUA" in normalized:
+        return "virtua"
+    if "ASSINATURA" in normalized:
+        return "signature"
+    return "unsupported"
+
+
+def _official_order(plan: dict[str, Any]) -> dict[str, Any]:
+    payload = plan.get("payload")
+    if not isinstance(payload, dict) or not isinstance(payload.get("ordemservico"), dict):
+        raise ControlledDryRunError(
+            f"A OS {_text(plan.get('num_os')) or '-'} nao gerou um JSON oficial valido"
+        )
+    return payload["ordemservico"]
+
+
+def _validate_confirmed_route(review: dict[str, Any]) -> None:
+    reasons = {
+        _text(reason)
+        for field in ("decision_reasons", "validation_errors")
+        for reason in review.get(field, [])
+        if _text(reason)
+    }
+    blocking_reasons = {
+        "route_not_confirmed",
+        "route_missing",
+        "route_ambiguous",
+        "route_aid_missing",
+        "route_aid_mismatch",
+    }
+    if reasons & blocking_reasons:
+        raise ControlledDryRunError(
+            "A rota da atividade esta ausente, ambigua ou nao confirmada"
+        )
+
+    provider = review.get("route_provider")
+    if not isinstance(provider, dict):
+        raise ControlledDryRunError("A rota da atividade nao foi confirmada")
+    candidates = provider.get("candidates")
+    if provider.get("ambiguous") is True or (
+        isinstance(candidates, list) and len(candidates) > 1
+    ):
+        raise ControlledDryRunError("A rota da atividade e ambigua")
+    provider_id = provider.get("external_id") or provider.get("id")
+    if not isinstance(provider_id, (str, int)) or not _text(provider_id):
+        raise ControlledDryRunError("A rota da atividade nao foi confirmada")
+
+
+def _validate_scheduled_date(value: Any) -> str:
+    if not isinstance(value, str):
+        raise ControlledDryRunError(
+            "Data de agendamento deve estar no formato YYYY-MM-DD"
+        )
+    try:
+        if dt.date.fromisoformat(value).isoformat() != value:
+            raise ValueError
+    except ValueError as error:
+        raise ControlledDryRunError(
+            "Data de agendamento deve estar no formato YYYY-MM-DD"
+        ) from error
+    return value
+
+
+def _validate_visible_close_code(plan: dict[str, Any], order: dict[str, Any]) -> None:
+    visible = _text(plan.get("close_code"))
+    if not re.fullmatch(r"\d{1,4}", visible):
+        raise ControlledDryRunError("O codigo visivel de baixa e invalido")
+    close_code = order.get("codigobaixa")
+    if type(close_code) is not int or not 0 <= close_code <= 9999:
+        raise ControlledDryRunError(
+            "codigobaixa deve ser um numero inteiro visivel"
+        )
+    if close_code != int(visible):
+        raise ControlledDryRunError(
+            "O JSON oficial nao preservou o codigo visivel de baixa"
+        )
+
+
+def _validate_order_fields(plan: dict[str, Any], order: dict[str, Any]) -> None:
+    number = order.get("numero")
+    if not isinstance(number, str) or not number.isdigit():
+        raise ControlledDryRunError("numero deve ser uma string numerica")
+    _validate_scheduled_date(order.get("dataagendamento"))
+    technician = order.get("codigotecnico")
+    if not isinstance(technician, str) or not technician.strip():
+        raise ControlledDryRunError("codigotecnico deve ser uma string nao vazia")
+    _validate_visible_close_code(plan, order)
+
+
+def _validate_installed_serials(order: dict[str, Any]) -> None:
+    installed = order.get("instaladosserializados")
+    if not isinstance(installed, list):
+        raise ControlledDryRunError("instaladosserializados deve ser uma lista")
+    for item in installed:
+        if not isinstance(item, dict) or set(item) != {"serialnumber"}:
+            raise ControlledDryRunError(
+                "Cada instalado deve possuir somente serialnumber"
+            )
+        serial = item.get("serialnumber")
+        if not isinstance(serial, str) or not serial.strip():
+            raise ControlledDryRunError("Serial instalado nao pode ser vazio")
+
+
+def _valid_code_format(value: Any) -> bool:
+    return isinstance(value, str) and bool(
+        re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", value)
+    )
+
+
+def _validate_materials(order: dict[str, Any]) -> None:
+    materials = order.get("instaladosmiscelaneas")
+    if not isinstance(materials, list):
+        raise ControlledDryRunError("instaladosmiscelaneas deve ser uma lista")
+    for material in materials:
+        if not isinstance(material, dict):
+            raise ControlledDryRunError("A lista de miscelaneas possui item invalido")
+        code = material.get("codigoequipamento")
+        quantity = material.get("qtd")
+        if set(material) != {"codigoequipamento", "qtd"}:
+            raise ControlledDryRunError(
+                "Cada miscelanea deve possuir codigoequipamento e qtd"
+            )
+        if not _valid_code_format(code):
+            raise ControlledDryRunError(
+                "O formato do codigo da miscelanea e invalido"
+            )
+        if not isinstance(quantity, str) or not re.fullmatch(
+            r"(?:0|[1-9]\d*)(?:\.\d+)?",
+            quantity,
+        ):
+            raise ControlledDryRunError(
+                f"A quantidade da miscelanea {code} deve ser uma string decimal"
+            )
+        try:
+            parsed_quantity = Decimal(quantity)
+        except InvalidOperation as error:
+            raise ControlledDryRunError(
+                f"A quantidade da miscelanea {code} deve ser uma string decimal"
+            ) from error
+        if not parsed_quantity.is_finite() or parsed_quantity <= 0:
+            raise ControlledDryRunError(
+                f"A quantidade da miscelanea {code} deve ser maior que zero"
+            )
+
+
+def _validate_removed_serials(order: dict[str, Any]) -> None:
+    removed = order.get("removidosserializados")
+    if not isinstance(removed, list):
+        raise ControlledDryRunError("removidosserializados deve ser uma lista")
+    for item in removed:
+        if not isinstance(item, dict) or set(item) != {
+            "codigoequipamento",
+            "serialnumber",
+        }:
+            raise ControlledDryRunError(
+                "Cada removido deve possuir codigoequipamento e serialnumber"
+            )
+        if not _valid_code_format(item.get("codigoequipamento")):
+            raise ControlledDryRunError(
+                "Equipamento removido deve possuir codigoequipamento concreto"
+            )
+        serial = item.get("serialnumber")
+        if not isinstance(serial, str) or not serial.strip():
+            raise ControlledDryRunError("Serial removido nao pode ser vazio")
+
+
+def _validate_inventory(order: dict[str, Any]) -> None:
+    _validate_installed_serials(order)
+    _validate_materials(order)
+    _validate_removed_serials(order)
+
+
+def _validate_signature_inventory(order: dict[str, Any]) -> None:
+    for field in (
+        "instaladosserializados",
+        "instaladosmiscelaneas",
+        "removidosserializados",
+    ):
+        if order.get(field) != []:
+            raise ControlledDryRunError(
+                f"A OS de assinatura deve enviar {field} como lista vazia"
+            )
+
+
+def build_controlled_official_dry_run(
+    review: dict[str, Any],
+    orders: list[dict[str, Any]],
+    scheduled_date: str,
+    *,
+    authorized_virtua_os: str,
+) -> dict[str, Any]:
+    """Build one authorized official request without exposing any send operation."""
+    authorized_number = _text(authorized_virtua_os)
+    if not authorized_number or not authorized_number.isdigit():
+        raise ControlledDryRunError("Informe uma OS Ponto Virtua autorizada")
+
+    if not isinstance(review, dict) or not isinstance(orders, list):
+        raise ControlledDryRunError("Dados de entrada invalidos")
+    _validate_confirmed_route(review)
+    date_text = _validate_scheduled_date(scheduled_date)
+
+    virtua_orders: list[dict[str, Any]] = []
+    signature_orders: list[dict[str, Any]] = []
+    unsupported: list[str] = []
+    for order in orders:
+        if not isinstance(order, dict):
+            unsupported.append("-")
+            continue
+        role = _service_role(order.get("service"))
+        if role == "virtua":
+            virtua_orders.append(order)
+        elif role == "signature":
+            signature_orders.append(order)
+        else:
+            unsupported.append(_text(order.get("num_os")) or "-")
+    if unsupported:
+        raise ControlledDryRunError(
+            "O contrato possui servico nao suportado neste teste: "
+            + ", ".join(unsupported)
+        )
+    if len(virtua_orders) != 1:
+        raise ControlledDryRunError(
+            "O teste controlado exige exatamente uma OS Ponto Virtua"
+        )
+    if len(signature_orders) > 1:
+        raise ControlledDryRunError(
+            "O teste controlado permite no maximo uma OS de assinatura"
+        )
+    if _text(virtua_orders[0].get("num_os")) != authorized_number:
+        raise ControlledDryRunError(
+            "A OS autorizada nao corresponde a unica OS Ponto Virtua do contrato"
+        )
+
+    plans = build_contract_official_plans(
+        review,
+        orders,
+        date_text,
+    )
+    if not plans or any(not plan.get("ok") for plan in plans):
+        blockers = sorted(
+            {
+                _text(blocker)
+                for plan in plans
+                for blocker in plan.get("blockers", [])
+                if _text(blocker)
+            }
+        )
+        raise ControlledDryRunError(
+            "O planejamento oficial esta bloqueado: " + ", ".join(blockers or ["sem plano"])
+        )
+
+    signature_plans = [
+        plan for plan in plans if _service_role(plan.get("service")) == "signature"
+    ]
+    virtua_plans = [
+        plan for plan in plans if _service_role(plan.get("service")) == "virtua"
+    ]
+    if len(virtua_plans) != 1 or len(signature_plans) > 1:
+        raise ControlledDryRunError(
+            "O planejamento nao preservou a combinacao autorizada de OS"
+        )
+
+    virtua_plan = virtua_plans[0]
+    if _text(virtua_plan.get("num_os")) != authorized_number:
+        raise ControlledDryRunError(
+            "A OS autorizada nao corresponde a unica OS Ponto Virtua do contrato"
+        )
+
+    virtua_order = _official_order(virtua_plan)
+    if _text(virtua_order.get("numero")) != authorized_number:
+        raise ControlledDryRunError(
+            "O numero do JSON oficial nao corresponde a OS Ponto Virtua autorizada"
+        )
+
+    _validate_order_fields(virtua_plan, virtua_order)
+    _validate_inventory(virtua_order)
+
+    official_payload = virtua_plan["payload"]
+    signature_companion = None
+    if signature_plans:
+        signature_plan = signature_plans[0]
+        signature_order = _official_order(signature_plan)
+        _validate_order_fields(signature_plan, signature_order)
+        _validate_inventory(signature_order)
+        _validate_signature_inventory(signature_order)
+        signature_companion = {
+            "send_authorized": False,
+            "num_os": _text(signature_plan.get("num_os")),
+            "payload": signature_plan["payload"],
+        }
+    return {
+        "mode": "controlled_official_http_dry_run",
+        "dry_run_only": True,
+        "send_enabled": False,
+        "human_confirmation_required": True,
+        "human_confirmation_received": False,
+        "authorized_request_limit": 1,
+        "requests_sent": 0,
+        "retry_enabled": False,
+        "datasnap_fallback_enabled": False,
+        "state_after_http_acceptance": "queued",
+        "authorized_virtua_os": authorized_number,
+        "validations": {
+            "virtua_os_number_matches": True,
+            "visible_close_code_preserved": True,
+            "material_code_format_valid": True,
+            "decimal_string_quantities_only": True,
+            "installed_serial_shape_valid": True,
+            "removed_serial_shape_valid": True,
+            "signature_inventory_lists_empty": True,
+        },
+        "official_payload_before_post": official_payload,
+        "official_json_before_post": json.dumps(
+            official_payload,
+            ensure_ascii=False,
+            indent=2,
+        ),
+        "signature_companion": signature_companion,
+    }
+
+
+def _main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Gera um JSON oficial controlado sem realizar POST.",
+    )
+    parser.add_argument("input", type=Path, help="Fixture JSON com review, orders e data")
+    arguments = parser.parse_args()
+    source = json.loads(arguments.input.read_text(encoding="utf-8"))
+    result = build_controlled_official_dry_run(
+        source["review"],
+        source["orders"],
+        source["scheduled_date"],
+        authorized_virtua_os=source["authorized_virtua_os"],
+    )
+    print(result["official_json_before_post"])
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_main())
+
+===== test_official_close_dry_run.py =====
+import inspect
+import json
+import unittest
+from copy import deepcopy
+
+import official_close_dry_run as dry_run_module
+from official_close_dry_run import (
+    ControlledDryRunError,
+    build_controlled_official_dry_run,
+)
+
+
+VIRTUA_OS = "2646888673"
+SIGNATURE_OS = "2646888662"
+
+
+def review_fixture() -> dict:
+    return {
+        "aid": "194516899",
+        "contract": "4231792",
+        "activity_status": "complete",
+        "tasks": [
+            {"index": 1, "os_number": SIGNATURE_OS, "close_code": "409"},
+            {"index": 2, "os_number": VIRTUA_OS, "close_code": "409"},
+        ],
+        "installed_equipment": [
+            {"serial": "2CD8AE5D3FD3", "point": "38244258"}
+        ],
+        "removed_equipment": [],
+        "materials": [
+            {"material_code": "22069613", "quantity": "100.5", "point": "38244258"},
+            {"material_code": "22061736", "quantity": "35", "point": "38244258"},
+        ],
+        "assigned_technician": {"external_id": "Z676290"},
+        "route_provider": {
+            "id": "62632",
+            "external_id": "Z676290",
+            "name": "TECNICO TESTE",
+        },
+        "inventory_providers": [{"external_id": "Z676290"}],
+        "validation_errors": [],
+        "decision": "candidate_after_validation",
+        "decision_reasons": [],
+    }
+
+
+def order_fixtures() -> list[dict]:
+    return [
+        {
+            "id_os": 2163993,
+            "num_os": SIGNATURE_OS,
+            "contract": "4231792",
+            "service": "ADESAO - INSTALACAO DE ASSINATURA",
+            "status": "EM CAMPO",
+            "technician_login": "Z676290",
+            "point": "38244255",
+        },
+        {
+            "id_os": 2163994,
+            "num_os": VIRTUA_OS,
+            "contract": "4231792",
+            "service": "ADESAO - INSTALAR PONTO VIRTUA",
+            "status": "EM CAMPO",
+            "technician_login": "Z676290",
+            "point": "38244258",
+        },
+    ]
+
+
+def virtua_only_fixtures() -> tuple[dict, list[dict]]:
+    review = review_fixture()
+    review["tasks"] = [
+        task for task in review["tasks"] if task["os_number"] == VIRTUA_OS
+    ]
+    orders = [
+        order for order in order_fixtures() if order["num_os"] == VIRTUA_OS
+    ]
+    return review, orders
+
+
+class ControlledOfficialDryRunTests(unittest.TestCase):
+    def build(
+        self,
+        review: dict | None = None,
+        orders: list[dict] | None = None,
+        scheduled_date: str = "2026-07-20",
+        authorized_virtua_os: str = VIRTUA_OS,
+    ) -> dict:
+        return build_controlled_official_dry_run(
+            review_fixture() if review is None else review,
+            order_fixtures() if orders is None else orders,
+            scheduled_date,
+            authorized_virtua_os=authorized_virtua_os,
+        )
+
+    def test_contract_with_only_one_virtua_order_is_allowed(self) -> None:
+        review, orders = virtua_only_fixtures()
+
+        result = self.build(review=review, orders=orders)
+
+        self.assertEqual(result["authorized_virtua_os"], VIRTUA_OS)
+        self.assertIsNone(result["signature_companion"])
+        self.assertTrue(result["dry_run_only"])
+
+    def test_contract_with_virtua_and_signature_is_allowed(self) -> None:
+        result = self.build()
+        signature = result["signature_companion"]
+
+        self.assertIsNotNone(signature)
+        self.assertFalse(signature["send_authorized"])
+        signature_order = signature["payload"]["ordemservico"]
+        self.assertEqual(signature_order["numero"], SIGNATURE_OS)
+        self.assertEqual(signature_order["instaladosserializados"], [])
+        self.assertEqual(signature_order["instaladosmiscelaneas"], [])
+        self.assertEqual(signature_order["removidosserializados"], [])
+
+    def test_two_virtua_orders_are_blocked(self) -> None:
+        orders = order_fixtures()
+        duplicate = deepcopy(orders[1])
+        duplicate["id_os"] = 2163995
+        duplicate["num_os"] = "2646888674"
+        orders.append(duplicate)
+
+        with self.assertRaisesRegex(ControlledDryRunError, "exatamente uma OS Ponto"):
+            self.build(orders=orders)
+
+    def test_more_than_one_signature_is_blocked(self) -> None:
+        orders = order_fixtures()
+        duplicate = deepcopy(orders[0])
+        duplicate["id_os"] = 2163995
+        duplicate["num_os"] = "2646888663"
+        orders.append(duplicate)
+
+        with self.assertRaisesRegex(ControlledDryRunError, "no maximo uma OS"):
+            self.build(orders=orders)
+
+    def test_no_virtua_order_is_blocked(self) -> None:
+        with self.assertRaisesRegex(ControlledDryRunError, "exatamente uma OS Ponto"):
+            self.build(orders=[order_fixtures()[0]])
+
+    def test_unknown_service_is_blocked(self) -> None:
+        orders = order_fixtures()
+        orders[1]["service"] = "SERVICO DESCONHECIDO"
+
+        with self.assertRaisesRegex(ControlledDryRunError, "nao suportado"):
+            self.build(orders=orders)
+
+    def test_missing_route_is_always_blocked(self) -> None:
+        review = review_fixture()
+        review["route_provider"] = {}
+
+        with self.assertRaisesRegex(ControlledDryRunError, "rota"):
+            self.build(review=review)
+        self.assertNotIn(
+            "allow_route_missing",
+            inspect.signature(build_controlled_official_dry_run).parameters,
+        )
+
+    def test_ambiguous_route_is_blocked(self) -> None:
+        review = review_fixture()
+        review["route_provider"]["ambiguous"] = True
+
+        with self.assertRaisesRegex(ControlledDryRunError, "ambigua"):
+            self.build(review=review)
+
+    def test_route_not_confirmed_reason_is_blocked(self) -> None:
+        review = review_fixture()
+        review["decision_reasons"] = ["route_not_confirmed"]
+
+        with self.assertRaisesRegex(ControlledDryRunError, "nao confirmada"):
+            self.build(review=review)
+
+    def test_invalid_installed_serial_is_blocked(self) -> None:
+        review = review_fixture()
+        review["installed_equipment"][0]["serial"] = ""
+
+        with self.assertRaisesRegex(ControlledDryRunError, "installed_serial_missing"):
+            self.build(review=review)
+
+    def test_removed_equipment_without_code_is_blocked(self) -> None:
+        review = review_fixture()
+        review["removed_equipment"] = [
+            {"serial": "REMOVIDO123", "point": "38244258"}
+        ]
+
+        with self.assertRaisesRegex(
+            ControlledDryRunError,
+            "removed_equipment_code_missing",
+        ):
+            self.build(review=review)
+
+    def test_removed_equipment_without_serial_is_blocked(self) -> None:
+        review = review_fixture()
+        review["removed_equipment"] = [
+            {"equipment_code": "41001272", "serial": "", "point": "38244258"}
+        ]
+
+        with self.assertRaisesRegex(ControlledDryRunError, "removed_serial_missing"):
+            self.build(review=review)
+
+    def test_invalid_date_is_blocked(self) -> None:
+        with self.assertRaisesRegex(ControlledDryRunError, "YYYY-MM-DD"):
+            self.build(scheduled_date="20/07/2026")
+
+    def test_empty_technician_is_blocked(self) -> None:
+        orders = order_fixtures()
+        for order in orders:
+            order["technician_login"] = ""
+
+        with self.assertRaisesRegex(ControlledDryRunError, "technician_login_missing"):
+            self.build(orders=orders)
+
+    def test_positive_decimal_quantity_is_preserved_as_string(self) -> None:
+        result = self.build()
+        order = json.loads(result["official_json_before_post"])["ordemservico"]
+
+        self.assertEqual(
+            order["instaladosmiscelaneas"][0],
+            {"codigoequipamento": "22069613", "qtd": "100.5"},
+        )
+        self.assertIsInstance(order["instaladosmiscelaneas"][0]["qtd"], str)
+        self.assertTrue(result["validations"]["material_code_format_valid"])
+        self.assertNotIn("concrete_material_codes_only", result["validations"])
+
+    def test_authorized_signature_order_is_blocked(self) -> None:
+        with self.assertRaisesRegex(ControlledDryRunError, "Ponto Virtua"):
+            self.build(authorized_virtua_os=SIGNATURE_OS)
+
+    def test_output_contains_no_send_capability(self) -> None:
+        result = self.build()
+        source = inspect.getsource(dry_run_module)
+
+        self.assertFalse(result["send_enabled"])
+        self.assertEqual(result["requests_sent"], 0)
+        self.assertFalse(result["retry_enabled"])
+        self.assertFalse(result["datasnap_fallback_enabled"])
+        self.assertNotRegex(source, r"(?m)^\s*import\s+(?:requests|urllib)\b")
+        self.assertNotRegex(source, r"(?m)^\s*from\s+(?:requests|urllib)\b")
+        self.assertNotRegex(source, r"(?m)^\s*def\s+(?:post|send)\s*\(")
+
+    def test_does_not_modify_source_data(self) -> None:
+        review = review_fixture()
+        orders = order_fixtures()
+        original_review = deepcopy(review)
+        original_orders = deepcopy(orders)
+
+        self.build(review=review, orders=orders)
+
+        self.assertEqual(review, original_review)
+        self.assertEqual(orders, original_orders)
+
+
+if __name__ == "__main__":
+    unittest.main()
