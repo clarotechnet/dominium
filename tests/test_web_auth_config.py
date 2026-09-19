@@ -107,6 +107,21 @@ class WebAuthConfigTests(unittest.TestCase):
         self.assertTrue(trusted)
         self.assertEqual(client, "198.51.100.7")
 
+    def test_remote_toa_origin_rejects_non_http_schemes(self):
+        for value in (
+            "file:///C:/Windows/win.ini",
+            "ftp://192.168.0.6:8787",
+            "http://user:pass@192.168.0.6:8787",
+            "http://192.168.0.6:8787/path",
+        ):
+            with self.subTest(value=value), self.assertRaises(RuntimeError):
+                app._validated_remote_toa_automation_base(value)
+
+        self.assertEqual(
+            app._validated_remote_toa_automation_base("http://192.168.0.6:8787/"),
+            "http://192.168.0.6:8787",
+        )
+
     def test_forged_proxy_headers_without_shared_secret_are_rejected(self):
         with patch.dict(
             os.environ,

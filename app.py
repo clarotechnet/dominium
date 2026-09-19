@@ -2443,9 +2443,27 @@ def _automatic_toa_import(route: dict[str, str], path: Path) -> dict:
 
 TOA_AUTOMATION = TOAAutomation(ROOT, _automatic_toa_import, logger=LOGGER)
 
-REMOTE_TOA_AUTOMATION_BASE = os.getenv(
-    "DOMINIUM_TOA_AUTOMATION_REMOTE", "http://192.168.0.6:8787"
-).rstrip("/")
+def _validated_remote_toa_automation_base(value: object) -> str:
+    base = str(value or "").strip().rstrip("/")
+    parsed = urlparse(base)
+    if (
+        parsed.scheme not in {"http", "https"}
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+        or parsed.path not in {"", "/"}
+    ):
+        raise RuntimeError(
+            "DOMINIUM_TOA_AUTOMATION_REMOTE deve ser uma origem HTTP/HTTPS valida"
+        )
+    return base
+
+
+REMOTE_TOA_AUTOMATION_BASE = _validated_remote_toa_automation_base(
+    os.getenv("DOMINIUM_TOA_AUTOMATION_REMOTE", "http://192.168.0.6:8787")
+)
 REMOTE_TOA_AUTOMATION_CLIENT = socket.gethostname().strip().upper()
 
 
@@ -2461,7 +2479,7 @@ def _remote_toa_automation_request(path: str, method: str = "GET") -> dict:
         method=method,
     )
     try:
-        with urlopen(request, timeout=15) as response:
+        with urlopen(request, timeout=15) as response:  # nosec B310
             payload = json.loads(response.read().decode("utf-8", errors="replace"))
     except HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")
