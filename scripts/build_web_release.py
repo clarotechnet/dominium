@@ -35,6 +35,31 @@ PRODUCTION_CONFIG_FILES = {
     "technicians.json",
     "official_close_code_catalog/Tabela_codigo_baixa0711.catalog.json",
 }
+LOCAL_ONLY_DIRS = {
+    ".git",
+    ".secrets",
+    ".temp",
+    ".venv",
+    "__pycache__",
+    "backups",
+    "data",
+    "logs",
+    "tests",
+    "tmp",
+}
+
+
+def release_source_allowed(rel: Path) -> bool:
+    if any(part in LOCAL_ONLY_DIRS for part in rel.parts):
+        return False
+    name = rel.name.casefold()
+    if name.endswith(".bak") or ".bak_" in name or name.endswith(".tmp"):
+        return False
+    return True
+
+
+def include_release_source(path: Path) -> bool:
+    return path.is_file() and release_source_allowed(path.relative_to(ROOT))
 
 
 def runtime_python_files() -> set[Path]:
@@ -85,7 +110,7 @@ def collect_release_files() -> set[Path]:
             files.update(
                 path
                 for path in base.rglob("*")
-                if path.is_file() and "__pycache__" not in path.parts
+                if include_release_source(path)
             )
 
     deploy = ROOT / "deploy"
@@ -94,8 +119,7 @@ def collect_release_files() -> set[Path]:
             path
             for path in deploy.rglob("*")
             if (
-                path.is_file()
-                and "__pycache__" not in path.parts
+                include_release_source(path)
                 and "legacy-vps" not in path.relative_to(deploy).parts
             )
         )

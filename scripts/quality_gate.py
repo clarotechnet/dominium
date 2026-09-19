@@ -87,6 +87,7 @@ def audit_release(release: Path) -> None:
         ".venv",
         ".secrets",
         ".ruff_cache",
+        ".temp",
         "backups",
         "data",
         "logs",
@@ -101,6 +102,13 @@ def audit_release(release: Path) -> None:
             continue
         if path.name.startswith("test_"):
             raise SystemExit(f"Release contem teste: {path}")
+        lowered_name = path.name.casefold()
+        if (
+            lowered_name.endswith(".bak")
+            or ".bak_" in lowered_name
+            or lowered_name.endswith(".tmp")
+        ):
+            raise SystemExit(f"Release contem artefato local/backup: {path}")
         if path.suffix.lower() == ".cmd":
             raise SystemExit(f"Release contem helper local: {path}")
         if path.suffix.lower() == ".ps1":

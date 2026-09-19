@@ -1,9 +1,11 @@
 import hashlib
 import json
+import os
 import tempfile
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from unittest.mock import patch
 
 from operation_scope import (
     PROJECT_ID,
@@ -120,6 +122,17 @@ class OperationScopeTests(unittest.TestCase):
                 "wrong_project_root",
             ):
                 ProjectIdentity.load(root)
+
+    def test_configured_production_root_is_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / ".imperium-project.json").write_text(
+                json.dumps({"project_id": PROJECT_ID}),
+                encoding="utf-8",
+            )
+            with patch.dict(os.environ, {"DOMINIUM_PROJECT_ROOT": str(root)}):
+                identity = ProjectIdentity.load(root)
+            self.assertEqual(Path(identity.root), root.resolve())
 
     def test_03_ntl_cannot_process_recife(self) -> None:
         with self.assertRaisesRegex(OperationBlocked, "city_scope_mismatch"):

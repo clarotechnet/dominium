@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from app import (
+    CLOSE_CONFIRM_RUNNING,
     _append_import_audit,
     _build_official_panel_plan,
     _confirm_bulk_creation,
@@ -21,6 +22,7 @@ from app import (
     _technician_by_current_name,
     _official_technician_code,
     _save_material_assignment,
+    _start_close_confirmation,
     _validate_official_installed_serial_ownership,
 )
 from bulk_orders import build_bulk_preview
@@ -30,6 +32,24 @@ from imperium_http_api import ImperiumHTTPResult
 
 
 class AppPersistenceTests(unittest.TestCase):
+    def test_invalid_close_confirmation_record_does_not_leak_running_state(self) -> None:
+        class ImmediateThread:
+            def __init__(self, *, target, **_kwargs):
+                self.target = target
+
+            def start(self):
+                self.target()
+
+        profile = SimpleNamespace(key="natal", label="Natal")
+        key = ("natal", "invalid-record")
+        with patch("app.threading.Thread", ImmediateThread):
+            _start_close_confirmation(
+                profile,
+                {"request_id": "invalid-record", "report_date": "not-a-date"},
+                initial_delay=0,
+            )
+        self.assertNotIn(key, CLOSE_CONFIRM_RUNNING)
+
     def test_technician_name_accepts_imperium_abbreviation_and_toa_typo(self) -> None:
         self.assertTrue(
             _same_technician_name(

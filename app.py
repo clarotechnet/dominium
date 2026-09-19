@@ -21,6 +21,7 @@ import datetime as dt
 import difflib
 import hashlib
 import hmac
+import ipaddress
 import json
 import logging
 import mimetypes
@@ -157,6 +158,20 @@ def _env_enabled(name: str, *, default: bool = False) -> bool:
 
 def _web_mode_enabled() -> bool:
     return _env_enabled("DOMINIUM_WEB_MODE")
+
+
+def _trusted_proxy_context(headers, peer: str) -> tuple[bool, str]:
+    if not (_web_mode_enabled() and _env_enabled("DOMINIUM_TRUST_PROXY_HEADERS")):
+        return False, peer
+    forwarded_proto = str(headers.get("X-Forwarded-Proto", "")).split(",", 1)[0].strip().lower()
+    if forwarded_proto != "https":
+        return False, peer
+    forwarded_for = str(headers.get("X-Forwarded-For", "")).split(",", 1)[0].strip()
+    try:
+        client = str(ipaddress.ip_address(forwarded_for))
+    except ValueError:
+        return False, peer
+    return True, client
 
 
 def _registration_enabled() -> bool:
@@ -3381,18 +3396,28 @@ def _start_close_confirmation(
         CLOSE_CONFIRM_RUNNING.add(key)
 
     def worker() -> None:
-        report_date = dt.date.fromisoformat(
-            str(record.get("report_date") or dt.date.today().isoformat())
-        )
-        order = _confirmation_order(record)
-        transport = str(record.get("transport") or "datasnap").strip().lower()
-        close_code = _resolve_close_definition(
-            profile,
-            str(record.get("close_code") or "106"),
-            transport,
-        )
-        last_error = ""
-        checks = int(record.get("confirmation_checks") or 0)
+        try:
+            report_date = dt.date.fromisoformat(
+                str(record.get("report_date") or dt.date.today().isoformat())
+            )
+            order = _confirmation_order(record)
+            transport = str(record.get("transport") or "datasnap").strip().lower()
+            close_code = _resolve_close_definition(
+                profile,
+                str(record.get("close_code") or "106"),
+                transport,
+            )
+            last_error = ""
+            checks = int(record.get("confirmation_checks") or 0)
+        except Exception:
+            LOGGER.exception(
+                "[%s] Registro de confirmacao invalido; acompanhamento cancelado request_id=%s",
+                profile.label,
+                request_id,
+            )
+            with CLOSE_CONFIRM_LOCK:
+                CLOSE_CONFIRM_RUNNING.discard(key)
+            return
         try:
             for delay in (initial_delay, 12.0, 20.0, 35.0, 60.0, 90.0, 120.0):
                 time.sleep(delay)
@@ -3649,8 +3674,9 @@ class PanelHandler(BaseHTTPRequestHandler):
         if headers is None:  # Permite os testes unitarios sem um socket HTTP real.
             return True
         self._request_id = secrets.token_hex(8)
-        client = getattr(self, "client_address", ("127.0.0.1", 0))[0]
-        is_loopback = client in {"127.0.0.1", "::1", "local"}
+        peer = getattr(self, "client_address", ("127.0.0.1", 0))[0]
+        is_loopback = peer in {"127.0.0.1", "::1", "local"}
+        trusted_proxy, client = _trusted_proxy_context(headers, peer)
         datalake_post = path in {
             "/api/toa-datalake/ingest",
             "/api/toa-datalake/detail-queue",
@@ -3672,8 +3698,11 @@ class PanelHandler(BaseHTTPRequestHandler):
             if not is_loopback:
                 self._json(HTTPStatus.FORBIDDEN, {"ok": False, "error": "Ingestao remota desabilitada"})
                 return False
-        if not is_loopback:
-            self._json(HTTPStatus.FORBIDDEN, {"ok": False, "error": "Acesso remoto restrito ao receptor do datalake"})
+        if not is_loopback and not trusted_proxy:
+            self._json(
+                HTTPStatus.FORBIDDEN,
+                {"ok": False, "error": "Acesso remoto exige o proxy HTTPS confiavel"},
+            )
             return False
         decision = validate_local_request(headers, method)
         if not decision.allowed:
@@ -4660,7 +4689,7 @@ class PanelHandler(BaseHTTPRequestHandler):
             LOGGER.exception("Erro inesperado ao atender GET %s", self.path)
             self._json(
                 HTTPStatus.INTERNAL_SERVER_ERROR,
-                {"ok": False, "error": f"Erro interno: {exc}"},
+                {"ok": False, "error": "Erro interno; consulte o suporte"},
             )
 
     def do_POST(self) -> None:
@@ -4859,7 +4888,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Falha ao receber lote do datalake TOA")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             return
         if parsed.path == "/api/toa-datalake/collect-now":
@@ -4871,7 +4900,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 self._json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
             except Exception as exc:
                 LOGGER.exception("Falha na coleta local imediata do TOA")
-                self._json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": f"Erro interno: {exc}"})
+                self._json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": "Erro interno; consulte o suporte"})
             return
         if parsed.path == "/api/toa-datalake/detail-queue":
             try:
@@ -4954,7 +4983,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Erro ao atualizar Monitor por CSV")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             return
         if parsed.path == "/api/monitor/snapshot/clear":
@@ -5010,7 +5039,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Erro inesperado na auditoria de seriais")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             return
         if parsed.path.startswith("/api/disconnect-automation/"):
@@ -5072,7 +5101,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 )
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             return
         if parsed.path == "/api/toa-live/connect":
@@ -5176,7 +5205,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                     HTTPStatus.INTERNAL_SERVER_ERROR,
                     {
                         "ok": False,
-                        "error": f"Erro interno: {exc}",
+                        "error": "Erro interno; consulte o suporte",
                         "dry_run_only": True,
                     },
                 )
@@ -5325,7 +5354,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Erro inesperado na transferencia serializada")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             finally:
                 if gate_acquired:
@@ -5479,12 +5508,12 @@ class PanelHandler(BaseHTTPRequestHandler):
                     with INSTALLER_CHANGE_REQUESTS_LOCK:
                         INSTALLER_CHANGE_REQUESTS[request_key] = {
                             "state": "uncertain",
-                            "error": f"Erro interno: {exc}",
+                            "error": "Erro interno; consulte o suporte",
                         }
                 LOGGER.exception("Erro inesperado na alteracao de instalador")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             finally:
                 if gate_acquired:
@@ -5726,7 +5755,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Erro inesperado na criacao de OS em massa")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             finally:
                 if gate_acquired:
@@ -5930,7 +5959,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Erro inesperado na baixa rapida de material")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             finally:
                 if gate_acquired:
@@ -6023,7 +6052,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Erro inesperado no lote de estoque")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             finally:
                 OPERATION_GATE.release()
@@ -6050,7 +6079,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Erro ao preparar previa de importacao")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             return
         if parsed.path == "/api/toa-agenda/import":
@@ -6095,7 +6124,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Erro ao carregar agenda TOA")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             return
         if parsed.path == "/api/imports/commit":
@@ -6202,7 +6231,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Erro inesperado durante a importacao")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             finally:
                 OPERATION_GATE.release()
@@ -6291,7 +6320,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 LOGGER.exception("Erro inesperado na colagem TOA")
                 self._json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": f"Erro interno: {exc}"},
+                    {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
             return
         match = re.fullmatch(r"/api/orders/(\d+)/close", parsed.path)
@@ -6986,7 +7015,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 )
             self._json(
                 HTTPStatus.INTERNAL_SERVER_ERROR,
-                {"ok": False, "error": f"Erro interno: {exc}"},
+                {"ok": False, "error": "Erro interno; consulte o suporte"},
             )
         finally:
             _sync_operational_close_reports()

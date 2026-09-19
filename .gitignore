@@ -8,6 +8,7 @@ __pycache__/
 .env
 .env.*
 !.env.example
+!deploy/windows-server/.env.production.example
 .secrets/
 config/*.dat
 config/*.dat.*

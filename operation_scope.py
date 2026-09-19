@@ -176,11 +176,17 @@ class ProjectIdentity:
         cls,
         root: Path | str,
         *,
-        expected_root: Path | str = EXPECTED_PROJECT_ROOT,
+        expected_root: Path | str | None = None,
         allow_test_root: bool = False,
     ) -> "ProjectIdentity":
         resolved = Path(root).resolve()
-        expected = Path(expected_root).resolve()
+        configured_root = (
+            expected_root
+            if expected_root is not None
+            else os.environ.get("DOMINIUM_PROJECT_ROOT", "").strip()
+            or EXPECTED_PROJECT_ROOT
+        )
+        expected = Path(configured_root).resolve()
         if not allow_test_root and not _same_path(resolved, expected):
             raise OperationBlocked(("wrong_project_root",))
         marker_path = resolved / PROJECT_MARKER

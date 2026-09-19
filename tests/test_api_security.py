@@ -114,6 +114,13 @@ class APISecurityTests(unittest.TestCase):
         self.assertNotIn("9988", rendered)
         self.assertEqual(rendered.count("[redacted]"), 2)
 
+    def test_unexpected_exception_details_are_not_returned_to_browser(self) -> None:
+        source = (
+            Path(__file__).resolve().parents[1] / "app.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn('"error": f"Erro interno: {exc}"', source)
+        self.assertIn('"error": "Erro interno; consulte o suporte"', source)
+
 
 if __name__ == "__main__":
     unittest.main()

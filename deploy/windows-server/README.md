@@ -21,7 +21,7 @@ py -3.12 -m venv .venv
 
 ## 2. Segredos
 
-Copie `.env.example` para `.env` no servidor e preencha os valores localmente. Nunca commite `.env`, `.secrets` ou `config/*.dat`.
+Copie `.env.example` para `.env` no servidor e preencha os valores localmente. `DOMINIUM_PROJECT_ROOT` deve apontar exatamente para a pasta instalada; no layout abaixo, use `C:\DominiumMain`. Nunca commite `.env`, `.secrets` ou `config/*.dat`.
 
 Crie as credenciais Imperium no proprio servidor, usando o mesmo usuario Windows que executara o DOMINIUM:
 
@@ -41,7 +41,7 @@ Valide Supabase antes de iniciar:
 .\deploy\windows-server\start-dominium.ps1
 ```
 
-O backend escuta em `0.0.0.0:8791` para permitir acesso do Caddy Docker. Nao encaminhe a porta 8791 no roteador.
+O backend escuta em `0.0.0.0:8791` para permitir acesso do Caddy Docker. Nao encaminhe a porta 8791 no roteador. Em producao, mantenha `DOMINIUM_TRUST_PROXY_HEADERS=1`; isso faz o backend aceitar o peer do Caddy e usar o IP original encaminhado pelo proxy nos limites de requisicao. Fora desse desenho, deixe a opcao desativada.
 
 ## 4. Caddy
 
