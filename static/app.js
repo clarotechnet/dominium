@@ -961,7 +961,7 @@ function refreshAuthFormState() {
   const registerReady = elements.authRegisterFirstName.value.trim().length >= 2
     && elements.authRegisterLastName.value.trim().length >= 2
     && elements.authRegisterUsername.value.trim().length >= 3
-    && registerPasswordLength >= 10 && registerPasswordLength <= 128;
+    && registerPasswordLength >= 12 && registerPasswordLength <= 128;
   elements.authRegisterSubmit.disabled = !registerReady;
 }
 
@@ -1371,10 +1371,29 @@ elements.operatorButton.addEventListener("click", () => {
 elements.operatorAvatar?.addEventListener("click", () => elements.operatorButton?.click());
 elements.accountClose.addEventListener("click", () => elements.accountDialog.close());
 elements.accountUsersRefresh.addEventListener("click", loadAccountUsers);
+
+function clearSensitiveBrowserState() {
+  state.authCsrfToken = "";
+  const sensitivePrefixes = ["imperium-toa-misc-", "dominium-tec1-voice-alerts-"];
+  for (let index = sessionStorage.length - 1; index >= 0; index -= 1) {
+    const key = sessionStorage.key(index) || "";
+    if (sensitivePrefixes.some((prefix) => key.startsWith(prefix))) {
+      sessionStorage.removeItem(key);
+    }
+  }
+  sensitivePrefixes.forEach((prefix) => {
+    for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+      const key = localStorage.key(index) || "";
+      if (key.startsWith(prefix)) localStorage.removeItem(key);
+    }
+  });
+}
+
 elements.accountLogout.addEventListener("click", async () => {
   try {
     await request("/api/auth/logout", { method: "POST", body: "{}", timeoutMs: 15000 });
   } finally {
+    clearSensitiveBrowserState();
     window.location.reload();
   }
 });
@@ -5204,7 +5223,7 @@ const TEC1_VOICE_STORAGE_KEY = "dominium-tec1-voice-alerts-v1";
 
 function loadTec1VoiceAlertKeys() {
   try {
-    const values = JSON.parse(localStorage.getItem("dominium-tec1-voice-alerts-v1") || "[]");
+    const values = JSON.parse(sessionStorage.getItem("dominium-tec1-voice-alerts-v1") || "[]");
     return new Set(Array.isArray(values) ? values.slice(-600) : []);
   } catch (_error) {
     return new Set();
@@ -5213,7 +5232,7 @@ function loadTec1VoiceAlertKeys() {
 
 function persistTec1VoiceAlertKeys() {
   const values = [...state.monitorVoiceAlerted].slice(-600);
-  localStorage.setItem(TEC1_VOICE_STORAGE_KEY, JSON.stringify(values));
+  sessionStorage.setItem(TEC1_VOICE_STORAGE_KEY, JSON.stringify(values));
 }
 
 function preferredPortugueseVoice() {
@@ -10231,7 +10250,7 @@ function materialPasteKey(text) {
 function materialPasteAssignments() {
   const key = `imperium-toa-misc-${localDate()}-${state.profile}`;
   try {
-    return { key, values: JSON.parse(localStorage.getItem(key) || "{}") };
+    return { key, values: JSON.parse(sessionStorage.getItem(key) || "{}") };
   } catch {
     return { key, values: {} };
   }
@@ -10904,7 +10923,7 @@ async function processOrders(orders, closeCode, equipment = null) {
         if (equipment?.toa_paste_key && equipment.materials?.length) {
           const assignments = materialPasteAssignments();
           assignments.values[equipment.toa_paste_key] = order.num_os;
-          localStorage.setItem(assignments.key, JSON.stringify(assignments.values));
+          sessionStorage.setItem(assignments.key, JSON.stringify(assignments.values));
         }
         state.orders = state.orders.filter((item) => item.id_os !== order.id_os);
         delete state.productiveDrafts[operationDraftKey(order)];

@@ -41,7 +41,7 @@ Valide Supabase antes de iniciar:
 .\deploy\windows-server\start-dominium.ps1
 ```
 
-O backend escuta em `0.0.0.0:8791` para permitir acesso do Caddy Docker. Nao encaminhe a porta 8791 no roteador. Em producao, mantenha `DOMINIUM_TRUST_PROXY_HEADERS=1`; isso faz o backend aceitar o peer do Caddy e usar o IP original encaminhado pelo proxy nos limites de requisicao. Fora desse desenho, deixe a opcao desativada.
+O backend escuta em `0.0.0.0:8791` para permitir acesso do Caddy Docker. Nao encaminhe a porta 8791 no roteador. Em producao, mantenha `DOMINIUM_TRUST_PROXY_HEADERS=1` e configure o mesmo valor aleatorio de `DOMINIUM_PROXY_TOKEN` no DOMINIUM e no ambiente do Caddy. O Caddy injeta esse segredo apenas na comunicacao interna com o backend; uma conexao direta na porta 8791 nao deve ser aceita como proxy confiavel. Fora desse desenho, deixe a confianca em proxy desativada.
 
 ## 4. Caddy
 
@@ -49,6 +49,7 @@ No stack `C:\Users\Usuario\Documents\sistematoa`, adicione ao `.env.docker`:
 
 ```text
 DOMINIUM_DOMAIN=dominium.clarotechnet.com.br
+DOMINIUM_PROXY_TOKEN=O_MESMO_TOKEN_ALEATORIO_FORTE_DO_DOMINIUM
 ```
 
 Adicione o conteudo de `caddy-snippet.txt` ao `docker\Caddyfile`. O proxy sera:

@@ -361,7 +361,13 @@ class SupabaseAuthStore:
             self.client.table(self.SESSION_TABLE).insert(payload).execute()
         return token, csrf, self.get_user(int(user_id))
 
-    def session(self, token: str, *, touch: bool = True) -> dict[str, Any] | None:
+    def session(
+        self,
+        token: str,
+        *,
+        user_agent: str = "",
+        touch: bool = True,
+    ) -> dict[str, Any] | None:
         if not token:
             return None
         token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
@@ -379,6 +385,16 @@ class SupabaseAuthStore:
         now = _utc_now()
         expires = _parse_time(row.get("expires_at"))
         absolute = _parse_time(row.get("absolute_expires_at"))
+        stored_user_agent = str(row.get("user_agent_hash") or "")
+        supplied_user_agent = (
+            hashlib.sha256(str(user_agent or "").encode("utf-8", "ignore")).hexdigest()
+            if user_agent
+            else ""
+        )
+        user_agent_mismatch = bool(
+            stored_user_agent
+            and not hmac.compare_digest(stored_user_agent, supplied_user_agent)
+        )
         try:
             user = self.get_user(int(row["user_id"]))
         except AuthError:
@@ -390,6 +406,7 @@ class SupabaseAuthStore:
             or absolute is None
             or now >= expires
             or now >= absolute
+            or user_agent_mismatch
         ):
             self.client.table(self.SESSION_TABLE).delete().eq(
                 "token_hash", token_hash

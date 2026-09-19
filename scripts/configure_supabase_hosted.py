@@ -22,7 +22,7 @@ def main() -> None:
     if not project_ref:
         raise SystemExit("SUPABASE_PROJECT_REF nao foi definido")
 
-    payload = {"disable_signup": True, "password_min_length": 10}
+    payload = {"disable_signup": True, "password_min_length": 12}
     if args.site_url:
         payload["site_url"] = args.site_url.rstrip("/")
     safe_payload = json.dumps(payload, ensure_ascii=True, sort_keys=True)

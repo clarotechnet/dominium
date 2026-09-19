@@ -9,6 +9,7 @@ from api_security import (
     API_INVENTORY,
     SECURITY_HEADERS,
     LocalRateLimiter,
+    rate_limit_for,
     redact_log_text,
     validate_local_request,
 )
@@ -88,6 +89,7 @@ class APISecurityTests(unittest.TestCase):
         self.assertIn("frame-ancestors 'none'", SECURITY_HEADERS["Content-Security-Policy"])
         self.assertEqual(SECURITY_HEADERS["X-Frame-Options"], "DENY")
         self.assertEqual(SECURITY_HEADERS["X-Content-Type-Options"], "nosniff")
+        self.assertEqual(SECURITY_HEADERS["X-Robots-Tag"], "noindex, nofollow, noarchive")
 
     def test_main_page_has_no_inline_script_blocked_by_csp(self) -> None:
         html = (Path(__file__).resolve().parents[1] / "static" / "index.html").read_text(
@@ -100,6 +102,10 @@ class APISecurityTests(unittest.TestCase):
         )
         self.assertEqual(inline_scripts, [])
         self.assertIn('<script src="/theme-init.js"></script>', html)
+
+    def test_auth_rate_limits_are_stricter(self) -> None:
+        self.assertEqual(rate_limit_for("/api/auth/login"), (8, 60.0))
+        self.assertEqual(rate_limit_for("/api/auth/register"), (3, 60.0))
 
     def test_rate_limiter_is_bounded(self) -> None:
         limiter = LocalRateLimiter()
@@ -120,6 +126,22 @@ class APISecurityTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertNotIn('"error": f"Erro interno: {exc}"', source)
         self.assertIn('"error": "Erro interno; consulte o suporte"', source)
+
+    def test_operational_identifiers_are_not_persisted_in_local_storage(self) -> None:
+        source = (
+            Path(__file__).resolve().parents[1] / "static" / "app.js"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("localStorage.setItem(assignments.key", source)
+        self.assertNotIn("localStorage.setItem(TEC1_VOICE_STORAGE_KEY", source)
+        self.assertIn("sessionStorage.setItem(assignments.key", source)
+        self.assertIn("clearSensitiveBrowserState()", source)
+
+    def test_https_logout_hardening_is_present(self) -> None:
+        source = (
+            Path(__file__).resolve().parents[1] / "app.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Strict-Transport-Security", source)
+        self.assertIn("Clear-Site-Data", source)
 
 
 if __name__ == "__main__":

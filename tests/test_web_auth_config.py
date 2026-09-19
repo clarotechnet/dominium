@@ -49,6 +49,7 @@ class WebAuthConfigTests(unittest.TestCase):
             "Host": "dominium.clarotechnet.com.br",
             "X-Forwarded-Proto": "https",
             "X-Forwarded-For": "203.0.113.25",
+            "X-Dominium-Proxy-Token": "proxy-test-secret",
         }
         handler.client_address = ("172.20.0.2", 49152)
         responses = []
@@ -59,6 +60,7 @@ class WebAuthConfigTests(unittest.TestCase):
             {
                 "DOMINIUM_WEB_MODE": "1",
                 "DOMINIUM_TRUST_PROXY_HEADERS": "1",
+                "DOMINIUM_PROXY_TOKEN": "proxy-test-secret",
                 "DOMINIUM_PUBLIC_ORIGIN": "https://dominium.clarotechnet.com.br",
             },
         ):
@@ -88,17 +90,112 @@ class WebAuthConfigTests(unittest.TestCase):
     def test_trusted_proxy_context_uses_forwarded_client_ip(self):
         with patch.dict(
             os.environ,
-            {"DOMINIUM_WEB_MODE": "1", "DOMINIUM_TRUST_PROXY_HEADERS": "1"},
+            {
+                "DOMINIUM_WEB_MODE": "1",
+                "DOMINIUM_TRUST_PROXY_HEADERS": "1",
+                "DOMINIUM_PROXY_TOKEN": "proxy-test-secret",
+            },
         ):
             trusted, client = app._trusted_proxy_context(
                 {
                     "X-Forwarded-Proto": "https",
                     "X-Forwarded-For": "198.51.100.7, 172.20.0.2",
+                    "X-Dominium-Proxy-Token": "proxy-test-secret",
                 },
                 "172.20.0.2",
             )
         self.assertTrue(trusted)
         self.assertEqual(client, "198.51.100.7")
+
+    def test_forged_proxy_headers_without_shared_secret_are_rejected(self):
+        with patch.dict(
+            os.environ,
+            {
+                "DOMINIUM_WEB_MODE": "1",
+                "DOMINIUM_TRUST_PROXY_HEADERS": "1",
+                "DOMINIUM_PROXY_TOKEN": "real-proxy-secret",
+            },
+        ):
+            trusted, client = app._trusted_proxy_context(
+                {
+                    "X-Forwarded-Proto": "https",
+                    "X-Forwarded-For": "198.51.100.9",
+                    "X-Dominium-Proxy-Token": "forged",
+                },
+                "192.0.2.10",
+            )
+        self.assertFalse(trusted)
+        self.assertEqual(client, "192.0.2.10")
+
+    def test_web_security_config_requires_strong_proxy_token(self):
+        with patch.dict(
+            os.environ,
+            {
+                "DOMINIUM_WEB_MODE": "1",
+                "DOMINIUM_HTTPS": "1",
+                "DOMINIUM_PUBLIC_ORIGIN": "https://dominium.clarotechnet.com.br",
+                "DOMINIUM_TRUST_PROXY_HEADERS": "1",
+                "DOMINIUM_PROXY_TOKEN": "short",
+            },
+            clear=True,
+        ):
+            with self.assertRaisesRegex(SystemExit, "pelo menos 32 caracteres"):
+                app._validate_web_security_config("0.0.0.0")
+
+    def test_web_security_config_rejects_placeholder_proxy_token(self):
+        with patch.dict(
+            os.environ,
+            {
+                "DOMINIUM_WEB_MODE": "1",
+                "DOMINIUM_HTTPS": "1",
+                "DOMINIUM_PUBLIC_ORIGIN": "https://dominium.clarotechnet.com.br",
+                "DOMINIUM_TRUST_PROXY_HEADERS": "1",
+                "DOMINIUM_PROXY_TOKEN": "COLOQUE_UM_TOKEN_ALEATORIO_FORTE_AQUI",
+            },
+            clear=True,
+        ):
+            with self.assertRaisesRegex(SystemExit, "segredo aleatorio forte"):
+                app._validate_web_security_config("0.0.0.0")
+
+    def test_web_security_config_accepts_hardened_proxy(self):
+        with patch.dict(
+            os.environ,
+            {
+                "DOMINIUM_WEB_MODE": "1",
+                "DOMINIUM_HTTPS": "1",
+                "DOMINIUM_PUBLIC_ORIGIN": "https://dominium.clarotechnet.com.br",
+                "DOMINIUM_TRUST_PROXY_HEADERS": "1",
+                "DOMINIUM_PROXY_TOKEN": "aB3!proxy-9Zx7_Lm2#Qw8$Rt5%Yu1&Kp4*Vc6",
+            },
+            clear=True,
+        ):
+            app._validate_web_security_config("0.0.0.0")
+
+    def test_viewer_cannot_read_internal_diagnostics(self):
+        handler = app.PanelHandler.__new__(app.PanelHandler)
+        handler.headers = {"Host": "127.0.0.1:8765"}
+        handler.client_address = ("127.0.0.1", 49152)
+        handler._auth_session = lambda: {
+            "user": {"id": 7, "username": "viewer", "role": "viewer"}
+        }
+        responses = []
+        handler._json = lambda status, payload: responses.append((int(status), payload))
+
+        self.assertFalse(handler._security_preflight("GET", "/api/logs"))
+        self.assertEqual(responses[0][0], 403)
+
+    def test_controller_can_read_internal_diagnostics(self):
+        handler = app.PanelHandler.__new__(app.PanelHandler)
+        handler.headers = {"Host": "127.0.0.1:8765"}
+        handler.client_address = ("127.0.0.1", 49152)
+        handler._auth_session = lambda: {
+            "user": {"id": 8, "username": "controller", "role": "controller"}
+        }
+        responses = []
+        handler._json = lambda status, payload: responses.append((int(status), payload))
+
+        self.assertTrue(handler._security_preflight("GET", "/api/logs"))
+        self.assertEqual(responses, [])
 
 
 if __name__ == "__main__":

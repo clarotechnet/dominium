@@ -2,5 +2,7 @@
 
 {$DOMINIUM_DOMAIN} {
     encode zstd gzip
-    reverse_proxy host.docker.internal:8791
+    reverse_proxy host.docker.internal:8791 {
+        header_up X-Dominium-Proxy-Token {$DOMINIUM_PROXY_TOKEN}
+    }
 }

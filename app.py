@@ -163,6 +163,14 @@ def _web_mode_enabled() -> bool:
 def _trusted_proxy_context(headers, peer: str) -> tuple[bool, str]:
     if not (_web_mode_enabled() and _env_enabled("DOMINIUM_TRUST_PROXY_HEADERS")):
         return False, peer
+    expected_token = os.environ.get("DOMINIUM_PROXY_TOKEN", "").strip()
+    supplied_token = str(headers.get("X-Dominium-Proxy-Token", "")).strip()
+    if (
+        not expected_token
+        or not supplied_token
+        or not hmac.compare_digest(supplied_token, expected_token)
+    ):
+        return False, peer
     forwarded_proto = str(headers.get("X-Forwarded-Proto", "")).split(",", 1)[0].strip().lower()
     if forwarded_proto != "https":
         return False, peer
@@ -172,6 +180,47 @@ def _trusted_proxy_context(headers, peer: str) -> tuple[bool, str]:
     except ValueError:
         return False, peer
     return True, client
+
+
+def _strong_runtime_secret(value: object) -> bool:
+    secret = str(value or "").strip()
+    upper = secret.upper()
+    placeholders = ("COLOQUE_", "CHANGE_ME", "CHANGEME", "EXAMPLE", "PLACEHOLDER")
+    return (
+        len(secret) >= 32
+        and len(set(secret)) >= 8
+        and not any(marker in upper for marker in placeholders)
+    )
+
+
+def _validate_web_security_config(host: str) -> None:
+    if not _web_mode_enabled():
+        return
+    if not _env_enabled("DOMINIUM_HTTPS"):
+        raise SystemExit("DOMINIUM_HTTPS=1 e obrigatorio no modo web.")
+    public_origin = os.environ.get("DOMINIUM_PUBLIC_ORIGIN", "").strip()
+    parsed = urlparse(public_origin)
+    if (
+        parsed.scheme != "https"
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+        or parsed.path not in {"", "/"}
+    ):
+        raise SystemExit("DOMINIUM_PUBLIC_ORIGIN deve ser uma origem HTTPS valida.")
+    remote_bind = host not in {"127.0.0.1", "localhost", "::1"}
+    if remote_bind and not _env_enabled("DOMINIUM_TRUST_PROXY_HEADERS"):
+        raise SystemExit(
+            "DOMINIUM_TRUST_PROXY_HEADERS=1 e obrigatorio para bind web remoto."
+        )
+    if _env_enabled("DOMINIUM_TRUST_PROXY_HEADERS"):
+        proxy_token = os.environ.get("DOMINIUM_PROXY_TOKEN", "").strip()
+        if not _strong_runtime_secret(proxy_token):
+            raise SystemExit(
+                "DOMINIUM_PROXY_TOKEN deve ser um segredo aleatorio forte de pelo menos 32 caracteres."
+            )
 
 
 def _registration_enabled() -> bool:
@@ -3579,6 +3628,13 @@ class PanelHandler(BaseHTTPRequestHandler):
     def end_headers(self) -> None:
         for name, value in SECURITY_HEADERS.items():
             self.send_header(name, value)
+        if _env_enabled("DOMINIUM_HTTPS"):
+            self.send_header(
+                "Strict-Transport-Security",
+                "max-age=31536000; includeSubDomains",
+            )
+        if getattr(self, "_clear_site_data", False):
+            self.send_header("Clear-Site-Data", '"cache", "cookies", "storage"')
         for cookie in getattr(self, "_response_cookies", ()):
             self.send_header("Set-Cookie", cookie)
         self.send_header(
@@ -3609,7 +3665,12 @@ class PanelHandler(BaseHTTPRequestHandler):
         cached = getattr(self, "_dominium_auth_session", None)
         if cached is not None:
             return cached
-        session = AUTH_STORE.session(self._session_token(), touch=touch)
+        user_agent = str(getattr(self, "headers", {}).get("User-Agent", ""))
+        session = AUTH_STORE.session(
+            self._session_token(),
+            user_agent=user_agent,
+            touch=touch,
+        )
         self._dominium_auth_session = session
         return session
 
@@ -3759,6 +3820,27 @@ class PanelHandler(BaseHTTPRequestHandler):
                 self._json(
                     HTTPStatus.FORBIDDEN,
                     {"ok": False, "error": "Esta acao exige um administrador"},
+                )
+                return False
+            operational_read = (
+                path in {
+                    "/api/health-check",
+                    "/api/import-history",
+                    "/api/logs",
+                    "/api/operational/export.json",
+                    "/api/toa-datalake/detail-queue",
+                    "/api/toa/v1/openapi.json",
+                }
+                or path.startswith("/api/toa-datalake/records/")
+            )
+            if (
+                method.upper() == "GET"
+                and operational_read
+                and user.get("role") not in {"admin", "controller"}
+            ):
+                self._json(
+                    HTTPStatus.FORBIDDEN,
+                    {"ok": False, "error": "Esta consulta exige perfil operacional"},
                 )
                 return False
             if method.upper() == "POST":
@@ -4804,6 +4886,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 request_id=getattr(self, "_request_id", ""),
             )
             self._clear_session_cookie()
+            self._clear_site_data = True
             self._json(HTTPStatus.OK, {"ok": True})
             return
         approve_match = re.fullmatch(r"/api/auth/users/(\d+)/approve", parsed.path)
@@ -7037,8 +7120,14 @@ def main() -> None:
     parser.add_argument("--open", action="store_true")
     args = parser.parse_args()
 
-    if args.host not in {"127.0.0.1", "localhost", "::1"} and not os.environ.get("DOMINIUM_INGEST_TOKEN", "").strip():
-        raise SystemExit("Defina DOMINIUM_INGEST_TOKEN antes de expor o receptor na rede.")
+    _validate_web_security_config(args.host)
+    if args.host not in {"127.0.0.1", "localhost", "::1"}:
+        ingest_token = os.environ.get("DOMINIUM_INGEST_TOKEN", "").strip()
+        if not _strong_runtime_secret(ingest_token):
+            raise SystemExit(
+                "Defina DOMINIUM_INGEST_TOKEN com pelo menos 32 caracteres aleatorios "
+                "antes de expor o receptor na rede."
+            )
     url = f"http://127.0.0.1:{args.port}"
     try:
         server = ExclusiveThreadingHTTPServer(

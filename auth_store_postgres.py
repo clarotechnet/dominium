@@ -339,7 +339,13 @@ class PostgresAuthStore(AuthStore):
             )
         return token, csrf, self.get_user(user_id)
 
-    def session(self, token: str, *, touch: bool = True) -> dict[str, Any] | None:
+    def session(
+        self,
+        token: str,
+        *,
+        user_agent: str = "",
+        touch: bool = True,
+    ) -> dict[str, Any] | None:
         if not token:
             return None
         token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
@@ -360,7 +366,24 @@ class PostgresAuthStore(AuthStore):
                 return None
             expires = _decode_time(row["expires_at"])
             absolute = _decode_time(row["absolute_expires_at"])
-            if row["status"] != "active" or not expires or not absolute or now >= expires or now >= absolute:
+            stored_user_agent = str(row["user_agent_hash"] or "")
+            supplied_user_agent = (
+                hashlib.sha256(str(user_agent or "").encode("utf-8", "ignore")).hexdigest()
+                if user_agent
+                else ""
+            )
+            user_agent_mismatch = bool(
+                stored_user_agent
+                and not hmac.compare_digest(stored_user_agent, supplied_user_agent)
+            )
+            if (
+                row["status"] != "active"
+                or not expires
+                or not absolute
+                or now >= expires
+                or now >= absolute
+                or user_agent_mismatch
+            ):
                 connection.execute("DELETE FROM dominium_sessions WHERE token_hash = %s", (token_hash,))
                 return None
             if touch:

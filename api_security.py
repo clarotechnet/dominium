@@ -100,6 +100,7 @@ SECURITY_HEADERS = {
     "Cross-Origin-Opener-Policy": "same-origin",
     "Cross-Origin-Resource-Policy": "same-origin",
     "X-Permitted-Cross-Domain-Policies": "none",
+    "X-Robots-Tag": "noindex, nofollow, noarchive",
     "Vary": "Origin, Sec-Fetch-Site",
 }
 
@@ -195,8 +196,10 @@ def redact_log_text(value: object) -> str:
 
 
 def rate_limit_for(path: str) -> tuple[int, float]:
-    if path in {"/api/auth/login", "/api/auth/register"}:
-        return 10, 60.0
+    if path == "/api/auth/login":
+        return 8, 60.0
+    if path == "/api/auth/register":
+        return 3, 60.0
     if path in {"/api/imports/preview", "/api/imports/commit", "/api/toa-capture/analyze"}:
         return 12, 60.0
     if path.startswith("/api/toa/v1/contracts/"):

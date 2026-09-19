@@ -17,13 +17,13 @@ class AuthStoreTests(unittest.TestCase):
         first = self.store.register(
             "dalton.control",
             "Dalton Controlador",
-            "senha-1234",
+            "senha-123456",
             allow_bootstrap=True,
         )
         second = self.store.register(
             "outro.control",
             "Outro Controlador",
-            "senha-5678",
+            "senha-567890",
             allow_bootstrap=True,
         )
         self.assertEqual(first["role"], "admin")
@@ -40,13 +40,23 @@ class AuthStoreTests(unittest.TestCase):
         )
         authenticated = self.store.authenticate("ADMIN.LOCAL", "senha-admin-1")
         token, csrf, _ = self.store.create_session(authenticated["id"], "test-agent")
-        session = self.store.session(token)
+        session = self.store.session(token, user_agent="test-agent")
         self.assertIsNotNone(session)
         self.assertNotEqual(session["token_hash"], token)
         self.assertTrue(self.store.validate_csrf(session, csrf))
         self.assertFalse(self.store.validate_csrf(session, "csrf-incorreto"))
         self.store.revoke_session(token)
-        self.assertIsNone(self.store.session(token))
+        self.assertIsNone(self.store.session(token, user_agent="test-agent"))
+
+        stolen_token, _csrf, _ = self.store.create_session(
+            authenticated["id"], "original-agent"
+        )
+        self.assertIsNone(
+            self.store.session(stolen_token, user_agent="different-agent")
+        )
+        self.assertIsNone(
+            self.store.session(stolen_token, user_agent="original-agent")
+        )
 
     def test_pending_account_cannot_authenticate_until_approved(self):
         admin = self.store.register(
@@ -72,18 +82,18 @@ class AuthStoreTests(unittest.TestCase):
             pending["id"],
         )
 
-    def test_password_accepts_ten_to_128_characters(self):
+    def test_password_accepts_twelve_to_128_characters(self):
         short = self.store.register(
-            "admin.curto", "Administrador Curto", "1234567890", allow_bootstrap=True
+            "admin.curto", "Administrador Curto", "123456789012", allow_bootstrap=True
         )
         self.assertEqual(
-            self.store.authenticate("admin.curto", "1234567890")["id"], short["id"]
+            self.store.authenticate("admin.curto", "123456789012")["id"], short["id"]
         )
-        with self.assertRaisesRegex(AuthError, "entre 10 e 128"):
+        with self.assertRaisesRegex(AuthError, "entre 12 e 128"):
             self.store.register(
-                "senha.pequena", "Senha Pequena", "123456789", allow_bootstrap=True
+                "senha.pequena", "Senha Pequena", "12345678901", allow_bootstrap=True
             )
-        with self.assertRaisesRegex(AuthError, "entre 10 e 128"):
+        with self.assertRaisesRegex(AuthError, "entre 12 e 128"):
             self.store.register(
                 "senha.grande", "Senha Grande", "x" * 129, allow_bootstrap=True
             )
