@@ -14,6 +14,7 @@
 # Mapa completo: MAPA_DOMINIUM_IMPERIUM_TOA.md
 # A ordem executavel abaixo foi preservada para evitar regressao.
 # =============================================================================
+import os
 import subprocess
 import time
 import urllib.error
@@ -25,6 +26,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
 from datasnap_client import load_credentials
 
@@ -38,18 +40,40 @@ CHROME_PATH = Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 DEBUG_PORT = 9339
 
 
+def _debug_port() -> int:
+    raw = os.environ.get("DOMINIUM_TOA_DEBUG_PORT", str(DEBUG_PORT)).strip()
+    try:
+        port = int(raw)
+    except ValueError as exc:
+        raise RuntimeError("DOMINIUM_TOA_DEBUG_PORT invalida") from exc
+    if port < 1 or port > 65535:
+        raise RuntimeError("DOMINIUM_TOA_DEBUG_PORT invalida")
+    return port
+
+
+def _webdriver_service() -> Service | None:
+    raw = os.environ.get("DOMINIUM_CHROMEDRIVER", "").strip()
+    if not raw:
+        return None
+    path = Path(raw).expanduser()
+    if not path.is_file():
+        raise RuntimeError(f"ChromeDriver configurado nao encontrado: {path}")
+    return Service(executable_path=str(path))
+
+
 def create_driver(
     *,
     headless: bool = False,
     launch_if_missing: bool = True,
 ) -> webdriver.Chrome:
     PROFILE_PATH.mkdir(parents=True, exist_ok=True)
-    if not _debugger_running():
+    debug_port = _debug_port()
+    if not _debugger_running(debug_port):
         if not launch_if_missing:
             raise RuntimeError("O Chrome TOA de automacao nao esta aberto")
         arguments = [
             str(CHROME_PATH),
-            f"--remote-debugging-port={DEBUG_PORT}",
+            f"--remote-debugging-port={debug_port}",
             f"--user-data-dir={PROFILE_PATH}",
             "--profile-directory=Default",
             "--window-size=1600,1000",
@@ -67,21 +91,25 @@ def create_driver(
             stderr=subprocess.DEVNULL,
         )
         deadline = time.monotonic() + 30
-        while time.monotonic() < deadline and not _debugger_running():
+        while time.monotonic() < deadline and not _debugger_running(debug_port):
             time.sleep(0.25)
-        if not _debugger_running():
+        if not _debugger_running(debug_port):
             raise RuntimeError("O Chrome TOA nao abriu a porta de automacao")
 
     options = Options()
     options.binary_location = str(CHROME_PATH)
-    options.debugger_address = f"127.0.0.1:{DEBUG_PORT}"
+    options.debugger_address = f"127.0.0.1:{debug_port}"
+    service = _webdriver_service()
+    if service is not None:
+        return webdriver.Chrome(options=options, service=service)
     return webdriver.Chrome(options=options)
 
 
-def _debugger_running() -> bool:
+def _debugger_running(port: int | None = None) -> bool:
+    debug_port = port if port is not None else _debug_port()
     try:
         with urllib.request.urlopen(
-            f"http://127.0.0.1:{DEBUG_PORT}/json/version",
+            f"http://127.0.0.1:{debug_port}/json/version",
             timeout=1,
         ) as response:
             return response.status == 200

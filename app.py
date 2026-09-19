@@ -7174,8 +7174,15 @@ def main() -> None:
     if args.open:
         threading.Timer(0.5, lambda: webbrowser.open(url)).start()
     web_mode = os.getenv("DOMINIUM_WEB_MODE", "0") == "1"
+    web_attach_toa = web_mode and _env_enabled("DOMINIUM_WEB_ATTACH_TOA")
     if web_mode:
-        LOGGER.info("Modo web ativo; automacoes e navegadores TOA locais nao serao iniciados")
+        if web_attach_toa:
+            LOGGER.info(
+                "Modo web ativo; anexando somente ao Chrome TOA existente, sem iniciar automacao local"
+            )
+            TOA_LIVE.start()
+        else:
+            LOGGER.info("Modo web ativo; automacoes e navegadores TOA locais nao serao iniciados")
     else:
         if os.getenv("DOMINIUM_LOCAL_TOA_AUTOMATION", "0") == "1":
             TOA_AUTOMATION.start()
@@ -7217,7 +7224,9 @@ def main() -> None:
     except KeyboardInterrupt:
         pass
     finally:
-        if not web_mode:
+        if web_attach_toa:
+            TOA_LIVE.stop()
+        elif not web_mode:
             if TOA_BRIDGE_SERVER is not None:
                 TOA_BRIDGE_SERVER.stop()
             if TOA_LOCAL_COLLECTOR is not None:

@@ -43,6 +43,8 @@ Valide Supabase antes de iniciar:
 
 O backend escuta em `0.0.0.0:8791` para permitir acesso do Caddy Docker. Nao encaminhe a porta 8791 no roteador. Em producao, mantenha `DOMINIUM_TRUST_PROXY_HEADERS=1` e configure o mesmo valor aleatorio de `DOMINIUM_PROXY_TOKEN` no DOMINIUM e no ambiente do Caddy. O Caddy injeta esse segredo apenas na comunicacao interna com o backend; uma conexao direta na porta 8791 nao deve ser aceita como proxy confiavel. Fora desse desenho, deixe a confianca em proxy desativada.
 
+Se o Chrome TOA ja for mantido por outro componente no mesmo servidor, o DOMINIUM web pode apenas se anexar a essa sessao, sem abrir outro navegador. Configure `DOMINIUM_WEB_ATTACH_TOA=1`, `DOMINIUM_TOA_DEBUG_PORT` com a porta DevTools existente e, quando necessario, `DOMINIUM_CHROMEDRIVER` apontando para um driver compativel. Esse modo inicia somente o monitor/leitor TOA; a automacao local continua desativada.
+
 ## 4. Caddy
 
 No stack `C:\Users\Usuario\Documents\sistematoa`, adicione ao `.env.docker`:
