@@ -1,0 +1,14 @@
+{
+  "name": "dominium-hostinger-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "node -e \"console.log('DOMINIUM Hostinger web build ready')\"",
+    "start": "node server.js",
+    "check": "node --check server.js"
+  },
+  "dependencies": {
+    "express": "5.1.0"
+  }
+}

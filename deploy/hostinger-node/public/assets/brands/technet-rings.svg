@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">TechNet</title>
+  <g fill="none" stroke="#e30613">
+    <circle cx="128" cy="128" r="117" stroke-width="3"/>
+    <circle cx="128" cy="128" r="108" stroke-width="3.5"/>
+    <circle cx="128" cy="128" r="99" stroke-width="4"/>
+    <circle cx="128" cy="128" r="90" stroke-width="4.5"/>
+    <circle cx="128" cy="128" r="81" stroke-width="5"/>
+    <circle cx="128" cy="128" r="72" stroke-width="5.5"/>
+    <circle cx="128" cy="128" r="63" stroke-width="6"/>
+    <circle cx="128" cy="128" r="54" stroke-width="6.5"/>
+    <circle cx="128" cy="128" r="45" stroke-width="7"/>
+    <circle cx="128" cy="128" r="36" stroke-width="8"/>
+  </g>
+</svg>
