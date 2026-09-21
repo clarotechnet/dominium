@@ -652,7 +652,10 @@ app.use((_req, res, next) => {
     "X-Frame-Options": "DENY",
     "Referrer-Policy": "no-referrer",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
-    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "Cross-Origin-Opener-Policy": "same-origin",
+    "Cross-Origin-Resource-Policy": "same-origin",
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests",
   });
   next();
 });
@@ -762,16 +765,20 @@ app.get("/api/monitor/snapshot", (_req, res) => res.json({ ok: true, available: 
 
 const publicDir = path.join(__dirname, "public");
 app.use(express.static(publicDir, {
-  index: "index.html",
+  index: false,
   etag: true,
   maxAge: "5m",
 }));
 
 app.get("/", (_req, res) => {
+  res.set("Cache-Control", "no-store");
   res.sendFile(path.join(publicDir, "index.html"));
 });
 
 app.get("/api/auth-test", async (req, res) => {
+  if (req.dominiumSession?.user?.role !== "admin") {
+    return res.status(403).json({ ok: false, error: "Esta consulta exige administrador." });
+  }
   const credentials = getCredentials();
   if (!credentials) {
     return res.status(503).json({ ok: false, error: "datasnap_credentials_not_configured" });
@@ -823,7 +830,10 @@ app.get("/api/auth-test", async (req, res) => {
   });
 });
 
-app.get("/api/diagnostics", async (_req, res) => {
+app.get("/api/diagnostics", async (req, res) => {
+  if (req.dominiumSession?.user?.role !== "admin") {
+    return res.status(403).json({ ok: false, error: "Esta consulta exige administrador." });
+  }
   const configured = Boolean(getCredentials());
   const results = [];
   for (const [key, profile] of Object.entries(PROFILES)) {
