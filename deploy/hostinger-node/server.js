@@ -1,8 +1,8 @@
 const express = require("express");
-const crypto = require("crypto");
 const net = require("net");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const app = express();
 app.disable("x-powered-by");
@@ -504,225 +504,15 @@ async function listOrders(profileKey, isoDate, status = "field", serviceType = "
 
 app.use(express.json({ limit: "256kb" }));
 
-const SUPABASE_URL = String(process.env.SUPABASE_URL || "").trim().replace(/\/+$/, "");
-const SUPABASE_PUBLISHABLE_KEY = String(process.env.SUPABASE_PUBLISHABLE_KEY || "").trim();
-const AUTH_EMAIL_DOMAIN = String(process.env.DOMINIUM_AUTH_EMAIL_DOMAIN || "auth.dominium.invalid").trim().toLowerCase();
-const SESSION_SECRET = String(process.env.DOMINIUM_SESSION_SECRET || "").trim();
-const ACCESS_COOKIE = "__Host-dominium_access";
+const SUPABASE_URL = String(process.env.SUPABASE_URL || "https://haqzzxpocwzntyudrbch.supabase.co").replace(/\/+$/, "");
+const SUPABASE_PUBLISHABLE_KEY = String(
+  process.env.SUPABASE_PUBLISHABLE_KEY || "sb_publishable_s__p_R64LRUZ_Vk4Cid5BQ_ajAJkSn7",
+);
+const AUTH_EMAIL_DOMAIN = "auth.dominium.invalid";
+const ACCESS_COOKIE = "__Host-dominium_session";
 const REFRESH_COOKIE = "__Host-dominium_refresh";
 const CSRF_COOKIE = "__Host-dominium_csrf";
-const BIND_COOKIE = "__Host-dominium_bind";
-const SESSION_SECONDS = 12 * 60 * 60;
-const loginFailures = new Map();
-
-if (!SUPABASE_URL.startsWith("https://")) throw new Error("SUPABASE_URL_missing");
-if (!SUPABASE_PUBLISHABLE_KEY) throw new Error("SUPABASE_PUBLISHABLE_KEY_missing");
-if (SESSION_SECRET.length < 32) throw new Error("DOMINIUM_SESSION_SECRET_too_short");
-
-function parseCookies(req) {
-  const out = {};
-  for (const part of String(req.headers.cookie || "").split(";")) {
-    const pos = part.indexOf("=");
-    if (pos < 0) continue;
-    const key = part.slice(0, pos).trim();
-    const raw = part.slice(pos + 1).trim();
-    if (!key) continue;
-    try { out[key] = decodeURIComponent(raw); } catch { out[key] = raw; }
-  }
-  return out;
-}
-
-function appendCookie(res, name, value, maxAge) {
-  res.append("Set-Cookie", `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${Math.max(0, Number(maxAge || 0))}`);
-}
-
-function clearAuthCookies(res) {
-  for (const name of [ACCESS_COOKIE, REFRESH_COOKIE, CSRF_COOKIE, BIND_COOKIE]) {
-    res.append("Set-Cookie", `${name}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`);
-  }
-}
-
-function digest(value) {
-  return crypto.createHash("sha256").update(String(value || ""), "utf8").digest("hex");
-}
-
-function equalText(a, b) {
-  const left = Buffer.from(String(a || ""));
-  const right = Buffer.from(String(b || ""));
-  return left.length === right.length && crypto.timingSafeEqual(left, right);
-}
-
-function createBinding(req) {
-  const payload = Buffer.from(JSON.stringify({ ua: digest(req.headers["user-agent"] || ""), iat: Date.now() })).toString("base64url");
-  const sig = crypto.createHmac("sha256", SESSION_SECRET).update(payload).digest("base64url");
-  return `${payload}.${sig}`;
-}
-
-function validBinding(req, raw) {
-  const [payload, sig] = String(raw || "").split(".", 2);
-  if (!payload || !sig) return false;
-  const expected = crypto.createHmac("sha256", SESSION_SECRET).update(payload).digest("base64url");
-  if (!equalText(sig, expected)) return false;
-  try {
-    const data = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
-    const age = Date.now() - Number(data.iat || 0);
-    return equalText(data.ua, digest(req.headers["user-agent"] || "")) && age >= 0 && age <= SESSION_SECONDS * 1000;
-  } catch { return false; }
-}
-
-function normalizeUsername(value) {
-  const username = String(value || "").trim().toLowerCase();
-  if (!/^[a-z0-9][a-z0-9._-]{2,47}$/.test(username)) throw new Error("invalid_username");
-  return username;
-}
-
-function supabaseHeaders(access = "") {
-  const headers = { apikey: SUPABASE_PUBLISHABLE_KEY, "content-type": "application/json" };
-  if (access) headers.authorization = `Bearer ${access}`;
-  return headers;
-}
-
-async function supabaseLogin(username, password) {
-  const email = `${normalizeUsername(username)}@${AUTH_EMAIL_DOMAIN}`;
-  const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-    method: "POST", headers: supabaseHeaders(), body: JSON.stringify({ email, password: String(password || "") }),
-  });
-  return response.ok ? response.json() : null;
-}
-
-async function supabaseRefresh(refreshToken) {
-  const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
-    method: "POST", headers: supabaseHeaders(), body: JSON.stringify({ refresh_token: String(refreshToken || "") }),
-  });
-  return response.ok ? response.json() : null;
-}
-
-async function supabaseRpc(name, access, body = {}) {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
-    method: "POST", headers: supabaseHeaders(access), body: JSON.stringify(body),
-  });
-  if (!response.ok) return null;
-  return response.json();
-}
-
-async function currentProfile(access) {
-  const profile = await supabaseRpc("dominium_web_current_profile", access);
-  return profile && profile.status === "active" ? profile : null;
-}
-
-function installSession(res, req, tokens, csrf = "") {
-  const csrfToken = csrf || crypto.randomBytes(32).toString("base64url");
-  appendCookie(res, ACCESS_COOKIE, tokens.access_token, Math.max(300, Math.min(Number(tokens.expires_in || 3600), 3600)));
-  appendCookie(res, REFRESH_COOKIE, tokens.refresh_token, SESSION_SECONDS);
-  appendCookie(res, CSRF_COOKIE, csrfToken, SESSION_SECONDS);
-  appendCookie(res, BIND_COOKIE, createBinding(req), SESSION_SECONDS);
-  return csrfToken;
-}
-
-async function resolveSession(req, res) {
-  const cookies = parseCookies(req);
-  if (!validBinding(req, cookies[BIND_COOKIE])) {
-    if (cookies[ACCESS_COOKIE] || cookies[REFRESH_COOKIE]) clearAuthCookies(res);
-    return null;
-  }
-  let access = cookies[ACCESS_COOKIE] || "";
-  let profile = access ? await currentProfile(access) : null;
-  if (!profile && cookies[REFRESH_COOKIE]) {
-    const fresh = await supabaseRefresh(cookies[REFRESH_COOKIE]);
-    if (fresh?.access_token && fresh?.refresh_token) {
-      access = fresh.access_token;
-      installSession(res, req, fresh, cookies[CSRF_COOKIE] || "");
-      profile = await currentProfile(access);
-    }
-  }
-  if (!profile) { clearAuthCookies(res); return null; }
-  let csrf = cookies[CSRF_COOKIE] || "";
-  if (!csrf) { csrf = crypto.randomBytes(32).toString("base64url"); appendCookie(res, CSRF_COOKIE, csrf, SESSION_SECONDS); }
-  return { user: profile, access, csrf };
-}
-
-function validCsrf(req, session) {
-  if (String(req.method || "GET").toUpperCase() !== "POST") return true;
-  return equalText(req.headers["x-csrf-token"] || "", session.csrf || "");
-}
-
-app.use((_req, res, next) => {
-  res.set({
-    "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
-    "Referrer-Policy": "no-referrer",
-    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
-    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-    "Cross-Origin-Opener-Policy": "same-origin",
-    "Cross-Origin-Resource-Policy": "same-origin",
-    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests",
-  });
-  next();
-});
-
-app.get("/api/auth/session", async (req, res) => {
-  const session = await resolveSession(req, res);
-  res.set("cache-control", "no-store").json({
-    ok: true, authenticated: Boolean(session), registration_enabled: false, bootstrap_required: false, bootstrap_allowed: false,
-    user: session?.user || null, csrf_token: session?.csrf || "",
-  });
-});
-
-app.post("/api/auth/login", async (req, res) => {
-  const username = String(req.body?.username || "").trim();
-  const password = String(req.body?.password || "");
-  const key = `${String(req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown").split(",")[0]}|${username.toLowerCase()}`;
-  const now = Date.now();
-  const failure = loginFailures.get(key);
-  if (failure && now - failure.started < 300000 && failure.count >= 8) {
-    return res.status(429).json({ ok: false, error: "Muitas tentativas. Aguarde alguns minutos." });
-  }
-  try {
-    const tokens = await supabaseLogin(username, password);
-    const profile = tokens?.access_token ? await currentProfile(tokens.access_token) : null;
-    if (!tokens?.access_token || !tokens?.refresh_token || !profile) {
-      const item = failure && now - failure.started < 300000 ? failure : { count: 0, started: now };
-      item.count += 1; loginFailures.set(key, item);
-      clearAuthCookies(res);
-      return res.status(401).json({ ok: false, error: "Usuario ou senha invalidos, ou cadastro ainda nao aprovado" });
-    }
-    loginFailures.delete(key);
-    const csrf = installSession(res, req, tokens);
-    return res.json({ ok: true, authenticated: true, user: profile, csrf_token: csrf });
-  } catch {
-    return res.status(401).json({ ok: false, error: "Usuario ou senha invalidos, ou cadastro ainda nao aprovado" });
-  }
-});
-
-app.post("/api/auth/register", (_req, res) => {
-  res.status(403).json({ ok: false, error: "Novos cadastros estao temporariamente desabilitados na versao web." });
-});
-
-app.post("/api/auth/logout", async (req, res) => {
-  const session = await resolveSession(req, res);
-  if (session && !validCsrf(req, session)) return res.status(403).json({ ok: false, error: "Sessao invalida. Atualize a pagina." });
-  clearAuthCookies(res);
-  res.json({ ok: true });
-});
-
-app.use("/api", async (req, res, next) => {
-  const session = await resolveSession(req, res);
-  if (!session) return res.status(401).json({ ok: false, error: "Entre no DOMINIUM para continuar", authentication_required: true });
-  if (!validCsrf(req, session)) return res.status(403).json({ ok: false, error: "Sessao invalida. Atualize a pagina." });
-  req.dominiumSession = session;
-  next();
-});
-
-app.get("/api/auth/pending-count", (req, res) => {
-  if (req.dominiumSession?.user?.role !== "admin") return res.status(403).json({ ok: false, error: "Esta consulta exige administrador." });
-  res.json({ ok: true, pending_count: 0 });
-});
-
-app.get("/api/auth/users", async (req, res) => {
-  if (req.dominiumSession?.user?.role !== "admin") return res.status(403).json({ ok: false, error: "Esta consulta exige administrador." });
-  const users = await supabaseRpc("dominium_web_admin_users", req.dominiumSession.access);
-  res.json({ ok: true, users: Array.isArray(users) ? users : [] });
-});
+const STATIC_DIR = path.join(__dirname, "static");
 
 const IMPORT_TARGETS = [
   { key: "rn", label: "RN", profile: "natal", description: "Natal e Parnamirim", routes: ["NTL", "PWM"] },
@@ -731,139 +521,334 @@ const IMPORT_TARGETS = [
   { key: "mro", label: "MRO", profile: "mossoro", description: "Rota Mossoro", routes: ["MRO"] },
 ];
 
-app.get("/api/import-targets", (_req, res) => res.json({ ok: true, targets: IMPORT_TARGETS }));
-
-app.get("/api/status", (req, res) => {
-  const key = String(req.query.profile || "natal").toLowerCase();
-  const profile = PROFILES[key] || PROFILES.natal;
-  res.json({
-    ok: true, company: profile.label, label: profile.label, profile: key, web_mode: true,
-    close_enabled: false, official_close_enabled: false, material_writeoff_enabled: false,
-    native_creation_enabled: false, installer_change_enabled: false, serialized_transfer_enabled: false,
-    native_creation_services: [], default_code: "106", codes: [],
-  });
-});
-
-app.get("/api/toa-automation", (_req, res) => res.json({
-  ok: true, credentials_configured: false, running: false, current_route: "",
-  times: [], next_run: null, last_run: null, history: [],
-  routes: IMPORT_TARGETS.flatMap((target) => target.routes.map((route) => ({ route, label: target.description, status: "aguardando" }))),
-}));
-
-app.get("/api/toa-live/status", (_req, res) => res.json({
-  ok: true, connected: false, authenticated: false, remote: false, busy: false,
-  last_error: "TOA local indisponivel nesta etapa da versao web",
-}));
-
-app.get("/api/toa-contracts", (_req, res) => res.json({ ok: true, records: [] }));
-app.get("/api/close-report", (_req, res) => res.json({
-  ok: true, records: [], summary: { confirmed: 0, pending: 0, uncertain: 0, failed: 0 },
-}));
-app.get("/api/monitor/snapshot", (_req, res) => res.json({ ok: true, available: false, records: [], generated_at: null }));
-
-
-
-const publicDir = path.join(__dirname, "public");
-app.use(express.static(publicDir, {
-  index: false,
-  etag: true,
-  maxAge: "5m",
-}));
-
-app.get("/", (_req, res) => {
-  res.set("Cache-Control", "no-store");
-  res.sendFile(path.join(publicDir, "index.html"));
-});
-
-app.get("/api/auth-test", async (req, res) => {
-  if (req.dominiumSession?.user?.role !== "admin") {
-    return res.status(403).json({ ok: false, error: "Esta consulta exige administrador." });
-  }
-  const credentials = getCredentials();
-  if (!credentials) {
-    return res.status(503).json({ ok: false, error: "datasnap_credentials_not_configured" });
-  }
-
-  const requested = String(req.query.profile || "all").toLowerCase();
-  const targets = requested === "all"
-    ? Object.entries(PROFILES)
-    : (PROFILES[requested] ? [[requested, PROFILES[requested]]] : []);
-
-  if (!targets.length) {
-    return res.status(400).json({ ok: false, error: "Perfil inválido" });
-  }
-
-  const results = [];
-  for (const [key, profile] of targets) {
-    const started = Date.now();
-    const client = new DataSnapClient(
-      HOST,
-      profile.port,
-      credentials.username,
-      credentials.password,
-      15000,
-    );
+function parseCookies(req) {
+  const out = {};
+  const raw = String(req.headers.cookie || "");
+  for (const part of raw.split(";")) {
+    const index = part.indexOf("=");
+    if (index <= 0) continue;
+    const key = part.slice(0, index).trim();
+    const value = part.slice(index + 1).trim();
+    if (!key) continue;
     try {
-      await client.connect();
-      results.push({
-        profile: key,
-        port: profile.port,
-        authenticated: true,
-        elapsed_ms: Date.now() - started,
-      });
-    } catch (error) {
-      results.push({
-        profile: key,
-        port: profile.port,
-        authenticated: false,
-        error: error instanceof Error ? error.message : "datasnap_error",
-        elapsed_ms: Date.now() - started,
-      });
-    } finally {
-      client.close();
-    }
-  }
-
-  res.set("cache-control", "no-store").json({
-    ok: results.every((item) => item.authenticated),
-    results,
-  });
-});
-
-app.get("/api/diagnostics", async (req, res) => {
-  if (req.dominiumSession?.user?.role !== "admin") {
-    return res.status(403).json({ ok: false, error: "Esta consulta exige administrador." });
-  }
-  const configured = Boolean(getCredentials());
-  const results = [];
-  for (const [key, profile] of Object.entries(PROFILES)) {
-    const started = Date.now();
-    try {
-      const socket = net.createConnection({ host: HOST, port: profile.port });
-      const result = await new Promise((resolve) => {
-        let buffer = Buffer.alloc(0);
-        const finish = (value) => { socket.destroy(); resolve(value); };
-        socket.setTimeout(5000);
-        socket.on("connect", () => socket.write(Buffer.alloc(5, 5)));
-        socket.on("data", (chunk) => {
-          buffer = Buffer.concat([buffer, chunk]);
-          if (buffer.length >= 5) {
-            finish(buffer.subarray(0, 5).equals(Buffer.from([6, 0, 0, 0, 0])));
-          }
-        });
-        socket.on("error", () => finish(false));
-        socket.on("timeout", () => finish(false));
-      });
-      results.push({ profile: key, port: profile.port, tcp: result, elapsed_ms: Date.now() - started });
+      out[key] = decodeURIComponent(value);
     } catch {
-      results.push({ profile: key, port: profile.port, tcp: false, elapsed_ms: Date.now() - started });
+      out[key] = value;
     }
   }
-  res.set("cache-control", "no-store").json({
-    ok: results.every((item) => item.tcp),
-    credentials_configured: configured,
-    host: HOST,
-    results,
+  return out;
+}
+
+function appendCookie(res, cookie) {
+  const current = res.getHeader("Set-Cookie");
+  if (!current) res.setHeader("Set-Cookie", [cookie]);
+  else if (Array.isArray(current)) res.setHeader("Set-Cookie", current.concat([cookie]));
+  else res.setHeader("Set-Cookie", [String(current), cookie]);
+}
+
+function setCookie(res, name, value, options = {}) {
+  const maxAge = Number(options.maxAge || 0);
+  const httpOnly = options.httpOnly !== false;
+  let cookie = name + "=" + encodeURIComponent(String(value || "")) + "; Path=/; Secure; SameSite=Strict";
+  if (httpOnly) cookie += "; HttpOnly";
+  if (maxAge > 0) cookie += "; Max-Age=" + Math.floor(maxAge);
+  appendCookie(res, cookie);
+}
+
+function clearCookie(res, name) {
+  appendCookie(res, name + "=; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=0");
+}
+
+function secureEqual(left, right) {
+  const a = Buffer.from(String(left || ""), "utf8");
+  const b = Buffer.from(String(right || ""), "utf8");
+  if (!a.length || a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
+
+function authState(extra = {}) {
+  return Object.assign({
+    registration_enabled: false,
+    bootstrap_required: false,
+    bootstrap_allowed: false,
+    auth_backend: "supabase",
+  }, extra);
+}
+
+async function supabaseJson(url, options = {}) {
+  const response = await fetch(url, options);
+  let payload = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
+  return { response, payload };
+}
+
+async function authToken(grantType, body) {
+  return supabaseJson(
+    SUPABASE_URL + "/auth/v1/token?grant_type=" + encodeURIComponent(grantType),
+    {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(body),
+    },
+  );
+}
+
+async function currentUser(accessToken) {
+  if (!accessToken) return null;
+  const result = await supabaseJson(
+    SUPABASE_URL + "/rest/v1/rpc/dominium_current_user",
+    {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        authorization: "Bearer " + accessToken,
+        "content-type": "application/json",
+      },
+      body: "{}",
+    },
+  );
+  const payload = result.payload;
+  if (!result.response.ok || !payload || typeof payload !== "object") return null;
+  if (String(payload.status || "") !== "active") return null;
+  return payload;
+}
+
+async function adminUsers(accessToken) {
+  const result = await supabaseJson(
+    SUPABASE_URL + "/rest/v1/rpc/dominium_admin_users",
+    {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        authorization: "Bearer " + accessToken,
+        "content-type": "application/json",
+      },
+      body: "{}",
+    },
+  );
+  if (!result.response.ok || !Array.isArray(result.payload)) {
+    throw new Error("forbidden");
+  }
+  return result.payload;
+}
+
+function setSessionCookies(res, authPayload, csrfToken) {
+  const expiresIn = Number((authPayload && authPayload.expires_in) || 3600);
+  setCookie(res, ACCESS_COOKIE, (authPayload && authPayload.access_token) || "", {
+    maxAge: Math.max(60, Math.min(expiresIn, 3600)),
+  });
+  setCookie(res, REFRESH_COOKIE, (authPayload && authPayload.refresh_token) || "", {
+    maxAge: 30 * 24 * 60 * 60,
+  });
+  setCookie(res, CSRF_COOKIE, csrfToken, {
+    maxAge: 12 * 60 * 60,
+  });
+}
+
+function clearSessionCookies(res) {
+  clearCookie(res, ACCESS_COOKIE);
+  clearCookie(res, REFRESH_COOKIE);
+  clearCookie(res, CSRF_COOKIE);
+}
+
+async function resolveSession(req, res) {
+  const cookies = parseCookies(req);
+  let accessToken = cookies[ACCESS_COOKIE] || "";
+  let refreshToken = cookies[REFRESH_COOKIE] || "";
+  let user = await currentUser(accessToken);
+
+  if (!user && refreshToken) {
+    const refreshed = await authToken("refresh_token", { refresh_token: refreshToken });
+    if (refreshed.response.ok && refreshed.payload && refreshed.payload.access_token) {
+      accessToken = String(refreshed.payload.access_token);
+      refreshToken = String(refreshed.payload.refresh_token || refreshToken);
+      user = await currentUser(accessToken);
+      if (user) {
+        const csrf = cookies[CSRF_COOKIE] || crypto.randomBytes(32).toString("base64url");
+        setSessionCookies(
+          res,
+          Object.assign({}, refreshed.payload, { refresh_token: refreshToken }),
+          csrf,
+        );
+        cookies[CSRF_COOKIE] = csrf;
+      }
+    }
+  }
+
+  if (!user) return null;
+  let csrfToken = cookies[CSRF_COOKIE] || "";
+  if (!csrfToken) {
+    csrfToken = crypto.randomBytes(32).toString("base64url");
+    setCookie(res, CSRF_COOKIE, csrfToken, { maxAge: 12 * 60 * 60 });
+  }
+  return { user, accessToken, csrfToken };
+}
+
+function requireRole(session, roles) {
+  return Boolean(session && session.user && roles.includes(String(session.user.role || "")));
+}
+
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "same-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader("Cross-Origin-Resource-Policy", "same-origin");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
+  );
+  next();
+});
+
+app.get("/api/auth/bootstrap", (_req, res) => {
+  res.set("cache-control", "no-store").json(Object.assign({ ok: true }, authState()));
+});
+
+app.get("/api/auth/session", async (req, res) => {
+  try {
+    const session = await resolveSession(req, res);
+    res.set("cache-control", "no-store").json(Object.assign({
+      ok: true,
+      authenticated: Boolean(session),
+      user: session ? session.user : null,
+      csrf_token: session ? session.csrfToken : "",
+    }, authState()));
+  } catch {
+    clearSessionCookies(res);
+    res.set("cache-control", "no-store").json(Object.assign({
+      ok: true,
+      authenticated: false,
+      user: null,
+      csrf_token: "",
+    }, authState()));
+  }
+});
+
+app.post("/api/auth/login", async (req, res) => {
+  const username = String((req.body && req.body.username) || "").trim().toLowerCase();
+  const password = String((req.body && req.body.password) || "");
+  if (!/^[a-z0-9][a-z0-9._-]{2,47}$/.test(username) || !password) {
+    return res.status(401).json({
+      ok: false,
+      error: "Usuario ou senha invalidos, ou cadastro ainda nao aprovado",
+    });
+  }
+
+  try {
+    const auth = await authToken("password", {
+      email: username + "@" + AUTH_EMAIL_DOMAIN,
+      password,
+    });
+    if (!auth.response.ok || !auth.payload || !auth.payload.access_token) {
+      return res.status(401).json({
+        ok: false,
+        error: "Usuario ou senha invalidos, ou cadastro ainda nao aprovado",
+      });
+    }
+
+    const user = await currentUser(String(auth.payload.access_token));
+    if (!user) {
+      return res.status(401).json({
+        ok: false,
+        error: "Usuario ou senha invalidos, ou cadastro ainda nao aprovado",
+      });
+    }
+
+    const csrfToken = crypto.randomBytes(32).toString("base64url");
+    setSessionCookies(res, auth.payload, csrfToken);
+    res.set("cache-control", "no-store").json(Object.assign({
+      ok: true,
+      authenticated: true,
+      user,
+      csrf_token: csrfToken,
+    }, authState()));
+  } catch {
+    res.status(503).json({ ok: false, error: "Falha temporaria ao autenticar no DOMINIUM" });
+  }
+});
+
+app.post("/api/auth/register", (_req, res) => {
+  res.status(403).json({ ok: false, error: "Novos cadastros estao temporariamente desabilitados" });
+});
+
+app.use(async (req, res, next) => {
+  if (!req.path.startsWith("/api/")) return next();
+  const publicPaths = new Set([
+    "/api/auth/bootstrap",
+    "/api/auth/session",
+    "/api/auth/login",
+    "/api/auth/register",
+  ]);
+  if (publicPaths.has(req.path)) return next();
+
+  let session = null;
+  try {
+    session = await resolveSession(req, res);
+  } catch {
+    session = null;
+  }
+  if (!session) {
+    return res.status(401).json({
+      ok: false,
+      error: "Entre no DOMINIUM para continuar",
+      authentication_required: true,
+    });
+  }
+
+  if (!["GET", "HEAD", "OPTIONS"].includes(req.method)) {
+    const cookies = parseCookies(req);
+    const supplied = String(req.headers["x-csrf-token"] || "");
+    if (!secureEqual(supplied, cookies[CSRF_COOKIE] || "")) {
+      return res.status(403).json({ ok: false, error: "Sessao de seguranca invalida" });
+    }
+  }
+
+  req.dominiumSession = session;
+  next();
+});
+
+app.post("/api/auth/logout", (_req, res) => {
+  clearSessionCookies(res);
+  res.set("cache-control", "no-store").json({ ok: true });
+});
+
+app.get("/api/auth/pending-count", async (req, res) => {
+  if (!requireRole(req.dominiumSession, ["admin"])) {
+    return res.status(403).json({ ok: false, error: "Esta acao exige um administrador" });
+  }
+  try {
+    const users = await adminUsers(req.dominiumSession.accessToken);
+    const pendingCount = users.filter((user) => user.status === "pending").length;
+    res.set("cache-control", "no-store").json({ ok: true, pending_count: pendingCount });
+  } catch {
+    res.status(403).json({ ok: false, error: "Esta acao exige um administrador" });
+  }
+});
+
+app.get("/api/auth/users", async (req, res) => {
+  if (!requireRole(req.dominiumSession, ["admin"])) {
+    return res.status(403).json({ ok: false, error: "Esta acao exige um administrador" });
+  }
+  try {
+    const users = await adminUsers(req.dominiumSession.accessToken);
+    res.set("cache-control", "no-store").json({ ok: true, users });
+  } catch {
+    res.status(403).json({ ok: false, error: "Esta acao exige um administrador" });
+  }
+});
+
+app.post(/^\/api\/auth\/users\/\d+\/(approve|reject|imperium-identity)$/, (_req, res) => {
+  res.status(501).json({
+    ok: false,
+    error: "Administracao de usuarios sera liberada na proxima etapa web",
   });
 });
 
@@ -885,17 +870,99 @@ app.get("/api/profiles", (_req, res) => {
   });
 });
 
+app.get("/api/status", (req, res) => {
+  const key = String(req.query.profile || "natal").toLowerCase();
+  const profile = PROFILES[key] || PROFILES.natal;
+  res.json({
+    ok: true,
+    label: profile.label,
+    company: profile.label,
+    close_enabled: false,
+    official_close_enabled: false,
+    material_writeoff_enabled: false,
+    native_creation_enabled: false,
+    installer_change_enabled: false,
+    serialized_transfer_enabled: false,
+    native_creation_services: [],
+    default_code: "106",
+    codes: [],
+    web_mode: true,
+    datasnap_read_only: true,
+  });
+});
+
+app.get("/api/import-targets", (_req, res) => {
+  res.json({ ok: true, targets: IMPORT_TARGETS });
+});
+
+app.get("/api/toa-automation", (_req, res) => {
+  res.json({
+    ok: true,
+    enabled: false,
+    credentials_configured: false,
+    running: false,
+    times: [],
+    next_run: null,
+    current_route: "",
+    last_run: null,
+    routes: [],
+    mode: "web",
+    message: "Automacao TOA permanece no servidor operacional",
+  });
+});
+
+app.get("/api/monitor/snapshot", (_req, res) => {
+  res.json({ ok: true, active: false, snapshot: null });
+});
+
+app.get("/api/toa-live/status", (_req, res) => {
+  res.json({
+    ok: true,
+    connected: false,
+    authenticated: false,
+    web_remote: true,
+    last_error: "Sessao TOA local nao anexada neste backend web",
+  });
+});
+
+app.get("/api/toa-contracts", (_req, res) => {
+  res.json({ ok: true, records: [] });
+});
+
+app.get("/api/close-report", (_req, res) => {
+  res.status(501).json({
+    ok: false,
+    error: "Relatorio operacional ainda nao migrado para o backend web",
+  });
+});
+
+app.get("/api/diagnostics", (req, res) => {
+  if (!requireRole(req.dominiumSession, ["admin", "controller"])) {
+    return res.status(403).json({ ok: false, error: "Esta consulta exige perfil operacional" });
+  }
+  res.set("cache-control", "no-store").json({
+    ok: true,
+    credentials_configured: Boolean(getCredentials()),
+    host: HOST,
+    profiles: Object.keys(PROFILES),
+    web_mode: true,
+  });
+});
+
 app.get("/api/orders", async (req, res) => {
   const profile = String(req.query.profile || "natal").toLowerCase();
   const date = String(req.query.date || new Date().toISOString().slice(0, 10));
   const status = String(req.query.status || "field").toLowerCase();
   const serviceType = String(req.query.service_type || "all").toLowerCase();
-  if (!PROFILES[profile]) return res.status(400).json({ ok: false, error: "Perfil inválido" });
-  if (!STATUS_VALUES[status]) return res.status(400).json({ ok: false, error: "Status inválido" });
-  if (!SERVICE_VALUES[serviceType]) return res.status(400).json({ ok: false, error: "Tipo de serviço inválido" });
+
+  if (!PROFILES[profile]) return res.status(400).json({ ok: false, error: "Perfil invalido" });
+  if (!STATUS_VALUES[status]) return res.status(400).json({ ok: false, error: "Status invalido" });
+  if (!SERVICE_VALUES[serviceType]) return res.status(400).json({ ok: false, error: "Tipo de servico invalido" });
+
   try {
     const orders = await listOrders(profile, date, status, serviceType);
     res.set("cache-control", "no-store").json({
+      ok: true,
       date,
       count: orders.length,
       status_filter: status,
@@ -906,19 +973,33 @@ app.get("/api/orders", async (req, res) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : "datasnap_error";
     const statusCode = message === "datasnap_credentials_not_configured" ? 503 : 502;
-    res.status(statusCode).json({ ok: false, error: message });
+    res.status(statusCode).json({
+      ok: false,
+      error: message === "datasnap_credentials_not_configured"
+        ? "Credencial DataSnap do Imperium ainda nao configurada no backend web"
+        : "Falha ao consultar o Imperium",
+    });
   }
 });
 
-app.use("/api", (_req, res) => {
-  res.status(501).json({
-    ok: false,
-    error: "Funcao ainda nao migrada para a versao web hospedada.",
-    category: "WEB_MIGRATION",
-  });
+app.use(express.static(STATIC_DIR, {
+  index: false,
+  etag: true,
+  maxAge: "5m",
+  setHeaders(res, filePath) {
+    if (filePath.endsWith(".html")) res.setHeader("Cache-Control", "no-store");
+  },
+}));
+
+app.use((req, res) => {
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({ ok: false, error: "Rota nao encontrada" });
+  }
+  res.setHeader("Cache-Control", "no-store");
+  res.sendFile(path.join(STATIC_DIR, "index.html"));
 });
 
 const port = Number(process.env.PORT || 3000);
 app.listen(port, "0.0.0.0", () => {
-  console.log("DOMINIUM Hostinger web listening on " + port);
+  console.log("DOMINIUM web backend listening on " + port);
 });
