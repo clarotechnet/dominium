@@ -516,6 +516,7 @@ app.use(express.json({ limit: "256kb" }));
 const SUPABASE_URL = "https://haqzzxpocwzntyudrbch.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_s__p_R64LRUZ_Vk4Cid5BQ_ajAJkSn7";
 const AUTH_EMAIL_DOMAIN = "auth.dominium.invalid";
+const DOMINIUM_AUTH_OPS_URL = SUPABASE_URL + "/functions/v1/dominium-auth-ops";
 const SESSION_IDLE_MS = 8 * 60 * 60 * 1000;
 const SESSION_ABSOLUTE_MS = 12 * 60 * 60 * 1000;
 const AUTH_COOKIE = "__Host-dominium_session";
@@ -589,6 +590,35 @@ async function supabaseRpc(name, body) {
   const raw = await response.text();
   if (!raw) return null;
   return JSON.parse(raw);
+}
+
+async function edgeAuthAction(action, body = {}, actorUserId = 0) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
+  try {
+    const requestBody = { action, ...(body || {}) };
+    if (actorUserId) requestBody.actor_user_id = Number(actorUserId);
+    const response = await fetch(DOMINIUM_AUTH_OPS_URL, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        "content-type": "application/json",
+        "x-dominium-edge-key": bridgeToken(),
+      },
+      body: JSON.stringify(requestBody),
+      signal: controller.signal,
+    });
+    let payload = null;
+    try { payload = await response.json(); } catch {}
+    if (!response.ok || !payload || payload.ok !== true) {
+      const error = new Error(String(payload?.error || "Falha temporaria na operacao"));
+      error.statusCode = response.status || 500;
+      throw error;
+    }
+    return payload;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function profileLookup(username) {
@@ -666,7 +696,7 @@ async function auditAuth(user, action, result, req, target = "", metadata = {}) 
 function authPublicState() {
   return {
     auth_backend: "supabase",
-    registration_enabled: false,
+    registration_enabled: true,
     bootstrap_required: false,
     bootstrap_allowed: false,
   };
@@ -684,6 +714,17 @@ function loginRateLimited(req, username) {
   row.count += 1;
   loginAttempts.set(key, row);
   return row.count > 12;
+}
+
+const registrationAttempts = new Map();
+function registrationRateLimited(req) {
+  const key = String(req.ip || req.socket?.remoteAddress || "");
+  const now = Date.now();
+  const row = registrationAttempts.get(key) || { count: 0, start: now };
+  if (now - row.start > 15 * 60_000) { row.count = 0; row.start = now; }
+  row.count += 1;
+  registrationAttempts.set(key, row);
+  return row.count > 8;
 }
 
 app.get("/api/auth/bootstrap", (_req, res) => {
@@ -705,8 +746,21 @@ app.get("/api/auth/session", async (req, res) => {
   }
 });
 
-app.post("/api/auth/register", (_req, res) => {
-  res.status(403).json({ ok: false, error: "Novos cadastros estao desabilitados nesta publicacao" });
+app.post("/api/auth/register", async (req, res) => {
+  if (registrationRateLimited(req)) {
+    return res.status(429).json({ ok: false, error: "Muitas tentativas de cadastro; tente novamente em alguns minutos" });
+  }
+  try {
+    const payload = await edgeAuthAction("register", req.body || {});
+    res.set("cache-control", "no-store").status(201).json({
+      ok: true, authenticated: false, user: payload.user || null, csrf_token: "", ...authPublicState(),
+    });
+  } catch (error) {
+    const status = Number(error?.statusCode || 400);
+    res.status(status >= 400 && status < 600 ? status : 400).json({
+      ok: false, error: String(error?.message || "Nao foi possivel criar o cadastro agora"),
+    });
+  }
 });
 
 app.post("/api/auth/login", async (req, res) => {
@@ -828,6 +882,29 @@ app.get("/api/auth/pending-count", async (_req, res) => {
     res.set("cache-control", "no-store").json({ ok: true, pending_count: Number(count || 0) });
   } catch {
     res.status(503).json({ ok: false, error: "Contagem indisponivel" });
+  }
+});
+
+app.post(/^\/api\/auth\/users\/\d+\/(approve|reject|imperium-identity)$/, async (req, res) => {
+  if (req.dominiumUser?.role !== "admin") {
+    return res.status(403).json({ ok: false, error: "Esta acao exige um administrador" });
+  }
+  const match = req.path.match(/^\/api\/auth\/users\/(\d+)\/(approve|reject|imperium-identity)$/);
+  if (!match) return res.status(404).json({ ok: false, error: "Operacao invalida" });
+  const userId = Number(match[1]);
+  const action = match[2] === "imperium-identity" ? "link_identity" : match[2];
+  try {
+    const payload = await edgeAuthAction(
+      action,
+      { ...(req.body || {}), user_id: userId },
+      Number(req.dominiumUser.id),
+    );
+    res.set("cache-control", "no-store").json({ ok: true, user: payload.user || null });
+  } catch (error) {
+    const status = Number(error?.statusCode || 400);
+    res.status(status >= 400 && status < 600 ? status : 400).json({
+      ok: false, error: String(error?.message || "Falha temporaria na operacao"),
+    });
   }
 });
 

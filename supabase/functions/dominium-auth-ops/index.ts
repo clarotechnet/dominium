@@ -3,7 +3,10 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-const EDGE_KEY_HASH = "f2ba8a5fc5d118bb7b1c35ac2e90555baacbc6d1e3b1eab8022b405721e9bd6c";
+const EDGE_KEY_HASHES = new Set([
+  "f2ba8a5fc5d118bb7b1c35ac2e90555baacbc6d1e3b1eab8022b405721e9bd6c",
+  "1e0b8e5f7841138b0f0cc73a63a68da14c12f0402515f8cf56e836b14125bb7d",
+]);
 const AUTH_EMAIL_DOMAIN = "auth.dominium.invalid";
 const VALID_ROLES = new Set(["admin", "controller", "viewer"]);
 const PROFILE_CONFIG: Record<string, number> = {
@@ -23,7 +26,7 @@ async function validEdgeKey(value: string) {
   const hex = Array.from(new Uint8Array(digest))
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
-  return hex === EDGE_KEY_HASH;
+  return EDGE_KEY_HASHES.has(hex);
 }
 
 function json(data: unknown, status = 200) {
@@ -119,7 +122,19 @@ async function fetchPublicUser(userId: number) {
   };
 }
 
-async function requireAdmin(req: Request) {
+async function requireAdmin(req: Request, body: any = {}) {
+  const bridgeActorId = Number(body?.actor_user_id);
+  if (Number.isInteger(bridgeActorId) && bridgeActorId > 0) {
+    const { data: bridgeProfile, error: bridgeError } = await admin
+      .from("dominium_profiles")
+      .select("id,username,role,status")
+      .eq("id", bridgeActorId)
+      .maybeSingle();
+    if (bridgeError || !bridgeProfile || bridgeProfile.role !== "admin" || bridgeProfile.status !== "active") {
+      throw new Error("forbidden");
+    }
+    return bridgeProfile;
+  }
   const authHeader = req.headers.get("authorization") || "";
   const token = authHeader.toLowerCase().startsWith("bearer ")
     ? authHeader.slice(7).trim()
@@ -352,7 +367,7 @@ Deno.serve(async (req) => {
       return json({ ok: true, authenticated: false, user });
     }
 
-    const actor = await requireAdmin(req);
+    const actor = await requireAdmin(req, body);
     if (action === "approve") {
       return json({ ok: true, user: await approve(body, actor) });
     }
