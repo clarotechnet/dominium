@@ -516,6 +516,9 @@ app.use(express.json({ limit: "256kb" }));
 const SUPABASE_URL = "https://haqzzxpocwzntyudrbch.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_s__p_R64LRUZ_Vk4Cid5BQ_ajAJkSn7";
 const AUTH_EMAIL_DOMAIN = "auth.dominium.invalid";
+const DOMINIUM_OPERATION_ORIGIN = String(
+  process.env.DOMINIUM_OPERATION_ORIGIN || "https://count-success-prisoner-mandate.trycloudflare.com",
+).replace(/\/+$/, "");
 const DOMINIUM_AUTH_OPS_URL = SUPABASE_URL + "/functions/v1/dominium-auth-ops";
 const SESSION_IDLE_MS = 8 * 60 * 60 * 1000;
 const SESSION_ABSOLUTE_MS = 12 * 60 * 60 * 1000;
@@ -906,6 +909,81 @@ app.post(/^\/api\/auth\/users\/\d+\/(approve|reject|imperium-identity)$/, async 
       ok: false, error: String(error?.message || "Falha temporaria na operacao"),
     });
   }
+});
+
+const OPERATIONAL_PROXY_HEADER_ALLOWLIST = [
+  "accept",
+  "content-type",
+  "cookie",
+  "user-agent",
+  "x-csrf-token",
+  "x-request-id",
+];
+
+async function proxyOperationalRequest(req, res, next) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 120000);
+  try {
+    const headers = {};
+    for (const name of OPERATIONAL_PROXY_HEADER_ALLOWLIST) {
+      const value = req.headers[name];
+      if (value !== undefined && String(value).length) headers[name] = String(value);
+    }
+    if (!headers.accept) headers.accept = "application/json";
+    if (!headers["user-agent"]) headers["user-agent"] = "DOMINIUM-Hostinger-Bridge/1.0";
+    if (!headers["x-request-id"]) headers["x-request-id"] = crypto.randomUUID();
+
+    let body;
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      const contentType = String(req.headers["content-type"] || "").toLowerCase();
+      if (contentType.includes("application/json")) {
+        body = JSON.stringify(req.body ?? {});
+      } else if (Buffer.isBuffer(req.body)) {
+        body = req.body;
+      } else if (typeof req.body === "string") {
+        body = req.body;
+      }
+    }
+
+    const upstream = await fetch(DOMINIUM_OPERATION_ORIGIN + req.originalUrl, {
+      method: req.method,
+      headers,
+      body,
+      redirect: "manual",
+      signal: controller.signal,
+    });
+
+    res.status(upstream.status);
+    for (const name of ["content-type", "content-disposition", "cache-control", "etag", "last-modified"]) {
+      const value = upstream.headers.get(name);
+      if (value) res.setHeader(name, value);
+    }
+    res.setHeader("x-dominium-backend", "operational-bridge");
+    if (!upstream.headers.get("cache-control")) res.setHeader("cache-control", "no-store");
+
+    const payload = Buffer.from(await upstream.arrayBuffer());
+    return res.send(payload);
+  } catch (error) {
+    const safeGetFallback = req.method === "GET" || req.method === "HEAD";
+    console.error("DOMINIUM operational bridge failed", {
+      path: req.path,
+      method: req.method,
+      error: error instanceof Error ? error.message : "bridge_error",
+    });
+    if (safeGetFallback) return next();
+    return res.status(502).json({
+      ok: false,
+      error: "Servidor operacional temporariamente indisponivel",
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+app.use(async (req, res, next) => {
+  if (!req.path.startsWith("/api/")) return next();
+  if (req.path.startsWith("/api/auth/")) return next();
+  return proxyOperationalRequest(req, res, next);
 });
 
 app.get("/api/status", (req, res) => {
