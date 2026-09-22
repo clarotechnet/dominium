@@ -132,6 +132,8 @@ const state = {
   bulkCreateLoading: false,
   bulkCreateResult: null,
   bulkCreateRequestId: null,
+  bulkCreateSource: "bulk",
+  bulkCreateElapsedMs: 0,
   closeWorkspaceOrderId: null,
   closeInstallerChecks: {},
   closeReport: { records: [], summary: {} },
@@ -510,6 +512,9 @@ const elements = {
   manualContract: document.querySelector("#manualContract"),
   manualCloseCode: document.querySelector("#manualCloseCode"),
   manualCreateReview: document.querySelector("#manualCreateReview"),
+  manualCreateResult: document.querySelector("#manualCreateResult"),
+  manualCreateResultTitle: document.querySelector("#manualCreateResultTitle"),
+  manualCreateResultDetail: document.querySelector("#manualCreateResultDetail"),
   importTargets: document.querySelector("#importTargets"),
   importFile: document.querySelector("#importFile"),
   importDropzone: document.querySelector("#importDropzone"),
@@ -4196,6 +4201,7 @@ async function createBulkOrders() {
     || !technician || !state.nativeCreationServices.includes(service) || !definition
   ) return;
 
+  const creationStartedAt = performance.now();
   state.bulkCreateLoading = true;
   state.bulkCreateResult = null;
   state.bulkCreateRequestId = state.bulkCreateRequestId
@@ -4217,18 +4223,25 @@ async function createBulkOrders() {
       timeoutMs: 300000,
     });
     result.close_code = elements.bulkCloseCode.value;
+    state.bulkCreateElapsedMs = Math.max(1, Math.round(performance.now() - creationStartedAt));
     state.bulkCreateResult = result;
     state.bulkCreateRequestId = null;
     const failures = creationFailureReasons(result, 1);
+    const createdRow = Array.isArray(result.orders)
+      ? result.orders.find((row) => row.imported && row.os_number)
+      : null;
     showToast(
       failures.length
         ? failures[0]
-        : `${result.imported || 0} OS criadas; `
-        + `${result.already_existing || 0} ja existentes; `
-        + `${result.not_imported || 0} nao criadas.`,
+        : state.bulkCreateSource === "manual" && createdRow
+          ? `OS ${createdRow.os_number} criada e confirmada no Imperium.`
+          : `${result.imported || 0} OS criadas; `
+            + `${result.already_existing || 0} ja existentes; `
+            + `${result.not_imported || 0} nao criadas.`,
       result.not_imported ? "error" : "success",
     );
   } catch (error) {
+    state.bulkCreateElapsedMs = Math.max(1, Math.round(performance.now() - creationStartedAt));
     state.bulkCreateResult = {
       ok: false,
       uncertain: Boolean(error.uncertain),
@@ -4802,10 +4815,41 @@ function renderManualCreate() {
   elements.manualTechnicianSelect.disabled = state.stockTechniciansLoading || state.bulkCreateLoading;
   elements.manualCloseCode.disabled = state.bulkCreateLoading
     || !state.nativeCreationEnabled;
+
+  const result = state.bulkCreateSource === "manual" ? state.bulkCreateResult : null;
+  const rows = Array.isArray(result?.orders) ? result.orders : [];
+  const created = rows.find((row) => row.imported && row.os_number);
+  const existing = rows.find((row) => row.already_existed && row.os_number);
+  const failed = Boolean(result && (!result.ok || Number(result.not_imported || 0) > 0));
+  elements.manualCreateResult.classList.toggle("hidden", !result);
+  elements.manualCreateResult.classList.toggle("error", failed);
+  if (result) {
+    const elapsed = state.bulkCreateElapsedMs > 0
+      ? ` em ${(state.bulkCreateElapsedMs / 1000).toFixed(1).replace(".0", "")}s`
+      : "";
+    if (created) {
+      elements.manualCreateResultTitle.textContent = "OS criada e confirmada no Imperium";
+      elements.manualCreateResultDetail.textContent =
+        `OS ${created.os_number} ? Contrato ${created.contract} ? confirmada${elapsed}.`;
+    } else if (existing) {
+      elements.manualCreateResultTitle.textContent = "OS ja existia no Imperium";
+      elements.manualCreateResultDetail.textContent =
+        `OS ${existing.os_number} ? Contrato ${existing.contract} ? nenhuma duplicacao foi criada.`;
+    } else {
+      elements.manualCreateResultTitle.textContent = result.uncertain
+        ? "Resultado precisa ser conferido" : "Criacao nao concluida";
+      elements.manualCreateResultDetail.textContent = result.error
+        || creationFailureReasons(result, 1)[0] || "O Imperium nao confirmou a criacao.";
+    }
+  }
 }
 
 function openManualCreateDialog() {
   if (elements.manualCreateReview.disabled) return;
+  state.bulkCreateSource = "manual";
+  state.bulkCreateResult = null;
+  state.bulkCreateRequestId = null;
+  state.bulkCreateElapsedMs = 0;
   elements.bulkTechnicianSelect.value = elements.manualTechnicianSelect.value;
   elements.bulkService.value = elements.manualService.value.trim().toUpperCase();
   elements.bulkContracts.value = elements.manualContract.value.trim();
@@ -11193,7 +11237,11 @@ elements.bulkCloseCode.addEventListener("change", () => {
   }
   renderBulkCreate();
 });
-elements.bulkCreateReview.addEventListener("click", openBulkCreateDialog);
+elements.bulkCreateReview.addEventListener("click", () => {
+  state.bulkCreateSource = "bulk";
+  state.bulkCreateElapsedMs = 0;
+  openBulkCreateDialog();
+});
 elements.bulkCreateDialog.addEventListener("close", () => {
   if (elements.bulkCreateDialog.returnValue === "confirm") createBulkOrders();
 });
