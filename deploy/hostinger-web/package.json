@@ -1,0 +1,13 @@
+{
+  "name": "dominium-hostinger-datasnap-poc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "node -e \"console.log('DOMINIUM Hostinger DataSnap build ready')\"",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "5.1.0"
+  }
+}
