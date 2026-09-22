@@ -509,6 +509,8 @@ const SUPABASE_PUBLISHABLE_KEY = String(
   process.env.SUPABASE_PUBLISHABLE_KEY || "sb_publishable_s__p_R64LRUZ_Vk4Cid5BQ_ajAJkSn7",
 );
 const AUTH_EMAIL_DOMAIN = "auth.dominium.invalid";
+const DOMINIUM_EDGE_KEY = String(process.env.DOMINIUM_EDGE_KEY || "").trim();
+const DOMINIUM_AUTH_OPS_URL = SUPABASE_URL + "/functions/v1/dominium-auth-ops";
 const ACCESS_COOKIE = "__Host-dominium_session";
 const REFRESH_COOKIE = "__Host-dominium_refresh";
 const CSRF_COOKIE = "__Host-dominium_csrf";
@@ -568,7 +570,7 @@ function secureEqual(left, right) {
 
 function authState(extra = {}) {
   return Object.assign({
-    registration_enabled: false,
+    registration_enabled: true,
     bootstrap_required: false,
     bootstrap_allowed: false,
     auth_backend: "supabase",
@@ -637,6 +639,41 @@ async function adminUsers(accessToken) {
     throw new Error("forbidden");
   }
   return result.payload;
+}
+
+async function edgeAuthAction(action, body = {}, accessToken = "") {
+  if (!DOMINIUM_EDGE_KEY) throw new Error("auth_ops_not_configured");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
+  try {
+    const headers = {
+      apikey: SUPABASE_PUBLISHABLE_KEY,
+      "content-type": "application/json",
+      "x-dominium-edge-key": DOMINIUM_EDGE_KEY,
+    };
+    if (accessToken) headers.authorization = "Bearer " + accessToken;
+    const response = await fetch(DOMINIUM_AUTH_OPS_URL, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(Object.assign({ action }, body)),
+      signal: controller.signal,
+    });
+    let payload = null;
+    try {
+      payload = await response.json();
+    } catch {
+      payload = null;
+    }
+    if (!response.ok || !payload || payload.ok !== true) {
+      const message = String(payload?.error || "Falha temporaria na operacao");
+      const error = new Error(message);
+      error.statusCode = response.status || 500;
+      throw error;
+    }
+    return payload;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function setSessionCookies(res, authPayload, csrfToken) {
@@ -775,8 +812,22 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
-app.post("/api/auth/register", (_req, res) => {
-  res.status(403).json({ ok: false, error: "Novos cadastros estao temporariamente desabilitados" });
+app.post("/api/auth/register", async (req, res) => {
+  try {
+    const payload = await edgeAuthAction("register", req.body || {});
+    res.set("cache-control", "no-store").status(201).json(Object.assign({
+      ok: true,
+      authenticated: false,
+      user: payload.user || null,
+      csrf_token: "",
+    }, authState()));
+  } catch (error) {
+    const status = Number(error?.statusCode || 400);
+    res.status(status >= 400 && status < 600 ? status : 400).json({
+      ok: false,
+      error: String(error?.message || "Nao foi possivel criar o cadastro agora"),
+    });
+  }
 });
 
 app.use(async (req, res, next) => {
@@ -845,11 +896,35 @@ app.get("/api/auth/users", async (req, res) => {
   }
 });
 
-app.post(/^\/api\/auth\/users\/\d+\/(approve|reject|imperium-identity)$/, (_req, res) => {
-  res.status(501).json({
-    ok: false,
-    error: "Administracao de usuarios sera liberada na proxima etapa web",
-  });
+app.post(/^\/api\/auth\/users\/\d+\/(approve|reject|imperium-identity)$/, async (req, res) => {
+  if (!requireRole(req.dominiumSession, ["admin"])) {
+    return res.status(403).json({ ok: false, error: "Esta acao exige um administrador" });
+  }
+
+  const match = req.path.match(/^\/api\/auth\/users\/(\d+)\/(approve|reject|imperium-identity)$/);
+  if (!match) return res.status(404).json({ ok: false, error: "Operacao invalida" });
+
+  const userId = Number(match[1]);
+  const operation = match[2];
+  const action = operation === "imperium-identity" ? "link_identity" : operation;
+
+  try {
+    const payload = await edgeAuthAction(
+      action,
+      Object.assign({}, req.body || {}, { user_id: userId }),
+      req.dominiumSession.accessToken,
+    );
+    res.set("cache-control", "no-store").json({
+      ok: true,
+      user: payload.user || null,
+    });
+  } catch (error) {
+    const status = Number(error?.statusCode || 400);
+    res.status(status >= 400 && status < 600 ? status : 400).json({
+      ok: false,
+      error: String(error?.message || "Falha temporaria na operacao"),
+    });
+  }
 });
 
 app.get("/api/profiles", (_req, res) => {
