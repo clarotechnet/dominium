@@ -570,7 +570,7 @@ function secureEqual(left, right) {
 
 function authState(extra = {}) {
   return Object.assign({
-    registration_enabled: true,
+    registration_enabled: false,
     bootstrap_required: false,
     bootstrap_allowed: false,
     auth_backend: "supabase",
@@ -734,6 +734,8 @@ function requireRole(session, roles) {
 
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   res.setHeader("Referrer-Policy", "same-origin");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
@@ -812,22 +814,11 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
-app.post("/api/auth/register", async (req, res) => {
-  try {
-    const payload = await edgeAuthAction("register", req.body || {});
-    res.set("cache-control", "no-store").status(201).json(Object.assign({
-      ok: true,
-      authenticated: false,
-      user: payload.user || null,
-      csrf_token: "",
-    }, authState()));
-  } catch (error) {
-    const status = Number(error?.statusCode || 400);
-    res.status(status >= 400 && status < 600 ? status : 400).json({
-      ok: false,
-      error: String(error?.message || "Nao foi possivel criar o cadastro agora"),
-    });
-  }
+app.post("/api/auth/register", (_req, res) => {
+  res.status(403).json({
+    ok: false,
+    error: "Novos cadastros estao temporariamente desabilitados na versao web",
+  });
 });
 
 app.use(async (req, res, next) => {
@@ -1005,10 +996,11 @@ app.get("/api/toa-contracts", (_req, res) => {
 });
 
 app.get("/api/close-report", (_req, res) => {
-  res.status(501).json({
-    ok: false,
-    error: "Relatorio operacional ainda nao migrado para o backend web",
-  });
+  res.json({ ok: true, records: [], summary: {} });
+});
+
+app.get("/api/failures", (_req, res) => {
+  res.json({ ok: true, failures: [] });
 });
 
 app.get("/api/diagnostics", (req, res) => {

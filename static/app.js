@@ -69,7 +69,7 @@ const state = {
                         ? "database"
                       : window.location.hash === "#ordens" || window.location.hash === "#falhas"
                         ? "orders"
-                        : "close",
+                        : "dashboard",
   activeView: window.location.hash === "#falhas" ? "failures" : "orders",
   importTargets: [],
   importTarget: "rn",
@@ -11609,6 +11609,25 @@ setInterval(() => {
   ));
   if (state.activeModule === "report" || hasPending) loadCloseReport({ quiet: true });
 }, 10000);
+
+// Hostinger web rollout: unsupported modules stay hidden until their backend routes are migrated.
+if (document.body?.dataset?.deployTarget === "hostinger-web") {
+  [
+    "importsModule",
+    "automationTestModule",
+    "bulkCreateModule",
+    "closeModule",
+    "stockModule",
+    "techniciansModule",
+    "intelligenceModule",
+    "reportModule",
+    "databaseModule",
+    "historyModule",
+  ].forEach((id) => document.getElementById(id)?.classList.add("hidden"));
+  if (!["dashboard", "orders"].includes(state.activeModule)) {
+    state.activeModule = "dashboard";
+  }
+}
 
 renderSidebarState();
 syncThemeControls();
