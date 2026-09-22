@@ -511,7 +511,20 @@ async function listOrders(profileKey, isoDate, status = "field", serviceType = "
   }
 }
 
+app.use("/api/toa-agenda/import", express.json({ limit: "24mb" }));
 app.use(express.json({ limit: "256kb" }));
+app.use((error, req, res, next) => {
+  if (error?.type === "entity.too.large") {
+    const agendaImport = req.path === "/api/toa-agenda/import";
+    return res.status(413).json({
+      ok: false,
+      error: agendaImport
+        ? "Arquivo de agenda excede o limite de 24 MB"
+        : "Solicitacao excede o limite permitido",
+    });
+  }
+  return next(error);
+});
 
 const SUPABASE_URL = "https://haqzzxpocwzntyudrbch.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_s__p_R64LRUZ_Vk4Cid5BQ_ajAJkSn7";
