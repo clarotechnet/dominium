@@ -961,7 +961,7 @@ function refreshAuthFormState() {
   const registerReady = elements.authRegisterFirstName.value.trim().length >= 2
     && elements.authRegisterLastName.value.trim().length >= 2
     && elements.authRegisterUsername.value.trim().length >= 3
-    && registerPasswordLength >= 12 && registerPasswordLength <= 128;
+    && registerPasswordLength >= 6 && registerPasswordLength <= 128;
   elements.authRegisterSubmit.disabled = !registerReady;
 }
 

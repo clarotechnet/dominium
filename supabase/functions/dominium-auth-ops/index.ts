@@ -49,8 +49,8 @@ function normalizeUsername(value: unknown) {
 
 function validatePassword(value: unknown, username: string) {
   const password = String(value || "");
-  if (password.length < 12 || password.length > 128) {
-    throw new Error("A senha do DOMINIUM deve ter entre 12 e 128 caracteres");
+  if (password.length < 6 || password.length > 128) {
+    throw new Error("A senha do DOMINIUM deve ter entre 6 e 128 caracteres");
   }
   if (password.toLowerCase() === username.toLowerCase()) {
     throw new Error("A senha nao pode ser igual ao usuario");
@@ -386,7 +386,7 @@ Deno.serve(async (req) => {
 
     const safe = new Set([
       "Use de 3 a 48 caracteres: letras, numeros, ponto, hifen ou sublinhado",
-      "A senha do DOMINIUM deve ter entre 12 e 128 caracteres",
+      "A senha do DOMINIUM deve ter entre 6 e 128 caracteres",
       "A senha nao pode ser igual ao usuario",
       "Informe o nome do operador, entre 3 e 80 caracteres",
       "Formato de e-mail de contato invalido",

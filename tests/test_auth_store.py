@@ -89,11 +89,11 @@ class AuthStoreTests(unittest.TestCase):
         self.assertEqual(
             self.store.authenticate("admin.curto", "123456789012")["id"], short["id"]
         )
-        with self.assertRaisesRegex(AuthError, "entre 12 e 128"):
+        with self.assertRaisesRegex(AuthError, "entre 6 e 128"):
             self.store.register(
                 "senha.pequena", "Senha Pequena", "12345678901", allow_bootstrap=True
             )
-        with self.assertRaisesRegex(AuthError, "entre 12 e 128"):
+        with self.assertRaisesRegex(AuthError, "entre 6 e 128"):
             self.store.register(
                 "senha.grande", "Senha Grande", "x" * 129, allow_bootstrap=True
             )

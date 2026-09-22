@@ -77,7 +77,7 @@ def normalize_username(value: object) -> str:
 def validate_password(password: object, username: str = "") -> str:
     value = str(password or "")
     if len(value) < 12 or len(value) > 128:
-        raise AuthError("A senha do DOMINIUM deve ter entre 12 e 128 caracteres")
+        raise AuthError("A senha do DOMINIUM deve ter entre 6 e 128 caracteres")
     if username and value.casefold() == username.casefold():
         raise AuthError("A senha nao pode ser igual ao usuario")
     return value
