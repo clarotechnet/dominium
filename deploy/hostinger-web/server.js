@@ -552,9 +552,13 @@ function randomToken(bytes = 32) {
 }
 
 function bridgeToken() {
-  const value = String(process.env.DOMINIUM_SUPABASE_BRIDGE_TOKEN || "").trim();
-  if (!value) throw new Error("dominium_bridge_not_configured");
-  return value;
+  const fromEnv = String(process.env.DOMINIUM_SUPABASE_BRIDGE_TOKEN || "").trim();
+  if (fromEnv) return fromEnv;
+  try {
+    const fromFile = fs.readFileSync(path.join(__dirname, ".dominium-bridge-token"), "utf8").trim();
+    if (fromFile) return fromFile;
+  } catch {}
+  throw new Error("dominium_bridge_not_configured");
 }
 
 function normalizeUsername(value) {
@@ -762,6 +766,8 @@ app.get("/api/auth/session", async (req, res) => {
   }
 });
 
+app.post("/api/auth/register", proxyOperationalRequest);
+
 app.post("/api/auth/register", async (req, res) => {
   if (registrationRateLimited(req)) {
     return res.status(429).json({ ok: false, error: "Muitas tentativas de cadastro; tente novamente em alguns minutos" });
@@ -900,6 +906,8 @@ app.get("/api/auth/pending-count", async (_req, res) => {
     res.status(503).json({ ok: false, error: "Contagem indisponivel" });
   }
 });
+
+app.post(/^\/api\/auth\/users\/\d+\/(approve|reject|imperium-identity)$/, proxyOperationalRequest);
 
 app.post(/^\/api\/auth\/users\/\d+\/(approve|reject|imperium-identity)$/, async (req, res) => {
   if (req.dominiumUser?.role !== "admin") {

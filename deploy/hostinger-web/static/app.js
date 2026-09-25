@@ -69,7 +69,7 @@ const state = {
                         ? "database"
                       : window.location.hash === "#ordens" || window.location.hash === "#falhas"
                         ? "orders"
-                        : "close",
+                        : "dashboard",
   activeView: window.location.hash === "#falhas" ? "failures" : "orders",
   importTargets: [],
   importTarget: "rn",

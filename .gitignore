@@ -62,3 +62,6 @@ whatsapp_connector/node_modules/
 
 # Hostinger deployment archives
 deploy/hostinger-node/*.zip
+
+# Hostinger runtime secrets
+deploy/hostinger-web/.dominium-bridge-token

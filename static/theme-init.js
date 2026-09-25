@@ -1,8 +1,9 @@
+document.documentElement.dataset.theme = "dark";
+
 try {
-  document.documentElement.dataset.theme =
-    localStorage.getItem("dominium-theme") || "dark";
+  localStorage.setItem("dominium-theme", "dark");
 } catch (_) {
-  document.documentElement.dataset.theme = "dark";
+  // Storage can be unavailable in hardened browser contexts.
 }
 
 document.documentElement.classList.add("auth-pending");

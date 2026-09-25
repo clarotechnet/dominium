@@ -1,88 +1,82 @@
-// =============================================================================
-// DOMINIUM | MAPA DE RESPONSABILIDADE
-//
-// IMPERIUM
-// - NAO DIRETO - infraestrutura comum, sem regra de negocio Imperium.
-//
-// TOA
-// - NAO DIRETO - infraestrutura comum, sem regra de negocio TOA.
-//
-// DOMINIUM COMPARTILHADO
-// - SIM - seguranca, interface, voz, empacotamento ou inicializacao.
-//
-// Categoria deste arquivo: COMPARTILHADO.
-// Mapa completo: MAPA_DOMINIUM_IMPERIUM_TOA.md
-// A ordem executavel abaixo foi preservada para evitar regressao.
-// =============================================================================
-function stagger(seconds) {
-  return (_element, index) => seconds * index;
-}
-
-function animationFrames(properties) {
-  const values = Object.values(properties);
-  const length = Math.max(1, ...values.map((value) => (Array.isArray(value) ? value.length : 1)));
-  return Array.from({ length }, (_, index) => {
-    const frame = {};
-    const at = (key, fallback) => {
-      const value = properties[key];
-      if (Array.isArray(value)) return value[Math.min(index, value.length - 1)];
-      return value === undefined ? fallback : value;
-    };
-    if (properties.opacity !== undefined) frame.opacity = at("opacity", 1);
-    if (properties.height !== undefined) frame.height = `${at("height", 0)}px`;
-    if (properties.y !== undefined || properties.scale !== undefined) {
-      frame.transform = `translateY(${at("y", 0)}px) scale(${at("scale", 1)})`;
-    }
-    return frame;
-  });
-}
-
-function animate(targets, properties, options = {}) {
-  const elements = targets instanceof Element ? [targets] : [...(targets || [])];
-  const players = elements.map((element, index) => element.animate(
-    animationFrames(properties),
-    {
-      duration: Number(options.duration || 0) * 1000,
-      delay: Number(typeof options.delay === "function" ? options.delay(element, index) : options.delay || 0) * 1000,
-      easing: options.easing || "linear",
-      fill: "forwards",
-    },
-  ));
-  return {
-    finished: Promise.all(players.map((player) => player.finished.catch(() => undefined))),
-  };
-}
-
+// DOMINIUM motion system — command-deck transitions, 2026-09-25
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const transitionTimers = new WeakMap();
 let lastAutomationSignature = "";
 let lastToaSignature = "";
 let lastToaStatus = "";
 
-function enabled() {
+function motionEnabled() {
   return !reducedMotion.matches;
 }
 
 function visibleWorkspace() {
   return document.querySelector(
-    "main > section:not(.hidden), main .dashboard-workspace:not(.hidden), main .close-workspace:not(.hidden)",
+    "main > section:not(.hidden), main > div:not(.hidden), main .dashboard-workspace:not(.hidden), main .close-workspace:not(.hidden)",
   );
 }
 
+function play(element, keyframes, options) {
+  if (!motionEnabled() || !(element instanceof Element)) return null;
+  try {
+    return element.animate(keyframes, { fill: "both", ...options });
+  } catch (_) {
+    return null;
+  }
+}
+
+function pulseWorkspaceChrome(workspace) {
+  if (!(workspace instanceof Element) || !motionEnabled()) return;
+  const previous = transitionTimers.get(workspace);
+  if (previous) window.clearTimeout(previous);
+
+  workspace.classList.remove("dominium-transitioning");
+  void workspace.offsetWidth;
+  workspace.classList.add("dominium-transitioning");
+
+  const timer = window.setTimeout(() => {
+    workspace.classList.remove("dominium-transitioning");
+    transitionTimers.delete(workspace);
+  }, 650);
+  transitionTimers.set(workspace, timer);
+}
+
 function enterWorkspace() {
-  if (!enabled()) return;
   const workspace = visibleWorkspace();
-  if (!workspace) return;
-  animate(
-    workspace,
-    { opacity: [0.72, 1], y: [7, 0] },
-    { duration: 0.2, easing: "ease-out" },
-  );
+  if (!workspace || !motionEnabled()) return;
+
+  pulseWorkspaceChrome(workspace);
+  const heading = workspace.querySelector(".workspace-heading");
+  play(heading, [
+    { opacity: 0.72, transform: "translateY(-5px)", filter: "blur(2px)" },
+    { opacity: 1, transform: "translateY(0)", filter: "blur(0)" },
+  ], { duration: 320, easing: "cubic-bezier(.16,1,.3,1)" });
+
+  const groups = [...workspace.querySelectorAll(
+    ".dashboard-metrics, .summary, .toolbar, .dashboard-panel, .table-section, .stock-toolbar, .import-toolbar, .bulk-create-form",
+  )].slice(0, 6);
+
+  groups.forEach((element, index) => {
+    play(element, [
+      { opacity: 0.78, transform: "translateY(6px)" },
+      { opacity: 1, transform: "translateY(0)" },
+    ], {
+      duration: 300,
+      delay: 34 * index,
+      easing: "cubic-bezier(.16,1,.3,1)",
+    });
+  });
+}
+
+function resultSignature(elements) {
+  return elements.map((item) => item.textContent?.slice(0, 160) || "").join("|");
 }
 
 function revealCards(cards, kind) {
   const elements = [...(cards || [])].filter((item) => item instanceof Element);
-  if (!enabled() || !elements.length) return;
-  const signature = elements.map((item) => item.textContent?.slice(0, 160)).join("|");
+  if (!motionEnabled() || !elements.length) return;
+
+  const signature = resultSignature(elements);
+
   if (kind === "automation") {
     if (signature === lastAutomationSignature) return;
     lastAutomationSignature = signature;
@@ -90,51 +84,53 @@ function revealCards(cards, kind) {
     if (signature === lastToaSignature) return;
     lastToaSignature = signature;
   }
-  animate(
-    elements,
-    { opacity: [0, 1], y: [8, 0] },
-    { duration: 0.22, delay: stagger(0.035), easing: "ease-out" },
-  );
+
+  elements.forEach((element, index) => {
+    play(element, [
+      { opacity: 0, transform: "translateY(8px)", filter: "blur(3px)" },
+      { opacity: 1, transform: "translateY(0)", filter: "blur(0)" },
+    ], {
+      duration: 300,
+      delay: 32 * index,
+      easing: "cubic-bezier(.16,1,.3,1)",
+    });
+  });
 }
 
 async function toggleDetails(details, expanded) {
-  if (!details) return;
-  if (!enabled()) {
+  if (!(details instanceof Element)) return;
+  if (!motionEnabled()) {
     details.hidden = !expanded;
     return;
   }
   details.style.overflow = "hidden";
   if (expanded) {
     details.hidden = false;
-    const height = details.scrollHeight;
-    await animate(
-      details,
-      { height: [0, height], opacity: [0, 1] },
-      { duration: 0.2, easing: "ease-out" },
-    ).finished;
-    details.style.height = "auto";
+    const player = play(details, [
+      { opacity: 0, transform: "translateY(-5px)", clipPath: "inset(0 0 100% 0)" },
+      { opacity: 1, transform: "translateY(0)", clipPath: "inset(0 0 0 0)" },
+    ], { duration: 240, easing: "cubic-bezier(.16,1,.3,1)" });
+    await player?.finished.catch(() => undefined);
     details.style.overflow = "";
     return;
   }
-  await animate(
-    details,
-    { height: [details.scrollHeight, 0], opacity: [1, 0] },
-    { duration: 0.16, easing: "ease-in" },
-  ).finished;
+
+  const player = play(details, [
+    { opacity: 1, transform: "translateY(0)", clipPath: "inset(0 0 0 0)" },
+    { opacity: 0, transform: "translateY(-4px)", clipPath: "inset(0 0 100% 0)" },
+  ], { duration: 180, easing: "cubic-bezier(.4,0,1,1)" });
+  await player?.finished.catch(() => undefined);
   details.hidden = true;
-  details.style.height = "";
-  details.style.opacity = "";
   details.style.overflow = "";
 }
 
 function animateStatus(element, kind) {
-  if (!enabled() || !element || kind === lastToaStatus) return;
+  if (!motionEnabled() || !(element instanceof Element) || kind === lastToaStatus) return;
   lastToaStatus = kind;
-  animate(
-    element,
-    { opacity: [0.55, 1], scale: [0.985, 1] },
-    { duration: 0.18, easing: "ease-out" },
-  );
+  play(element, [
+    { opacity: 0.58, transform: "scale(.992)", filter: "brightness(.82)" },
+    { opacity: 1, transform: "scale(1)", filter: "brightness(1)" },
+  ], { duration: 260, easing: "cubic-bezier(.16,1,.3,1)" });
 }
 
 document.addEventListener("dominium:module-change", enterWorkspace);
@@ -146,20 +142,6 @@ document.addEventListener("dominium:toa-results", (event) => {
 });
 document.addEventListener("dominium:toa-status", (event) => {
   animateStatus(event.detail?.element, event.detail?.kind || "");
-});
-
-document.addEventListener("pointerover", (event) => {
-  if (!enabled() || event.pointerType === "touch") return;
-  const button = event.target.closest("button:not(:disabled)");
-  if (!button || button.contains(event.relatedTarget)) return;
-  animate(button, { scale: 1.012 }, { duration: 0.1 });
-});
-
-document.addEventListener("pointerout", (event) => {
-  if (!enabled() || event.pointerType === "touch") return;
-  const button = event.target.closest("button:not(:disabled)");
-  if (!button || button.contains(event.relatedTarget)) return;
-  animate(button, { scale: 1 }, { duration: 0.1 });
 });
 
 globalThis.DOMINIUM_MOTION = { toggleDetails };
