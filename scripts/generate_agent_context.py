@@ -103,25 +103,26 @@ def first_summary(rel: Path, text: str) -> str:
                 return value.strip().splitlines()[0][:180]
         except SyntaxError:
             pass
+    punctuation = {"=", "-", "_", "*", "#", "/", " "}
     for line in text.splitlines():
         stripped = line.strip()
         if not stripped:
             continue
-        if set(stripped) <= {"=", "-", "_", "*", "#", "/"}:
-            continue
-        if stripped.startswith("from __future__ import"):
+        if set(stripped) <= punctuation:
             continue
         if stripped.startswith("#"):
             value = stripped.lstrip("#").strip()
-            if value:
+            if value and not set(value) <= punctuation:
                 return value[:180]
             continue
         if stripped.startswith(("//", "/*", "<!--")):
             value = stripped.lstrip("/< !-*").strip()
-            if value:
+            if value and not set(value) <= punctuation:
                 return value[:180]
             continue
-        return stripped[:180]
+        if rel.suffix.casefold() in {".md", ".txt"}:
+            return stripped[:180]
+        return ""
     return ""
 
 

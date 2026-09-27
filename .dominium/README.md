@@ -21,6 +21,11 @@ Refresh:
 .\.venv\Scripts\python.exe .\scripts\generate_agent_context.py
 ```
 
+Query without scanning source:
+```powershell
+.\.venv\Scripts\python.exe .\scripts\query_agent_context.py installer reassignment
+```
+
 Verify freshness:
 ```powershell
 .\.venv\Scripts\python.exe .\scripts\generate_agent_context.py --check

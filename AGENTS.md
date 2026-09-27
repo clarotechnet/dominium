@@ -6,9 +6,10 @@ Use this file as the first navigation layer for Codex, Claude Code, and other co
 
 1. Read `.dominium/project-map.md`.
 2. Use the TSV indexes for targeted lookup: `symbol-index.tsv` for symbols, `api-index.tsv` for API paths, `dependency-index.tsv` for imports, and `file-index.tsv` for file/category summaries. Use `project-map.json` only as structured file-metadata fallback.
-3. Open only the source files relevant to the task.
-4. Verify behavior in real code before editing; the map is an index, not source of truth.
-5. Do not recursively scan the whole repository unless the map is stale or the target is genuinely unknown.
+3. For a named symbol, endpoint, module, or concept, run `.\.venv\Scripts\python.exe .\scripts\query_agent_context.py <terms>` and open only the top candidates.
+4. Open only the source files relevant to the task.
+5. Verify behavior in real code before editing; the map is an index, not source of truth.
+6. Do not recursively scan the whole repository unless the map is stale or the target is genuinely unknown.
 
 Regenerate the map with:
 

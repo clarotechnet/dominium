@@ -456,6 +456,13 @@ re	scripts/quality_gate.py
 shutil	scripts/quality_gate.py
 subprocess	scripts/quality_gate.py
 sys	scripts/quality_gate.py
+__future__	scripts/query_agent_context.py
+argparse	scripts/query_agent_context.py
+csv	scripts/query_agent_context.py
+dataclasses	scripts/query_agent_context.py
+pathlib	scripts/query_agent_context.py
+re	scripts/query_agent_context.py
+unicodedata	scripts/query_agent_context.py
 base64	serialized_transfer.py
 datasnap_client	serialized_transfer.py
 datetime	serialized_transfer.py
