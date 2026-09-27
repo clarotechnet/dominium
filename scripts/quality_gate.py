@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 import shutil
 import subprocess
@@ -127,6 +128,13 @@ def audit_release(release: Path) -> None:
 
 
 def main() -> None:
+    os.environ["DOMINIUM_PROJECT_ROOT"] = str(ROOT)
+
+    run(
+        "Agent context freshness",
+        [sys.executable, str(ROOT / "scripts" / "generate_agent_context.py"), "--check"],
+    )
+
     print("\\n== Repository secret audit ==", flush=True)
     audit_repository()
     print("Repository secret audit: OK", flush=True)

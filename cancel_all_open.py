@@ -58,7 +58,7 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=212)
     parser.add_argument("--company", default="NATAL / PARNAMIRIM")
     parser.add_argument("--profile", default="natal")
-    parser.add_argument("--controller-id", type=int, default=313101)
+    parser.add_argument("--controller-id", type=int, default=362032)
     parser.add_argument("--rounds", type=int, default=2)
     args = parser.parse_args()
 

@@ -50,7 +50,15 @@ function disconnectManualError(message) {
 }
 
 const CANONICAL_MATERIAL_MAP = extractObjectConstant("CANONICAL_MATERIAL_MAP");
+const SEMI_AUTO_PROFILE_ROUTE_PREFIXES = extractObjectConstant("SEMI_AUTO_PROFILE_ROUTE_PREFIXES");
+const state = { profile: "natal" };
 
+eval(extractFunction("automationProviderLabel"));
+eval(extractFunction("semiAutoCanonicalRoute"));
+eval(extractFunction("semiAutoSourceRoutePrefixes"));
+eval(extractFunction("semiAutoJobRoutePrefixes"));
+eval(extractFunction("semiAutoRouteMatchesJob"));
+eval(extractFunction("semiAutoJobRouteLabel"));
 eval(extractFunction("toaLiveMaterialIdentity"));
 eval(extractFunction("disconnectMaterialsDraft"));
 eval(extractFunction("disconnectAutomationMaterialDraft"));
@@ -77,7 +85,38 @@ assert.equal(disconnectQueueItemHasAdmScope({
 }), false);
 assert.equal(disconnectQueueItemHasAdmScope({
   source_files: ["Atividades-FTZ-DMV_ADM_29_07_26.csv"],
-}), false);
+}), true);
+assert.equal(disconnectQueueItemHasAdmScope({
+  source_files: ["Atividades-JCR-DMV_ADM_29_07_26.csv"],
+}), true);
+assert.equal(disconnectQueueItemHasAdmScope({
+  source_files: ["15 ADM 23.09.xlsx"],
+}), true);
+
+assert.equal(semiAutoRouteMatchesJob(
+  { route_provider: { name: "FTZ-DMV_ADM" } },
+  { profile: "fortaleza", sourceFiles: ["15 ADM 23.09.xlsx"], isDisconnect: true },
+), true);
+assert.equal(semiAutoRouteMatchesJob(
+  { route_provider: { name: "JCR-DMV_ADM" } },
+  { profile: "recife", sourceFiles: ["10 ADM 23.09.xlsx"], isDisconnect: true },
+), true);
+assert.equal(semiAutoRouteMatchesJob(
+  { route_provider: { name: "PWM-DMV_ADM" } },
+  { profile: "natal", sourceFiles: ["12 ADM 23.09.xlsx"], isDisconnect: true },
+), true);
+assert.equal(semiAutoRouteMatchesJob(
+  { route_provider: { name: "NTL-DMV_ADM" } },
+  { profile: "natal", sourceFiles: ["08 ADM 23.09.xlsx"], isDisconnect: true },
+), true);
+assert.equal(semiAutoRouteMatchesJob(
+  { route_provider: { name: "FTZ-DMV_ADM" } },
+  { profile: "recife", sourceFiles: ["15 ADM 23.09.xlsx"], isDisconnect: true },
+), false);
+assert.equal(semiAutoRouteMatchesJob(
+  { route_provider: { name: "FTZ-DMV_ADM" } },
+  { profile: "fortaleza", sourceFiles: ["15 BAIXA 23.09.xlsx"], isDisconnect: false },
+), false);
 
 assert.equal(disconnectTaskExecuted("E"), true);
 assert.equal(disconnectTaskExecuted("N"), true);

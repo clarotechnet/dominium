@@ -6118,12 +6118,16 @@ async function loadOrders({ preserveSelection = false, quiet = false } = {}) {
     return true;
   } catch (error) {
     if (profileKey !== state.profile) return false;
+    const operationBusy = error?.status === 409
+      && normalize(error?.message).includes("OUTRA OPERACAO ESTA EM ANDAMENTO");
     if (state.orders.length) state.monitorSnapshotStale = true;
     setConnection(
-      state.orders.length ? "Conexão instável; lista mantida" : "Falha de conexão",
-      "error",
+      operationBusy
+        ? "Operação em andamento; aguardando Imperium"
+        : state.orders.length ? "Conexão instável; lista mantida" : "Falha de conexão",
+      operationBusy ? "busy" : "error",
     );
-    if (!quiet) showToast(error.message, "error");
+    if (!quiet && !operationBusy) showToast(error.message, "error");
     return false;
   } finally {
     if (profileKey === state.profile) {
@@ -6847,7 +6851,7 @@ function disconnectQueueItemHasAdmScope(queueItem) {
   if (!sources.length) return false;
   return sources.every((source) => {
     const filename = String(source || "").split(/[\\/]/).pop();
-    return /(?:^|[-_])(NTL|PWM)[-_]DMV[-_]ADM(?:[-_.]|$)/i.test(filename);
+    return /(?:^|[^A-Z0-9])ADM(?:[^A-Z0-9]|$)/i.test(filename);
   });
 }
 
@@ -7484,10 +7488,56 @@ function prepareToaLiveClose(
   return true;
 }
 
-const SEMI_AUTO_ROUTE = "NTL-DMV";
+const SEMI_AUTO_PROFILE_ROUTE_PREFIXES = {
+  natal: ["NTL", "PWM"],
+  fortaleza: ["FTZ"],
+  recife: ["JCR"],
+  mossoro: ["MRO"],
+};
 
 function semiAutoCanonicalRoute(value) {
   return normalize(value).replaceAll("_", "-").replace(/\s+/g, "");
+}
+
+function semiAutoSourceRoutePrefixes(sources) {
+  const prefixes = [];
+  (Array.isArray(sources) ? sources : []).forEach((source) => {
+    const filename = String(source || "").split(/[\\/]/).pop().toUpperCase();
+    const match = filename.match(/(?:^|[^A-Z0-9])(NTL|PWM|FTZ|JCR|MRO)(?:[^A-Z0-9]|$)/);
+    if (match && !prefixes.includes(match[1])) prefixes.push(match[1]);
+  });
+  return prefixes;
+}
+
+function semiAutoJobRoutePrefixes(job) {
+  const explicit = semiAutoSourceRoutePrefixes(job?.sourceFiles || job?.source_files || []);
+  if (explicit.length) return explicit;
+  return [...(SEMI_AUTO_PROFILE_ROUTE_PREFIXES[String(job?.profile || state.profile || "").toLowerCase()] || [])];
+}
+
+function semiAutoRouteMatchesJob(capture, job) {
+  const route = semiAutoCanonicalRoute(automationProviderLabel(capture?.route_provider));
+  const prefixes = semiAutoJobRoutePrefixes(job);
+  if (!prefixes.length) return true;
+  if (!route || route === "NAOINFORMADO") return true;
+  const matchedPrefix = prefixes.find((prefix) => route.startsWith(`${prefix}-DMV`));
+  if (!matchedPrefix) return false;
+  const admRoute = /(?:^|-)ADM(?:-|$)/.test(route);
+  if (job?.isDisconnect) {
+    // Algumas respostas diretas do TOA devolvem o bucket pai (ex.: NTL-DMV)
+    // mesmo quando a atividade veio do bucket ADM. O expected_profile_key
+    // continua validando a base; se o sufixo vier explícito, ele deve ser ADM.
+    const hasSpecificSuffix = route !== `${matchedPrefix}-DMV`;
+    return !hasSpecificSuffix || admRoute;
+  }
+  return !admRoute;
+}
+
+function semiAutoJobRouteLabel(job) {
+  const prefixes = semiAutoJobRoutePrefixes(job);
+  if (!prefixes.length) return job?.isDisconnect ? "ADM" : "DMV";
+  const suffix = job?.isDisconnect ? "-DMV-ADM" : "-DMV";
+  return prefixes.map((prefix) => `${prefix}${suffix}`).join(" / ");
 }
 
 function semiAutoOrderRoute(order) {
@@ -7673,6 +7723,10 @@ function semiAutoBuildJobs(agendaRecords, orders, profile) {
     const activityIds = [...new Set(activeOrders.map((order) => (
       String(order.activity_id || "").trim()
     )).filter(Boolean))];
+    const sourceFiles = Array.isArray(record.source_files)
+      ? record.source_files.filter(Boolean)
+      : [state.semiAutoAgenda?.filename].filter(Boolean);
+    const isDisconnect = disconnectQueueItemHasAdmScope({ source_files: sourceFiles });
     let jobState = "pending";
     let message = "";
     let skipCategory = "";
@@ -7688,7 +7742,8 @@ function semiAutoBuildJobs(agendaRecords, orders, profile) {
     return {
       contract,
       profile,
-      route: SEMI_AUTO_ROUTE,
+      route: semiAutoJobRouteLabel({ profile, sourceFiles, isDisconnect }),
+      routePrefixes: semiAutoJobRoutePrefixes({ profile, sourceFiles }),
       windowStart,
       windowEnd,
       windowLabel: record.window || record.windows?.[0] || parsedWindow.label,
@@ -7699,6 +7754,8 @@ function semiAutoBuildJobs(agendaRecords, orders, profile) {
       windowOverrideAt: 0,
       osNumbers,
       activityIds,
+      sourceFiles,
+      isDisconnect,
       agendaWindow: true,
       activeOrderCount: activeOrders.length,
       imperiumSeen: activeOrders.length > 0,
@@ -8185,8 +8242,7 @@ function semiAutoCandidates(payload, job) {
   const candidates = [];
   const eligibleOs = new Set((job?.osNumbers || []).map(String));
   (payload.results || []).forEach((capture) => {
-    const route = semiAutoCanonicalRoute(automationProviderLabel(capture.route_provider));
-    if (route !== SEMI_AUTO_ROUTE) return;
+    if (!semiAutoRouteMatchesJob(capture, job)) return;
     if (!disconnectActivityComplete(capture.activity_status)) return;
 
     const matchedOsSet = new Set();
@@ -8209,6 +8265,8 @@ function semiAutoCandidates(payload, job) {
         order: match,
         numOs,
         code,
+        sourceFiles: Array.isArray(job?.sourceFiles) ? job.sourceFiles : [],
+        isDisconnect: Boolean(job?.isDisconnect),
         reviewed: false,
       });
     });
@@ -8232,6 +8290,7 @@ function semiAutoMaterialGroupKey(candidate) {
 }
 
 function semiAutoCandidateAcceptsMaterials(candidate) {
+  if (candidate?.isDisconnect && String(candidate?.code || "").trim() === "430") return false;
   if (!closeCodeAllowsMaterials(candidate?.code)) return false;
   if (!toaLiveMaterialsDraft(candidate?.capture?.materials).length) return false;
   const service = normalize(candidate?.order?.service || candidate?.capture?.work_type || "");
@@ -9011,17 +9070,14 @@ function semiAutoClassifySkip(job, payload) {
   }
 
   const results = payload.results;
-  const dmvResults = results.filter((capture) => {
-    const route = semiAutoCanonicalRoute(automationProviderLabel(capture.route_provider));
-    return route === SEMI_AUTO_ROUTE;
-  });
+  const dmvResults = results.filter((capture) => semiAutoRouteMatchesJob(capture, job));
 
   if (!dmvResults.length) {
-    const otherRoutes = [...new Set(results.map((c) => c.route_provider).filter(Boolean))].join(", ") || "outra base/rota";
+    const otherRoutes = [...new Set(results.map((c) => automationProviderLabel(c.route_provider)).filter(Boolean))].join(", ") || "outra base/rota";
     return {
       category: "toa_other_route",
       title: "Fora da Rota DMV",
-      detail: `Atividade encontrada no TOA pertence a outra rota (${otherRoutes}), fora da árvore NTL-DMV.`,
+      detail: `Atividade encontrada no TOA pertence a outra rota (${otherRoutes}); esperado: ${semiAutoJobRouteLabel(job)}.`,
     };
   }
 
@@ -9218,6 +9274,71 @@ async function processAutoCloseCandidate(candidate, profile) {
   const noEquipment = isNoEquipmentService(service);
   const definition = state.closeCodes.find((item) => item.code === code);
   const isImproductive = (!definition || !definition.productive || code === "106" || code === "555" || code === "510");
+  const isDisconnect430 = Boolean(candidate?.isDisconnect) && code === "430";
+
+  if (isDisconnect430) {
+    const equipmentPlan = semiAutoCandidateEquipmentPlan(candidate);
+    if (equipmentPlan.error) {
+      return { closed: false, humanReview: true, reason: equipmentPlan.error };
+    }
+    if (equipmentPlan.correction) {
+      return {
+        closed: false,
+        humanReview: true,
+        reason: "430 de desconexao com substituicao serial exige revisao manual",
+      };
+    }
+    if (equipmentPlan.installed.length) {
+      return {
+        closed: false,
+        humanReview: true,
+        reason: `installed_equipment_in_430:${candidate.numOs}`,
+      };
+    }
+    if (!equipmentPlan.removed.length) {
+      return {
+        closed: false,
+        humanReview: true,
+        reason: `430_without_removed_equipment:${candidate.numOs}`,
+      };
+    }
+
+    candidate.omittedMaterials = toaLiveMaterialsDraft(capture.materials);
+    candidate.validatedMaterials = [];
+    const res = await executeDirectAutoClose(candidate, []);
+    if (res && typeof res === "object") {
+      if (res.pending) {
+        return {
+          closed: false,
+          pending: true,
+          humanReview: false,
+          requestId: res.requestId || "",
+          reportState: res.reportState || "pending",
+          materialPreparation: null,
+          reason: res.message || "Aguardando confirmacao do Imperium",
+        };
+      }
+      if (res.closed) {
+        return {
+          closed: true,
+          pending: false,
+          humanReview: false,
+          reason: "",
+        };
+      }
+      return {
+        closed: false,
+        humanReview: true,
+        reason: res.reason || res.error || "Falha na confirmacao da baixa 430 de desconexao",
+      };
+    }
+    const success = Boolean(res);
+    return {
+      closed: success,
+      humanReview: !success,
+      reason: success ? "" : "Falha na confirmacao da baixa 430 de desconexao",
+    };
+  }
 
   if (noEquipment || isImproductive) {
     const res = await executeDirectAutoClose(candidate, []);

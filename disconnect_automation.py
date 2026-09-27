@@ -88,8 +88,12 @@ TERMINAL_STATUSES = {
 }
 UPDATE_STATUSES = ACTIVE_STATUSES | NON_REPEATABLE_STATUSES
 
-_SOURCE_PATTERN = re.compile(
-    r"(?:^|[-_])(NTL|PWM)[-_]DMV[-_]ADM(?:[-_.]|$)",
+_ADM_SOURCE_PATTERN = re.compile(
+    r"(?<![A-Z0-9])ADM(?![A-Z0-9])",
+    re.IGNORECASE,
+)
+_ROUTE_SOURCE_PATTERN = re.compile(
+    r"(?:^|[-_])(NTL|PWM|FTZ|JCR|MRO)(?:[-_.]|$)",
     re.IGNORECASE,
 )
 _WINDOW_PATTERN = re.compile(
@@ -138,11 +142,13 @@ def validate_sources(values: Iterable[object]) -> tuple[list[str], list[str]]:
     routes: list[str] = []
     errors: list[str] = []
     for source in sources:
-        match = _SOURCE_PATTERN.search(Path(source).name)
-        if not match:
-            errors.append(f"source_not_ntl_pwm_adm:{Path(source).name}")
+        filename = Path(source).name
+        if not _ADM_SOURCE_PATTERN.search(filename):
+            errors.append(f"source_not_adm:{filename}")
             continue
-        routes.append(match.group(1).upper())
+        route_match = _ROUTE_SOURCE_PATTERN.search(filename)
+        if route_match:
+            routes.append(route_match.group(1).upper())
     return _unique(routes), errors
 
 
@@ -301,7 +307,7 @@ class DisconnectAutomation:
                     continue
                 if any(
                     reason == "source_file_missing"
-                    or reason.startswith("source_not_ntl_pwm_adm:")
+                    or reason.startswith("source_not_adm:")
                     for reason in item["reasons"]
                 ):
                     ignored += 1

@@ -59,3 +59,10 @@ step_*.txt
 deploy/*.local
 config/whatsapp_bridge/
 whatsapp_connector/node_modules/
+
+# Machine-local TLS/SSH material (never version)
+deploy/windows-server/serveo_*_ed25519
+deploy/windows-server/serveo_*_ed25519.pub
+deploy/windows-server/caddy-local-root.crt
+deploy/windows-server/*.key
+deploy/windows-server/*.pem

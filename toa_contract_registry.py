@@ -16,8 +16,10 @@
 # =============================================================================
 import datetime as dt
 import json
+import os
 import re
 import threading
+import time
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -80,12 +82,27 @@ class TOAContractRegistry:
 
     def _save(self, payload: dict[str, Any]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        temporary = self.path.with_suffix(self.path.suffix + ".tmp")
+        temporary = self.path.with_name(
+            f"{self.path.name}.{os.getpid()}.{threading.get_ident()}.tmp"
+        )
         temporary.write_text(
             json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True),
             encoding="utf-8",
         )
-        temporary.replace(self.path)
+        try:
+            for attempt in range(12):
+                try:
+                    temporary.replace(self.path)
+                    return
+                except PermissionError:
+                    if attempt >= 11:
+                        raise
+                    time.sleep(min(0.05 * (attempt + 1), 0.25))
+        finally:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError:
+                pass
 
     @staticmethod
     def _record_key(profile: str, date: str, contract: str) -> str:

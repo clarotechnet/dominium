@@ -51,21 +51,25 @@ class DisconnectAutomationTests(unittest.TestCase):
         self.assertEqual(normalize_window("8 - 22"), "08:00-22:00")
         self.assertEqual(normalize_window("09:00 - 13:00"), "")
 
-    def test_accepts_only_ntl_or_pwm_adm_sources(self) -> None:
+    def test_accepts_any_adm_source_name(self) -> None:
         state = self.prepare([
             record("1", "08:00 - 11:00"),
             record("2", "08:00 - 12:00", "Atividades-PWM-DMV_ADM_29_07_26.csv"),
             record("3", "08:00 - 22:00", "Atividades-FTZ-DMV_ADM_29_07_26.csv"),
             record("4", "08:00 - 22:00", "Atividades-NTL-DMV_29_07_26.csv"),
             record("5", "08:00 - 22:00", "Atividades-PWM-DMV_VT_29_07_26.csv"),
+            record("6", "08:00 - 22:00", "15 ADM 23.09.xlsx"),
+            record("7", "08:00 - 22:00", "Atividades-JCR-DMV_ADM_29_07_26.csv"),
         ])
         statuses = {item["contract"]: item["status"] for item in state["items"]}
         self.assertEqual(statuses["1"], "pending")
         self.assertEqual(statuses["2"], "pending")
-        self.assertNotIn("3", statuses)
+        self.assertEqual(statuses["3"], "pending")
         self.assertNotIn("4", statuses)
         self.assertNotIn("5", statuses)
-        self.assertEqual(state["ignored_records"], 3)
+        self.assertEqual(statuses["6"], "pending")
+        self.assertEqual(statuses["7"], "pending")
+        self.assertEqual(state["ignored_records"], 2)
 
     def test_mixed_adm_and_vt_sources_are_excluded(self) -> None:
         mixed = record("6", "08:00 - 11:00")

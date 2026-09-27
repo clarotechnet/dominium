@@ -108,7 +108,7 @@ from toa_import import (
     unpack_toa_content,
 )
 from toa_inventory import parse_toa_clipboard
-from toa_live import TOALiveSession
+from toa_secondary_session import TOASecondarySession
 from toa_local_collector import TOALocalCollector
 from toa_bridge_server import ToaBridgeServer
 
@@ -331,7 +331,7 @@ def _merged_close_code_metadata(profile: "ProfileRuntime") -> list[dict]:
     return sorted(definitions.values(), key=sort_key)
 
 
-TOA_LIVE = TOALiveSession(ROOT, logger=LOGGER)
+TOA_LIVE = TOASecondarySession(ROOT, logger=LOGGER)
 TOA_CONNECTOR = TOAConnector(ROOT, TOA_LIVE)
 TOA_LOCAL_COLLECTOR: TOALocalCollector | None = None
 TOA_BRIDGE_SERVER: ToaBridgeServer | None = None
@@ -433,10 +433,10 @@ class ProfileRuntime:
 
 
 PROFILE_SPECS = (
-    ("natal", "NATAL / PARNAMIRIM", 212, 313101, LOG_ROOT),
-    ("fortaleza", "FORTALEZA", 596, 49127, LOG_ROOT / "fortaleza"),
-    ("mossoro", "MOSSORÓ", 579, 20857, LOG_ROOT / "mossoro"),
-    ("recife", "RECIFE", 599, 1766, LOG_ROOT / "recife"),
+    ("natal", "NATAL / PARNAMIRIM", 212, 362032, LOG_ROOT),
+    ("fortaleza", "FORTALEZA", 596, 90321, LOG_ROOT / "fortaleza"),
+    ("mossoro", "MOSSORÓ", 579, 22722, LOG_ROOT / "mossoro"),
+    ("recife", "RECIFE", 599, 15787, LOG_ROOT / "recife"),
 )
 PROFILES = {
     key: ProfileRuntime(key, label, port, controller_id, log_root)
@@ -3683,12 +3683,22 @@ class PanelHandler(BaseHTTPRequestHandler):
         cached = getattr(self, "_dominium_auth_session", None)
         if cached is not None:
             return cached
-        user_agent = str(getattr(self, "headers", {}).get("User-Agent", ""))
-        session = AUTH_STORE.session(
-            self._session_token(),
-            user_agent=user_agent,
-            touch=touch,
-        )
+        headers = getattr(self, "headers", {})
+        ticket = str(headers.get("X-Dominium-Operation-Ticket", "")).strip()
+        session = None
+        if ticket and hasattr(AUTH_STORE, "redeem_operation_ticket"):
+            session = AUTH_STORE.redeem_operation_ticket(
+                ticket,
+                method=str(getattr(self, "command", "") or ""),
+                path=urlparse(str(getattr(self, "path", "") or "")).path,
+            )
+        if session is None and not ticket:
+            user_agent = str(headers.get("User-Agent", ""))
+            session = AUTH_STORE.session(
+                self._session_token(),
+                user_agent=user_agent,
+                touch=touch,
+            )
         self._dominium_auth_session = session
         return session
 

@@ -2932,11 +2932,10 @@
   }
 
   function scheduleAutomationRender() {
-    if (automationRenderTimer) clearTimeout(automationRenderTimer);
-    automationRenderTimer = setTimeout(() => {
-      automationRenderTimer = null;
-      renderAutomationPanel();
-    }, 80);
+    // Modo silencioso: captura e fila continuam ativas sem UI sobre o TOA.
+    const legacyPanel = document.getElementById(PANEL_ID);
+    if (legacyPanel) legacyPanel.remove();
+    return;
   }
 
   function queueSummary() {
@@ -3369,7 +3368,9 @@
     automationState,
 
     showPanel() {
-      return createAutomationPanel();
+      const legacyPanel = document.getElementById(PANEL_ID);
+      if (legacyPanel) legacyPanel.remove();
+      return false;
     },
 
     addContracts(text, cityLabel = automationState.cityLabel) {
@@ -3925,8 +3926,10 @@
   window[GLOBAL_KEY] = API;
   window.TECHCAP = API;
 
+  // Operacao silenciosa: nunca abre o painel TECHCAP sobre o TOA.
   setTimeout(() => {
-    try { createAutomationPanel(); } catch (error) { console.warn("Falha ao abrir painel V5.", error); }
+    const legacyPanel = document.getElementById(PANEL_ID);
+    if (legacyPanel) legacyPanel.remove();
   }, 0);
 
   addEvent("capture-started", {

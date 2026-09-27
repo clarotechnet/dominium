@@ -128,6 +128,11 @@ assert.match(uncertainMarker, /candidate\.humanReview = true/);
 
 const autoCloser = extractFunction("processAutoCloseCandidate");
 assert.match(autoCloser, /if \(res\.pending\)[\s\S]*closed: false,[\s\S]*pending: true/);
+assert.match(autoCloser, /isDisconnect430/);
+assert.match(autoCloser, /430_without_removed_equipment/);
+assert.match(autoCloser, /installed_equipment_in_430/);
+assert.match(autoCloser, /candidate\.validatedMaterials = \[\]/);
+assert.match(autoCloser, /executeDirectAutoClose\(candidate, \[\]\)/);
 
 const renderer = extractFunction("renderSemiAutoQueue");
 assert.match(renderer, /data-semi-contract-review/);
@@ -165,7 +170,9 @@ assert.match(skippedRenderer, /toa_pending/);
 assert.match(skippedRenderer, /!\["toa_pending", "awaiting_imperium_import"\]\.includes/);
 
 const queueBuilder = extractFunction("semiAutoBuildJobs");
-assert.match(queueBuilder, /SEMI_AUTO_ROUTE/);
+assert.match(queueBuilder, /semiAutoJobRouteLabel/);
+assert.match(queueBuilder, /isDisconnect/);
+assert.match(queueBuilder, /sourceFiles/);
 assert.match(queueBuilder, /activeByContract/);
 assert.match(queueBuilder, /imperiumSeen: activeOrders\.length > 0/);
 assert.doesNotMatch(queueBuilder, /TOA não consultado.*Nenhuma OS em campo/s);
@@ -185,7 +192,7 @@ assert.match(importWake, /semiAutoRefreshActiveOrders/);
 assert.match(importWake, /runSemiAutoQueue/);
 
 const candidateFilter = extractFunction("semiAutoCandidates");
-assert.match(candidateFilter, /route !== SEMI_AUTO_ROUTE/);
+assert.match(candidateFilter, /semiAutoRouteMatchesJob/);
 assert.match(candidateFilter, /disconnectActivityComplete/);
 assert.match(candidateFilter, /disconnectTaskExecuted/);
 assert.match(candidateFilter, /eligibleOs\.has/);
@@ -211,13 +218,11 @@ assert.equal(exactToaMaterial.code, "22066906");
 assert.notEqual(exactToaMaterial.code, "22026223");
 
 const perTaskCodeFactory = new Function(`
-  const SEMI_AUTO_ROUTE = "NTL-DMV";
   const state = {
     closeCodes: Array.from({ length: 10 }, (_, index) => ({ code: String(401 + index) })),
     orders: [],
   };
-  function automationProviderLabel(provider) { return String(provider?.id || provider || ""); }
-  function semiAutoCanonicalRoute(value) { return String(value || ""); }
+  function semiAutoRouteMatchesJob() { return true; }
   function disconnectActivityComplete() { return true; }
   function disconnectTaskExecuted() { return true; }
   function toaLiveImperiumMatch(capture, task) {
@@ -435,7 +440,19 @@ assert.equal(semiAutoCandidateKind(adhesionCandidates[0]), "Assinatura");
 assert.equal(semiAutoCandidateKind(adhesionCandidates[1]), "Ponto Virtua");
 
 const queueFactory = new Function(`
-  const SEMI_AUTO_ROUTE = "NTL-DMV";
+  const state = { profile: "natal", semiAutoAgenda: null };
+  const SEMI_AUTO_PROFILE_ROUTE_PREFIXES = {
+    natal: ["NTL", "PWM"],
+    fortaleza: ["FTZ"],
+    recife: ["JCR"],
+    mossoro: ["MRO"],
+  };
+  function automationProviderLabel(provider) { return String(provider?.name || provider?.external_id || provider?.id || "Nao informado"); }
+  function disconnectQueueItemHasAdmScope(queueItem) {
+    const sources = Array.isArray(queueItem?.source_files) ? queueItem.source_files : [];
+    if (!sources.length) return false;
+    return sources.every((source) => /(?:^|[^A-Z0-9])ADM(?:[^A-Z0-9]|$)/i.test(String(source || "").split(/[\\\\/]/).pop()));
+  }
   function normalize(value) {
     return String(value || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toUpperCase();
   }
@@ -445,6 +462,9 @@ const queueFactory = new Function(`
       .some((candidate) => status.includes(candidate));
   }
   ${extractFunction("semiAutoCanonicalRoute")}
+  ${extractFunction("semiAutoSourceRoutePrefixes")}
+  ${extractFunction("semiAutoJobRoutePrefixes")}
+  ${extractFunction("semiAutoJobRouteLabel")}
   ${extractFunction("semiAutoOrderRoute")}
   ${extractFunction("semiAutoWindow")}
   ${extractFunction("semiAutoOrderWindow")}
@@ -485,7 +505,8 @@ assert.deepEqual(
   orderedJobs.map((job) => job.contract),
   ["120007", "120010", "120011", "120012", "120099"],
 );
-assert.ok(orderedJobs.every((job) => job.route === "NTL-DMV"));
+assert.ok(orderedJobs.every((job) => job.route === "NTL-DMV / PWM-DMV"));
+assert.ok(orderedJobs.every((job) => job.isDisconnect === false));
 assert.equal(orderedJobs[0].state, "pending");
 assert.equal(orderedJobs[0].imperiumSeen, false);
 assert.equal(orderedJobs[1].state, "pending");

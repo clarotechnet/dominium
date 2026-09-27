@@ -1,0 +1,235 @@
+category	path	symbols	api_paths	datasnap_methods	summary	hash16
+imperium	.imperium-project.json				{	a6c72b51e8822cc7
+shared	ABRIR LEITOR DE FLUXOS.cmd				@echo off	2dff58e7ef08f81c
+shared	Abrir Painel.cmd				@echo off	cc450d4a69af656f
+shared	AGENTS.md			1	DOMINIUM agent guide	245d8fa3ed487e1c
+shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
+orchestration	app.py	130	74	39	=============================================================================	f8391ce3582a7ef1
+shared	auth_store.py	28			Autenticacao local do DOMINIUM.	3767cb9484eaea2d
+shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
+shared	bulk_orders.py	2			=============================================================================	2775b7a068f33346
+shared	cancel_all_open.py	3			=============================================================================	9dde6a0f10a22ffe
+shared	CLAUDE.md			1	DOMINIUM / Claude Code	72cd26f7e3c16afb
+shared	close_report.py	15			=============================================================================	7639b2cf9981442b
+shared	close_report_excel.py	3			=============================================================================	db6f655647eeb923
+toa	Conectar TOA.cmd				@echo off	5b1f2a4fb8c3ec37
+shared	config/official_close_code_catalog/Tabela_codigo_baixa0711.catalog.json			1	{	c1f98a79ea40eb4e
+shared	config/technicians.json			2	{	f1135f8c8fd7e9a8
+toa	Configurar TOA.cmd				@echo off	4c723142074ed214
+toa	Configurar_Coletor_TOA.cmd				@echo off	62f43e9861a81020
+toa	configurar_toa_credenciais.py	1			=============================================================================	53d47e7046687d82
+toa	configure_toa_cloud_bridge.py	1			Grava a credencial primaria da ponte com protecao DPAPI do Windows.	1740fb9f14a07660
+shared	consolidate_dominium.ps1			4	=============================================================================	c82b6b36d57d2f66
+shared	datasnap_client.py	23			=============================================================================	18769b58c990389a
+tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para migracao futura	bbfe97a6ef6f2341
+tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
+tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
+tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json				{"ref":"haqzzxpocwzntyudrbch","name":"DOMINIUM","organization_id":"clugmaegimukmefeounb","organization_slug":"clugmaegimukmefeounb"}	55ceb062fdaf3cc0
+tooling-deploy	deploy/supabase-hosted/supabase/config.toml				project_id = "dominium-hosted-auth-config"	04a1ca9302799337
+tooling-deploy	deploy/windows-server/caddy-snippet.txt				Adicionar ao docker/Caddyfile do stack dominium-toa no servidor:	5bfc12f4f66ede0c
+tooling-deploy	deploy/windows-server/README.md				DOMINIUM no servidor Windows	bdb24de6348883c3
+tooling-deploy	deploy/windows-server/start-dominium.ps1				$ErrorActionPreference = 'Stop'	07dbc429acea36ce
+orchestration	disconnect_automation.py	26			=============================================================================	b4aaf01ad3a34fad
+docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
+docs	docs/reference/DOMINIUM X IMPERIUM Especificacoes_requisicoes.txt				﻿================================================================================	0888eec3d49a2ab5
+docs	docs/reference/GUIA_API_OFICIAL_TOA_E_IMPERIUM.txt				GUIA OPERACIONAL - APIs OFICIAIS DO TOA E DO IMPERIUM	f786a457b0065170
+docs	docs/reference/LEIA-ME-LOCAL.txt				PAINEL DIRETO DE BAIXA DE OS - IMPERIUM	0be0563222de776d
+docs	docs/reference/TOA_CONNECTOR_API.md				DOMINIUM TOA Connector	a1c7cfee4cf9ed29
+shared	edge_voice.py	8			=============================================================================	32f7dbf35b7da5a8
+shared	flow_reader/__init__.py				Read-only Imperium/DataSnap capture analyzer.	fd76c045b68cdb47
+shared	flow_reader/analyzer.py	28			=============================================================================	39c1790690d96093
+shared	flow_reader/LEIA-ME.txt				DOMINIUM FLOWSCOPE 1.0 - LEITOR DE FLUXOS IMPERIUM	cc2d42ab8116c798
+shared	flow_reader/server.py	11	2		=============================================================================	00c885db859081c8
+shared	flow_reader/static/app.js	30	1		=============================================================================	406f388b7677c04f
+shared	flow_reader/static/index.html				<!doctype html>	e59d2e5b33c31164
+shared	flow_reader/static/styles.css				:root {	f204ad89f8897c62
+imperium	imperium_api.py	134		3	=============================================================================	82ebd2b29f6d33ad
+imperium	imperium_http_api.py	37		2	=============================================================================	f0fdaa781ea7c790
+imperium	imperium_http_plan.py	9			=============================================================================	9dbe93e68be6432c
+shared	import_protocol_templates.json			1	{"version":1,"server_method":"TDtmOrdemServico.AS_GetRecords","captured_controller_id":313101,"chunk_size":30720,"chunk_length_offset":21,"xml_length_offset":170,"transport_trailer	9a6465634e73b3ec
+shared	import_technicians_xlsx.py	4		1	=============================================================================	341a4f747dde9502
+imperium	installer_change.py	5			=============================================================================	18de9230c2938c1e
+shared	installer_change_protocol_templates.json			1	{	f69d1e6915145bd3
+toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json				{	4313d055b4300572
+shared	integrations/n8n/payload-example.json				{	0c015c7d1052fb63
+shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76			(function () {	b8274ffc7dfb2fbb
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-isolated.js	1			content-isolated.js - Roda no world: ISOLATED	3aa2ece3a08e2b62
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-main.js	107		2	content-main.js - Roda no world: MAIN	8d916f5a998a60cb
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/disconnect-inventory.js	4			(function (root, factory) {	8eb127a43fa75b41
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/manifest.json				{	f9aa3c97637b20df
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/offscreen-worker.js	1			const ATLAS_CLOCK_INTERVAL_MS = 2_500;	e1d01dab03adfe17
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/offscreen.html				<!doctype html>	9c8595611fc176cf
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/offscreen.js	1			Documento offscreen persistente. Um Web Worker fornece o relogio porque	613f56de5d804ae4
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/options.css				:root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; background:#080b11; color:#f7f8fb; }	50445bc9cb9383c6
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/options.html				<!doctype html>	ef61241d316cc1f9
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/options.js	1			const fields = {	3ee520096d24e271
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/README.md				TOA TechNet Bridge 2.6.3	b598f317299f1f6b
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/test-disconnect-inventory.js				"use strict";	a8cc2171048d0355
+toa	integrations/toa_cloud_bridge/extension-central-2.6.3/test-toa-inventory-core.js	1			'use strict';	0d65a6c33ed68bad
+toa	integrations/toa_cloud_bridge/extension-central-2.6.3/test-toa-route-tree.cjs	1		1	const assert = require('node:assert/strict');	4427aa457afc0962
+toa	integrations/toa_cloud_bridge/extension-central-2.6.3/toa-auto-export.js	22		1	(function installTOAAutoExport(root) {	35b7506d2144a819
+toa	integrations/toa_cloud_bridge/extension-central-2.6.3/toa-inventory-core.js	16		1	(function (root, factory) {	047a8550b3cbb118
+shared	integrations/toa_cloud_bridge/migrations/0001_lookup_jobs.sql				CREATE TABLE IF NOT EXISTS lookup_jobs (	e412883d6d2c34e4
+shared	integrations/toa_cloud_bridge/package-lock.json				{	7228bf6a88726221
+shared	integrations/toa_cloud_bridge/package.json				{	c0b854be20d83626
+shared	integrations/toa_cloud_bridge/README.md				DOMINIUM TOA Cloud Bridge	ac8373e4722833dc
+shared	integrations/toa_cloud_bridge/src/core.js	12			const CONTRACT_PATTERN = /^\d{5,18}$/;	cad8e91cfcb7a873
+shared	integrations/toa_cloud_bridge/src/index.js	12			import {	ef75451cc76d5ee0
+shared	integrations/toa_cloud_bridge/test/core.test.mjs				import assert from "node:assert/strict";	05644003d6b69e0a
+shared	manual_materials.py	8			=============================================================================	e16f18afb6ff534e
+shared	manual_order_protocol_templates.json			1	{	bf1cf40e9254049d
+imperium	manual_orders.py	7		1	=============================================================================	798d598c687607a2
+shared	material_matching.py	9			=============================================================================	7139f2ccdea7ddef
+shared	material_protocol_templates.json			1	{	47be23329154990a
+shared	native_order_protocol_templates.json			2	{	367772f217ffe2f1
+imperium	native_orders.py	16			=============================================================================	378bb09520e3c284
+shared	official_candidate_locator.py	4			Read-only offline candidate locator for official API closes.	f8b29bedd9fffdc7
+shared	official_close.py	4			=============================================================================	e97697e7e06e29a5
+shared	official_close_code_catalog.py	8		1	=============================================================================	426e603d06d43f03
+shared	official_close_code_reconciliation.py	12			=============================================================================	dc33a3fe162420af
+shared	official_close_dry_run.py	28			=============================================================================	ab938e1051da15d0
+shared	official_close_sender.py	29			Restricted single-request executor for an official Imperium close payload.	cebc6e3e147de789
+toa	official_close_toa_dry_run.py	29		3	Read-only bridge from a TECHCAP capture to the official close dry-run.	2e0dce3ee0456061
+shared	official_material_catalog.py	27			=============================================================================	d665ed6202602d55
+shared	official_material_resolver.py	6			Unified, strictly offline facade for official material resolution.	12ddf210fa5ea1dd
+shared	official_stock_audit.py	14		2	=============================================================================	b8d8aa6f0c44f4a1
+shared	official_stock_blocker_review.py	15			=============================================================================	9a394acc9ed1e5e8
+shared	official_stock_remediation_plan.py	25		1	=============================================================================	dc0a0db6611a94a4
+orchestration	operation_scope.py	55			=============================================================================	3f9d748a18c158b6
+orchestration	operational_store.py	23			=============================================================================	16bf556f5a694301
+orchestration	operations_intelligence.py	13			=============================================================================	96115509d8e34c26
+toa	patch_remote_toa.py		2	5	from pathlib import Path	cb6eb87e50eeb356
+shared	productive_protocol_templates.json			3	{	c04b19e6f576ff97
+shared	protocol_templates.json				{"version":1,"captured_date":"2026-07-15","main_query":"KERzcEdldE9zIQFgYQEgEATBAgwgAAABAAAAAAAAAA0AAAAMIAAAAQAAAAAAAAAGAAAACAAAAA0AAABAAFIARQBUAFUAUgBOAF8AVgBBAEwAVQBFAAAAAAAQAAAA	dea41cc769da2970
+shared	README.md				DOMINIUM	a0f4a28883525e13
+shared	requirements-dev.txt				-r requirements-web.txt	04613c3898d0f090
+shared	requirements-voice.txt				Voz neural gratuita dos alertas TEC1. A voz local do navegador permanece como fallback.	37ed02602fc9f231
+shared	requirements-web.txt				Runtime do DOMINIUM web em producao	a9f5230558034692
+tooling-deploy	scripts/bootstrap_admin.py	2			import argparse	578b01fcd9f2bce3
+tooling-deploy	scripts/build_hostinger_frontend.py	3			import datetime as dt	376de6598486d1b3
+tooling-deploy	scripts/build_web_release.py	8		1	import argparse	12c3694527509ac1
+tooling-deploy	scripts/check_supabase_ready.py	1			import argparse	ef416758e6102aca
+tooling-deploy	scripts/configure_imperium_credentials.py	2			import argparse	ded6c45e67597ae0
+tooling-deploy	scripts/configure_supabase_hosted.py	1			import argparse	f4637b027d3a1889
+tooling-deploy	scripts/deploy_supabase.ps1				param(	ae66340ccd4c0380
+tooling-deploy	scripts/generate_agent_context.py	20		1	import argparse	80ecd9195796da06
+tooling-deploy	scripts/install_agent_context_hooks.py	2			import os	3f284e6102d8feeb
+tooling-deploy	scripts/quality_gate.py	5			import os	cc96500385c6fc7c
+imperium	serialized_transfer.py	7			=============================================================================	99d03cfc88daa911
+shared	serialized_transfer_protocol_templates.json			2	{	e2b8d2a089b99a02
+toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
+frontend	static/index.html		1		<!doctype html>	197dfdf015fc4ec4
+frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
+frontend	static/lucide.min.js	1			* @license lucide v1.8.0 - ISC	ab85225ecc1daa20
+frontend	static/motion-ui.js	10			=============================================================================	674603136f3f4a4f
+frontend	static/operations-monitor.js	34			=============================================================================	b112edee82115b2f
+frontend	static/styles.css				:root {	2996f0e4132df09a
+frontend	static/theme-init.js				try {	97eb92ef899f8dcf
+imperium	stock_inventory.py	21			=============================================================================	019fbb8f33d571b8
+shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
+shared	stock_protocol_templates.json			2	{	d4310f519e27cc25
+shared	supabase/config.toml				For detailed configuration reference documentation, visit:	c6cfb0e691f6ac10
+shared	supabase/migrations/20260917202620_dominium_auth_schema.sql				-- DOMINIUM web auth schema for Supabase.	62ed33bcd27847c6
+shared	supabase/migrations/20260918000000_dominium_registration_v2.sql				-- Migration: dominium_registration_v2	d445e86d360cdf9c
+shared	supabase_auth_store.py	28			import datetime as dt	127a75071634aba0
+shared	supabase_schema.sql				-- DOMINIUM web auth schema for Supabase.	f4c24a6069098221
+shared	technician_directory.py	7			=============================================================================	c428cc21c4d30f17
+tests	tests/__init__.py					01ba4719c80b6fe9
+tests	tests/test_api_security.py	14	2		import json	6a9274ff24f39348
+tests	tests/test_app.py	35	5	2	import datetime as dt	d9d48f2fbb14cd0b
+tests	tests/test_auth_store.py	7			import tempfile	5be2b71f2ba58bcf
+tests	tests/test_build_web_release.py	4			import unittest	eabc3ef6da8765dc
+tests	tests/test_bulk_orders.py	6			import datetime as dt	f1b4e9b58dcc0d87
+tests	tests/test_city_scope_integration.py	18			import datetime as dt	e81c1bf0df38ecdc
+tests	tests/test_close_report.py	15			import datetime as dt	125242a6d2cff245
+tests	tests/test_close_report_excel.py	5			import datetime as dt	36de3899cae4ba75
+tests	tests/test_configure_imperium_credentials.py	4			import unittest	931f61ff4157fbfa
+tests	tests/test_disconnect_automation.py	22			import datetime as dt	243f0edcb0dcc000
+tests	tests/test_disconnect_frontend.js	4			const assert = require("node:assert/strict");	f5e517e7af4cede6
+tests	tests/test_edge_voice.py	4			import unittest	4e8791562f884964
+tests	tests/test_equipment_group_matching.py	24			import struct	46876ea91612d830
+tests	tests/test_flow_reader.py	8		1	import io	0971a6aac40c5b38
+tests	tests/test_imperium_api.py	72		1	import hashlib	85f345d7101df526
+tests	tests/test_imperium_http_api.py	25			import io	25ab6758e210eefb
+tests	tests/test_imperium_http_plan.py	8			import unittest	056547e8c6b8d815
+tests	tests/test_import_audit_history.py	3			import datetime as dt	6df23f085d3bdbda
+tests	tests/test_installer_change.py	11			import struct	c0e798b009cdfd15
+tests	tests/test_installer_reassignment.py	19	1		import datetime as dt	e571ea08992a6d7b
+tests	tests/test_manual_materials.py	14			import hashlib	13ebf22bf45dd258
+tests	tests/test_material_matching.py	33			import unittest	f7a01b4226d11747
+tests	tests/test_material_writeoff.py	16			import hashlib	4d6bdafc337eb87a
+tests	tests/test_native_orders.py	19		2	import base64	aad9802e44267483
+tests	tests/test_official_close.py	8			import datetime as dt	9d4b733270930e68
+tests	tests/test_official_close_code_catalog.py	9		1	import ast	dbabe02e00041d80
+tests	tests/test_official_close_code_reconciliation.py	13			import ast	5e245e74532a146f
+tests	tests/test_official_close_codes.py	12			import unittest	c7b5728e1454e988
+tests	tests/test_official_close_dry_run.py	26			import inspect	d4aec02f82c7d3ac
+tests	tests/test_official_close_sender.py	29			import contextlib	7308fd219528d01d
+tests	tests/test_official_close_toa_dry_run.py	34			import ast	f3a1ea940debcd05
+tests	tests/test_official_material_catalog.py	24			import hashlib	08cd1715009af381
+tests	tests/test_official_stock_audit.py	19			import copy	5c870201eb1f0e37
+tests	tests/test_official_stock_blocker_review.py	21			import ast	2bb6e8566ad6e1e5
+tests	tests/test_official_stock_remediation_plan.py	22		1	import ast	a64ed28f5256d2d9
+tests	tests/test_offline_candidate_and_resolver.py	12			Comprehensive test suite for frontend block, candidate locator, and material resolver.	2c65244509db2c6a
+tests	tests/test_operation_scope.py	42			import hashlib	f804afda128c9e71
+tests	tests/test_operational_store.py	4			import json	7feee2da1f4abd24
+tests	tests/test_operations_intelligence.py	11			import datetime as dt	dc597e4943edd292
+tests	tests/test_operations_monitor.js				"use strict";	6e5f6241957f3296
+tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
+tests	tests/test_semiauto_frontend.js	18			"use strict";	03df3690fe36ab90
+tests	tests/test_serialized_transfer.py	16			import hashlib	60606b0ffbf12f8a
+tests	tests/test_stock_inventory.py	5			import struct	c08f24560a02efc7
+tests	tests/test_stock_pdf.py	5		1	import re	63db548ac3442d35
+tests	tests/test_supabase_sdk_compat.py	2			import unittest	49269ce926869e84
+tests	tests/test_technician_directory.py	5			import datetime as dt	d78aba13b7ad30e2
+tests	tests/test_toa_agenda.py	4			import csv	169f9c78410dfd88
+tests	tests/test_toa_automation.py	13			import tempfile	96f4a2bc505351d5
+tests	tests/test_toa_bridge_server.py				﻿import json	8984c15b56c098d9
+tests	tests/test_toa_browser.py	11			import unittest	5166c5f3bfc2648b
+tests	tests/test_toa_capture.py	36		2	import ast	e5e27b0eedd3ae4c
+tests	tests/test_toa_capture_panel.py	7			import ast	d5a0869de1ff3b0f
+tests	tests/test_toa_cloud_client.py	7			import unittest	fa7633bf20afbda8
+tests	tests/test_toa_connector.py	9			import json	d0fdbfda30bc5c1c
+tests	tests/test_toa_contract_registry.py	10			import json	52916856a7baf022
+tests	tests/test_toa_datalake_store.py	5			import tempfile	9a077ca9a38c9926
+tests	tests/test_toa_discovery_browser.py	3			import unittest	cc0d9dd8e053328f
+tests	tests/test_toa_import.py	15		1	import unittest	28ef082b0cc1d01f
+tests	tests/test_toa_inventory.py	5			import json	a45e6a23cf09fd8a
+tests	tests/test_toa_live.py	26		1	import time	c296ffdcf69eaca9
+tests	tests/test_toa_live_lookup.py	11		1	import datetime as dt	222b7464976a3788
+tests	tests/test_toa_local_collector.py	10			import unittest	4535aa3efc123af1
+tests	tests/test_web_auth_config.py	16	1		import os	99c3b240a63cbdb8
+toa	toa-discovery/content.js	1			=============================================================================	b8110ec34f849ddb
+toa	toa-discovery/core.js	25			=============================================================================	9e149f8465bb638e
+toa	toa-discovery/exporter.js	20		1	=============================================================================	78edda133c880436
+toa	toa-discovery/manifest.json				{	57e04e5b10d2e35c
+toa	toa-discovery/page-hook.js	31			=============================================================================	b52329da5187281e
+toa	toa-discovery/popup.css				:root {	a5bcf3a260707901
+toa	toa-discovery/popup.html				<!doctype html>	ad956d3627a3138e
+toa	toa-discovery/popup.js	5		3	=============================================================================	30866c0130bbc835
+toa	toa-discovery/README.md			1	TOA Discovery	2ac5a47fe62bd0a5
+toa	toa-discovery/service-worker.js	16			=============================================================================	b1f5b23f77970862
+toa	toa-discovery/service-worker.test.js				"use strict";	0344a84018ff6265
+toa	toa-discovery/test.js				"use strict";	c5d100ed71c457c7
+toa	toa_agenda.py	11			=============================================================================	09c04d200370200e
+toa	toa_automation.py	22			=============================================================================	06aa6724e98c1429
+toa	toa_bridge_server.py	21		1	Bridge local escutando na porta 8787.	6db7265c92cf23fe
+toa	toa_browser.py	10			=============================================================================	a964b5fa73cbe312
+toa	toa_capture.py	29		1	Read-only validator for TECHCAP V5.6 capture exports.	d0cd1fa03bac20aa
+toa	toa_capture_panel.py	10		2	=============================================================================	a1fdf7495ee34cb2
+toa	toa_cloud_client.py	9			Cliente da fila privada Cloudflare usada pelo DOMINIUM primario.	431148a4b1391254
+toa	toa_connector.py	25		2	API local, sanitizada e somente leitura para dados operacionais do TOA.	c8196559e0ceb7af
+toa	toa_context.py	8			=============================================================================	43ac572adde029a8
+toa	toa_contract_registry.py	13			=============================================================================	b0e99161ce94b754
+toa	toa_datalake_store.py	19			=============================================================================	f7c80584d8f7687e
+toa	toa_discovery_browser.py	2			=============================================================================	70da7424e3e7a77f
+toa	toa_discovery_check.py	1			=============================================================================	780c396748a6abe3
+toa	toa_import.py	23			=============================================================================	32013568e2e200cf
+toa	toa_inventory.py	11			=============================================================================	4a753ed25a0c24b3
+toa	toa_live.py	34		8	=============================================================================	0fc34001a55c7c28
+toa	toa_local_collector.py	13			=============================================================================	88bb369658f48698
+toa	toa_secondary_direct_lookup.mjs				const contract = String(process.argv[2] || '').replace(/\D/g, '');	c8ef3f34279460bf
+toa	toa_secondary_session.py	14			import datetime as dt	655850be32fd4666
+toa	verify_toa_cloud_bridge.py	3			Teste online seguro da ponte Cloudflare/D1 sem expor as chaves.	99d1169ad8c2856a

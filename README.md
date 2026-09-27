@@ -27,7 +27,26 @@ Os testes ficam em `tests/`. Antes de qualquer push/deploy, execute:
 .\.venv\Scripts\python.exe .\scripts\quality_gate.py
 ```
 
-O gate executa a suite Python, os testes JavaScript, lint critico, build do release e auditoria do pacote.
+O gate executa a suite Python, os testes JavaScript, lint critico, build do release,
+auditoria do pacote e valida se o contexto dos agentes esta atualizado.
+
+## Contexto para Codex e Claude Code
+
+Leia `AGENTS.md` / `CLAUDE.md` antes de explorar o repositorio. O indice compacto
+fica em `.dominium/project-map.md`; simbolos, endpoints e dependencias ficam em
+indices TSV para busca direta sem varrer arquivo por arquivo.
+
+Atualize o indice apos mudancas estruturais:
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\generate_agent_context.py
+```
+
+Para atualizar automaticamente no pre-commit e apos checkout/merge:
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\install_agent_context_hooks.py
+```
 
 ## Release web
 
