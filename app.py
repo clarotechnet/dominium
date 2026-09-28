@@ -102,7 +102,11 @@ from serialized_transfer import SerializedTransferUncertainError
 from stock_pdf import build_stock_pdf, safe_pdf_filename
 from technician_directory import TechnicianDirectory, normalize as normalize_technician
 from toa_datalake_store import TOADatalakeStore
-from toa_automation import TOAAutomation, TOAExistingSessionExporter
+from toa_automation import (
+    BUCKET_COLLECTION_TIMES,
+    TOAAutomation,
+    TOAExistingSessionExporter,
+)
 from toa_capture_panel import TOACaptureCatalog
 from toa_context import PROFILE_ROUTES, TOAContextIndex
 from toa_connector import TOAConnector
@@ -3323,6 +3327,7 @@ TOA_BUCKET_AUTOMATION = TOAAutomation(
     _collect_toa_bucket_registry,
     logger=LOGGER,
     exporter_factory=TOAExistingSessionExporter,
+    times=BUCKET_COLLECTION_TIMES,
     export_subdir="toa-bucket-exports",
     history_filename="toa-bucket-collection.jsonl",
     state_filename="toa_bucket_collection_state.json",
@@ -8192,16 +8197,12 @@ def main() -> None:
             AUTO_IMPRODUCTIVE_CLOSER.interval_seconds,
             auto_improductive_enabled,
         )
-        if auto_improductive_enabled and TOA_BUCKET_AUTOMATION.credentials_path.is_file():
+        if auto_improductive_enabled:
             TOA_BUCKET_AUTOMATION.start()
             TOA_BUCKET_AUTOMATION.trigger("startup")
             LOGGER.info(
-                "Coleta automatica de buckets TOA iniciada para alimentar a fila de baixas"
-            )
-        elif auto_improductive_enabled:
-            LOGGER.warning(
-                "Auto-baixa esta ligada, mas config/toa_credentials.dat nao existe; "
-                "coleta de buckets indisponivel"
+                "Coleta automatica de buckets TOA iniciada a cada 5 minutos "
+                "para alimentar as filas improdutiva e produtiva"
             )
         if web_attach_toa:
             LOGGER.info(
