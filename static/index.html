@@ -812,34 +812,6 @@
           </div>
         </div>
 
-        <section class="auto-improductive-card" aria-label="Auto-baixa de improdutivas">
-          <div class="auto-improductive-heading">
-            <div>
-              <div class="toa-automation-title-row">
-                <h4>Auto-baixa improdutivas</h4>
-                <span class="toa-automation-state" id="autoImproductiveStatus">
-                  <span class="toa-status-dot" aria-hidden="true"></span>
-                  <span id="autoImproductiveStatusText">Carregando</span>
-                </span>
-              </div>
-              <p>
-                A cada 5 minutos revisa as agendas de todas as cidades. Enquanto a
-                atividade estiver em campo no TOA, ela permanece aguardando.
-              </p>
-            </div>
-            <button class="button primary" id="autoImproductiveToggle" type="button">
-              <i data-lucide="power" aria-hidden="true"></i>
-              <span>Ativar</span>
-            </button>
-          </div>
-          <div class="auto-improductive-metrics">
-            <div><span>Proximo ciclo</span><strong id="autoImproductiveNext">-</strong></div>
-            <div><span>Aguardando TOA</span><strong id="autoImproductiveWaiting">0</strong></div>
-            <div><span>Baixadas na rodada</span><strong id="autoImproductiveClosed">0</strong></div>
-            <div><span>Bloqueadas</span><strong id="autoImproductiveBlocked">0</strong></div>
-          </div>
-        </section>
-
         <div class="toa-automation-content">
           <div>
             <h4>Rotas monitoradas</h4>
@@ -1070,7 +1042,7 @@
             </button>
             <button class="button primary" id="autoCloseStart" type="button" disabled title="Executar baixa automatica direta das OS aptas">
               <i data-lucide="zap" aria-hidden="true"></i>
-              <span>Baixa Automatica (100%)</span>
+              <span>Baixa Automatica</span>
             </button>
             <button class="button secondary hidden" id="toaLiveOpen" type="button" aria-hidden="true" tabindex="-1">
               <i data-lucide="external-link" aria-hidden="true"></i>
@@ -1078,6 +1050,36 @@
             </button>
           </div>
         </header>
+
+        <section class="auto-improductive-card" aria-label="Auto-baixa de improdutivas">
+          <div class="auto-improductive-heading">
+            <div>
+              <div class="toa-automation-title-row">
+                <h4>Auto-baixa de improdutivas</h4>
+                <span class="toa-automation-state" id="autoImproductiveStatus">
+                  <span class="toa-status-dot" aria-hidden="true"></span>
+                  <span id="autoImproductiveStatusText">Carregando</span>
+                </span>
+              </div>
+              <p>
+                Monitora todas as cidades a cada 5 minutos. Enquanto a atividade
+                estiver em campo no TOA, a O.S. permanece aguardando e e revisada
+                novamente no proximo ciclo.
+              </p>
+            </div>
+            <button class="button primary" id="autoImproductiveToggle" type="button">
+              <i data-lucide="power" aria-hidden="true"></i>
+              <span>Ativar</span>
+            </button>
+          </div>
+          <div class="auto-improductive-metrics">
+            <div><span>Proximo ciclo</span><strong id="autoImproductiveNext">-</strong></div>
+            <div><span>Aguardando TOA</span><strong id="autoImproductiveWaiting">0</strong></div>
+            <div><span>Baixadas na rodada</span><strong id="autoImproductiveClosed">0</strong></div>
+            <div><span>Bloqueadas</span><strong id="autoImproductiveBlocked">0</strong></div>
+          </div>
+        </section>
+
         <section class="semi-auto-panel hidden" id="semiAutoPanel" aria-label="Fila de baixa de ordens">
           <header class="semi-auto-head">
             <div>
