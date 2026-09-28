@@ -386,10 +386,10 @@ class TOAExistingSessionExporter:
         target = self.download_root / filename
         format_name = str(result.get("format") or "").strip().casefold()
         if format_name == "csv":
-            csv = result.get("csv")
-            if not isinstance(csv, str) or not csv.strip():
+            csv_text = result.get("csv")
+            if not isinstance(csv_text, str) or not csv_text.strip():
                 raise RuntimeError("Exportacao TOA retornou CSV vazio")
-            target.write_text(csv, encoding="utf-8-sig")
+            target.write_text(csv_text, encoding="utf-8-sig")
             return target
         if format_name == "xlsx":
             encoded = str(result.get("base64") or "")
