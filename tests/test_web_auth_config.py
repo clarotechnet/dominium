@@ -1,5 +1,7 @@
 import os
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import app
@@ -42,6 +44,41 @@ class WebAuthConfigTests(unittest.TestCase):
         self.assertFalse(state["bootstrap_required"])
         self.assertFalse(state["bootstrap_allowed"])
         self.assertTrue(state["registration_enabled"])
+
+    def test_unauthenticated_bootstrap_endpoint_is_rejected(self):
+        handler = app.PanelHandler.__new__(app.PanelHandler)
+        handler.headers = {"Host": "127.0.0.1:8791"}
+        handler.client_address = ("127.0.0.1", 49152)
+        handler._auth_session = lambda: None
+        responses = []
+        handler._json = lambda status, payload: responses.append((int(status), payload))
+
+        self.assertFalse(handler._security_preflight("GET", "/api/auth/bootstrap"))
+        self.assertEqual(responses[0][0], 401)
+
+    def test_unauthenticated_session_endpoint_remains_public(self):
+        handler = app.PanelHandler.__new__(app.PanelHandler)
+        handler.headers = {"Host": "127.0.0.1:8791"}
+        handler.client_address = ("127.0.0.1", 49152)
+        handler._auth_session = lambda: None
+        responses = []
+        handler._json = lambda status, payload: responses.append((int(status), payload))
+
+        self.assertTrue(handler._security_preflight("GET", "/api/auth/session"))
+        self.assertEqual(responses, [])
+
+    def test_static_backup_artifacts_are_never_served(self):
+        handler = app.PanelHandler.__new__(app.PanelHandler)
+        errors = []
+        handler.send_error = lambda status, *args, **kwargs: errors.append(int(status))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "app.js.bak_secret").write_text("sensitive", encoding="utf-8")
+            with patch.object(app, "STATIC_ROOT", root):
+                handler._static("/app.js.bak_secret")
+
+        self.assertEqual(errors, [404])
 
     def test_public_https_proxy_is_allowed_only_when_explicitly_trusted(self):
         handler = app.PanelHandler.__new__(app.PanelHandler)

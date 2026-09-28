@@ -3825,7 +3825,6 @@ class PanelHandler(BaseHTTPRequestHandler):
                 )
                 return False
         public_auth = path in {
-            "/api/auth/bootstrap",
             "/api/auth/register",
             "/api/auth/login",
             "/api/auth/session",
@@ -3952,7 +3951,16 @@ class PanelHandler(BaseHTTPRequestHandler):
 
     def _static(self, request_path: str) -> None:
         relative = "index.html" if request_path == "/" else request_path.lstrip("/")
-        path = (STATIC_ROOT / relative).resolve()
+        relative_path = Path(relative)
+        filename = relative_path.name.casefold()
+        blocked_markers = (".bak", ".old", ".orig", ".tmp", ".swp")
+        if (
+            any(part.startswith(".") for part in relative_path.parts)
+            or any(marker in filename for marker in blocked_markers)
+        ):
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
+        path = (STATIC_ROOT / relative_path).resolve()
         if STATIC_ROOT.resolve() not in path.parents and path != STATIC_ROOT.resolve():
             self.send_error(HTTPStatus.NOT_FOUND)
             return

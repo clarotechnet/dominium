@@ -849,6 +849,8 @@ toa_local_collector	tests/test_toa_local_collector.py
 unittest	tests/test_toa_local_collector.py
 app	tests/test_web_auth_config.py
 os	tests/test_web_auth_config.py
+pathlib	tests/test_web_auth_config.py
+tempfile	tests/test_web_auth_config.py
 unittest	tests/test_web_auth_config.py
 __future__	toa_agenda.py
 collections	toa_agenda.py

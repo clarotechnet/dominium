@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	130	74	39	DOMINIUM | MAPA DE RESPONSABILIDADE	f8391ce3582a7ef1
+orchestration	app.py	130	74	39	DOMINIUM | MAPA DE RESPONSABILIDADE	d2c0fade1d0945e8
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	3767cb9484eaea2d
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	bulk_orders.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	2775b7a068f33346
@@ -201,7 +201,7 @@ tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
 tests	tests/test_toa_live.py	26		1		c296ffdcf69eaca9
 tests	tests/test_toa_live_lookup.py	11		1		222b7464976a3788
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
-tests	tests/test_web_auth_config.py	16	1			99c3b240a63cbdb8
+tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb
 toa	toa-discovery/core.js	25			DOMINIUM | MAPA DE RESPONSABILIDADE	9e149f8465bb638e
 toa	toa-discovery/exporter.js	20		1	DOMINIUM | MAPA DE RESPONSABILIDADE	78edda133c880436

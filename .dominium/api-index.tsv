@@ -93,4 +93,6 @@ endpoint	path
 /api/orders/2207229/material-inventory?profile=natal	tests/test_app.py
 /api/orders/{order.id_os}/close?profile=natal	tests/test_app.py
 /api/orders/1837422/close?profile=natal	tests/test_installer_reassignment.py
+/api/auth/bootstrap	tests/test_web_auth_config.py
+/api/auth/session	tests/test_web_auth_config.py
 /api/logs	tests/test_web_auth_config.py

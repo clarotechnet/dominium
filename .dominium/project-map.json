@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-27T04:12:24+00:00",
+  "generated_at": "2026-09-28T11:46:59+00:00",
   "schema": 2,
-  "source_fingerprint": "0ebf67e63d415b0b8ca5ac117c882c5d189e03201535b538afa62aac9492cad9",
+  "source_fingerprint": "455b2219eb941a06c356b5858c0c0d7a7dbef4d28cd4b4d8e4de4c9073f9a9fa",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 294523,
-      "sha256": "f8391ce3582a7ef1b005c05596725a5d7babc88ecb157b131e174a829617656e",
+      "bytes": 294881,
+      "sha256": "d2c0fade1d0945e857145f3d7241d5dda7cfab8c3d7ecb36e3c975eaa9dcef4b",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -3882,21 +3882,25 @@
     {
       "path": "tests/test_web_auth_config.py",
       "category": "tests",
-      "bytes": 8458,
-      "sha256": "99c3b240a63cbdb8b14dee9aede4c510050842aa7d7e862e8f9ca2bd9e76ccc2",
+      "bytes": 10087,
+      "sha256": "cc659c0071083bc830834c2cd85829552374cc5a887b05f1dbd2f4a578c12f5f",
       "summary": "",
       "imports": [
         "app",
         "os",
+        "pathlib",
+        "tempfile",
         "unittest"
       ],
       "endpoints": [
+        "/api/auth/bootstrap",
+        "/api/auth/session",
         "/api/logs"
       ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 16
+      "symbol_count": 19
     },
     {
       "path": "toa-discovery/content.js",
