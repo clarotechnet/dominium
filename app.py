@@ -2689,6 +2689,14 @@ def _automatic_toa_import(route: dict[str, str], path: Path) -> dict:
             }
         raise
 
+    registry_result = _safe_record_import_contracts(preview, target, profile)
+    if not registry_result.get("ok"):
+        LOGGER.warning(
+            "[%s] TOA automatico: bucket lido, mas registro persistente falhou: %s",
+            profile.label,
+            registry_result.get("error", "erro desconhecido"),
+        )
+
     if not profile.close_enabled:
         raise ValueError(f"Importacao ainda nao habilitada para {profile.label}")
     if not OPERATION_GATE.acquire(timeout=300):
@@ -2721,7 +2729,6 @@ def _automatic_toa_import(route: dict[str, str], path: Path) -> dict:
             time.monotonic() - started,
             result=result,
         )
-        _safe_record_import_contracts(preview, target, profile)
         return {
             "status": "concluida",
             "count": int(result.get("count", len(preview.orders))),
