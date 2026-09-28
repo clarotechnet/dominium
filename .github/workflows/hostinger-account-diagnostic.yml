@@ -14,6 +14,7 @@ concurrency:
 
 jobs:
   validate-and-deploy:
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip deploy]')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -200,9 +201,12 @@ jobs:
           }
 
           DOT_STATUS="$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/.env")"
-          test "$DOT_STATUS" = "404" || {
-            echo "::error::Dotfile nao foi bloqueado: HTTP $DOT_STATUS"
-            exit 1
-          }
+          case "$DOT_STATUS" in
+            403|404) ;;
+            *)
+              echo "::error::Dotfile nao foi bloqueado: HTTP $DOT_STATUS"
+              exit 1
+              ;;
+          esac
 
           echo "DOMINIUM production smoke tests: OK"
