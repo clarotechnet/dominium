@@ -942,6 +942,7 @@ re	toa_contract_registry.py
 threading	toa_contract_registry.py
 time	toa_contract_registry.py
 typing	toa_contract_registry.py
+unicodedata	toa_contract_registry.py
 __future__	toa_datalake_store.py
 contextlib	toa_datalake_store.py
 datetime	toa_datalake_store.py

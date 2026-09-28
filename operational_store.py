@@ -524,6 +524,30 @@ class OperationalStore:
     def _rows(connection: sqlite3.Connection, query: str, values: tuple[Any, ...]) -> list[dict[str, Any]]:
         return [dict(row) for row in connection.execute(query, values).fetchall()]
 
+    def order_by_id_os(
+        self,
+        profile: str,
+        id_os: int,
+        *,
+        source: str = "imperium",
+    ) -> dict[str, Any] | None:
+        wanted_profile = _text(profile, 40)
+        wanted_id = int(id_os or 0)
+        wanted_source = _text(source, 40)
+        if not wanted_profile or wanted_id <= 0:
+            return None
+        with self.lock, closing(self._connect()) as connection, connection:
+            row = connection.execute(
+                """
+                SELECT * FROM orders
+                WHERE profile=? AND id_os=? AND source=?
+                ORDER BY updated_at DESC
+                LIMIT 1
+                """,
+                (wanted_profile, wanted_id, wanted_source),
+            ).fetchone()
+            return dict(row) if row is not None else None
+
     def contract(self, contract: str, *, profile: str = "") -> dict[str, Any] | None:
         wanted = _digits(contract)
         if not wanted:

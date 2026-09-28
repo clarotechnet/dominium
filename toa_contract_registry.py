@@ -20,6 +20,7 @@ import os
 import re
 import threading
 import time
+import unicodedata
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -62,6 +63,15 @@ def _iso_date(value: str, fallback: str) -> str:
         except ValueError:
             continue
     return fallback
+
+
+def _normalize_service_name(value: object) -> str:
+    text = unicodedata.normalize("NFD", str(value or ""))
+    text = "".join(
+        char for char in text
+        if unicodedata.category(char) != "Mn"
+    )
+    return " ".join(text.upper().split())
 
 
 class TOAContractRegistry:
@@ -285,6 +295,28 @@ class TOAContractRegistry:
             )
             self._save(payload)
         return {"ok": True, "recorded": recorded, "updated_at": now}
+
+    def service_id(self, service_name: str) -> int | None:
+        wanted = _normalize_service_name(service_name)
+        if not wanted:
+            return None
+        with self.lock:
+            payload = self._load()
+        matches: set[int] = set()
+        for record in payload.get("records", {}).values():
+            if not isinstance(record, dict):
+                continue
+            for order in record.get("orders", ()) or ():
+                if not isinstance(order, dict):
+                    continue
+                label = str(order.get("service") or "").strip()
+                match = re.match(r"^\s*(\d+)\s*-\s*(.+?)\s*$", label)
+                if match is None:
+                    continue
+                normalized = _normalize_service_name(match.group(2))
+                if normalized == wanted:
+                    matches.add(int(match.group(1)))
+        return next(iter(matches)) if len(matches) == 1 else None
 
     def public_state(
         self,

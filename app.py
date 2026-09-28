@@ -1221,6 +1221,96 @@ MANUAL_PROFILE_CITY_SCOPE = {
 }
 
 
+def _historical_order_from_record(
+    profile: ProfileRuntime,
+    record: dict | None,
+) -> Order | None:
+    if not isinstance(record, dict):
+        return None
+    if str(record.get("source") or "").strip().lower() != "imperium":
+        return None
+    try:
+        id_os = int(record.get("id_os") or 0)
+    except (TypeError, ValueError):
+        return None
+    num_os = "".join(re.findall(r"\d", str(record.get("os_number") or "")))
+    contract = "".join(re.findall(r"\d", str(record.get("contract") or "")))
+    service_name = str(record.get("service") or "").strip()
+    if id_os <= 0 or not num_os or not contract or not service_name:
+        return None
+    service_id = 0
+    try:
+        service = profile.api.native_order_protocol.service(service_name)
+        service_id = int(service.id_service)
+    except (AttributeError, ValueError):
+        service_id = int(TOA_CONTRACTS.service_id(service_name) or 0)
+    if service_id <= 0:
+        return None
+    return Order(
+        id_os=id_os,
+        num_os=num_os,
+        contract=contract,
+        id_service=service_id,
+        service=service_name,
+        status=str(record.get("imperium_status") or "EM CAMPO").strip() or "EM CAMPO",
+    )
+
+
+def _resolve_operational_order(
+    profile: ProfileRuntime,
+    id_os: int,
+) -> tuple[Order | None, str, dict | None]:
+    with profile.cache_lock:
+        current = profile.order_cache.get(int(id_os))
+    if current is not None:
+        return current, "imperium_cache", None
+    record = OPERATIONAL_STORE.order_by_id_os(
+        profile.key,
+        int(id_os),
+        source="imperium",
+    )
+    historical = _historical_order_from_record(profile, record)
+    if historical is None:
+        return None, "", None
+    return historical, "imperium_history", record
+
+
+def _historical_manual_close_scope(
+    profile: ProfileRuntime,
+    order: Order,
+    record: dict,
+) -> dict:
+    city_scope = MANUAL_PROFILE_CITY_SCOPE.get(profile.key)
+    if not city_scope:
+        raise OperationBlocked(("profile_scope_mismatch", "operation_blocked"))
+    observed_at = str(record.get("updated_at") or "").strip()
+    if not observed_at:
+        raise OperationBlocked(("stale_snapshot", "operation_blocked"))
+    state = {
+        "project_id": PROJECT_IDENTITY.project_id,
+        "source": "imperium_history_v1",
+        "profile_key": profile.key,
+        "city_scope": city_scope,
+        "history_updated_at": observed_at,
+        "id_os": order.id_os,
+        "num_os": order.num_os,
+        "contract": order.contract,
+        "id_service": order.id_service,
+        "service": order.service,
+        "status": order.status,
+    }
+    encoded = json.dumps(
+        state,
+        ensure_ascii=True,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    return {
+        **state,
+        "state_hash": hashlib.sha256(encoded).hexdigest(),
+    }
+
+
 def _manual_close_scope(
     profile: ProfileRuntime,
     order: Order,
@@ -1274,28 +1364,60 @@ def _validate_manual_close_operation(
     scope = body.get("manual_scope")
     if not isinstance(scope, dict):
         raise OperationBlocked(("payload_scope_violation", "operation_blocked"))
-    with profile.cache_lock:
-        cached = profile.order_cache.get(order.id_os)
-        cache_date = profile.cache_date
-        cache_generation = profile.cache_generation
-    if cached is None or cached != order:
-        raise OperationBlocked(("stale_snapshot", "operation_blocked"))
-    if cache_date is None or cache_generation <= 0:
-        raise OperationBlocked(("stale_snapshot", "operation_blocked"))
 
-    client_generation = int(scope.get("cache_generation") or 0)
-    if (
-        client_generation != cache_generation
-        or scope.get("cache_date") != cache_date.isoformat()
-    ):
-        raise OperationBlocked(("stale_snapshot", "operation_blocked"))
+    scope_source = str(scope.get("source") or "").strip()
+    if scope_source == "imperium_history_v1":
+        record = OPERATIONAL_STORE.order_by_id_os(
+            profile.key,
+            order.id_os,
+            source="imperium",
+        )
+        historical = _historical_order_from_record(profile, record)
+        if historical is None or historical != order or record is None:
+            raise OperationBlocked(("stale_snapshot", "operation_blocked"))
+        expected = _historical_manual_close_scope(profile, historical, record)
+        exact_fields = (
+            "history_updated_at",
+            "id_os",
+            "num_os",
+            "contract",
+            "id_service",
+            "service",
+            "status",
+        )
+    else:
+        with profile.cache_lock:
+            cached = profile.order_cache.get(order.id_os)
+            cache_date = profile.cache_date
+            cache_generation = profile.cache_generation
+        if cached is None or cached != order:
+            raise OperationBlocked(("stale_snapshot", "operation_blocked"))
+        if cache_date is None or cache_generation <= 0:
+            raise OperationBlocked(("stale_snapshot", "operation_blocked"))
 
-    expected = _manual_close_scope(
-        profile,
-        cached,
-        cache_date=cache_date,
-        cache_generation=cache_generation,
-    )
+        client_generation = int(scope.get("cache_generation") or 0)
+        if (
+            client_generation != cache_generation
+            or scope.get("cache_date") != cache_date.isoformat()
+        ):
+            raise OperationBlocked(("stale_snapshot", "operation_blocked"))
+
+        expected = _manual_close_scope(
+            profile,
+            cached,
+            cache_date=cache_date,
+            cache_generation=cache_generation,
+        )
+        exact_fields = (
+            "cache_date",
+            "id_os",
+            "num_os",
+            "contract",
+            "id_service",
+            "service",
+            "status",
+        )
+
     blockers: list[str] = []
     if scope.get("project_id") != expected["project_id"]:
         blockers.append("wrong_project_identity")
@@ -1305,15 +1427,6 @@ def _validate_manual_close_operation(
         blockers.append("city_scope_mismatch")
     if scope.get("source") != expected["source"]:
         blockers.append("payload_scope_violation")
-    exact_fields = (
-        "cache_date",
-        "id_os",
-        "num_os",
-        "contract",
-        "id_service",
-        "service",
-        "status",
-    )
     if any(scope.get(field) != expected[field] for field in exact_fields):
         blockers.append("stale_snapshot")
     approved_hash = str(body.get("approved_state_hash", "")).strip()
@@ -1616,6 +1729,18 @@ def _match_live_capture_to_orders(
         activity_id = str(capture.get("aid", "")).strip()
         capture_city = str(capture.get("city", "")).strip()
         capture_date = _live_capture_iso_date(capture.get("scheduled_date"))
+        refresh_info = result.get("imperium_refresh")
+        refresh_info = refresh_info if isinstance(refresh_info, dict) else {}
+        refresh_missing = set(refresh_info.get("missing_after") or ())
+        operational_record = OPERATIONAL_STORE.contract(
+            contract,
+            profile=profile.key,
+        ) or {}
+        last_imperium_by_os = {
+            str(item.get("os_number") or "").strip(): item
+            for item in operational_record.get("orders") or ()
+            if isinstance(item, dict) and item.get("source") == "imperium"
+        }
         registry_records = TOA_CONTRACTS.public_state(
             profile=profile.key,
             date=capture_date,
@@ -1683,16 +1808,45 @@ def _match_live_capture_to_orders(
             for order in current_contract_matches
             if order.get("num_os") in task_numbers
         ]
-        all_matches_map = {str(o.get("num_os") or ""): o for o in current_contract_matches}
+        historical_exact_matches: list[dict] = []
+        for os_number in sorted(task_numbers):
+            record = last_imperium_by_os.get(os_number)
+            historical = _historical_order_from_record(profile, record)
+            if historical is None or record is None:
+                continue
+            scope = _historical_manual_close_scope(profile, historical, record)
+            historical_exact_matches.append({
+                **historical.to_dict(),
+                "operation_source": "imperium_history",
+                "manual_scope": scope,
+                "approved_state_hash": scope["state_hash"],
+                "historical_imperium": True,
+                "read_only": False,
+            })
+
+        all_matches_map = {
+            str(o.get("num_os") or ""): o
+            for o in current_contract_matches
+        }
         for o in exact_matches:
             num = str(o.get("num_os") or "")
             if num:
                 all_matches_map[num] = o
-        selected = list(all_matches_map.values()) if all_matches_map else (exact_matches or current_exact_matches)
+        for o in historical_exact_matches:
+            num = str(o.get("num_os") or "")
+            if num and num not in all_matches_map:
+                all_matches_map[num] = o
+
+        selected = (
+            list(all_matches_map.values())
+            if all_matches_map
+            else (exact_matches or current_exact_matches or historical_exact_matches)
+        )
         capture["imperium_matches"] = selected
         capture["imperium_match_kind"] = (
-            "os_number_and_activity" if exact_matches and selected is exact_matches
+            "os_number_and_activity" if exact_matches
             else "os_number_current_imperium" if current_contract_matches
+            else "os_number_operational_history" if historical_exact_matches
             else "activity_without_exact_os" if contract_matches
             else "not_found"
         )
@@ -1735,11 +1889,54 @@ def _match_live_capture_to_orders(
                 continue
             os_number = str(task.get("os_number") or "").strip()
             current_order = matches_by_os.get(os_number)
-            task["imperium_field"] = current_order is not None
-            task["imperium_status"] = (
-                str(current_order.get("status") or "EM CAMPO").strip()
-                if current_order is not None
-                else "FORA DA LISTA EM CAMPO"
+            history_order = last_imperium_by_os.get(os_number)
+            historical_match = bool(
+                current_order
+                and current_order.get("operation_source") == "imperium_history"
+            )
+            task_key = f"{contract}:{os_number}"
+            task["imperium_field"] = current_order is not None and not historical_match
+            if current_order is not None and not historical_match:
+                task["imperium_status"] = str(
+                    current_order.get("status") or "EM CAMPO"
+                ).strip()
+                task["imperium_status_source"] = "current_field_cache"
+            elif refresh_info.get("busy"):
+                task["imperium_status"] = "NAO CONFIRMADA - IMPERIUM OCUPADO"
+                task["imperium_status_source"] = "refresh_busy"
+            elif refresh_info.get("error"):
+                task["imperium_status"] = "NAO CONFIRMADA - FALHA NA ATUALIZACAO"
+                task["imperium_status_source"] = "refresh_error"
+            elif refresh_info.get("refreshed") and task_key in refresh_missing:
+                task["imperium_status"] = "NAO ESTA EM CAMPO"
+                task["imperium_status_source"] = "current_field_refresh"
+            elif history_order is not None:
+                last_status = str(
+                    history_order.get("imperium_status") or "OBSERVADA"
+                ).strip()
+                task["imperium_status"] = f"ULTIMO REGISTRO: {last_status}"
+                task["imperium_status_source"] = "operational_history"
+                task["imperium_last_seen_at"] = str(
+                    history_order.get("updated_at") or ""
+                )
+            else:
+                task["imperium_status"] = "NAO CONFIRMADA NO CACHE ATUAL"
+                task["imperium_status_source"] = "unconfirmed"
+        if refresh_info.get("busy") and any(
+            not bool(task.get("imperium_field"))
+            for task in capture.get("tasks", [])
+            if isinstance(task, dict)
+        ):
+            capture.setdefault("validation_warnings", []).append(
+                "Imperium ocupado; a situacao atual da OS ainda nao foi confirmada."
+            )
+        elif refresh_info.get("refreshed") and any(
+            str(task.get("imperium_status_source")) == "current_field_refresh"
+            for task in capture.get("tasks", [])
+            if isinstance(task, dict)
+        ):
+            capture.setdefault("validation_warnings", []).append(
+                "A OS nao apareceu na lista EM CAMPO apos atualizar o Imperium."
             )
         capture["operation_blockers"] = list(dict.fromkeys(blockers))
     result["profile"] = profile.key
@@ -1870,6 +2067,97 @@ def _resolve_toa_live_reference(
             "OS nao localizada na lista atual do DOMINIUM. Atualize as ordens e tente novamente"
         )
     return reference, "contract", ""
+
+
+def _live_lookup_task_keys(result: dict) -> set[tuple[str, str]]:
+    keys: set[tuple[str, str]] = set()
+    for capture in result.get("results") or ():
+        if not isinstance(capture, dict):
+            continue
+        contract = "".join(re.findall(r"\d", str(capture.get("contract") or "")))
+        if not contract:
+            continue
+        for task in capture.get("tasks") or ():
+            if not isinstance(task, dict):
+                continue
+            os_number = "".join(re.findall(
+                r"\d",
+                str(task.get("os_number") or task.get("num_os") or ""),
+            ))
+            if os_number:
+                keys.add((contract, os_number))
+    return keys
+
+
+def _refresh_live_lookup_imperium_cache(
+    profile: ProfileRuntime,
+    result: dict,
+) -> dict:
+    wanted = _live_lookup_task_keys(result)
+    with profile.cache_lock:
+        current = {
+            (str(order.contract).strip(), str(order.num_os).strip())
+            for order in profile.order_cache.values()
+        }
+    missing_before = wanted - current
+    info = {
+        "attempted": bool(missing_before),
+        "refreshed": False,
+        "busy": False,
+        "error": "",
+        "missing_before": sorted(f"{contract}:{os_number}" for contract, os_number in missing_before),
+        "missing_after": sorted(f"{contract}:{os_number}" for contract, os_number in missing_before),
+    }
+    if not missing_before:
+        return info
+    if not OPERATION_GATE.acquire(timeout=5.0):
+        info["busy"] = True
+        return info
+
+    try:
+        date = dt.date.today()
+        orders = profile.api.list_orders(
+            date,
+            status="field",
+            service_type="all",
+        )
+        with profile.cache_lock:
+            profile.order_cache.clear()
+            profile.order_cache.update({order.id_os: order for order in orders})
+            profile.cache_date = date
+            profile.cache_generation = getattr(profile, "cache_generation", 0) + 1
+        _reconcile_failures(profile, orders)
+        rows = _enrich_orders(profile, date, orders)
+        _record_operational_orders(profile, rows)
+        current = {
+            (str(order.contract).strip(), str(order.num_os).strip())
+            for order in orders
+        }
+        missing_after = wanted - current
+        info.update({
+            "refreshed": True,
+            "count": len(orders),
+            "missing_after": sorted(
+                f"{contract}:{os_number}"
+                for contract, os_number in missing_after
+            ),
+        })
+        LOGGER.info(
+            "[%s] Consulta TOA atualizou cache Imperium: %s OS em campo; %s tarefa(s) ainda ausentes",
+            profile.label,
+            len(orders),
+            len(missing_after),
+        )
+    except (DataSnapError, OSError) as exc:
+        info["error"] = str(exc)
+        LOGGER.warning(
+            "[%s] Nao foi possivel atualizar cache Imperium durante consulta TOA: %s",
+            profile.label,
+            exc,
+        )
+    finally:
+        OPERATION_GATE.release()
+    return info
 
 
 def _prepare_toa_live_lookup(
@@ -2050,7 +2338,7 @@ def _validated_close_operation(
     close_code: str,
 ) -> tuple[OSIdentity, OSSnapshot, ImportScope, PlannedClose] | dict:
     operation_source = str(body.get("operation_source", "")).strip()
-    if operation_source in {"imperium_cache", "toa_live_auto"}:
+    if operation_source in {"imperium_cache", "imperium_history", "toa_live_auto"}:
         return _validate_manual_close_operation(profile, order, body)
     if operation_source not in {"", "toa_import"}:
         raise OperationBlocked(("payload_scope_violation", "operation_blocked"))
@@ -4419,10 +4707,12 @@ class PanelHandler(BaseHTTPRequestHandler):
             )
             if installer_detail_match is not None:
                 id_os = int(installer_detail_match.group(1))
-                with profile.cache_lock:
-                    order = profile.order_cache.get(id_os)
+                order, _order_source, _history_record = _resolve_operational_order(
+                    profile,
+                    id_os,
+                )
                 if order is None:
-                    raise ValueError("Atualize a lista antes de consultar esta OS")
+                    raise ValueError("A OS nao foi localizada no historico operacional do Imperium")
                 if not OPERATION_GATE.acquire(timeout=10.0):
                     self._json(
                         HTTPStatus.CONFLICT,
@@ -4590,10 +4880,12 @@ class PanelHandler(BaseHTTPRequestHandler):
             )
             if inventory_match is not None:
                 id_os = int(inventory_match.group(1))
-                with profile.cache_lock:
-                    order = profile.order_cache.get(id_os)
+                order, _order_source, _history_record = _resolve_operational_order(
+                    profile,
+                    id_os,
+                )
                 if order is None:
-                    raise ValueError("Atualize a lista antes de consultar o estoque")
+                    raise ValueError("A OS nao foi localizada no historico operacional do Imperium")
                 if not OPERATION_GATE.acquire(timeout=10.0):
                     self._json(
                         HTTPStatus.CONFLICT,
@@ -5271,6 +5563,10 @@ class PanelHandler(BaseHTTPRequestHandler):
                     )
                 else:
                     result = TOA_LIVE.lookup_contract(contract)
+                result["imperium_refresh"] = _refresh_live_lookup_imperium_cache(
+                    profile,
+                    result,
+                )
                 _record_live_technician_evidence(profile, result)
                 _record_operational_toa_capture(profile, result)
                 self._json(
@@ -6367,10 +6663,12 @@ class PanelHandler(BaseHTTPRequestHandler):
                 paste_text = str(body.get("text", ""))
                 inventory = parse_toa_clipboard(paste_text)
                 paste_key = _material_paste_key(paste_text)
-                with profile.cache_lock:
-                    order = profile.order_cache.get(id_os)
+                order, _order_source, _history_record = _resolve_operational_order(
+                    profile,
+                    id_os,
+                )
                 if order is None:
-                    raise ValueError("Atualize a lista antes de processar a colagem")
+                    raise ValueError("A OS nao foi localizada no historico operacional do Imperium")
                 if not OPERATION_GATE.acquire(blocking=False):
                     self._json(
                         HTTPStatus.CONFLICT,
@@ -6526,10 +6824,12 @@ class PanelHandler(BaseHTTPRequestHandler):
                 close_code,
                 transport,
             )
-            with profile.cache_lock:
-                order = profile.order_cache.get(id_os)
+            order, _order_source, _history_record = _resolve_operational_order(
+                profile,
+                id_os,
+            )
             if order is None:
-                raise ValueError("Atualize a lista antes de baixar esta OS")
+                raise ValueError("A OS nao foi localizada no historico operacional do Imperium")
             if str(body.get("num_os", "")) != order.num_os:
                 raise ValueError("O numero da OS nao corresponde a linha selecionada")
             _validated_close_operation(profile, order, body, close_code)

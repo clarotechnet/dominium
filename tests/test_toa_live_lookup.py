@@ -11,6 +11,7 @@ from app import (
     _annotate_live_operational_windows,
     _merge_live_capture_registry_tasks,
     _match_live_capture_to_orders,
+    _refresh_live_lookup_imperium_cache,
     _resolve_toa_live_reference,
 )
 from imperium_api import Order
@@ -127,6 +128,110 @@ class TOALiveLookupTests(unittest.TestCase):
             if task["os_number"] == "2652246791"
         )
         self.assertEqual(chip_task["close_code"], "706")
+
+    def test_live_lookup_refreshes_field_cache_when_toa_os_is_missing(self) -> None:
+        order = Order(
+            2214730,
+            "2658396041",
+            "4296304",
+            43,
+            "ADESAO - INSTALAR PONTO VIRTUA",
+        )
+        profile = SimpleNamespace(
+            key="natal",
+            label="Natal",
+            cache_lock=threading.RLock(),
+            order_cache={},
+            cache_date=None,
+            cache_generation=0,
+            api=SimpleNamespace(
+                list_orders=lambda *_args, **_kwargs: [order],
+            ),
+        )
+        result = {
+            "results": [{
+                "contract": "4296304",
+                "tasks": [{"os_number": "2658396041"}],
+            }],
+        }
+        gate = SimpleNamespace(
+            acquire=lambda **_kwargs: True,
+            release=lambda: None,
+        )
+
+        with (
+            patch("app.OPERATION_GATE", gate),
+            patch("app._reconcile_failures"),
+            patch("app._enrich_orders", return_value=[order.to_dict()]),
+            patch("app._record_operational_orders"),
+        ):
+            info = _refresh_live_lookup_imperium_cache(profile, result)
+
+        self.assertTrue(info["attempted"])
+        self.assertTrue(info["refreshed"])
+        self.assertFalse(info["busy"])
+        self.assertEqual(info["missing_after"], [])
+        self.assertEqual(profile.order_cache[2214730], order)
+        self.assertEqual(profile.cache_date, dt.date.today())
+        self.assertEqual(profile.cache_generation, 1)
+
+    def test_live_lookup_does_not_use_stale_cache_when_imperium_is_busy(self) -> None:
+        profile = SimpleNamespace(
+            key="natal",
+            label="Natal",
+            cache_lock=threading.RLock(),
+            order_cache={},
+            cache_date=dt.date.today(),
+            cache_generation=2,
+            api=SimpleNamespace(
+                list_orders=lambda *_args, **_kwargs: self.fail(
+                    "DataSnap must not run while gate is busy"
+                ),
+            ),
+        )
+        result = {
+            "results": [{
+                "contract": "4296304",
+                "tasks": [{"os_number": "2658396041", "close_code": "409"}],
+            }],
+        }
+        gate = SimpleNamespace(
+            acquire=lambda **_kwargs: False,
+            release=lambda: self.fail("busy gate must not be released"),
+        )
+
+        with patch("app.OPERATION_GATE", gate):
+            info = _refresh_live_lookup_imperium_cache(profile, result)
+        result["imperium_refresh"] = info
+
+        with (
+            patch("app._enrich_orders", return_value=[]),
+            patch("app.TOA_CONTRACTS.public_state", return_value={"records": []}),
+            patch(
+                "app.OPERATIONAL_STORE.contract",
+                return_value={
+                    "orders": [{
+                        "os_number": "2658396041",
+                        "imperium_status": "EM CAMPO",
+                        "source": "imperium",
+                        "updated_at": "2026-09-28T08:26:15-03:00",
+                    }],
+                },
+            ),
+        ):
+            matched = _match_live_capture_to_orders(profile, result)
+
+        task = matched["results"][0]["tasks"][0]
+        self.assertFalse(task["imperium_field"])
+        self.assertEqual(
+            task["imperium_status"],
+            "NAO CONFIRMADA - IMPERIUM OCUPADO",
+        )
+        self.assertEqual(task["imperium_status_source"], "refresh_busy")
+        self.assertIn(
+            "Imperium ocupado",
+            matched["results"][0]["validation_warnings"][0],
+        )
 
     def test_resolves_os_to_contract_from_current_profile(self) -> None:
         profile = SimpleNamespace(
@@ -264,6 +369,65 @@ class TOALiveLookupTests(unittest.TestCase):
             serialized = json.dumps(ledger, ensure_ascii=False)
             self.assertNotIn("NAO DEVE SER SALVO", serialized)
 
+
+    def test_historical_imperium_order_becomes_scoped_manual_match(self) -> None:
+        profile = SimpleNamespace(
+            key="natal",
+            cache_lock=threading.RLock(),
+            cache_date=dt.date(2026, 9, 28),
+            cache_generation=4,
+            installer_overrides={},
+            order_cache={},
+            api=SimpleNamespace(
+                native_order_protocol=SimpleNamespace(
+                    service=lambda _name: SimpleNamespace(id_service=43)
+                )
+            ),
+        )
+        history = {
+            "profile": "natal",
+            "contract": "4296304",
+            "os_number": "2658396041",
+            "id_os": 2214730,
+            "service": "ADESAO - INSTALAR PONTO VIRTUA",
+            "imperium_status": "EM CAMPO",
+            "source": "imperium",
+            "updated_at": "2026-09-28T08:26:15-03:00",
+        }
+        result = {
+            "results": [{
+                "aid": "201021791",
+                "contract": "4296304",
+                "city": "NATAL",
+                "tasks": [{"os_number": "2658396041", "close_code": "409"}],
+            }],
+        }
+
+        with (
+            patch("app.OPERATIONAL_STORE.contract", return_value={
+                "orders": [history],
+            }),
+            patch("app.TOA_CONTRACTS.public_state", return_value={"records": []}),
+        ):
+            matched = _match_live_capture_to_orders(profile, result)
+
+        capture = matched["results"][0]
+        self.assertEqual(capture["imperium_match_kind"], "os_number_operational_history")
+        self.assertEqual(len(capture["imperium_matches"]), 1)
+        order = capture["imperium_matches"][0]
+        self.assertEqual(order["id_os"], 2214730)
+        self.assertEqual(order["id_service"], 43)
+        self.assertEqual(order["operation_source"], "imperium_history")
+        self.assertEqual(order["manual_scope"]["source"], "imperium_history_v1")
+        self.assertEqual(
+            order["approved_state_hash"],
+            order["manual_scope"]["state_hash"],
+        )
+        self.assertFalse(capture["tasks"][0]["imperium_field"])
+        self.assertEqual(
+            capture["tasks"][0]["imperium_status_source"],
+            "operational_history",
+        )
 
 if __name__ == "__main__":
     unittest.main()

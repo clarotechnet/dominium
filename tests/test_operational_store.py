@@ -68,5 +68,24 @@ class OperationalStoreTests(unittest.TestCase):
         self.assertEqual(exported["contracts"][0]["contract"], "4253923")
 
 
+    def test_order_by_id_os_returns_only_requested_imperium_row(self) -> None:
+        self.store.ingest_imperium_orders("natal", [{
+            "contract": "4296304",
+            "num_os": "2658396041",
+            "id_os": 2214730,
+            "service": "ADESAO - INSTALAR PONTO VIRTUA",
+            "status": "EM CAMPO",
+        }])
+
+        row = self.store.order_by_id_os("natal", 2214730)
+
+        self.assertIsNotNone(row)
+        self.assertEqual(row["contract"], "4296304")
+        self.assertEqual(row["os_number"], "2658396041")
+        self.assertEqual(row["source"], "imperium")
+        self.assertIsNone(
+            self.store.order_by_id_os("natal", 2214730, source="monitor_csv")
+        )
+
 if __name__ == "__main__":
     unittest.main()

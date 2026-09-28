@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	130	74	39	DOMINIUM | MAPA DE RESPONSABILIDADE	d2c0fade1d0945e8
+orchestration	app.py	135	74	40	DOMINIUM | MAPA DE RESPONSABILIDADE	875d8e5e17ca2222
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	3767cb9484eaea2d
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	bulk_orders.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	2775b7a068f33346
@@ -98,7 +98,7 @@ shared	official_stock_audit.py	14		2	DOMINIUM | MAPA DE RESPONSABILIDADE	b8d8aa6
 shared	official_stock_blocker_review.py	15			DOMINIUM | MAPA DE RESPONSABILIDADE	9a394acc9ed1e5e8
 shared	official_stock_remediation_plan.py	25		1	DOMINIUM | MAPA DE RESPONSABILIDADE	dc0a0db6611a94a4
 orchestration	operation_scope.py	55			DOMINIUM | MAPA DE RESPONSABILIDADE	3f9d748a18c158b6
-orchestration	operational_store.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	16bf556f5a694301
+orchestration	operational_store.py	24			DOMINIUM | MAPA DE RESPONSABILIDADE	68ffea0441c2cb65
 orchestration	operations_intelligence.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	96115509d8e34c26
 toa	patch_remote_toa.py		2	5		cb6eb87e50eeb356
 shared	productive_protocol_templates.json			3		c04b19e6f576ff97
@@ -175,11 +175,11 @@ tests	tests/test_official_stock_blocker_review.py	21				2bb6e8566ad6e1e5
 tests	tests/test_official_stock_remediation_plan.py	22		1		a64ed28f5256d2d9
 tests	tests/test_offline_candidate_and_resolver.py	12			Comprehensive test suite for frontend block, candidate locator, and material resolver.	2c65244509db2c6a
 tests	tests/test_operation_scope.py	42				f804afda128c9e71
-tests	tests/test_operational_store.py	4				7feee2da1f4abd24
+tests	tests/test_operational_store.py	5				1245242d685ecf66
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
-tests	tests/test_semiauto_frontend.js	18				03df3690fe36ab90
+tests	tests/test_semiauto_frontend.js	19				5a3fb6281ca05630
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
@@ -193,13 +193,13 @@ tests	tests/test_toa_capture.py	36		2		e5e27b0eedd3ae4c
 tests	tests/test_toa_capture_panel.py	7				d5a0869de1ff3b0f
 tests	tests/test_toa_cloud_client.py	7				fa7633bf20afbda8
 tests	tests/test_toa_connector.py	9				d0fdbfda30bc5c1c
-tests	tests/test_toa_contract_registry.py	10				52916856a7baf022
+tests	tests/test_toa_contract_registry.py	11				6e71b7328d1d9f1b
 tests	tests/test_toa_datalake_store.py	5				9a077ca9a38c9926
 tests	tests/test_toa_discovery_browser.py	3				cc0d9dd8e053328f
 tests	tests/test_toa_import.py	15		1		28ef082b0cc1d01f
 tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
 tests	tests/test_toa_live.py	26		1		c296ffdcf69eaca9
-tests	tests/test_toa_live_lookup.py	11		1		222b7464976a3788
+tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb
@@ -223,7 +223,7 @@ toa	toa_capture_panel.py	10		2	DOMINIUM | MAPA DE RESPONSABILIDADE	a1fdf7495ee34
 toa	toa_cloud_client.py	9			Cliente da fila privada Cloudflare usada pelo DOMINIUM primario.	431148a4b1391254
 toa	toa_connector.py	25		2	API local, sanitizada e somente leitura para dados operacionais do TOA.	c8196559e0ceb7af
 toa	toa_context.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	43ac572adde029a8
-toa	toa_contract_registry.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	b0e99161ce94b754
+toa	toa_contract_registry.py	15			DOMINIUM | MAPA DE RESPONSABILIDADE	a1ed2fe41f6f3222
 toa	toa_datalake_store.py	19			DOMINIUM | MAPA DE RESPONSABILIDADE	f7c80584d8f7687e
 toa	toa_discovery_browser.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	70da7424e3e7a77f
 toa	toa_discovery_check.py	1			DOMINIUM | MAPA DE RESPONSABILIDADE	780c396748a6abe3

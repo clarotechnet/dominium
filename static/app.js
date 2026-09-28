@@ -7316,10 +7316,7 @@ function toaLiveImperiumMatch(capture, task) {
   const matches = capture?.imperium_matches || [];
   const exact = matches.find((order) => String(order.num_os) === String(task?.os_number));
   if (exact) return exact;
-  return (state.orders || []).find((order) =>
-    String(order.num_os) === String(task?.os_number)
-    && String(order.contract) === String(capture?.contract)
-  ) || null;
+  return null;
 }
 
 function operationDraftKey(order) {
@@ -7440,6 +7437,14 @@ function prepareToaLiveClose(
   if (!definition) {
     showToast(`O codigo ${code || "vazio"} ainda nao esta cadastrado no painel`, "error");
     return false;
+  }
+
+  if (!state.orders.some((item) => (
+    Number(item.id_os) === Number(order.id_os)
+    && String(item.num_os) === String(order.num_os)
+    && String(item.contract) === String(order.contract)
+  ))) {
+    state.orders = [...state.orders, order];
   }
 
   selectCloseWorkspaceOrder(order.id_os);
@@ -10351,10 +10356,38 @@ function resolveMaterialCodeWithEquivalence(code, inventory = []) {
 function mergeMaterialInventory(materials) {
   const merged = new Map(state.materialInventory.map((item) => [item.code, item]));
   materials.forEach((item) => {
-    merged.set(item.code, { ...merged.get(item.code), ...item });
+    const rawLabel = String(
+      item?.name || item?.lookup_description || item?.description || ""
+    ).trim();
+    const validLabel = (
+      rawLabel
+      && !["undefined", "null", "none"].includes(rawLabel.toLowerCase())
+    ) ? rawLabel : "";
+    const identity = toaLiveMaterialIdentity({
+      code: item?.code,
+      material_code: item?.material_code,
+      description: validLabel,
+    });
+    const code = String(item?.code || item?.material_code || identity.code || "").trim();
+    if (!code) return;
+    const canonical = CANONICAL_MATERIAL_MAP[code];
+    const name = String(
+      validLabel
+      || identity.description
+      || canonical?.name
+      || code
+    ).trim();
+    merged.set(code, {
+      ...merged.get(code),
+      ...item,
+      code,
+      name,
+      lookup_description: name,
+      unit: item?.unit || canonical?.unit || "",
+    });
   });
   state.materialInventory = [...merged.values()].sort((a, b) => (
-    `${a.code} ${a.name}`.localeCompare(`${b.code} ${b.name}`)
+    `${a.code} ${a.name || ""}`.localeCompare(`${b.code} ${b.name || ""}`)
   ));
 }
 

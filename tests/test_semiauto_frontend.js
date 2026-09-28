@@ -12,6 +12,7 @@ const source = fs.readFileSync(
 const imperiumMatch = extractFunction("toaLiveImperiumMatch");
 assert.match(imperiumMatch, /if \(exact\) return exact;/);
 assert.doesNotMatch(imperiumMatch, /matches\.length === 1/);
+assert.doesNotMatch(imperiumMatch, /state\.orders/);
 
 function extractFunction(name) {
   const marker = `function ${name}(`;
@@ -216,6 +217,34 @@ const exactToaMaterial = exactToaMaterialFactory().toaLiveMaterialIdentity({
 });
 assert.equal(exactToaMaterial.code, "22066906");
 assert.notEqual(exactToaMaterial.code, "22026223");
+
+const materialMergeFactory = new Function(`
+  const state = { materialInventory: [] };
+  const CANONICAL_MATERIAL_MAP = {
+    "22025072": { code: "22025072", name: "FITA ISOLANTE 3M 33+", unit: "UN" },
+    "22025321": { code: "22025321", name: "ANEL VEDACAO PLASTICA P PORTA F", unit: "UN" },
+  };
+  function normalize(value) {
+    return String(value || "").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toUpperCase();
+  }
+  ${extractFunction("toaLiveMaterialIdentity")}
+  ${extractFunction("mergeMaterialInventory")}
+  return { state, mergeMaterialInventory };
+`);
+const materialMerge = materialMergeFactory();
+materialMerge.mergeMaterialInventory([
+  { code: "22025072", description: "FITA ISOLANTE 3M 33+", quantity: 2 },
+  { code: "22025321", description: "undefined", quantity: 1 },
+]);
+assert.equal(
+  materialMerge.state.materialInventory.find((item) => item.code === "22025072").name,
+  "FITA ISOLANTE 3M 33+",
+);
+assert.equal(
+  materialMerge.state.materialInventory.find((item) => item.code === "22025321").name,
+  "ANEL VEDACAO PLASTICA P PORTA F",
+);
+assert.ok(materialMerge.state.materialInventory.every((item) => item.name !== "undefined"));
 
 const perTaskCodeFactory = new Function(`
   const state = {

@@ -165,5 +165,37 @@ class TOAContractRegistryTests(unittest.TestCase):
         self.assertEqual([item["contract"] for item in agenda], ["67890"])
 
 
+    def test_service_id_requires_exact_unique_service_name(self) -> None:
+        payload = {
+            "version": 1,
+            "records": {
+                "natal:2026-09-28:1": {
+                    "orders": [
+                        {"service": "43 - ADESAO - INSTALAR PONTO VIRTUA"},
+                        {"service": "44 - INSTALAR PONTO VIRTUA"},
+                    ],
+                },
+                "natal:2026-09-28:2": {
+                    "orders": [
+                        {"service": "43 - ADESAO - INSTALAR PONTO VIRTUA"},
+                    ],
+                },
+            },
+        }
+        self.path.write_text(
+            json.dumps(payload, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
+        self.assertEqual(
+            self.registry.service_id("ADESAO - INSTALAR PONTO VIRTUA"),
+            43,
+        )
+        self.assertEqual(
+            self.registry.service_id("INSTALAR PONTO VIRTUA"),
+            44,
+        )
+        self.assertIsNone(self.registry.service_id("PONTO VIRTUA"))
+
 if __name__ == "__main__":
     unittest.main()

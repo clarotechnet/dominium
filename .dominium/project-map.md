@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-09-28T11:46:59+00:00
-- Source fingerprint: `455b2219eb941a06`
+- Generated: 2026-09-28T12:40:12+00:00
+- Source fingerprint: `b5894bbd26fbe5db`
 - Indexed files: 235
-- Indexed symbols: 2650
+- Indexed symbols: 2664
 - API path references: 97
 
 ## Navigation rule
@@ -16,10 +16,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (130 symbols, 74 API paths, 39 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (135 symbols, 74 API paths, 40 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
-- `operational_store.py` (23 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `operational_store.py` (24 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operations_intelligence.py` (13 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 
 ## toa
@@ -58,7 +58,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `toa_cloud_client.py` (9 symbols) - Cliente da fila privada Cloudflare usada pelo DOMINIUM primario.
 - `toa_connector.py` (25 symbols, 2 DataSnap methods) - API local, sanitizada e somente leitura para dados operacionais do TOA.
 - `toa_context.py` (8 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
-- `toa_contract_registry.py` (13 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `toa_contract_registry.py` (15 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_datalake_store.py` (19 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_discovery_browser.py` (2 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_discovery_check.py` (1 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE

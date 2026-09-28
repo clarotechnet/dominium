@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-28T11:46:59+00:00",
+  "generated_at": "2026-09-28T12:40:12+00:00",
   "schema": 2,
-  "source_fingerprint": "455b2219eb941a06c356b5858c0c0d7a7dbef4d28cd4b4d8e4de4c9073f9a9fa",
+  "source_fingerprint": "b5894bbd26fbe5dbf135718243499bcc3bfc006eb148bb92f17ae94de3046c1a",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 294881,
-      "sha256": "d2c0fade1d0945e857145f3d7241d5dda7cfab8c3d7ecb36e3c975eaa9dcef4b",
+      "bytes": 306137,
+      "sha256": "875d8e5e17ca22227f257e502b5203364c3c319f9ce56fad466250cdd7602956",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -260,6 +260,7 @@
         "TOA_CONTRACTS.public_state",
         "TOA_CONTRACTS.record_preview",
         "TOA_CONTRACTS.replace_agenda",
+        "TOA_CONTRACTS.service_id",
         "TOA_DATALAKE.detail_queue",
         "TOA_DATALAKE.feed",
         "TOA_DATALAKE.ingest",
@@ -282,7 +283,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 130
+      "symbol_count": 135
     },
     {
       "path": "auth_store.py",
@@ -1903,8 +1904,8 @@
     {
       "path": "operational_store.py",
       "category": "orchestration",
-      "bytes": 32548,
-      "sha256": "16bf556f5a6943019a016f81d1da190dce05ebe553d7b951fccbf98615a42677",
+      "bytes": 33358,
+      "sha256": "68ffea0441c2cb65827deeab97359179e05c00a59efb0b4f428608a54c4a3c09",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "__future__",
@@ -1922,7 +1923,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 23
+      "symbol_count": 24
     },
     {
       "path": "operations_intelligence.py",
@@ -3390,8 +3391,8 @@
     {
       "path": "tests/test_operational_store.py",
       "category": "tests",
-      "bytes": 2855,
-      "sha256": "7feee2da1f4abd24f3f3e3156437cdb1da122ad214f72a0fa889e1377ec91e96",
+      "bytes": 3564,
+      "sha256": "1245242d685ecf6635295bd5e29f81ad87a549b90b2c1ebc218fa3139cf09b60",
       "summary": "",
       "imports": [
         "json",
@@ -3404,7 +3405,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 4
+      "symbol_count": 5
     },
     {
       "path": "tests/test_operations_intelligence.py",
@@ -3463,15 +3464,15 @@
     {
       "path": "tests/test_semiauto_frontend.js",
       "category": "tests",
-      "bytes": 26560,
-      "sha256": "03df3690fe36ab906a6c61c4f0c62e4f4ca6209332376f48fb4e3774af11c66a",
+      "bytes": 27776,
+      "sha256": "5a3fb6281ca05630264e821feb79bd5fe4f571ec6cea813cf67ed6cf924d1ef5",
       "summary": "",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 18
+      "symbol_count": 19
     },
     {
       "path": "tests/test_serialized_transfer.py",
@@ -3722,8 +3723,8 @@
     {
       "path": "tests/test_toa_contract_registry.py",
       "category": "tests",
-      "bytes": 6233,
-      "sha256": "52916856a7baf0221f4802e79f1bb9fec07f826c380b8568e863a366902071a5",
+      "bytes": 7282,
+      "sha256": "6e71b7328d1d9f1bf0bc91f602adcc26caf7f7d7c0b5e0580e107b871e3e0ddb",
       "summary": "",
       "imports": [
         "dataclasses",
@@ -3737,7 +3738,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 10
+      "symbol_count": 11
     },
     {
       "path": "tests/test_toa_datalake_store.py",
@@ -3840,8 +3841,8 @@
     {
       "path": "tests/test_toa_live_lookup.py",
       "category": "tests",
-      "bytes": 10171,
-      "sha256": "222b7464976a3788e64fd0cde300829b69a3c66e273070bdae3490570cdbd324",
+      "bytes": 16115,
+      "sha256": "adc623f2dedf332a204338f1a6679637561db3b5ce7b63f2721ff4601084201d",
       "summary": "",
       "imports": [
         "app",
@@ -3861,7 +3862,7 @@
         "TOA_CONTRACTS.public_state"
       ],
       "entrypoint": true,
-      "symbol_count": 11
+      "symbol_count": 14
     },
     {
       "path": "tests/test_toa_local_collector.py",
@@ -4296,8 +4297,8 @@
     {
       "path": "toa_contract_registry.py",
       "category": "toa",
-      "bytes": 12519,
-      "sha256": "b0e99161ce94b754352fa3a08a7cbc93e1dada7928ec9dd64e27d9243093e094",
+      "bytes": 13737,
+      "sha256": "a1ed2fe41f6f3222775d399822cdce82ea896300375cfb2cf0b6e07421b273c9",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "datetime",
@@ -4307,13 +4308,14 @@
         "re",
         "threading",
         "time",
-        "typing"
+        "typing",
+        "unicodedata"
       ],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 13
+      "symbol_count": 15
     },
     {
       "path": "toa_datalake_store.py",
@@ -4617,6 +4619,7 @@
     "TOA_CONTRACTS.public_state",
     "TOA_CONTRACTS.record_preview",
     "TOA_CONTRACTS.replace_agenda",
+    "TOA_CONTRACTS.service_id",
     "TOA_DATALAKE.detail_queue",
     "TOA_DATALAKE.feed",
     "TOA_DATALAKE.ingest",
