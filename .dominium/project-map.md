@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-09-28T13:35:48+00:00
-- Source fingerprint: `d93ae39935bf928a`
-- Indexed files: 237
-- Indexed symbols: 2664
-- API path references: 97
+- Generated: 2026-09-28T17:06:47+00:00
+- Source fingerprint: `c63fb474ca997ab3`
+- Indexed files: 240
+- Indexed symbols: 2696
+- API path references: 99
 
 ## Navigation rule
 
@@ -16,7 +16,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (135 symbols, 74 API paths, 40 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (136 symbols, 76 API paths, 40 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operational_store.py` (24 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -73,7 +73,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## imperium
 
 - `.imperium-project.json`
-- `imperium_api.py` (134 symbols, 3 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `imperium_api.py` (135 symbols, 3 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `imperium_http_api.py` (37 symbols, 2 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `imperium_http_plan.py` (9 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `installer_change.py` (5 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -100,6 +100,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.
 - `auth_store.py` (28 symbols) - Autenticacao local do DOMINIUM.
 - `auth_store_postgres.py` (18 symbols) - Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.
+- `auto_improductive_close.py` (21 symbols)
 - `bulk_orders.py` (2 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `cancel_all_open.py` (3 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `CLAUDE.md` (1 DataSnap methods) - DOMINIUM / Claude Code
@@ -149,10 +150,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 82 files
+- shared: 83 files
 - tooling-deploy: 19 files
 - docs: 5 files
-- tests: 65 files
+- tests: 67 files
 
 ## Search indexes
 

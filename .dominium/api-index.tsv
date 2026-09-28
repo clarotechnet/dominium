@@ -15,6 +15,8 @@ endpoint	path
 /api/auth/users/(\d+)/approve	app.py
 /api/auth/users/(\d+)/imperium-identity	app.py
 /api/auth/users/(\d+)/reject	app.py
+/api/auto-improductive-close	app.py
+/api/auto-improductive-close/toggle	app.py
 /api/close-report	app.py
 /api/close-report.xlsx	app.py
 /api/close-report/export.xlsx	app.py

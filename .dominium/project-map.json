@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-28T13:35:48+00:00",
+  "generated_at": "2026-09-28T17:06:47+00:00",
   "schema": 2,
-  "source_fingerprint": "d93ae39935bf928a9edfb1cdea3fc2a77c87cc26639f5d0a40fcfd55cfcc67c7",
+  "source_fingerprint": "c63fb474ca997ab3a432285561fab32e5c737667e96c1e23548cbdc39564979f",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,14 +92,15 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 306137,
-      "sha256": "875d8e5e17ca22227f257e502b5203364c3c319f9ce56fad466250cdd7602956",
+      "bytes": 322199,
+      "sha256": "ed24481b996e2abbdf74249b7cf2959a2b7de48045e2b8a8f7d8f8f4ac616ecd",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
         "argparse",
         "auth_store",
         "auth_store_postgres",
+        "auto_improductive_close",
         "base64",
         "bulk_orders",
         "close_report",
@@ -163,6 +164,8 @@
         "/api/auth/users/(\\d+)/approve",
         "/api/auth/users/(\\d+)/imperium-identity",
         "/api/auth/users/(\\d+)/reject",
+        "/api/auto-improductive-close",
+        "/api/auto-improductive-close/toggle",
         "/api/close-report",
         "/api/close-report.xlsx",
         "/api/close-report/export.xlsx",
@@ -283,7 +286,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 135
+      "symbol_count": 136
     },
     {
       "path": "auth_store.py",
@@ -336,6 +339,28 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 18
+    },
+    {
+      "path": "auto_improductive_close.py",
+      "category": "shared",
+      "bytes": 9322,
+      "sha256": "224e8f5e1d25d7dd46f49d45f469c0146c5cb4f5b5fa06a500d0adc082b05345",
+      "summary": "",
+      "imports": [
+        "__future__",
+        "datetime",
+        "json",
+        "logging",
+        "pathlib",
+        "threading",
+        "time",
+        "typing"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 21
     },
     {
       "path": "bulk_orders.py",
@@ -924,8 +949,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 250497,
-      "sha256": "82ebd2b29f6d33ad513dbdd44229cdc48ceb9a3376dbadc7062f2ff9de64cc1c",
+      "bytes": 252244,
+      "sha256": "c3fe586020655e76397974757f7a0a5b947ee42c80792060fa0eabb73dfb036f",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -963,7 +988,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": false,
-      "symbol_count": 134
+      "symbol_count": 135
     },
     {
       "path": "imperium_http_api.py",
@@ -2361,8 +2386,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 99240,
-      "sha256": "197dfdf015fc4ec4ebd8526058aac5224eeb4431f5d7a353bdd92ec1dc97e01e",
+      "bytes": 100682,
+      "sha256": "6170879f490330357ea06f4347730b11bbe4ec527e07d7efa86f7a79065d1025",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2428,8 +2453,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 175437,
-      "sha256": "2996f0e4132df09a46a67fc65a7f754b29f3f883c6b39d48d43a2b38107b896f",
+      "bytes": 176674,
+      "sha256": "f342ccea7202721babc780ba49129e03b53bc8f8c45bb6c47cfb8e9f36505d74",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -2729,6 +2754,26 @@
       "symbol_count": 7
     },
     {
+      "path": "tests/test_auto_improductive_close.py",
+      "category": "tests",
+      "bytes": 2427,
+      "sha256": "bd9232ece3712b7173bd500e65a14dd36b13651ec1a0c9186c77bb420b1ea102",
+      "summary": "",
+      "imports": [
+        "auto_improductive_close",
+        "datetime",
+        "json",
+        "pathlib",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 5
+    },
+    {
       "path": "tests/test_build_web_release.py",
       "category": "tests",
       "bytes": 1102,
@@ -3009,6 +3054,22 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 3
+    },
+    {
+      "path": "tests/test_improductive_catalog_close.py",
+      "category": "tests",
+      "bytes": 2090,
+      "sha256": "ca5c5519773f660b37c88f8382a92077fd5dc37912f9dc3ede2f6f97db6d3182",
+      "summary": "",
+      "imports": [
+        "imperium_api",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 4
     },
     {
       "path": "tests/test_installer_change.py",

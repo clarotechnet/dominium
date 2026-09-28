@@ -4,9 +4,10 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	135	74	40	DOMINIUM | MAPA DE RESPONSABILIDADE	875d8e5e17ca2222
+orchestration	app.py	136	76	40	DOMINIUM | MAPA DE RESPONSABILIDADE	ed24481b996e2abb
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	3767cb9484eaea2d
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
+shared	auto_improductive_close.py	21				224e8f5e1d25d7dd
 shared	bulk_orders.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	2775b7a068f33346
 shared	cancel_all_open.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	9dde6a0f10a22ffe
 shared	CLAUDE.md			1	DOMINIUM / Claude Code	ad7a8982c5c5b42a
@@ -43,7 +44,7 @@ shared	flow_reader/server.py	11	2		DOMINIUM | MAPA DE RESPONSABILIDADE	00c885db8
 shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f388b7677c04f
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
-imperium	imperium_api.py	134		3	DOMINIUM | MAPA DE RESPONSABILIDADE	82ebd2b29f6d33ad
+imperium	imperium_api.py	135		3	DOMINIUM | MAPA DE RESPONSABILIDADE	c3fe586020655e76
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 shared	import_protocol_templates.json			1		9a6465634e73b3ec
@@ -121,12 +122,12 @@ tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
-frontend	static/index.html		1			197dfdf015fc4ec4
+frontend	static/index.html		1			6170879f49033035
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	10			DOMINIUM | MAPA DE RESPONSABILIDADE	674603136f3f4a4f
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/styles.css					2996f0e4132df09a
+frontend	static/styles.css					f342ccea7202721b
 frontend	static/theme-init.js					97eb92ef899f8dcf
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
@@ -143,6 +144,7 @@ tests	tests/__init__.py					01ba4719c80b6fe9
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
 tests	tests/test_app.py	35	5	2		d9d48f2fbb14cd0b
 tests	tests/test_auth_store.py	7				5be2b71f2ba58bcf
+tests	tests/test_auto_improductive_close.py	5				bd9232ece3712b71
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87
 tests	tests/test_city_scope_integration.py	18				e81c1bf0df38ecdc
@@ -158,6 +160,7 @@ tests	tests/test_imperium_api.py	72		1		85f345d7101df526
 tests	tests/test_imperium_http_api.py	25				25ab6758e210eefb
 tests	tests/test_imperium_http_plan.py	8				056547e8c6b8d815
 tests	tests/test_import_audit_history.py	3				6df23f085d3bdbda
+tests	tests/test_improductive_catalog_close.py	4				ca5c5519773f660b
 tests	tests/test_installer_change.py	11				c0e798b009cdfd15
 tests	tests/test_installer_reassignment.py	19	1			e571ea08992a6d7b
 tests	tests/test_manual_materials.py	14				13ebf22bf45dd258

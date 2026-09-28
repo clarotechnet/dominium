@@ -12,6 +12,7 @@ api_security	app.py
 argparse	app.py
 auth_store	app.py
 auth_store_postgres	app.py
+auto_improductive_close	app.py
 base64	app.py
 bulk_orders	app.py
 close_report	app.py
@@ -87,6 +88,14 @@ psycopg	auth_store_postgres.py
 re	auth_store_postgres.py
 secrets	auth_store_postgres.py
 typing	auth_store_postgres.py
+__future__	auto_improductive_close.py
+datetime	auto_improductive_close.py
+json	auto_improductive_close.py
+logging	auto_improductive_close.py
+pathlib	auto_improductive_close.py
+threading	auto_improductive_close.py
+time	auto_improductive_close.py
+typing	auto_improductive_close.py
 datetime	bulk_orders.py
 pathlib	bulk_orders.py
 re	bulk_orders.py
@@ -529,6 +538,12 @@ auth_store	tests/test_auth_store.py
 pathlib	tests/test_auth_store.py
 tempfile	tests/test_auth_store.py
 unittest	tests/test_auth_store.py
+auto_improductive_close	tests/test_auto_improductive_close.py
+datetime	tests/test_auto_improductive_close.py
+json	tests/test_auto_improductive_close.py
+pathlib	tests/test_auto_improductive_close.py
+tempfile	tests/test_auto_improductive_close.py
+unittest	tests/test_auto_improductive_close.py
 pathlib	tests/test_build_web_release.py
 scripts	tests/test_build_web_release.py
 unittest	tests/test_build_web_release.py
@@ -598,6 +613,8 @@ pathlib	tests/test_import_audit_history.py
 tempfile	tests/test_import_audit_history.py
 types	tests/test_import_audit_history.py
 unittest	tests/test_import_audit_history.py
+imperium_api	tests/test_improductive_catalog_close.py
+unittest	tests/test_improductive_catalog_close.py
 datasnap_client	tests/test_installer_change.py
 imperium_api	tests/test_installer_change.py
 installer_change	tests/test_installer_change.py
