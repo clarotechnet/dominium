@@ -4899,6 +4899,56 @@ class ImperiumAPI:
         except KeyError as exc:
             raise ValueError(f"Codigo de baixa nao permitido: {normalized}") from exc
 
+    def close_improductive_catalog(
+        self,
+        order: Order,
+        code: str,
+        description: str,
+        *,
+        observation: str = "",
+    ) -> dict:
+        """Close an improductive code using the validated simple close layout.
+
+        The simple DataSnap delta is already shared by 106, 125 and 301. The
+        service-specific IdCodigoBaixa is resolved live before ApplyUpdates and
+        the requested code is confirmed from a fresh order detail afterwards.
+        """
+        normalized = str(code).strip()
+        if not re.fullmatch(r"\d{3}", normalized):
+            raise ValueError("Codigo improdutivo invalido")
+        existing = self.close_codes.get(normalized)
+        if existing is not None:
+            if existing.productive:
+                raise ValueError(
+                    f"O codigo {normalized} e produtivo e nao pertence a auto-baixa"
+                )
+            return self.close_order(
+                order,
+                existing,
+                observation=observation,
+            )
+
+        label = " ".join(str(description or "").strip().split())
+        if not label:
+            raise ValueError(
+                f"O codigo improdutivo {normalized} nao possui descricao oficial"
+            )
+        dynamic = CloseCode(
+            code=normalized,
+            wire_code=normalized,
+            description=label,
+            id_code=7,
+            suffixes=self.delta_suffix_variants,
+            productive=False,
+        )
+        # Keep the code in the remote-state detector after the first encounter.
+        self.close_codes[normalized] = dynamic
+        return self.close_order(
+            order,
+            dynamic,
+            observation=observation,
+        )
+
     @staticmethod
     def _is_closed(order: Order, detail: bytes, close_code: CloseCode) -> bool:
         norm_detail = detail.upper()
