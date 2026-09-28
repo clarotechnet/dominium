@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from app import _automatic_toa_import, _collect_toa_bucket_registry
-from toa_automation import DEFAULT_TIMES, TOAAutomation
+from toa_automation import BUCKET_COLLECTION_TIMES, DEFAULT_TIMES, TOAAutomation
 
 
 class FakeExporter:
@@ -28,6 +28,11 @@ class FakeExporter:
 class TOAAutomationScheduleTests(unittest.TestCase):
     def test_daily_schedule_uses_the_current_operational_times(self) -> None:
         self.assertEqual(DEFAULT_TIMES, ("08:20", "09:00", "11:00", "13:00", "15:00", "17:20"))
+
+    def test_bucket_collection_covers_the_full_day_every_five_minutes(self) -> None:
+        self.assertEqual(len(BUCKET_COLLECTION_TIMES), 24 * 12)
+        self.assertEqual(BUCKET_COLLECTION_TIMES[:4], ("00:00", "00:05", "00:10", "00:15"))
+        self.assertEqual(BUCKET_COLLECTION_TIMES[-1], "23:55")
 
 
 class BlockingExporter(FakeExporter):
