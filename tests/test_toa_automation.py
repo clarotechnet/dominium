@@ -3,7 +3,7 @@ import threading
 import unittest
 from pathlib import Path
 
-from app import _automatic_toa_import
+from app import _automatic_toa_import, _collect_toa_bucket_registry
 from toa_automation import DEFAULT_TIMES, TOAAutomation
 
 
@@ -76,6 +76,33 @@ class TOAAutomationTests(unittest.TestCase):
             )
             self.assertTrue(automation.history_path.is_file())
 
+    def test_custom_storage_names_isolate_bucket_collection(self):
+        routes = ({"route": "NTL-DMV_ADM", "target": "rn", "label": "Natal"},)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            automation = TOAAutomation(
+                root,
+                lambda _route, _path: {"status": "vazia"},
+                routes=routes,
+                exporter_factory=FakeExporter,
+                export_subdir="toa-bucket-exports",
+                history_filename="toa-bucket-collection.jsonl",
+                state_filename="toa_bucket_collection_state.json",
+            )
+
+            self.assertEqual(
+                automation.export_root,
+                root.resolve() / "logs" / "toa-bucket-exports",
+            )
+            self.assertEqual(
+                automation.history_path,
+                root.resolve() / "logs" / "toa-bucket-collection.jsonl",
+            )
+            self.assertEqual(
+                automation.state_path,
+                root.resolve() / "config" / "toa_bucket_collection_state.json",
+            )
+
     def test_second_trigger_is_rejected_while_worker_is_running(self):
         BlockingExporter.release.clear()
         routes = ({"route": "NTL-DMV_ADM", "target": "rn", "label": "Natal"},)
@@ -92,6 +119,25 @@ class TOAAutomationTests(unittest.TestCase):
             BlockingExporter.release.set()
             automation.worker_thread.join(timeout=3)
             self.assertFalse(automation.public_state()["running"])
+
+    def test_bucket_collection_header_only_is_read_only_empty_snapshot(self):
+        headers = (
+            "Data,Login do Tecnico,Status da Atividade,Cidade,UF,Contrato,"
+            "Numero da WO,Numero da OS 1,Tipo OS 1\r\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "Atividades-NTL-DMV_ADM.csv"
+            path.write_text(headers, encoding="utf-8")
+
+            result = _collect_toa_bucket_registry(
+                {"route": "NTL-DMV_ADM", "target": "rn"},
+                path,
+            )
+
+            self.assertEqual(result["status"], "vazia")
+            self.assertEqual(result["count"], 0)
+            self.assertEqual(result["contracts"], 0)
+            self.assertFalse(result["requires_human"])
 
     def test_header_only_csv_is_valid_empty_route_and_never_reaches_imperium(self):
         headers = (
