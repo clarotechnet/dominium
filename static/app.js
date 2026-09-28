@@ -80,6 +80,8 @@ const state = {
   importLoading: false,
   toaAutomation: null,
   toaAutomationLoading: false,
+  autoImproductiveClose: null,
+  autoImproductiveLoading: false,
   automationTestLots: [],
   automationTestLotKey: "",
   automationTestRegistry: null,
@@ -538,6 +540,13 @@ const elements = {
   toaAutomationRun: document.querySelector("#toaAutomationRun"),
   toaAutomationRoutes: document.querySelector("#toaAutomationRoutes"),
   toaAutomationHistory: document.querySelector("#toaAutomationHistory"),
+  autoImproductiveStatus: document.querySelector("#autoImproductiveStatus"),
+  autoImproductiveStatusText: document.querySelector("#autoImproductiveStatusText"),
+  autoImproductiveToggle: document.querySelector("#autoImproductiveToggle"),
+  autoImproductiveNext: document.querySelector("#autoImproductiveNext"),
+  autoImproductiveWaiting: document.querySelector("#autoImproductiveWaiting"),
+  autoImproductiveClosed: document.querySelector("#autoImproductiveClosed"),
+  autoImproductiveBlocked: document.querySelector("#autoImproductiveBlocked"),
   closeQueueBadge: document.querySelector("#closeQueueBadge"),
   toaLiveSession: document.querySelector("#toaLiveSession"),
   toaLiveSessionText: document.querySelector("#toaLiveSessionText"),
@@ -2181,6 +2190,101 @@ async function runToaAutomation() {
   }
 }
 
+function renderAutoImproductiveClose() {
+  const auto = state.autoImproductiveClose;
+  if (!elements.autoImproductiveStatus) return;
+  if (!auto) {
+    elements.autoImproductiveStatus.className = "toa-automation-state loading";
+    elements.autoImproductiveStatusText.textContent = "Carregando";
+    elements.autoImproductiveToggle.disabled = true;
+    return;
+  }
+
+  const enabled = Boolean(auto.enabled);
+  const running = Boolean(auto.running);
+  const canControl = ["admin", "supervisor"].includes(
+    String(state.authUser?.role || "").toLowerCase(),
+  );
+  elements.autoImproductiveStatus.className = `toa-automation-state ${
+    running ? "running" : enabled ? "online" : "warning"
+  }`;
+  elements.autoImproductiveStatusText.textContent = running
+    ? "Executando"
+    : enabled ? "Ligada" : "Desligada";
+
+  const last = auto.last_run || {};
+  elements.autoImproductiveWaiting.textContent = String(last.waiting_toa || 0);
+  elements.autoImproductiveClosed.textContent = String(last.closed || 0);
+  elements.autoImproductiveBlocked.textContent = String(auto.blocked_count || 0);
+
+  if (!enabled) {
+    elements.autoImproductiveNext.textContent = "-";
+  } else if (running) {
+    elements.autoImproductiveNext.textContent = "Agora";
+  } else {
+    const seconds = Number(auto.next_run_seconds || 0);
+    elements.autoImproductiveNext.textContent = seconds <= 0
+      ? "< 1 min"
+      : seconds < 60
+        ? `${seconds}s`
+        : `${Math.ceil(seconds / 60)} min`;
+  }
+
+  elements.autoImproductiveToggle.className = `button ${enabled ? "danger" : "primary"}`;
+  const label = elements.autoImproductiveToggle.querySelector("span");
+  if (label) label.textContent = enabled ? "Desativar" : "Ativar";
+  elements.autoImproductiveToggle.disabled = state.autoImproductiveLoading || !canControl;
+  elements.autoImproductiveToggle.title = canControl
+    ? enabled
+      ? "Parar novas rodadas da auto-baixa"
+      : "Ativar a auto-baixa persistente a cada 5 minutos"
+    : "Somente admin ou supervisor pode alterar esta automacao";
+}
+
+async function loadAutoImproductiveClose({ quiet = false } = {}) {
+  try {
+    state.autoImproductiveClose = await request("/api/auto-improductive-close", {
+      timeoutMs: 15000,
+    });
+  } catch (error) {
+    if (!quiet) {
+      showToast(error.message, "error");
+      console.error("Falha ao consultar auto-baixa improdutiva", error);
+    }
+  }
+  renderAutoImproductiveClose();
+}
+
+async function toggleAutoImproductiveClose() {
+  if (state.autoImproductiveLoading || !state.autoImproductiveClose) return;
+  state.autoImproductiveLoading = true;
+  renderAutoImproductiveClose();
+  const enabled = !Boolean(state.autoImproductiveClose.enabled);
+  try {
+    state.autoImproductiveClose = await request(
+      "/api/auto-improductive-close/toggle",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled }),
+        timeoutMs: 15000,
+      },
+    );
+    showToast(
+      enabled
+        ? "Auto-baixa improdutiva ativada. O DOMINIUM revisara as agendas a cada 5 minutos."
+        : "Auto-baixa improdutiva desativada.",
+      "success",
+    );
+  } catch (error) {
+    showToast(error.message, "error");
+    console.error("Falha ao alterar auto-baixa improdutiva", error);
+  } finally {
+    state.autoImproductiveLoading = false;
+    renderAutoImproductiveClose();
+  }
+}
+
 function automationTestContracts() {
   const seen = new Set();
   return elements.automationTestContracts.value
@@ -2716,7 +2820,10 @@ function setModule(module) {
     loadStockTechnicians();
   }
   if (module === "technicians" && !state.technicians.length) loadTechnicians();
-  if (module === "imports") loadToaAutomation({ quiet: true });
+  if (module === "imports") {
+    loadToaAutomation({ quiet: true });
+    loadAutoImproductiveClose({ quiet: true });
+  }
   if (module === "automation-test") loadAutomationTestData();
   if (module === "intelligence") {
     loadIntelligence();
@@ -11395,6 +11502,7 @@ elements.importSelectAll?.addEventListener("change", () => {
 });
 elements.commitImport.addEventListener("click", commitImportFile);
 elements.toaAutomationRun.addEventListener("click", runToaAutomation);
+elements.autoImproductiveToggle?.addEventListener("click", toggleAutoImproductiveClose);
 elements.automationTestLot.addEventListener("change", () => {
   state.automationTestLotKey = elements.automationTestLot.value;
   state.automationTestResult = null;
@@ -11741,12 +11849,16 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden && state.authReady) {
     refreshForNewDay();
     loadToaAutomation({ quiet: true });
+    loadAutoImproductiveClose({ quiet: true });
     loadToaLiveStatus({ quiet: true });
   }
 });
 
 setInterval(() => {
-  if (state.authReady) loadToaAutomation({ quiet: true });
+  if (state.authReady) {
+    loadToaAutomation({ quiet: true });
+    loadAutoImproductiveClose({ quiet: true });
+  }
 }, 15000);
 setInterval(() => {
   if (state.authReady) loadToaLiveStatus({ quiet: true });
@@ -11782,6 +11894,7 @@ async function initialize() {
     state.profileSwitching = true;
     await loadImportTargets();
     await loadToaAutomation({ quiet: true });
+    await loadAutoImproductiveClose({ quiet: true });
     await loadProfiles();
     await loadProfile();
     await loadMonitorCsvSnapshot({ quiet: true });
