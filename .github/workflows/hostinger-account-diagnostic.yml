@@ -57,3 +57,12 @@ jobs:
           echo "=== GIT INSTALLATIONS ==="
           hostinger hosting git list-installations --format json || true
 
+          echo "=== WEBSITE FILES ==="
+          hostinger hosting files list-website-and-directories u998431343 dominium.clarotechnet.com.br --max-depth 2 --max-items 250 --format json || true
+
+          echo "=== PACKAGE JSON ==="
+          hostinger hosting files website-content u998431343 dominium.clarotechnet.com.br --path package.json --max-lines 200 --format json || true
+
+          echo "=== SERVER JS HEAD ==="
+          hostinger hosting files website-content u998431343 dominium.clarotechnet.com.br --path server.js --max-lines 260 --format json || true
+
