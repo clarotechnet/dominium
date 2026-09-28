@@ -6013,6 +6013,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 operator = self._current_user() or {}
                 if str(operator.get("role") or "").strip().lower() not in {
                     "admin",
+                    "controller",
                     "supervisor",
                 }:
                     self._json(
