@@ -35,6 +35,11 @@ from datasnap_client import load_credentials
 
 TOA_URL = "https://clarobrasil.etadirect.com/toa/"
 DEFAULT_TIMES = ("08:20", "09:00", "11:00", "13:00", "15:00", "17:20")
+BUCKET_COLLECTION_TIMES = tuple(
+    f"{hour:02d}:{minute:02d}"
+    for hour in range(24)
+    for minute in range(0, 60, 5)
+)
 ROUTE_PREFIX_TARGETS = {
     "NTL": {"target": "rn", "label": "Natal"},
     "PWM": {"target": "rn", "label": "Parnamirim"},
