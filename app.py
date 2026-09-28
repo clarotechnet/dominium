@@ -51,6 +51,11 @@ from api_security import (
     validate_local_request,
 )
 from auth_store import AuthError, AuthStore
+from auto_improductive_close import (
+    AutoImproductiveCloser,
+    review_record_is_due,
+    toa_activity_is_complete,
+)
 from bulk_orders import DEFAULT_SERVICE, build_bulk_preview
 from close_report import CloseReportStore
 from close_report_excel import (
@@ -70,6 +75,7 @@ from imperium_api import (
     CAPTURED_CONTROLLER_ID,
     CloseCode,
     CloseConfirmationUncertainError,
+    CloseStateConflictError,
     ImperiumAPI,
     MaterialTransferUncertainError,
     Order,
@@ -2729,6 +2735,358 @@ def _automatic_toa_import(route: dict[str, str], path: Path) -> dict:
         OPERATION_GATE.release()
 
 
+def _auto_improductive_scan(
+    controller: AutoImproductiveCloser,
+) -> dict:
+    now = dt.datetime.now().astimezone()
+    scan_dates = (now.date() - dt.timedelta(days=1), now.date())
+    improductive_codes = {
+        code: definition
+        for code, definition in OFFICIAL_CLOSE_CODES.items()
+        if not definition.productive
+    }
+    summary = {
+        "ok": True,
+        "closed": 0,
+        "waiting_toa": 0,
+        "productive_ignored": 0,
+        "unknown_code": 0,
+        "blocked": 0,
+        "datasnap_busy": 0,
+        "lookup_errors": 0,
+        "profiles": {},
+        "details": [],
+    }
+    seen_targets: set[tuple[str, int, str]] = set()
+
+    def detail(kind: str, profile: str, contract: str, **extra: object) -> None:
+        if len(summary["details"]) >= 200:
+            return
+        summary["details"].append({
+            "kind": kind,
+            "profile": profile,
+            "contract": contract,
+            **extra,
+        })
+
+    for profile in PROFILES.values():
+        profile_state = {
+            "open_orders": 0,
+            "contracts_due": 0,
+            "closed": 0,
+            "waiting_toa": 0,
+            "errors": 0,
+        }
+        summary["profiles"][profile.key] = profile_state
+        if not profile.close_enabled:
+            profile_state["error"] = "close_disabled"
+            continue
+
+        open_orders: list[Order] = []
+        for report_date in scan_dates:
+            if not OPERATION_GATE.acquire(blocking=False):
+                summary["datasnap_busy"] += 1
+                profile_state["errors"] += 1
+                detail(
+                    "datasnap_busy",
+                    profile.key,
+                    "",
+                    date=report_date.isoformat(),
+                )
+                continue
+            try:
+                rows = profile.api.list_orders(
+                    report_date,
+                    status="field",
+                    service_type="all",
+                )
+                open_orders.extend(rows)
+                try:
+                    OPERATIONAL_STORE.ingest_imperium_orders(
+                        profile.key,
+                        [
+                            {
+                                **order.to_dict(),
+                                "date": report_date.isoformat(),
+                            }
+                            for order in rows
+                        ],
+                    )
+                except Exception:
+                    LOGGER.exception(
+                        "[%s] Auto-baixa: falha ao registrar snapshot Imperium",
+                        profile.label,
+                    )
+            except Exception as exc:
+                profile_state["errors"] += 1
+                detail(
+                    "imperium_query_error",
+                    profile.key,
+                    "",
+                    date=report_date.isoformat(),
+                    error=str(exc),
+                )
+                LOGGER.exception(
+                    "[%s] Auto-baixa improdutiva: falha ao consultar OS abertas",
+                    profile.label,
+                )
+            finally:
+                OPERATION_GATE.release()
+
+        open_by_contract: dict[str, dict[str, Order]] = {}
+        for order in open_orders:
+            open_by_contract.setdefault(order.contract, {})[order.num_os] = order
+        profile_state["open_orders"] = len(open_orders)
+        if not open_orders:
+            continue
+
+        registry_records: list[dict] = []
+        for report_date in scan_dates:
+            state = TOA_CONTRACTS.public_state(
+                profile=profile.key,
+                date=report_date.isoformat(),
+            )
+            for record in state.get("records", []):
+                if not isinstance(record, dict):
+                    continue
+                if report_date == now.date():
+                    if not review_record_is_due(record, now):
+                        continue
+                contract = str(record.get("contract") or "").strip()
+                if contract and contract in open_by_contract:
+                    registry_records.append(record)
+
+        due_contracts = sorted({
+            str(record.get("contract") or "").strip()
+            for record in registry_records
+            if str(record.get("contract") or "").strip()
+        })
+        profile_state["contracts_due"] = len(due_contracts)
+
+        for contract in due_contracts:
+            try:
+                document = TOA_CONNECTOR.lookup(
+                    contract,
+                    refresh=True,
+                    allow_stale=False,
+                )
+            except Exception as exc:
+                summary["lookup_errors"] += 1
+                profile_state["errors"] += 1
+                detail(
+                    "toa_lookup_error",
+                    profile.key,
+                    contract,
+                    error=str(exc),
+                )
+                continue
+
+            activities = [
+                activity
+                for activity in document.get("activities", [])
+                if isinstance(activity, dict)
+            ]
+            relevant = []
+            for activity in activities:
+                raw_date = str(activity.get("scheduled_date") or "").strip()
+                try:
+                    scheduled = dt.date.fromisoformat(raw_date[:10])
+                except ValueError:
+                    continue
+                if scheduled in scan_dates:
+                    relevant.append(activity)
+
+            if not relevant:
+                profile_state["errors"] += 1
+                detail("toa_activity_date_missing", profile.key, contract)
+                continue
+
+            for activity in relevant:
+                if not toa_activity_is_complete(activity.get("status")):
+                    summary["waiting_toa"] += 1
+                    profile_state["waiting_toa"] += 1
+                    detail(
+                        "waiting_toa",
+                        profile.key,
+                        contract,
+                        status=str(activity.get("status") or ""),
+                        scheduled_date=str(activity.get("scheduled_date") or ""),
+                    )
+                    continue
+
+                observation = str(
+                    activity.get("technician_observation") or ""
+                ).strip()
+                tasks = activity.get("tasks")
+                if not isinstance(tasks, list):
+                    continue
+                for task in tasks:
+                    if not isinstance(task, dict):
+                        continue
+                    num_os = re.sub(
+                        r"\D",
+                        "",
+                        str(task.get("os_number") or ""),
+                    )
+                    code = str(task.get("close_code") or "").strip()
+                    if not num_os:
+                        continue
+                    order = open_by_contract.get(contract, {}).get(num_os)
+                    if order is None:
+                        continue
+                    target_key = (profile.key, order.id_os, code)
+                    if target_key in seen_targets:
+                        continue
+                    seen_targets.add(target_key)
+
+                    definition = improductive_codes.get(code)
+                    if definition is None:
+                        known = OFFICIAL_CLOSE_CODES.get(code)
+                        if known is not None and known.productive:
+                            summary["productive_ignored"] += 1
+                            detail(
+                                "productive_ignored",
+                                profile.key,
+                                contract,
+                                os_number=num_os,
+                                code=code,
+                            )
+                        else:
+                            summary["unknown_code"] += 1
+                            detail(
+                                "unknown_code",
+                                profile.key,
+                                contract,
+                                os_number=num_os,
+                                code=code,
+                            )
+                        continue
+
+                    block_key = f"{profile.key}:{order.id_os}:{code}"
+                    if controller.is_blocked(block_key):
+                        summary["blocked"] += 1
+                        detail(
+                            "blocked_no_retry",
+                            profile.key,
+                            contract,
+                            os_number=num_os,
+                            code=code,
+                        )
+                        continue
+
+                    if not OPERATION_GATE.acquire(blocking=False):
+                        summary["datasnap_busy"] += 1
+                        detail(
+                            "datasnap_busy",
+                            profile.key,
+                            contract,
+                            os_number=num_os,
+                            code=code,
+                        )
+                        continue
+                    try:
+                        LOGGER.info(
+                            "[%s] Auto-baixa improdutiva: contrato %s OS %s codigo %s",
+                            profile.label,
+                            contract,
+                            num_os,
+                            code,
+                        )
+                        result = profile.api.close_improductive_catalog(
+                            order,
+                            code,
+                            definition.description,
+                            observation=observation,
+                        )
+                        controller.unblock(block_key)
+                        summary["closed"] += 1
+                        profile_state["closed"] += 1
+                        detail(
+                            "closed",
+                            profile.key,
+                            contract,
+                            os_number=num_os,
+                            id_os=order.id_os,
+                            code=code,
+                            already_closed=bool(result.get("already_closed")),
+                        )
+                    except CloseConfirmationUncertainError as exc:
+                        controller.block(
+                            block_key,
+                            str(exc),
+                            metadata={
+                                "profile": profile.key,
+                                "contract": contract,
+                                "id_os": order.id_os,
+                                "os_number": num_os,
+                                "code": code,
+                            },
+                        )
+                        summary["blocked"] += 1
+                        detail(
+                            "uncertain_no_retry",
+                            profile.key,
+                            contract,
+                            os_number=num_os,
+                            code=code,
+                            error=str(exc),
+                        )
+                    except CloseStateConflictError as exc:
+                        controller.block(
+                            block_key,
+                            str(exc),
+                            metadata={
+                                "profile": profile.key,
+                                "contract": contract,
+                                "id_os": order.id_os,
+                                "os_number": num_os,
+                                "code": code,
+                            },
+                        )
+                        summary["blocked"] += 1
+                        detail(
+                            "state_conflict",
+                            profile.key,
+                            contract,
+                            os_number=num_os,
+                            code=code,
+                            error=str(exc),
+                        )
+                    except (DataSnapError, OSError, ValueError) as exc:
+                        profile_state["errors"] += 1
+                        detail(
+                            "close_error",
+                            profile.key,
+                            contract,
+                            os_number=num_os,
+                            code=code,
+                            error=str(exc),
+                        )
+                        LOGGER.warning(
+                            "[%s] Auto-baixa improdutiva retida: OS %s codigo %s: %s",
+                            profile.label,
+                            num_os,
+                            code,
+                            exc,
+                        )
+                    finally:
+                        OPERATION_GATE.release()
+
+    summary["ok"] = all(
+        int(value.get("errors", 0)) == 0
+        for value in summary["profiles"].values()
+    )
+    return summary
+
+
+AUTO_IMPRODUCTIVE_CLOSER = AutoImproductiveCloser(
+    ROOT / "config" / "auto_improductive_close_state.json",
+    LOG_ROOT / "auto-improductive-close.jsonl",
+    _auto_improductive_scan,
+    interval_seconds=300,
+    logger=LOGGER,
+)
+
 TOA_AUTOMATION = TOAAutomation(ROOT, _automatic_toa_import, logger=LOGGER)
 
 def _validated_remote_toa_automation_base(value: object) -> str:
@@ -4390,6 +4748,12 @@ class PanelHandler(BaseHTTPRequestHandler):
             if parsed.path == "/api/technicians":
                 self._json(HTTPStatus.OK, TECHNICIANS.public_dict())
                 return
+            if parsed.path == "/api/auto-improductive-close":
+                self._json(
+                    HTTPStatus.OK,
+                    AUTO_IMPRODUCTIVE_CLOSER.public_state(),
+                )
+                return
             if parsed.path == "/api/toa-automation":
                 try:
                     state = _remote_toa_automation_request("/toa/import-status")
@@ -5623,6 +5987,38 @@ class PanelHandler(BaseHTTPRequestHandler):
                         "error": "Erro interno; consulte o suporte",
                         "dry_run_only": True,
                     },
+                )
+            return
+        if parsed.path == "/api/auto-improductive-close/toggle":
+            try:
+                body = self._body(max_length=16 * 1024)
+                enabled = body.get("enabled")
+                if not isinstance(enabled, bool):
+                    raise ValueError("Informe enabled=true ou enabled=false")
+                operator = self._current_user() or {}
+                if str(operator.get("role") or "").strip().lower() not in {
+                    "admin",
+                    "supervisor",
+                }:
+                    self._json(
+                        HTTPStatus.FORBIDDEN,
+                        {
+                            "ok": False,
+                            "error": "Somente admin ou supervisor pode alterar a auto-baixa",
+                        },
+                    )
+                    return
+                state = AUTO_IMPRODUCTIVE_CLOSER.set_enabled(enabled)
+                self._auth_audit(
+                    "auto_improductive.toggle",
+                    "enabled" if enabled else "disabled",
+                    metadata={"interval_seconds": 300},
+                )
+                self._json(HTTPStatus.OK, state)
+            except ValueError as exc:
+                self._json(
+                    HTTPStatus.BAD_REQUEST,
+                    {"ok": False, "error": str(exc)},
                 )
             return
         if parsed.path == "/api/toa-automation/run":
@@ -7494,6 +7890,12 @@ def main() -> None:
     web_mode = os.getenv("DOMINIUM_WEB_MODE", "0") == "1"
     web_attach_toa = web_mode and _env_enabled("DOMINIUM_WEB_ATTACH_TOA")
     if web_mode:
+        AUTO_IMPRODUCTIVE_CLOSER.start()
+        LOGGER.info(
+            "Auto-baixa improdutiva: worker web iniciado (intervalo %ss, enabled=%s)",
+            AUTO_IMPRODUCTIVE_CLOSER.interval_seconds,
+            AUTO_IMPRODUCTIVE_CLOSER.public_state().get("enabled"),
+        )
         if web_attach_toa:
             LOGGER.info(
                 "Modo web ativo; anexando somente ao Chrome TOA existente, sem iniciar automacao local"
@@ -7542,6 +7944,8 @@ def main() -> None:
     except KeyboardInterrupt:
         pass
     finally:
+        if web_mode:
+            AUTO_IMPRODUCTIVE_CLOSER.stop()
         if web_attach_toa:
             TOA_LIVE.stop()
         elif not web_mode:
