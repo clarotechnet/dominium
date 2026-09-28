@@ -134,6 +134,8 @@ shared	stock_protocol_templates.json			2		d4310f519e27cc25
 shared	supabase/config.toml				For detailed configuration reference documentation, visit:	c6cfb0e691f6ac10
 shared	supabase/migrations/20260917202620_dominium_auth_schema.sql					62ed33bcd27847c6
 shared	supabase/migrations/20260918000000_dominium_registration_v2.sql					d445e86d360cdf9c
+shared	supabase/migrations/20260928132700_harden_dominium_bridge_rpc_grants.sql					32524212d8abffa5
+shared	supabase/migrations/20260928132900_explicit_deny_policies_for_server_owned_tables.sql					ccdcef1918ac45e1
 shared	supabase_auth_store.py	28				127a75071634aba0
 shared	supabase_schema.sql					f4c24a6069098221
 shared	technician_directory.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	c428cc21c4d30f17

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-28T12:40:12+00:00",
+  "generated_at": "2026-09-28T13:35:48+00:00",
   "schema": 2,
-  "source_fingerprint": "b5894bbd26fbe5dbf135718243499bcc3bfc006eb148bb92f17ae94de3046c1a",
+  "source_fingerprint": "d93ae39935bf928a9edfb1cdea3fc2a77c87cc26639f5d0a40fcfd55cfcc67c7",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -2541,6 +2541,32 @@
       "category": "shared",
       "bytes": 1124,
       "sha256": "d445e86d360cdf9cf691990af39ed0e0b9c59dff07e21b9d49c80c55a902af8a",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "supabase/migrations/20260928132700_harden_dominium_bridge_rpc_grants.sql",
+      "category": "shared",
+      "bytes": 1646,
+      "sha256": "32524212d8abffa5feb28a5e24d2845d3f4524d117554a5667c78a9f4228c4ae",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "supabase/migrations/20260928132900_explicit_deny_policies_for_server_owned_tables.sql",
+      "category": "shared",
+      "bytes": 1318,
+      "sha256": "ccdcef1918ac45e122eba13ca4dfdd257d07aef20be3cf36d8152ce06ebdc5b4",
       "summary": "",
       "imports": [],
       "endpoints": [],
