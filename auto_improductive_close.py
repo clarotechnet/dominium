@@ -206,6 +206,11 @@ class AutoImproductiveCloser:
         with self.lock:
             return str(key).strip() in self.blocked
 
+    def is_enabled(self) -> bool:
+        self._reload_state()
+        with self.lock:
+            return self.enabled
+
     def public_state(self) -> dict[str, Any]:
         self._reload_state()
         now = time.monotonic()
