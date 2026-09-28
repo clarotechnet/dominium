@@ -7724,7 +7724,7 @@ function semiAutoEnrichOrders(orders, contextOrders) {
 
 function semiAutoAgendaRecords() {
   return (state.semiAutoAgenda?.records || []).filter((record) => (
-    record?.agenda_only && String(record.contract || "").replace(/\D/g, "").length >= 5
+    String(record?.contract || "").replace(/\D/g, "").length >= 5
   ));
 }
 
@@ -7732,13 +7732,16 @@ function renderSemiAutoAgenda() {
   if (!elements.semiAutoAgendaChoose) return;
   const records = semiAutoAgendaRecords();
   const stats = state.semiAutoAgenda?.stats || {};
+  const sourceMode = state.semiAutoAgenda?.sourceMode || "";
   const filename = state.semiAutoAgenda?.filename
     || records[0]?.source_files?.[0]
     || "";
   elements.semiAutoAgendaChoose.disabled = state.semiAutoAgendaLoading || state.semiAutoRunning;
   elements.semiAutoAgendaChoose.querySelector("span").textContent = state.semiAutoAgendaLoading
     ? "Lendo agenda..." : "Carregar agenda CSV/XLSX";
-  elements.semiAutoAgendaName.textContent = filename || "Nenhuma agenda carregada";
+  elements.semiAutoAgendaName.textContent = sourceMode === "bucket"
+    ? "Dominium automatico · buckets TOA"
+    : filename || "Nenhuma agenda carregada";
   elements.semiAutoAgendaContracts.textContent = records.length;
   elements.semiAutoAgendaBlank.textContent = Number(stats.blank_or_invalid_contract || 0);
   elements.semiAutoAgendaNoWindow.textContent = Number(stats.missing_or_invalid_window || 0);
@@ -7746,8 +7749,10 @@ function renderSemiAutoAgenda() {
   elements.semiAutoAgendaMessage.classList.toggle("success", Boolean(records.length));
   elements.semiAutoAgendaMessage.classList.remove("error");
   elements.semiAutoAgendaMessage.textContent = records.length
-    ? `${records.length} contrato(s) guardados por janela. A esteira consultará o Imperium antes do TOA.`
-    : "Selecione a fotografia de atividades do dia para montar a ordem das pesquisas.";
+    ? sourceMode === "bucket"
+      ? `${records.length} contrato(s) coletados automaticamente dos buckets do TOA. XLSX/CSV manual nao e necessario.`
+      : `${records.length} contrato(s) guardados por janela. A esteira consultará o Imperium antes do TOA.`
+    : "Nenhum contrato do dia foi coletado ainda. O scheduler dos buckets preenchera esta fila automaticamente.";
 }
 
 async function loadSemiAutoAgenda({ quiet = true } = {}) {
@@ -7756,9 +7761,19 @@ async function loadSemiAutoAgenda({ quiet = true } = {}) {
     const payload = await request(apiUrl(
       `/api/toa-contracts?profile=${encodeURIComponent(state.profile)}&date=${encodeURIComponent(date)}`,
     ), { timeoutMs: 30000 });
+    const allRecords = (payload.records || []).filter((record) => (
+      String(record?.contract || "").replace(/\D/g, "").length >= 5
+    ));
+    const manualRecords = allRecords.filter((record) => record.agenda_only === true);
+    const bucketRecords = allRecords.filter((record) => record.agenda_only !== true);
+    const records = manualRecords.length ? manualRecords : bucketRecords;
+    const sourceMode = manualRecords.length ? "manual" : (bucketRecords.length ? "bucket" : "");
     state.semiAutoAgenda = {
-      records: (payload.records || []).filter((record) => record.agenda_only),
-      filename: (payload.records || []).find((record) => record.agenda_only)?.source_files?.[0] || "",
+      records,
+      sourceMode,
+      filename: sourceMode === "manual"
+        ? manualRecords[0]?.source_files?.[0] || ""
+        : "",
       stats: {},
     };
   } catch (error) {
@@ -7794,6 +7809,7 @@ async function importSemiAutoAgenda(file) {
     }));
     state.semiAutoAgenda = {
       records,
+      sourceMode: "manual",
       filename: payload.filename || file.name,
       stats: payload.stats || {},
     };
@@ -9613,6 +9629,8 @@ async function runSemiAutoQueue() {
           body: JSON.stringify({
             query: job.contract,
             expected_profile_key: profile,
+            prefer_cached: true,
+            cache_max_age_seconds: 420,
           }),
           timeoutMs: 300000,
         });
@@ -9725,9 +9743,13 @@ async function startSemiAutoQueue() {
   }
   const refreshed = await semiAutoRefreshActiveOrders({ announce: true });
   if (!refreshed) return;
+  await loadSemiAutoAgenda({ quiet: true });
   const agendaRecords = semiAutoAgendaRecords();
   if (!agendaRecords.length) {
-    showToast("Carregue primeiro o CSV ou XLSX com contratos e janelas do TOA.", "warning");
+    showToast(
+      "Ainda nao ha contratos coletados dos buckets do TOA para esta data. Aguarde a proxima coleta ou carregue uma agenda manual.",
+      "warning",
+    );
     renderSemiAutoQueue();
     return;
   }
