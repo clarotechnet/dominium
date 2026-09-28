@@ -115,7 +115,7 @@ jobs:
           fi
 
           SOURCE_OPTIONS="$(jq -cn --arg archive "$REMOTE_ARCHIVE" '{archive_path:$archive}')"
-          BUILD_JSON="$(hostinger hosting nodejs start-build             "$HOSTINGER_USERNAME" "$HOSTINGER_DOMAIN"             --node-version 22             --app-type express             --output-directory "."             --build-script build             --entry-file server.js             --package-manager npm             --source-type archive             --source-options "$SOURCE_OPTIONS"             --format json)"
+          BUILD_JSON="$(hostinger hosting nodejs start-build             "$HOSTINGER_USERNAME" "$HOSTINGER_DOMAIN"             --node-version 22             --app-type express             --root-directory ""             --output-directory "."             --build-script build             --entry-file server.js             --package-manager npm             --source-type archive             --source-options "$SOURCE_OPTIONS"             --format json)"
 
           BUILD_UUID="$(echo "$BUILD_JSON" | jq -r '.uuid // .data.uuid // empty')"
           test -n "$BUILD_UUID" || {
