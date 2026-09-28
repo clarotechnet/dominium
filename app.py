@@ -2221,6 +2221,125 @@ def _toa_live_public_state() -> dict:
     return local
 
 
+def _toa_connector_cache_is_fresh(
+    document: dict,
+    *,
+    max_age_seconds: int = 420,
+) -> bool:
+    freshness = document.get("freshness")
+    if not isinstance(freshness, dict):
+        return False
+    observed_at = str(freshness.get("observed_at") or "").strip()
+    if not observed_at:
+        return False
+    try:
+        observed = dt.datetime.fromisoformat(observed_at.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if observed.tzinfo is None:
+        observed = observed.replace(tzinfo=dt.datetime.now().astimezone().tzinfo)
+    age = (
+        dt.datetime.now(dt.timezone.utc)
+        - observed.astimezone(dt.timezone.utc)
+    ).total_seconds()
+    return -60 <= age <= max(60, int(max_age_seconds))
+
+
+def _connector_document_to_live_lookup(
+    document: dict,
+    elapsed_seconds: float,
+) -> dict:
+    activities: list[dict] = []
+    for raw in document.get("activities", []):
+        if not isinstance(raw, dict):
+            continue
+        technician = raw.get("technician")
+        technician = technician if isinstance(technician, dict) else {}
+        route = raw.get("route_provider")
+        route = route if isinstance(route, dict) else {}
+        equipment = raw.get("equipment")
+        equipment = equipment if isinstance(equipment, dict) else {}
+        validation = raw.get("validation")
+        validation = validation if isinstance(validation, dict) else {}
+        route_id = str(
+            route.get("login")
+            or route.get("external_id")
+            or route.get("id")
+            or route.get("name")
+            or ""
+        ).strip()
+        activities.append({
+            "found": True,
+            "aid": str(raw.get("activity_id") or "").strip(),
+            "contract": str(raw.get("contract") or document.get("contract") or "").strip(),
+            "scheduled_date": str(raw.get("scheduled_date") or "").strip(),
+            "service_window": str(raw.get("service_window") or "").strip(),
+            "start_time": str(raw.get("start_time") or "").strip(),
+            "end_time": str(raw.get("end_time") or "").strip(),
+            "city": str(raw.get("city") or "").strip(),
+            "work_type": str(raw.get("work_type") or "").strip(),
+            "activity_status": str(raw.get("status") or "").strip(),
+            "assigned_technician": {
+                "id": str(technician.get("id") or "").strip(),
+                "external_id": str(
+                    technician.get("login")
+                    or technician.get("external_id")
+                    or ""
+                ).strip(),
+                "name": str(technician.get("name") or "").strip(),
+            },
+            "route_provider": {
+                "id": route_id,
+                "external_id": route_id,
+                "name": str(route.get("name") or route_id).strip(),
+            },
+            "technician_observation": str(
+                raw.get("technician_observation") or ""
+            ).strip(),
+            "tasks": [
+                dict(item) for item in raw.get("tasks", [])
+                if isinstance(item, dict)
+            ],
+            "installed_equipment": [
+                dict(item) for item in equipment.get("installed", [])
+                if isinstance(item, dict)
+            ],
+            "removed_equipment": [
+                dict(item) for item in equipment.get("removed", [])
+                if isinstance(item, dict)
+            ],
+            "customer_equipment": [
+                dict(item) for item in equipment.get("customer", [])
+                if isinstance(item, dict)
+            ],
+            "materials": [
+                dict(item) for item in raw.get("materials", [])
+                if isinstance(item, dict)
+            ],
+            "decision": str(
+                validation.get("decision")
+                or raw.get("classification")
+                or ""
+            ).strip(),
+            "validation_errors": list(validation.get("errors") or ()),
+            "validation_warnings": list(validation.get("warnings") or ()),
+            "decision_reasons": list(validation.get("reasons") or ()),
+            "source": "toa_cache",
+            "read_only": True,
+        })
+    return {
+        "ok": True,
+        "contract": str(document.get("contract") or "").strip(),
+        "results": activities,
+        "elapsed_seconds": round(float(elapsed_seconds), 2),
+        "session": _toa_live_public_state(),
+        "source": "toa_cache",
+        "cache_hit": True,
+        "freshness": dict(document.get("freshness") or {}),
+        "read_only": True,
+    }
+
+
 def _cloud_snapshot_to_live_lookup(snapshot: dict, elapsed_seconds: float) -> dict:
     """Adapt the sanitized cloud snapshot to the existing close-workspace UI."""
     equipment = snapshot.get("equipment")
@@ -5941,14 +6060,48 @@ class PanelHandler(BaseHTTPRequestHandler):
                     query,
                 )
                 lookup_started_at = time.monotonic()
-                if TOA_CONNECTOR.cloud_client.configured:
-                    snapshot = TOA_CONNECTOR.cloud_client.lookup_contract(contract)
-                    result = _cloud_snapshot_to_live_lookup(
-                        snapshot,
-                        time.monotonic() - lookup_started_at,
+                prefer_cached = body.get("prefer_cached") is True
+                try:
+                    cache_max_age_seconds = int(
+                        body.get("cache_max_age_seconds", 420)
                     )
-                else:
-                    result = TOA_LIVE.lookup_contract(contract)
+                except (TypeError, ValueError) as exc:
+                    raise ValueError("Tempo maximo de cache invalido") from exc
+                cache_max_age_seconds = max(
+                    60,
+                    min(cache_max_age_seconds, 900),
+                )
+                result = None
+                if prefer_cached:
+                    try:
+                        cached_document = TOA_CONNECTOR.lookup(
+                            contract,
+                            refresh=False,
+                            allow_stale=True,
+                        )
+                    except (OSError, RuntimeError, ValueError):
+                        cached_document = None
+                    if (
+                        isinstance(cached_document, dict)
+                        and _toa_connector_cache_is_fresh(
+                            cached_document,
+                            max_age_seconds=cache_max_age_seconds,
+                        )
+                    ):
+                        result = _connector_document_to_live_lookup(
+                            cached_document,
+                            time.monotonic() - lookup_started_at,
+                        )
+
+                if result is None:
+                    if TOA_CONNECTOR.cloud_client.configured:
+                        snapshot = TOA_CONNECTOR.cloud_client.lookup_contract(contract)
+                        result = _cloud_snapshot_to_live_lookup(
+                            snapshot,
+                            time.monotonic() - lookup_started_at,
+                        )
+                    else:
+                        result = TOA_LIVE.lookup_contract(contract)
                 result["imperium_refresh"] = _refresh_live_lookup_imperium_cache(
                     profile,
                     result,
