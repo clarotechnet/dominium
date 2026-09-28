@@ -2770,6 +2770,9 @@ def _auto_improductive_scan(
         })
 
     for profile in PROFILES.values():
+        if not controller.is_enabled():
+            summary["stopped"] = True
+            return summary
         profile_state = {
             "open_orders": 0,
             "contracts_due": 0,
@@ -2864,6 +2867,9 @@ def _auto_improductive_scan(
         profile_state["contracts_due"] = len(due_contracts)
 
         for contract in due_contracts:
+            if not controller.is_enabled():
+                summary["stopped"] = True
+                return summary
             try:
                 document = TOA_CONNECTOR.lookup(
                     contract,
@@ -2921,6 +2927,9 @@ def _auto_improductive_scan(
                 if not isinstance(tasks, list):
                     continue
                 for task in tasks:
+                    if not controller.is_enabled():
+                        summary["stopped"] = True
+                        return summary
                     if not isinstance(task, dict):
                         continue
                     num_os = re.sub(
