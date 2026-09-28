@@ -15,29 +15,26 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Instalar cliente FTP
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+      - name: Instalar cliente SFTP
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
 
-      - name: Localizar app DOMINIUM no FTP
+      - name: Localizar app DOMINIUM via SFTP
         shell: bash
         env:
-          FTP_SERVER: ${{ secrets.HOSTINGER_FTP_SERVER }}
-          FTP_USERNAME: ${{ secrets.HOSTINGER_FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          SFTP_SERVER: ${{ secrets.HOSTINGER_FTP_SERVER }}
+          SFTP_USERNAME: ${{ secrets.HOSTINGER_FTP_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
         run: |
           set -euo pipefail
-          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP'
-          set ftp:ssl-allow no
-          set net:timeout 10
-          set net:max-retries 1
-          echo === ROOT ===
+          cat > /tmp/sftp-batch <<'EOF'
           pwd
-          cls -la
-          echo === PUBLIC_HTML ===
-          cd public_html
-          pwd
-          cls -la
-          echo === CANDIDATES ===
-          find .
+          ls -la
+          ls -la domains
+          ls -la domains/clarotechnet.com.br
+          ls -la domains/clarotechnet.com.br/public_html
+          ls -la domains/dominium.clarotechnet.com.br
+          ls -la nodejs
+          ls -la .nodejs
           bye
-          LFTP
+          EOF
+          SSHPASS="$SFTP_PASSWORD" sshpass -e sftp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -P 65002 -b /tmp/sftp-batch "$SFTP_USERNAME@$SFTP_SERVER"
