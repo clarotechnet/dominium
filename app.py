@@ -2861,6 +2861,62 @@ def _automatic_toa_import(route: dict[str, str], path: Path) -> dict:
         OPERATION_GATE.release()
 
 
+def _collect_toa_bucket_registry(
+    route: dict[str, str],
+    path: Path,
+) -> dict:
+    """Read a TOA bucket export and persist its contracts without writing Imperium."""
+    target = IMPORT_TARGET_BY_KEY[route["target"]]
+    profile = PROFILES[target["profile"]]
+    try:
+        preview = _scoped_import_preview(
+            path.read_bytes(),
+            path.name,
+            profile,
+        )
+    except ValueError as exc:
+        if "Nenhuma OS foi encontrada" in str(exc):
+            LOGGER.info(
+                "[%s] Coleta de bucket: %s sem OS",
+                profile.label,
+                route["route"],
+            )
+            return {
+                "status": "vazia",
+                "count": 0,
+                "contracts": 0,
+                "requires_human": False,
+            }
+        raise
+
+    registry_result = _safe_record_import_contracts(preview, target, profile)
+    if not registry_result.get("ok"):
+        raise OSError(
+            str(registry_result.get("error") or "Falha ao persistir contratos do bucket")
+        )
+
+    contracts = {
+        str(getattr(order, "contract", "") or "").strip()
+        for order in getattr(preview, "orders", ()) or ()
+        if str(getattr(order, "contract", "") or "").strip()
+    }
+    LOGGER.info(
+        "[%s] Coleta de bucket %s: %s OS / %s contratos guardados",
+        profile.label,
+        route["route"],
+        len(getattr(preview, "orders", ()) or ()),
+        len(contracts),
+    )
+    return {
+        "status": "coletada",
+        "count": len(getattr(preview, "orders", ()) or ()),
+        "contracts": len(contracts),
+        "recorded": int(registry_result.get("recorded", 0)),
+        "excluded_count": len(getattr(preview, "scope_exclusions", ()) or ()),
+        "requires_human": False,
+    }
+
+
 def _auto_improductive_scan(
     controller: AutoImproductiveCloser,
 ) -> dict:
@@ -3229,6 +3285,39 @@ AUTO_IMPRODUCTIVE_CLOSER = AutoImproductiveCloser(
 )
 
 TOA_AUTOMATION = TOAAutomation(ROOT, _automatic_toa_import, logger=LOGGER)
+
+TOA_BUCKET_AUTOMATION = TOAAutomation(
+    ROOT,
+    _collect_toa_bucket_registry,
+    logger=LOGGER,
+    export_subdir="toa-bucket-exports",
+    history_filename="toa-bucket-collection.jsonl",
+    state_filename="toa_bucket_collection_state.json",
+)
+
+
+def _auto_improductive_public_state() -> dict:
+    state = AUTO_IMPRODUCTIVE_CLOSER.public_state()
+    state["bucket_collection"] = TOA_BUCKET_AUTOMATION.public_state()
+    return state
+
+
+def _set_auto_improductive_enabled(enabled: bool) -> dict:
+    state = AUTO_IMPRODUCTIVE_CLOSER.set_enabled(enabled)
+    if enabled:
+        if TOA_BUCKET_AUTOMATION.credentials_path.is_file():
+            TOA_BUCKET_AUTOMATION.start()
+            TOA_BUCKET_AUTOMATION.trigger("auto-improductive-enabled")
+        else:
+            LOGGER.warning(
+                "Auto-baixa improdutiva ligada sem credenciais do exportador TOA; "
+                "a coleta automatica de buckets nao sera iniciada"
+            )
+    else:
+        TOA_BUCKET_AUTOMATION.stop()
+    state["bucket_collection"] = TOA_BUCKET_AUTOMATION.public_state()
+    return state
+
 
 def _validated_remote_toa_automation_base(value: object) -> str:
     base = str(value or "").strip().rstrip("/")
@@ -4892,7 +4981,7 @@ class PanelHandler(BaseHTTPRequestHandler):
             if parsed.path == "/api/auto-improductive-close":
                 self._json(
                     HTTPStatus.OK,
-                    AUTO_IMPRODUCTIVE_CLOSER.public_state(),
+                    _auto_improductive_public_state(),
                 )
                 return
             if parsed.path == "/api/toa-automation":
@@ -6184,7 +6273,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                         },
                     )
                     return
-                state = AUTO_IMPRODUCTIVE_CLOSER.set_enabled(enabled)
+                state = _set_auto_improductive_enabled(enabled)
                 self._auth_audit(
                     "auto_improductive.toggle",
                     "enabled" if enabled else "disabled",
@@ -8067,11 +8156,25 @@ def main() -> None:
     web_attach_toa = web_mode and _env_enabled("DOMINIUM_WEB_ATTACH_TOA")
     if web_mode:
         AUTO_IMPRODUCTIVE_CLOSER.start()
+        auto_improductive_enabled = bool(
+            AUTO_IMPRODUCTIVE_CLOSER.public_state().get("enabled")
+        )
         LOGGER.info(
             "Auto-baixa improdutiva: worker web iniciado (intervalo %ss, enabled=%s)",
             AUTO_IMPRODUCTIVE_CLOSER.interval_seconds,
-            AUTO_IMPRODUCTIVE_CLOSER.public_state().get("enabled"),
+            auto_improductive_enabled,
         )
+        if auto_improductive_enabled and TOA_BUCKET_AUTOMATION.credentials_path.is_file():
+            TOA_BUCKET_AUTOMATION.start()
+            TOA_BUCKET_AUTOMATION.trigger("startup")
+            LOGGER.info(
+                "Coleta automatica de buckets TOA iniciada para alimentar a fila de baixas"
+            )
+        elif auto_improductive_enabled:
+            LOGGER.warning(
+                "Auto-baixa esta ligada, mas config/toa_credentials.dat nao existe; "
+                "coleta de buckets indisponivel"
+            )
         if web_attach_toa:
             LOGGER.info(
                 "Modo web ativo; anexando somente ao Chrome TOA existente, sem iniciar automacao local"
@@ -8122,6 +8225,7 @@ def main() -> None:
     finally:
         if web_mode:
             AUTO_IMPRODUCTIVE_CLOSER.stop()
+            TOA_BUCKET_AUTOMATION.stop()
         if web_attach_toa:
             TOA_LIVE.stop()
         elif not web_mode:
