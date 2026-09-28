@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-28T17:49:20+00:00",
+  "generated_at": "2026-09-28T18:25:25+00:00",
   "schema": 2,
-  "source_fingerprint": "c63fb474ca997ab3a432285561fab32e5c737667e96c1e23548cbdc39564979f",
+  "source_fingerprint": "9e23c4e1c4d992a6e64090d53939253f7a788f3a5ab46addbd49785d9f40772e",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 322199,
-      "sha256": "ed24481b996e2abbdf74249b7cf2959a2b7de48045e2b8a8f7d8f8f4ac616ecd",
+      "bytes": 322233,
+      "sha256": "cfd173fd5792741c67e6ce3025d8598a5fb9d81549359431774f529065c4feff",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -618,6 +618,85 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "deploy/hostinger-web/package-lock.json",
+      "category": "tooling-deploy",
+      "bytes": 31045,
+      "sha256": "891bf4bcfe97f46778f260ec35675631653aad307e08413d7ed3ae4aac3da123",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "deploy/hostinger-web/package.json",
+      "category": "tooling-deploy",
+      "bytes": 292,
+      "sha256": "2a416a1cb0bd6b9515f93a7d90cf6c8cbf495d49b8ecf8b5db9d47ec80074748",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "deploy/hostinger-web/protocol_templates.json",
+      "category": "tooling-deploy",
+      "bytes": 12505,
+      "sha256": "dea41cc769da29709142822f2c637385f0c9fde8f462af3e4c8e0620f2472e1e",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "deploy/hostinger-web/server.js",
+      "category": "tooling-deploy",
+      "bytes": 39539,
+      "sha256": "5570e14e8ac6b13cf4d6870dfb7cf85ae0f51f5584d85b3fc8252cb0bb37893b",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/auth/",
+        "/api/auth/bootstrap",
+        "/api/auth/login",
+        "/api/auth/logout",
+        "/api/auth/pending-count",
+        "/api/auth/register",
+        "/api/auth/session",
+        "/api/auth/users",
+        "/api/diagnostics",
+        "/api/health-check",
+        "/api/import-targets",
+        "/api/orders",
+        "/api/profiles",
+        "/api/status",
+        "/api/technicians",
+        "/api/toa-agenda/import",
+        "/api/toa-automation",
+        "/api/toa-live/status"
+      ],
+      "env_vars": [
+        "DOMINIUM_OPERATION_ORIGIN",
+        "DOMINIUM_SUPABASE_BRIDGE_TOKEN",
+        "IMPERIUM_DATASNAP_PASSWORD",
+        "IMPERIUM_DATASNAP_USERNAME",
+        "PORT"
+      ],
+      "datasnap_methods": [
+        "TDtmOrdemServico.AS_GetRecords"
+      ],
+      "entrypoint": false,
+      "symbol_count": 40
     },
     {
       "path": "deploy/legacy-vps/README-VPS.md",
@@ -4631,9 +4710,11 @@
     "DOMINIUM_HTTPS",
     "DOMINIUM_INGEST_TOKEN",
     "DOMINIUM_LOCAL_TOA_AUTOMATION",
+    "DOMINIUM_OPERATION_ORIGIN",
     "DOMINIUM_PROJECT_ROOT",
     "DOMINIUM_PROXY_TOKEN",
     "DOMINIUM_PUBLIC_ORIGIN",
+    "DOMINIUM_SUPABASE_BRIDGE_TOKEN",
     "DOMINIUM_TOA_AUTOMATION_REMOTE",
     "DOMINIUM_TOA_BRIDGE_LOOKUP_TIMEOUT",
     "DOMINIUM_TOA_BRIDGE_POLL_INTERVAL",
@@ -4644,6 +4725,9 @@
     "DOMINIUM_TOA_PRIMARY_TOKEN",
     "DOMINIUM_TV_INGEST_URL",
     "DOMINIUM_WEB_MODE",
+    "IMPERIUM_DATASNAP_PASSWORD",
+    "IMPERIUM_DATASNAP_USERNAME",
+    "PORT",
     "SUPABASE_ACCESS_TOKEN",
     "SUPABASE_DB_PASSWORD",
     "SUPABASE_PROJECT_REF",

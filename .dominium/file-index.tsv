@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	136	76	40	DOMINIUM | MAPA DE RESPONSABILIDADE	ed24481b996e2abb
+orchestration	app.py	136	76	40	DOMINIUM | MAPA DE RESPONSABILIDADE	cfd173fd5792741c
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	3767cb9484eaea2d
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	21				224e8f5e1d25d7dd
@@ -23,6 +23,10 @@ toa	configure_toa_cloud_bridge.py	1			Grava a credencial primaria da ponte com p
 shared	consolidate_dominium.ps1			4	DOMINIUM | MAPA DE RESPONSABILIDADE	c82b6b36d57d2f66
 shared	datasnap_client.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	18769b58c990389a
 tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para migracao futura	bbfe97a6ef6f2341
+tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
+tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
+tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
+tooling-deploy	deploy/hostinger-web/server.js	40	18	1		5570e14e8ac6b13c
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
