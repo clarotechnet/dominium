@@ -81,6 +81,8 @@ assert.deepEqual(
 
 const worker = extractFunction("runSemiAutoQueue");
 assert.match(worker, /\/api\/toa-live\/lookup/);
+assert.match(worker, /prefer_cached:\s*true/);
+assert.match(worker, /cache_max_age_seconds:\s*420/);
 assert.match(worker, /semiAutoRefreshActiveOrders/);
 assert.match(worker, /semiAutoJobDueNow/);
 assert.doesNotMatch(worker, /\/close/);
@@ -169,6 +171,13 @@ const skippedRenderer = extractFunction("renderSemiAutoSkippedDialog");
 assert.match(skippedRenderer, /awaiting_imperium_import/);
 assert.match(skippedRenderer, /toa_pending/);
 assert.match(skippedRenderer, /!\["toa_pending", "awaiting_imperium_import"\]\.includes/);
+
+const agendaRecordsSource = extractFunction("semiAutoAgendaRecords");
+assert.doesNotMatch(agendaRecordsSource, /agenda_only/);
+const agendaLoader = extractFunction("loadSemiAutoAgenda");
+assert.match(agendaLoader, /bucketRecords/);
+assert.match(agendaLoader, /sourceMode/);
+assert.match(agendaLoader, /manualRecords\.length \? manualRecords : bucketRecords/);
 
 const queueBuilder = extractFunction("semiAutoBuildJobs");
 assert.match(queueBuilder, /semiAutoJobRouteLabel/);
