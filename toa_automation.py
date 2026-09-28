@@ -14,11 +14,13 @@
 # Mapa completo: MAPA_DOMINIUM_IMPERIUM_TOA.md
 # A ordem executavel abaixo foi preservada para evitar regressao.
 # =============================================================================
+import base64
 import datetime as dt
 import json
 import logging
 import re
 import shutil
+import subprocess
 import tempfile
 import threading
 import time
@@ -291,6 +293,115 @@ class TOAWebExporter:
         raise TimeoutError(f"O TOA nao concluiu a exportacao de {route} em 5 minutos")
 
 
+class TOAExistingSessionExporter:
+    """Export DMV buckets through the TOA Chrome session already open on port 9341."""
+
+    def __init__(
+        self,
+        credentials_path: Path,
+        download_root: Path,
+        *,
+        headless: bool = True,
+    ) -> None:
+        del headless
+        self.root = credentials_path.resolve().parent.parent
+        self.download_root = download_root.resolve()
+        self.helper = self.root / "toa_secondary_bucket_export.mjs"
+
+    def __enter__(self) -> "TOAExistingSessionExporter":
+        self.download_root.mkdir(parents=True, exist_ok=True)
+        if not self.helper.is_file():
+            raise RuntimeError("Helper CDP de exportacao dos buckets TOA nao localizado")
+        # Fail fast if the existing TOA page/extension is unavailable.
+        self.available_routes()
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        return None
+
+    def close(self) -> None:
+        return None
+
+    def reset_console(self) -> None:
+        return None
+
+    def _call(self, *args: str, timeout: float = 30.0) -> dict[str, Any]:
+        completed = subprocess.run(
+            ["node", str(self.helper), *args],
+            cwd=str(self.root),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=timeout,
+            check=False,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+        if completed.returncode != 0:
+            detail = (completed.stderr or completed.stdout or "Falha no exportador TOA").strip()
+            raise RuntimeError(detail[-1500:])
+        try:
+            payload = json.loads(completed.stdout.strip())
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("Resposta invalida do exportador CDP do TOA") from exc
+        if not isinstance(payload, dict) or payload.get("ok") is not True:
+            raise RuntimeError(str(payload.get("error") if isinstance(payload, dict) else "") or "Falha no exportador TOA")
+        return payload
+
+    def available_routes(self) -> tuple[dict[str, str], ...]:
+        payload = self._call("list", timeout=10.0)
+        found: dict[str, dict[str, str]] = {}
+        for item in payload.get("buckets", []):
+            if not isinstance(item, dict):
+                continue
+            route = " ".join(str(item.get("name") or "").split()).upper()
+            match = re.match(r"^(NTL|PWM|FTZ|JCR|MRO)-DMV(?:_[A-Z0-9]+)*$", route)
+            if match is None:
+                continue
+            destination = ROUTE_PREFIX_TARGETS[match.group(1)]
+            found[route] = {
+                "route": route,
+                "target": destination["target"],
+                "label": destination["label"],
+            }
+        if not found:
+            raise RuntimeError("Nenhum bucket DMV foi localizado na sessao TOA aberta")
+        return tuple(sorted(found.values(), key=lambda item: item["route"]))
+
+    def export_route(self, route: str, timeout: float = 300.0) -> Path:
+        payload = self._call(
+            "export",
+            route,
+            dt.date.today().isoformat(),
+            timeout=max(30.0, timeout),
+        )
+        result = payload.get("result")
+        if not isinstance(result, dict):
+            raise RuntimeError("Exportacao TOA nao retornou conteudo")
+        filename = Path(str(result.get("filename") or "")).name
+        if not filename:
+            filename = f"Atividades-{route}_{dt.date.today():%d_%m_%y}.csv"
+        target = self.download_root / filename
+        format_name = str(result.get("format") or "").strip().casefold()
+        if format_name == "csv":
+            csv = result.get("csv")
+            if not isinstance(csv, str) or not csv.strip():
+                raise RuntimeError("Exportacao TOA retornou CSV vazio")
+            target.write_text(csv, encoding="utf-8-sig")
+            return target
+        if format_name == "xlsx":
+            encoded = str(result.get("base64") or "")
+            try:
+                raw = base64.b64decode(encoded, validate=True)
+            except (ValueError, TypeError) as exc:
+                raise RuntimeError("Exportacao TOA retornou XLSX invalido") from exc
+            if not raw:
+                raise RuntimeError("Exportacao TOA retornou XLSX vazio")
+            target.write_bytes(raw)
+            return target
+        raise RuntimeError(f"Formato de exportacao TOA invalido: {format_name or 'ausente'}")
+
+
 class TOAAutomation:
     def __init__(
         self,
@@ -304,12 +415,14 @@ class TOAAutomation:
         export_subdir: str = "toa-exports",
         history_filename: str = "toa-automation.jsonl",
         state_filename: str = "toa_automation_state.json",
+        requires_credentials: bool = True,
     ) -> None:
         self.root = root.resolve()
         self.credentials_path = self.root / "config" / "toa_credentials.dat"
         self.export_root = self.root / "logs" / export_subdir
         self.history_path = self.root / "logs" / history_filename
         self.state_path = self.root / "config" / state_filename
+        self.requires_credentials = bool(requires_credentials)
         self.import_callback = import_callback
         self.logger = logger or logging.getLogger("imperium.toa")
         self.times = times
@@ -415,7 +528,9 @@ class TOAAutomation:
         while not self.stop_event.is_set():
             now = dt.datetime.now()
             minute = now.strftime("%H:%M")
-            if minute in self.times and self.credentials_path.is_file():
+            if minute in self.times and (
+                not self.requires_credentials or self.credentials_path.is_file()
+            ):
                 slot = f"{now.date().isoformat()}T{minute}"
                 with self.lock:
                     already_executed = slot in self.executed_slots
@@ -525,7 +640,11 @@ class TOAAutomation:
             return {
                 "ok": True,
                 "enabled": True,
-                "credentials_configured": self.credentials_path.is_file(),
+                "credentials_configured": (
+                    self.credentials_path.is_file()
+                    if self.requires_credentials
+                    else True
+                ),
                 "running": self.running,
                 "started_at": self.started_at,
                 "source": self.source,
