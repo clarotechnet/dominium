@@ -13,53 +13,33 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Instalar clientes
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp sshpass
+      - name: Instalar cliente SFTP
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
 
-      - name: Testar FTP em modo leitura
+      - name: Testar SFTP DOMINIUM em modo leitura
         shell: bash
         env:
           FTP_SERVER: ${{ secrets.HOSTINGER_FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.HOSTINGER_FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
         run: |
-          set -euo pipefail
+          set -u
           for name in FTP_SERVER FTP_USERNAME FTP_PASSWORD; do
             test -n "${!name}" || { echo "::error::Secret ausente: $name"; exit 1; }
           done
 
-          echo "=== FTP ROOT ==="
-          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP'
-          set ftp:ssl-allow no
-          set net:timeout 12
-          set net:max-retries 1
-          pwd
-          cls -la
-          echo === PUBLIC_HTML ===
-          cls -la public_html || true
-          echo === DOMAINS ===
-          cls -la domains || true
-          echo === FIND TOP ===
-          find . -maxdepth 3 || true
-          bye
-          LFTP
-
-      - name: Testar SFTP em modo leitura
-        shell: bash
-        env:
-          FTP_SERVER: ${{ secrets.HOSTINGER_FTP_SERVER }}
-          FTP_USERNAME: ${{ secrets.HOSTINGER_FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
-        run: |
-          set +e
           cat > /tmp/sftp-batch <<'EOF'
           pwd
           ls -la
           ls -la public_html
           ls -la domains
+          ls -la dominium
+          ls -la dominium.clarotechnet.com.br
           bye
           EOF
+
+          set +e
           SSHPASS="$FTP_PASSWORD" sshpass -e sftp             -o StrictHostKeyChecking=no             -o UserKnownHostsFile=/dev/null             -o ConnectTimeout=10             -P 65002             -b /tmp/sftp-batch             "$FTP_USERNAME@$FTP_SERVER"
           code=$?
           echo "SFTP_EXIT=$code"
-          exit 0
+          exit "$code"
