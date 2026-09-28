@@ -183,7 +183,8 @@ jobs:
           }
 
           curl -fsS "$BASE/" >/dev/null
-          curl -fsS "$BASE/app.js" | grep -q "autoImproductiveToggle" || {
+          curl -fsS "$BASE/app.js" -o /tmp/dominium-app.js
+          grep -q "autoImproductiveToggle" /tmp/dominium-app.js || {
             echo "::error::Frontend novo nao foi publicado"
             exit 1
           }
