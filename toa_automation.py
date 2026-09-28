@@ -80,7 +80,9 @@ class TOAWebExporter:
         try:
             from selenium import webdriver
             from selenium.webdriver.chrome.options import Options
+            from selenium.webdriver.chrome.service import Service
             from selenium.webdriver.common.by import By
+            from selenium.webdriver.common.selenium_manager import SeleniumManager
             from selenium.webdriver.support import expected_conditions as EC
             from selenium.webdriver.support.ui import WebDriverWait
         except ImportError as exc:
@@ -113,7 +115,22 @@ class TOAWebExporter:
             options.add_argument("--headless=new")
 
         try:
-            self.driver = webdriver.Chrome(options=options)
+            manager_result = SeleniumManager().binary_paths([
+                "--browser",
+                "chrome",
+                "--browser-path",
+                options.binary_location,
+                "--skip-driver-in-path",
+            ])
+            driver_path = str(manager_result.get("driver_path") or "").strip()
+            if not driver_path:
+                raise RuntimeError(
+                    "Selenium Manager nao retornou um ChromeDriver compativel"
+                )
+            self.driver = webdriver.Chrome(
+                service=Service(executable_path=driver_path),
+                options=options,
+            )
             credentials = load_credentials(self.credentials_path)
             self.driver.get(TOA_URL)
             wait = WebDriverWait(self.driver, 120)
