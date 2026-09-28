@@ -133,6 +133,7 @@ def _activity(value: object) -> dict[str, Any]:
         "work_type": _repair_text(activity.get("work_type")),
         "status": _text(activity.get("activity_status")),
         "technician": _provider(activity.get("assigned_technician")),
+        "route_provider": _provider(activity.get("route_provider")),
         "technician_observation": _repair_text(
             activity.get("technician_observation")
         ),
@@ -365,6 +366,11 @@ class TOAConnector:
                 "id": _text(technician.get("id")),
                 "login": _text(technician.get("login")),
                 "name": _repair_text(technician.get("name")),
+            },
+            "route_provider": {
+                "id": _text(snapshot.get("route")),
+                "login": _text(snapshot.get("route")),
+                "name": _repair_text(snapshot.get("route")),
             },
             "technician_observation": _repair_text(
                 snapshot.get("technician_observation")
