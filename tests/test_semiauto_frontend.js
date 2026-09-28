@@ -174,10 +174,9 @@ assert.match(skippedRenderer, /!\["toa_pending", "awaiting_imperium_import"\]\.i
 
 const agendaRecordsSource = extractFunction("semiAutoAgendaRecords");
 assert.doesNotMatch(agendaRecordsSource, /agenda_only/);
-const agendaLoader = extractFunction("loadSemiAutoAgenda");
-assert.match(agendaLoader, /bucketRecords/);
-assert.match(agendaLoader, /sourceMode/);
-assert.match(agendaLoader, /manualRecords\.length \? manualRecords : bucketRecords/);
+assert.match(source, /const bucketRecords = allRecords\.filter/);
+assert.match(source, /const sourceMode = manualRecords\.length \? "manual" : \(bucketRecords\.length \? "bucket" : ""\)/);
+assert.match(source, /const records = manualRecords\.length \? manualRecords : bucketRecords/);
 
 const queueBuilder = extractFunction("semiAutoBuildJobs");
 assert.match(queueBuilder, /semiAutoJobRouteLabel/);
