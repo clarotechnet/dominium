@@ -2895,10 +2895,16 @@ def _auto_improductive_scan(
             relevant = []
             for activity in activities:
                 raw_date = str(activity.get("scheduled_date") or "").strip()
-                try:
-                    scheduled = dt.date.fromisoformat(raw_date[:10])
-                except ValueError:
-                    continue
+                scheduled = None
+                for pattern in ("%Y-%m-%d", "%d/%m/%Y", "%d/%m/%y"):
+                    try:
+                        scheduled = dt.datetime.strptime(
+                            raw_date[:10],
+                            pattern,
+                        ).date()
+                        break
+                    except ValueError:
+                        continue
                 if scheduled in scan_dates:
                     relevant.append(activity)
 
