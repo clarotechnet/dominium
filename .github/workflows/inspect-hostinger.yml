@@ -1,6 +1,11 @@
 name: Diagnosticar Hostinger DOMINIUM
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/inspect-hostinger.yml"
   workflow_dispatch:
 
 permissions:
@@ -13,7 +18,7 @@ jobs:
       - name: Instalar cliente FTP
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
 
-      - name: Listar estrutura da conta Hostinger
+      - name: Localizar app DOMINIUM no FTP
         shell: bash
         env:
           FTP_SERVER: ${{ secrets.HOSTINGER_FTP_SERVER }}
@@ -21,17 +26,18 @@ jobs:
           FTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
         run: |
           set -euo pipefail
-          for name in FTP_SERVER FTP_USERNAME FTP_PASSWORD; do
-            test -n "${!name}" || { echo "::error::Secret ausente: $name"; exit 1; }
-          done
           lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP'
           set ftp:ssl-allow no
           set net:timeout 10
           set net:max-retries 1
+          echo === ROOT ===
           pwd
-          cls -1
-          cls -1 domains || true
-          cls -1 domains/clarotechnet.com.br || true
-          cls -1 domains/clarotechnet.com.br/public_html || true
+          cls -la
+          echo === PUBLIC_HTML ===
+          cd public_html
+          pwd
+          cls -la
+          echo === CANDIDATES ===
+          find .
           bye
           LFTP
