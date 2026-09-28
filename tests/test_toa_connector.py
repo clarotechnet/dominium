@@ -30,6 +30,11 @@ def _live_result(contract: str = "4252617") -> dict:
                 "name": "ROBERTO TESTE",
                 "email": "nao-pode-vazar@example.com",
             },
+            "route_provider": {
+                "id": "NTL-DMV",
+                "external_id": "NTL-DMV",
+                "name": "NTL-DMV",
+            },
             "tasks": [
                 {"index": "1", "os_number": "2650569922", "status": "E", "close_code": "409"},
                 {"index": "2", "os_number": "2650569933", "status": "E", "close_code": "409"},
@@ -79,6 +84,7 @@ class TOAConnectorTests(unittest.TestCase):
         self.assertEqual(result["summary"]["os_count"], 2)
         self.assertEqual(result["activities"][0]["service_window"], "12 - 15")
         self.assertEqual(result["activities"][0]["technician"]["login"], "Z581722")
+        self.assertEqual(result["activities"][0]["route_provider"]["login"], "NTL-DMV")
         self.assertEqual(result["activities"][0]["materials"][0]["material_code"], "22056332")
         serialized = json.dumps(result)
         self.assertNotIn("NAO PODE VAZAR", serialized)
@@ -123,6 +129,7 @@ class TOAConnectorTests(unittest.TestCase):
             "status": "complete",
             "scheduled_date": "2026-08-20",
             "service_window": "12 - 15",
+            "route": "NTL-DMV",
             "technician": {
                 "id": "31146", "login": "Z581722", "name": "ROBERTO TESTE"
             },
@@ -149,6 +156,7 @@ class TOAConnectorTests(unittest.TestCase):
         self.assertEqual(result["source"], "toa_cloud")
         self.assertEqual(result["activities"][0]["equipment"]["installed"][0]["serial"], "C412EC773DBC")
         self.assertEqual(result["activities"][0]["materials"][0]["material_code"], "22056332")
+        self.assertEqual(result["activities"][0]["route_provider"]["login"], "NTL-DMV")
         self.assertNotIn("NAO PODE VAZAR", json.dumps(result))
         self.live.lookup_contract.assert_not_called()
 
