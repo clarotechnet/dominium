@@ -102,7 +102,7 @@ from serialized_transfer import SerializedTransferUncertainError
 from stock_pdf import build_stock_pdf, safe_pdf_filename
 from technician_directory import TechnicianDirectory, normalize as normalize_technician
 from toa_datalake_store import TOADatalakeStore
-from toa_automation import TOAAutomation
+from toa_automation import TOAAutomation, TOAExistingSessionExporter
 from toa_capture_panel import TOACaptureCatalog
 from toa_context import PROFILE_ROUTES, TOAContextIndex
 from toa_connector import TOAConnector
@@ -3322,9 +3322,11 @@ TOA_BUCKET_AUTOMATION = TOAAutomation(
     ROOT,
     _collect_toa_bucket_registry,
     logger=LOGGER,
+    exporter_factory=TOAExistingSessionExporter,
     export_subdir="toa-bucket-exports",
     history_filename="toa-bucket-collection.jsonl",
     state_filename="toa_bucket_collection_state.json",
+    requires_credentials=False,
 )
 
 
@@ -3337,14 +3339,8 @@ def _auto_improductive_public_state() -> dict:
 def _set_auto_improductive_enabled(enabled: bool) -> dict:
     state = AUTO_IMPRODUCTIVE_CLOSER.set_enabled(enabled)
     if enabled:
-        if TOA_BUCKET_AUTOMATION.credentials_path.is_file():
-            TOA_BUCKET_AUTOMATION.start()
-            TOA_BUCKET_AUTOMATION.trigger("auto-improductive-enabled")
-        else:
-            LOGGER.warning(
-                "Auto-baixa improdutiva ligada sem credenciais do exportador TOA; "
-                "a coleta automatica de buckets nao sera iniciada"
-            )
+        TOA_BUCKET_AUTOMATION.start()
+        TOA_BUCKET_AUTOMATION.trigger("auto-improductive-enabled")
     else:
         TOA_BUCKET_AUTOMATION.stop()
     state["bucket_collection"] = TOA_BUCKET_AUTOMATION.public_state()
