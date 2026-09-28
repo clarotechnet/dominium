@@ -1,18 +1,52 @@
-﻿name: Diagnosticar conta Hostinger
+name: Deploy Hostinger DOMINIUM
 
 on:
   push:
     branches: [main]
-    paths:
-      - ".github/workflows/hostinger-account-diagnostic.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: dominium-hostinger-production
+  cancel-in-progress: false
+
 jobs:
-  inspect:
+  validate-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      HOSTINGER_USERNAME: u998431343
+      HOSTINGER_DOMAIN: dominium.clarotechnet.com.br
+
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: deploy/hostinger-web/package-lock.json
+
+      - name: Validar runtime e montar release
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check deploy/hostinger-web/server.js
+          npm ci --prefix deploy/hostinger-web --ignore-scripts --no-audit --no-fund
+          npm run build --prefix deploy/hostinger-web
+          python -m unittest tests.test_build_hostinger_node_release -v
+          python scripts/build_hostinger_node_release.py
+          test -s output/hostinger-node-release.zip
+
       - name: Instalar Hostinger CLI oficial
         shell: bash
         run: |
@@ -25,7 +59,7 @@ jobs:
           chmod +x "$HOME/bin/hostinger"
           echo "$HOME/bin" >> "$GITHUB_PATH"
 
-      - name: Inspecionar recursos visiveis
+      - name: Upload e build na Hostinger
         shell: bash
         env:
           HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
@@ -33,36 +67,142 @@ jobs:
           set -euo pipefail
           test -n "$HOSTINGER_API_TOKEN" || { echo "::error::HOSTINGER_API_TOKEN ausente"; exit 1; }
 
-          echo "=== HOSTING WEBSITES ==="
-          hostinger hosting websites list --format json || true
+          WEBSITE_JSON="$(hostinger hosting websites list --domain "$HOSTINGER_DOMAIN" --format json)"
+          echo "$WEBSITE_JSON" | jq -e --arg domain "$HOSTINGER_DOMAIN" '
+            (.data // []) | any(.domain == $domain and .is_enabled == true and .website_type == "nodejs")
+          ' >/dev/null || {
+            echo "::error::O dominio Node.js esperado nao esta disponivel para este token"
+            exit 1
+          }
 
-          echo "=== AGENCY ORDERS ==="
-          hostinger agency-hosting orders list --format json || true
+          ARCHIVE="output/hostinger-node-release.zip"
+          REMOTE_ARCHIVE="dominium-web-${GITHUB_SHA:0:7}.zip"
+          SIZE="$(stat -c%s "$ARCHIVE")"
 
-          echo "=== AGENCY WEBSITES ==="
-          hostinger agency-hosting websites list-plan --format json || true
+          UPLOAD_JSON="$(hostinger hosting files generate-upload-url             --username "$HOSTINGER_USERNAME"             --domain "$HOSTINGER_DOMAIN"             --format json)"
 
-          echo "=== AGENCY DOMINIUM FILTER ==="
-          hostinger agency-hosting websites list-plan --domain dominium.clarotechnet.com.br --format json || true
+          UPLOAD_URL="$(echo "$UPLOAD_JSON" | jq -r '.url // .data.url // empty')"
+          AUTH_KEY="$(echo "$UPLOAD_JSON" | jq -r '.auth_key // .data.auth_key // empty')"
+          REST_AUTH_KEY="$(echo "$UPLOAD_JSON" | jq -r '.rest_auth_key // .data.rest_auth_key // empty')"
 
-          echo "=== NODE BUILD SETTINGS ==="
-          hostinger hosting nodejs build-settings u998431343 dominium.clarotechnet.com.br --format json || true
+          test -n "$UPLOAD_URL" && test -n "$AUTH_KEY" && test -n "$REST_AUTH_KEY" || {
+            echo "::error::A Hostinger nao retornou credenciais de upload"
+            exit 1
+          }
 
-          echo "=== NODE BUILDS ==="
-          hostinger hosting nodejs list-builds u998431343 dominium.clarotechnet.com.br --per-page 5 --format json || true
+          echo "::add-mask::$UPLOAD_URL"
+          echo "::add-mask::$AUTH_KEY"
+          echo "::add-mask::$REST_AUTH_KEY"
 
-          echo "=== GIT AUTO DEPLOY ==="
-          hostinger hosting git auto-deployment-settings u998431343 dominium.clarotechnet.com.br --format json || true
+          DEST="${UPLOAD_URL%/}/$REMOTE_ARCHIVE?override=true"
 
-          echo "=== GIT INSTALLATIONS ==="
-          hostinger hosting git list-installations --format json || true
+          CREATE_STATUS="$(curl -sS -o /tmp/tus-create-body -D /tmp/tus-create-headers             -w '%{http_code}' -X POST "$DEST"             -H "X-Auth: $AUTH_KEY"             -H "X-Auth-Rest: $REST_AUTH_KEY"             -H "Tus-Resumable: 1.0.0"             -H "Upload-Length: $SIZE"             -H "Upload-Offset: 0")"
+          test "$CREATE_STATUS" = "201" || {
+            echo "::error::Falha ao criar upload Hostinger (HTTP $CREATE_STATUS)"
+            exit 1
+          }
 
-          echo "=== WEBSITE FILES ==="
-          hostinger hosting files list-website-and-directories u998431343 dominium.clarotechnet.com.br --max-depth 2 --max-items 250 --format json || true
+          PATCH_STATUS="$(curl -sS -o /tmp/tus-patch-body -D /tmp/tus-patch-headers             -w '%{http_code}' -X PATCH "$DEST"             -H "X-Auth: $AUTH_KEY"             -H "X-Auth-Rest: $REST_AUTH_KEY"             -H "Tus-Resumable: 1.0.0"             -H "Content-Type: application/offset+octet-stream"             -H "Upload-Offset: 0"             --data-binary "@$ARCHIVE")"
+          test "$PATCH_STATUS" = "204" || {
+            echo "::error::Falha no upload Hostinger (HTTP $PATCH_STATUS)"
+            exit 1
+          }
 
-          echo "=== PACKAGE JSON ==="
-          hostinger hosting files website-content u998431343 dominium.clarotechnet.com.br --path package.json --max-lines 200 --format json || true
+          UPLOADED_OFFSET="$(awk 'BEGIN{IGNORECASE=1} /^upload-offset:/ {gsub("\r","",$2); print $2}' /tmp/tus-patch-headers | tail -1)"
+          if [ -n "$UPLOADED_OFFSET" ] && [ "$UPLOADED_OFFSET" != "$SIZE" ]; then
+            echo "::error::Upload incompleto: $UPLOADED_OFFSET de $SIZE bytes"
+            exit 1
+          fi
 
-          echo "=== SERVER JS HEAD ==="
-          hostinger hosting files website-content u998431343 dominium.clarotechnet.com.br --path server.js --max-lines 260 --format json || true
+          SOURCE_OPTIONS="$(jq -cn --arg archive "$REMOTE_ARCHIVE" '{archive_path:$archive}')"
+          BUILD_JSON="$(hostinger hosting nodejs start-build             "$HOSTINGER_USERNAME" "$HOSTINGER_DOMAIN"             --node-version 22             --app-type express             --output-directory "."             --build-script build             --entry-file server.js             --package-manager npm             --source-type archive             --source-options "$SOURCE_OPTIONS"             --format json)"
 
+          BUILD_UUID="$(echo "$BUILD_JSON" | jq -r '.uuid // .data.uuid // empty')"
+          test -n "$BUILD_UUID" || {
+            echo "::error::A Hostinger nao retornou UUID do build"
+            exit 1
+          }
+
+          echo "Build Hostinger iniciado."
+          COMPLETED=0
+          for attempt in $(seq 1 45); do
+            DETAILS="$(hostinger hosting nodejs build               "$HOSTINGER_USERNAME" "$HOSTINGER_DOMAIN" "$BUILD_UUID"               --format json)"
+            STATE="$(echo "$DETAILS" | jq -r '.state // .data.state // empty')"
+            echo "Build Hostinger: $STATE"
+            case "$STATE" in
+              completed)
+                COMPLETED=1
+                break
+                ;;
+              failed)
+                echo "::error::Build Hostinger falhou"
+                hostinger hosting nodejs build-logs                   "$HOSTINGER_USERNAME" "$HOSTINGER_DOMAIN" "$BUILD_UUID"                   --format table || true
+                exit 1
+                ;;
+              pending|running|"")
+                sleep 8
+                ;;
+              *)
+                echo "::error::Estado de build inesperado: $STATE"
+                exit 1
+                ;;
+            esac
+          done
+
+          test "$COMPLETED" = "1" || {
+            echo "::error::Timeout aguardando build Hostinger"
+            exit 1
+          }
+
+          hostinger hosting nodejs restart-application             "$HOSTINGER_USERNAME" "$HOSTINGER_DOMAIN"             --format json >/dev/null
+
+      - name: Smoke tests de producao
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://dominium.clarotechnet.com.br"
+
+          READY=0
+          for attempt in $(seq 1 20); do
+            STATUS="$(curl -sS -o /tmp/dominium-session.json -w '%{http_code}' "$BASE/api/auth/session" || true)"
+            if [ "$STATUS" = "200" ] && jq -e '.ok == true' /tmp/dominium-session.json >/dev/null 2>&1; then
+              READY=1
+              break
+            fi
+            sleep 5
+          done
+          test "$READY" = "1" || {
+            echo "::error::DOMINIUM nao ficou pronto apos o deploy"
+            exit 1
+          }
+
+          jq -e '.registration_enabled == false' /tmp/dominium-session.json >/dev/null || {
+            echo "::error::Cadastro publico continua habilitado"
+            exit 1
+          }
+
+          curl -fsS "$BASE/" >/dev/null
+          curl -fsS "$BASE/app.js" | grep -q "autoImproductiveToggle" || {
+            echo "::error::Frontend novo nao foi publicado"
+            exit 1
+          }
+
+          REGISTER_STATUS="$(curl -sS -o /tmp/register.json -w '%{http_code}'             -X POST "$BASE/api/auth/register"             -H 'Content-Type: application/json'             --data '{}')"
+          test "$REGISTER_STATUS" = "403" || {
+            echo "::error::Cadastro publico retornou HTTP $REGISTER_STATUS"
+            exit 1
+          }
+
+          AUTO_STATUS="$(curl -sS -o /tmp/auto.json -w '%{http_code}'             "$BASE/api/auto-improductive-close")"
+          test "$AUTO_STATUS" = "401" || {
+            echo "::error::Ponte operacional retornou HTTP $AUTO_STATUS"
+            exit 1
+          }
+
+          DOT_STATUS="$(curl -sS -o /dev/null -w '%{http_code}' "$BASE/.env")"
+          test "$DOT_STATUS" = "404" || {
+            echo "::error::Dotfile nao foi bloqueado: HTTP $DOT_STATUS"
+            exit 1
+          }
+
+          echo "DOMINIUM production smoke tests: OK"
