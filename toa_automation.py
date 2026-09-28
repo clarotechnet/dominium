@@ -284,12 +284,15 @@ class TOAAutomation:
         times: tuple[str, ...] = DEFAULT_TIMES,
         routes: tuple[dict[str, str], ...] = DEFAULT_ROUTES,
         exporter_factory: Callable[..., TOAWebExporter] = TOAWebExporter,
+        export_subdir: str = "toa-exports",
+        history_filename: str = "toa-automation.jsonl",
+        state_filename: str = "toa_automation_state.json",
     ) -> None:
         self.root = root.resolve()
         self.credentials_path = self.root / "config" / "toa_credentials.dat"
-        self.export_root = self.root / "logs" / "toa-exports"
-        self.history_path = self.root / "logs" / "toa-automation.jsonl"
-        self.state_path = self.root / "config" / "toa_automation_state.json"
+        self.export_root = self.root / "logs" / export_subdir
+        self.history_path = self.root / "logs" / history_filename
+        self.state_path = self.root / "config" / state_filename
         self.import_callback = import_callback
         self.logger = logger or logging.getLogger("imperium.toa")
         self.times = times
