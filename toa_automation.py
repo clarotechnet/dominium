@@ -15,7 +15,9 @@
 # A ordem executavel abaixo foi preservada para evitar regressao.
 # =============================================================================
 import base64
+import csv
 import datetime as dt
+import io
 import json
 import logging
 import re
@@ -397,8 +399,43 @@ class TOAExistingSessionExporter:
                 raise RuntimeError("Exportacao TOA retornou XLSX invalido") from exc
             if not raw:
                 raise RuntimeError("Exportacao TOA retornou XLSX vazio")
-            target.write_bytes(raw)
-            return target
+            try:
+                import openpyxl
+                workbook = openpyxl.load_workbook(
+                    io.BytesIO(raw),
+                    read_only=True,
+                    data_only=True,
+                )
+            except Exception as exc:
+                raise RuntimeError(f"Nao foi possivel ler o XLSX do TOA: {exc}") from exc
+            csv_target = target.with_suffix(".csv")
+            try:
+                sheet = workbook.active
+                with csv_target.open(
+                    "w",
+                    encoding="utf-8-sig",
+                    newline="",
+                ) as stream:
+                    writer = csv.writer(stream)
+
+                    def cell(value: object) -> object:
+                        if value is None:
+                            return ""
+                        if isinstance(value, dt.datetime):
+                            return value.strftime("%d/%m/%Y %H:%M:%S")
+                        if isinstance(value, dt.date):
+                            return value.strftime("%d/%m/%Y")
+                        if isinstance(value, dt.time):
+                            return value.strftime("%H:%M:%S")
+                        if isinstance(value, float) and value.is_integer():
+                            return str(int(value))
+                        return value
+
+                    for row in sheet.iter_rows(values_only=True):
+                        writer.writerow([cell(value) for value in row])
+            finally:
+                workbook.close()
+            return csv_target
         raise RuntimeError(f"Formato de exportacao TOA invalido: {format_name or 'ausente'}")
 
 
