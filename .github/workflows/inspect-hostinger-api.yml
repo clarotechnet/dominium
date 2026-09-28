@@ -27,22 +27,16 @@ jobs:
           chmod +x "$HOME/bin/hostinger"
           echo "$HOME/bin" >> "$GITHUB_PATH"
 
-      - name: Validar token e localizar DOMINIUM
+      - name: Enumerar websites visiveis ao token
         shell: bash
         env:
           HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
         run: |
           set -euo pipefail
           test -n "$HOSTINGER_API_TOKEN" || { echo "::error::HOSTINGER_API_TOKEN ausente"; exit 1; }
-
-          echo "=== CLI ==="
-          hostinger version
-
-          echo "=== WEBSITE ==="
-          hostinger hosting websites list --domain dominium.clarotechnet.com.br --format json
-
-          echo "=== NODEJS HELP ==="
-          hostinger hosting nodejs --help
-
-          echo "=== NODEJS LIST HELP ==="
-          hostinger hosting nodejs list --help || true
+          echo "=== WEBSITES ==="
+          hostinger hosting websites list --format json
+          echo "=== BUILDS HELP ==="
+          hostinger hosting nodejs list-builds --help
+          echo "=== SETTINGS HELP ==="
+          hostinger hosting nodejs build-settings --help
