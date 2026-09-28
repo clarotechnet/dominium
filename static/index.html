@@ -812,6 +812,34 @@
           </div>
         </div>
 
+        <section class="auto-improductive-card" aria-label="Auto-baixa de improdutivas">
+          <div class="auto-improductive-heading">
+            <div>
+              <div class="toa-automation-title-row">
+                <h4>Auto-baixa improdutivas</h4>
+                <span class="toa-automation-state" id="autoImproductiveStatus">
+                  <span class="toa-status-dot" aria-hidden="true"></span>
+                  <span id="autoImproductiveStatusText">Carregando</span>
+                </span>
+              </div>
+              <p>
+                A cada 5 minutos revisa as agendas de todas as cidades. Enquanto a
+                atividade estiver em campo no TOA, ela permanece aguardando.
+              </p>
+            </div>
+            <button class="button primary" id="autoImproductiveToggle" type="button">
+              <i data-lucide="power" aria-hidden="true"></i>
+              <span>Ativar</span>
+            </button>
+          </div>
+          <div class="auto-improductive-metrics">
+            <div><span>Proximo ciclo</span><strong id="autoImproductiveNext">-</strong></div>
+            <div><span>Aguardando TOA</span><strong id="autoImproductiveWaiting">0</strong></div>
+            <div><span>Baixadas na rodada</span><strong id="autoImproductiveClosed">0</strong></div>
+            <div><span>Bloqueadas</span><strong id="autoImproductiveBlocked">0</strong></div>
+          </div>
+        </section>
+
         <div class="toa-automation-content">
           <div>
             <h4>Rotas monitoradas</h4>
