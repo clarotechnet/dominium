@@ -2202,7 +2202,7 @@ function renderAutoImproductiveClose() {
 
   const enabled = Boolean(auto.enabled);
   const running = Boolean(auto.running);
-  const canControl = ["admin", "supervisor"].includes(
+  const canControl = ["admin", "controller", "supervisor"].includes(
     String(state.authUser?.role || "").toLowerCase(),
   );
   elements.autoImproductiveStatus.className = `toa-automation-state ${
