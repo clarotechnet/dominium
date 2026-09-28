@@ -2236,8 +2236,40 @@ def _toa_connector_cache_is_fresh(
         observed = dt.datetime.fromisoformat(observed_at.replace("Z", "+00:00"))
     except ValueError:
         return False
+    local_tz = dt.datetime.now().astimezone().tzinfo
     if observed.tzinfo is None:
-        observed = observed.replace(tzinfo=dt.datetime.now().astimezone().tzinfo)
+        observed = observed.replace(tzinfo=local_tz)
+
+    # A completed TOA snapshot is operationally final for that service day.
+    # Keep it reusable until the local day changes so the productive auto-close
+    # can consume data already collected by the 24h improductive worker.
+    today = dt.datetime.now().astimezone().date()
+    observed_local = observed.astimezone(local_tz)
+    activities = [
+        item
+        for item in document.get("activities", [])
+        if isinstance(item, dict)
+    ]
+    activities_today = []
+    for activity in activities:
+        raw_date = str(activity.get("scheduled_date") or "").strip()
+        scheduled = None
+        for pattern in ("%Y-%m-%d", "%d/%m/%Y", "%d/%m/%y"):
+            try:
+                scheduled = dt.datetime.strptime(raw_date[:10], pattern).date()
+                break
+            except ValueError:
+                continue
+        if scheduled == today:
+            activities_today.append(activity)
+
+    if (
+        observed_local.date() == today
+        and activities_today
+        and all(toa_activity_is_complete(item.get("status")) for item in activities_today)
+    ):
+        return True
+
     age = (
         dt.datetime.now(dt.timezone.utc)
         - observed.astimezone(dt.timezone.utc)
