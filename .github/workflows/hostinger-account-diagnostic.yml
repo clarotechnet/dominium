@@ -177,8 +177,8 @@ jobs:
             exit 1
           }
 
-          jq -e '.registration_enabled == false' /tmp/dominium-session.json >/dev/null || {
-            echo "::error::Cadastro publico continua habilitado"
+          jq -e '.registration_enabled == true' /tmp/dominium-session.json >/dev/null || {
+            echo "::error::Cadastro publico nao esta habilitado"
             exit 1
           }
 
@@ -190,8 +190,13 @@ jobs:
           }
 
           REGISTER_STATUS="$(curl -sS -o /tmp/register.json -w '%{http_code}'             -X POST "$BASE/api/auth/register"             -H 'Content-Type: application/json'             --data '{}')"
-          test "$REGISTER_STATUS" = "403" || {
-            echo "::error::Cadastro publico retornou HTTP $REGISTER_STATUS"
+          test "$REGISTER_STATUS" = "400" || {
+            echo "::error::Cadastro publico nao respondeu com validacao esperada (HTTP $REGISTER_STATUS)"
+            cat /tmp/register.json || true
+            exit 1
+          }
+          jq -e '.error | type == "string" and length > 0' /tmp/register.json >/dev/null || {
+            echo "::error::Cadastro publico nao retornou erro de validacao estruturado"
             exit 1
           }
 
