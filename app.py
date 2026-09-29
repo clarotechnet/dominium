@@ -3116,6 +3116,88 @@ def _toa_registry_record_needs_lookup(record: dict) -> bool:
     return any(toa_activity_is_complete(status) for status in statuses)
 
 
+def _record_auto_improductive_close_report(
+    profile: ProfileRuntime,
+    order: Order,
+    definition: CloseCode,
+    *,
+    observation: str,
+    result: dict,
+) -> None:
+    report_date = dt.date.today()
+    already_closed = bool(result.get("already_closed"))
+    try:
+        existing = profile.close_report.list(report_date)
+        for record in existing:
+            if (
+                int(record.get("id_os") or 0) == int(order.id_os)
+                and str(record.get("close_code") or "") == definition.code
+                and str(record.get("attribution") or "").startswith(
+                    "auto_improductive"
+                )
+                and str(record.get("state") or "") == "confirmed"
+            ):
+                return
+
+        payload = _report_base(
+            order,
+            definition,
+            transport="datasnap_auto",
+            observation=observation,
+        )
+        payload["attribution"] = (
+            "auto_improductive_observed"
+            if already_closed
+            else "auto_improductive"
+        )
+        record, _duplicate = profile.close_report.begin(
+            payload,
+            date=report_date,
+            block_active_duplicate=False,
+        )
+        now = dt.datetime.now().astimezone().isoformat(timespec="seconds")
+        if already_closed:
+            category = "OBSERVED_CLOSED"
+            category_label = "Ja estava baixada"
+            message = (
+                f"Auto-baixa confirmou que a OS ja estava fechada com o codigo "
+                f"{definition.code}"
+            )
+            detail_text = (
+                "Nenhuma nova baixa foi atribuida ao DOMINIUM; "
+                "o estado fechado ja existia no Imperium."
+            )
+        else:
+            category = "SUCCESS"
+            category_label = "Baixada Auto"
+            message = f"Auto-baixa confirmada com o codigo {definition.code}"
+            detail_text = (
+                "Baixa executada pelo worker automatico TOA -> Imperium."
+            )
+        profile.close_report.update(
+            record["request_id"],
+            {
+                "state": "confirmed",
+                "category": category,
+                "category_label": category_label,
+                "message": message,
+                "detail": detail_text,
+                "accepted_at": now,
+                "confirmed_at": now,
+                "safe_to_retry": False,
+                "attribution": payload["attribution"],
+            },
+            date=report_date,
+        )
+    except Exception:
+        LOGGER.exception(
+            "[%s] Auto-baixa: a OS %s foi processada, mas o relatorio "
+            "nao conseguiu registrar a auditoria",
+            profile.label,
+            order.num_os,
+        )
+
+
 def _auto_improductive_scan(
     controller: AutoImproductiveCloser,
 ) -> dict:
@@ -3476,6 +3558,13 @@ def _auto_improductive_scan(
                             code,
                             definition.description,
                             observation=observation,
+                        )
+                        _record_auto_improductive_close_report(
+                            profile,
+                            order,
+                            definition,
+                            observation=observation,
+                            result=result,
                         )
                         controller.unblock(block_key)
                         already_closed = bool(result.get("already_closed"))
