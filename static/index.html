@@ -1005,9 +1005,9 @@
       </section>
       <section class="semi-auto-agenda" aria-label="Agenda da esteira semiautomatica">
         <div class="semi-auto-agenda-copy">
-          <span class="toa-live-kicker">AGENDA DA ESTEIRA</span>
-          <h3>Carregar contratos e janelas do TOA</h3>
-          <p>Importe o CSV ou XLSX. O DOMINIUM lê <strong>Intervalo de Tempo</strong> e <strong>Contrato</strong>, ignora linhas sem contrato e consulta primeiro o Imperium. A ponte TOA só recebe contratos que ainda possuam alguma O.S. em campo.</p>
+          <span class="toa-live-kicker">AGENDA AUTOMATICA</span>
+          <h3>Contratos e janelas coletados dos buckets TOA</h3>
+          <p>O DOMINIUM coleta os buckets automaticamente a cada 5 minutos e guarda as O.S. por janela. <strong>CSV/XLSX e opcional</strong> e serve apenas como agenda manual quando voce quiser substituir a coleta automatica do dia.</p>
         </div>
         <div class="semi-auto-agenda-actions">
           <input class="hidden" id="semiAutoAgendaFile" type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
@@ -1023,7 +1023,7 @@
           <div><span>Sem janela válida</span><strong id="semiAutoAgendaNoWindow">0</strong></div>
           <div><span>Duplicidades unificadas</span><strong id="semiAutoAgendaDuplicates">0</strong></div>
         </div>
-        <p class="semi-auto-agenda-message" id="semiAutoAgendaMessage">Selecione a fotografia de atividades do dia para montar a ordem das pesquisas.</p>
+        <p class="semi-auto-agenda-message" id="semiAutoAgendaMessage">Aguardando a coleta automatica dos buckets TOA. Nenhum arquivo manual e necessario.</p>
       </section>
       <section class="toa-live-lookup" aria-label="Consulta ao vivo no TOA">
         <header>
@@ -1076,6 +1076,7 @@
             <div><span>Proximo ciclo</span><strong id="autoImproductiveNext">-</strong></div>
             <div><span>Aguardando TOA</span><strong id="autoImproductiveWaiting">0</strong></div>
             <div><span>Baixadas na rodada</span><strong id="autoImproductiveClosed">0</strong></div>
+            <div><span>Produtivas guardadas</span><strong id="autoImproductiveProductive">0</strong></div>
             <div><span>Bloqueadas</span><strong id="autoImproductiveBlocked">0</strong></div>
           </div>
         </section>
