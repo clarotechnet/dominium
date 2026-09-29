@@ -90,6 +90,26 @@ class ApplyPacketTests(unittest.TestCase):
         with patch.object(ImperiumAPI, "_detail_record", return_value=record):
             self.assertEqual(self.api._detail_close_code(b"detail"), "106")
 
+    def test_writer_identity_guard_blocks_mismatched_datasnap_user(self) -> None:
+        self.api.expected_username = "DOMINIUM"
+        with patch(
+            "imperium_api.load_credentials",
+            return_value={"username": "DALTON", "password": "hidden"},
+        ):
+            with self.assertRaisesRegex(
+                DataSnapError,
+                "escrita exige o usuario DOMINIUM",
+            ):
+                self.api._assert_writer_identity()
+
+    def test_writer_identity_guard_accepts_expected_datasnap_user(self) -> None:
+        self.api.expected_username = "DOMINIUM"
+        with patch(
+            "imperium_api.load_credentials",
+            return_value={"username": "DOMINIUM", "password": "hidden"},
+        ):
+            self.api._assert_writer_identity()
+
     def test_field_status_wins_over_prefilled_close_code(self) -> None:
         order = Order(2214890, "2658040946", "1579992", 78, "RETIRAR EMTA")
         requested = self.api.close_code("106")
