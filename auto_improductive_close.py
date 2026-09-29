@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import datetime as dt
 import json
 import logging
@@ -87,6 +88,14 @@ class AutoImproductiveCloser:
         self.blocked: dict[str, dict[str, Any]] = {}
         self.last_run: dict[str, Any] | None = None
         self.history: list[dict[str, Any]] = []
+        self.history_totals: dict[str, int] = {
+            "runs": 0,
+            "closed": 0,
+            "closed_new": 0,
+            "already_closed": 0,
+        }
+        self.current_run: dict[str, Any] | None = None
+        self._progress_published_at = 0.0
         self._reload_state()
         self._load_history()
 
@@ -156,26 +165,73 @@ class AutoImproductiveCloser:
             lines = self.history_path.read_text(encoding="utf-8").splitlines()
         except OSError:
             return
-        loaded: list[dict[str, Any]] = []
-        for line in lines[-HISTORY_LIMIT:]:
+        all_runs: list[dict[str, Any]] = []
+        for line in lines:
             try:
                 value = json.loads(line)
             except json.JSONDecodeError:
                 continue
             if isinstance(value, dict):
-                loaded.append(value)
+                all_runs.append(value)
+        totals = {
+            "runs": len(all_runs),
+            "closed": sum(int(item.get("closed") or 0) for item in all_runs),
+            "closed_new": sum(
+                int(item.get("closed_new", item.get("closed") or 0) or 0)
+                for item in all_runs
+            ),
+            "already_closed": sum(
+                int(item.get("already_closed") or 0) for item in all_runs
+            ),
+        }
+        loaded = all_runs[-HISTORY_LIMIT:]
         with self.lock:
             self.history = loaded
             self.last_run = loaded[-1] if loaded else None
+            self.history_totals = totals
 
     def _append_history(self, value: dict[str, Any]) -> None:
         self.history_path.parent.mkdir(parents=True, exist_ok=True)
+        persisted = dict(value)
+        persisted.pop("audit_items", None)
         with self.history_path.open("a", encoding="utf-8") as stream:
-            stream.write(json.dumps(value, ensure_ascii=True, separators=(",", ":")))
+            stream.write(
+                json.dumps(persisted, ensure_ascii=True, separators=(",", ":"))
+            )
             stream.write("\n")
         with self.lock:
-            self.history = (self.history + [value])[-HISTORY_LIMIT:]
-            self.last_run = value
+            self.history = (self.history + [copy.deepcopy(value)])[-HISTORY_LIMIT:]
+            self.last_run = copy.deepcopy(value)
+            self.history_totals["runs"] += 1
+            self.history_totals["closed"] += int(value.get("closed") or 0)
+            self.history_totals["closed_new"] += int(
+                value.get("closed_new", value.get("closed") or 0) or 0
+            )
+            self.history_totals["already_closed"] += int(
+                value.get("already_closed") or 0
+            )
+
+    def publish_progress(
+        self,
+        value: dict[str, Any],
+        *,
+        force: bool = False,
+    ) -> None:
+        now = time.monotonic()
+        with self.lock:
+            if not force and now - self._progress_published_at < 0.5:
+                return
+            started_at = (
+                self.current_run.get("started_at")
+                if isinstance(self.current_run, dict)
+                else _now()
+            )
+            self.current_run = {
+                "started_at": started_at,
+                "running": True,
+                **copy.deepcopy(value),
+            }
+            self._progress_published_at = now
 
     def start(self) -> None:
         if self.thread and self.thread.is_alive():
@@ -250,10 +306,15 @@ class AutoImproductiveCloser:
                 "running": self.running,
                 "interval_seconds": self.interval_seconds,
                 "next_run_seconds": next_seconds,
-                "last_run": self.last_run,
-                "history": list(reversed(self.history[-10:])),
+                "last_run": copy.deepcopy(self.last_run),
+                "current_run": copy.deepcopy(self.current_run),
+                "history": [
+                    copy.deepcopy(item)
+                    for item in reversed(self.history[-10:])
+                ],
+                "totals": dict(self.history_totals),
                 "blocked_count": len(self.blocked),
-                "blocked": dict(self.blocked),
+                "blocked": copy.deepcopy(self.blocked),
             }
 
     def _loop(self) -> None:
@@ -279,6 +340,11 @@ class AutoImproductiveCloser:
             if self.running:
                 return
             self.running = True
+            self.current_run = {
+                "started_at": started_at,
+                "running": True,
+            }
+            self._progress_published_at = 0.0
         try:
             result = self.run_callback(self)
             if not isinstance(result, dict):
@@ -304,5 +370,8 @@ class AutoImproductiveCloser:
                 self.running = False
         try:
             self._append_history(run)
+        finally:
+            with self.lock:
+                self.current_run = None
         except OSError:
             self.logger.exception("Auto-baixa improdutiva: falha ao persistir historico")
