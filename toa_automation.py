@@ -548,11 +548,11 @@ class TOAAutomation:
 
     def trigger(self, source: str = "manual", slot: str = "") -> bool:
         with self.lock:
-            if self.running:
-                return False
             if slot:
                 self.executed_slots.add(slot)
                 self._persist_slots()
+            if self.running:
+                return False
             self.running = True
             self.started_at = dt.datetime.now().isoformat(timespec="seconds")
             self.source = source
