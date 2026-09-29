@@ -1075,12 +1075,68 @@
           </div>
           <div class="auto-improductive-metrics">
             <div><span>Proximo ciclo</span><strong id="autoImproductiveNext">-</strong></div>
-            <div><span>Aguardando TOA</span><strong id="autoImproductiveWaiting">0</strong></div>
-            <div><span>Baixadas na rodada</span><strong id="autoImproductiveClosed">0</strong></div>
-            <div><span>Produtivas guardadas</span><strong id="autoImproductiveProductive">0</strong></div>
-            <div><span>Bloqueadas</span><strong id="autoImproductiveBlocked">0</strong></div>
+            <div class="auto-audit-card" data-auto-audit="waiting" role="button" tabindex="0" title="Ver contratos aguardando TOA">
+              <span>Aguardando TOA</span>
+              <strong id="autoImproductiveWaiting">0</strong>
+              <small>Ver contratos</small>
+            </div>
+            <div class="auto-audit-card" data-auto-audit="current_closed" role="button" tabindex="0" title="Ver baixas da rodada atual">
+              <span>Baixadas agora</span>
+              <strong id="autoImproductiveClosed">0</strong>
+              <small>Rodada atual</small>
+            </div>
+            <div class="auto-audit-card" data-auto-audit="total_closed" role="button" tabindex="0" title="Ver historico de baixas automaticas">
+              <span>Baixadas no total</span>
+              <strong id="autoImproductiveClosedTotal">0</strong>
+              <small>Historico automatico</small>
+            </div>
+            <div class="auto-audit-card" data-auto-audit="previous_closed" role="button" tabindex="0" title="Ver baixas da rodada anterior">
+              <span>Rodada anterior</span>
+              <strong id="autoImproductivePreviousClosed">0</strong>
+              <small>Ver baixas</small>
+            </div>
+            <div class="auto-audit-card" data-auto-audit="productive" role="button" tabindex="0" title="Ver produtivas guardadas em cache">
+              <span>Produtivas guardadas</span>
+              <strong id="autoImproductiveProductive">0</strong>
+              <small>Ver contratos</small>
+            </div>
+            <div class="auto-audit-card" data-auto-audit="already_closed" role="button" tabindex="0" title="Ver OS que ja estavam baixadas">
+              <span>Ja estavam baixadas</span>
+              <strong id="autoImproductiveAlreadyClosed">0</strong>
+              <small>Confirmadas no Imperium</small>
+            </div>
+            <div class="auto-audit-card" data-auto-audit="blocked" role="button" tabindex="0" title="Ver contratos bloqueados e o motivo">
+              <span>Bloqueadas</span>
+              <strong id="autoImproductiveBlocked">0</strong>
+              <small>Ver motivo</small>
+            </div>
           </div>
         </section>
+
+        <dialog id="autoImproductiveAuditDialog" class="auto-improductive-audit-dialog" aria-labelledby="autoImproductiveAuditTitle">
+          <form method="dialog">
+            <header class="auto-improductive-audit-header">
+              <div>
+                <span>AUDITORIA DA AUTO-BAIXA</span>
+                <h2 id="autoImproductiveAuditTitle">Detalhes</h2>
+                <p id="autoImproductiveAuditSubtitle">Contratos e O.S. desta categoria.</p>
+              </div>
+              <button class="icon-button" id="autoImproductiveAuditClose" type="button" title="Fechar" aria-label="Fechar">
+                <i data-lucide="x" aria-hidden="true"></i>
+              </button>
+            </header>
+            <div class="auto-improductive-audit-toolbar">
+              <input type="search" id="autoImproductiveAuditSearch" placeholder="Buscar por contrato, OS, codigo ou motivo..." autocomplete="off">
+              <span id="autoImproductiveAuditCount">0 registros</span>
+            </div>
+            <div class="auto-improductive-audit-list" id="autoImproductiveAuditList">
+              <div class="auto-improductive-audit-empty">Nenhum registro nesta categoria.</div>
+            </div>
+            <div class="dialog-actions">
+              <button class="button secondary" type="button" id="autoImproductiveAuditBottomClose">Fechar</button>
+            </div>
+          </form>
+        </dialog>
 
         <section class="semi-auto-panel hidden" id="semiAutoPanel" aria-label="Fila de baixa de ordens">
           <header class="semi-auto-head">
