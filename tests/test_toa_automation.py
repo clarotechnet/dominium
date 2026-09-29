@@ -125,6 +125,25 @@ class TOAAutomationTests(unittest.TestCase):
             automation.worker_thread.join(timeout=3)
             self.assertFalse(automation.public_state()["running"])
 
+    def test_scheduled_slot_is_consumed_when_another_collection_is_already_running(self):
+        BlockingExporter.release.clear()
+        routes = ({"route": "NTL-DMV_ADM", "target": "rn", "label": "Natal"},)
+        with tempfile.TemporaryDirectory() as directory:
+            automation = TOAAutomation(
+                Path(directory),
+                lambda _route, _path: {"status": "vazia"},
+                routes=routes,
+                exporter_factory=BlockingExporter,
+            )
+            slot = "2026-09-29T09:40"
+
+            self.assertTrue(automation.trigger("startup"))
+            self.assertFalse(automation.trigger("agendada", slot))
+            self.assertIn(slot, automation.executed_slots)
+
+            BlockingExporter.release.set()
+            automation.worker_thread.join(timeout=3)
+
     def test_bucket_collection_header_only_is_read_only_empty_snapshot(self):
         headers = (
             "Data,Login do Tecnico,Status da Atividade,Cidade,UF,Contrato,"
