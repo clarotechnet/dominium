@@ -3225,6 +3225,8 @@ def _auto_improductive_scan(
         "datasnap_busy": 0,
         "lookup_errors": 0,
         "toa_busy_deferred": 0,
+        "confirmation_uncertain": 0,
+        "circuit_breaker": "",
         "profiles": {},
         "details": [],
         "waiting_items": [],
@@ -3603,6 +3605,7 @@ def _auto_improductive_scan(
                             },
                         )
                         summary["blocked"] += 1
+                        summary["confirmation_uncertain"] += 1
                         detail(
                             "uncertain_no_retry",
                             profile.key,
@@ -3611,6 +3614,25 @@ def _auto_improductive_scan(
                             code=code,
                             error=str(exc),
                         )
+                        if _auto_improductive_should_trip_uncertain_circuit(
+                            summary["confirmation_uncertain"]
+                        ):
+                            summary["ok"] = False
+                            summary["circuit_breaker"] = "confirmation_uncertain"
+                            detail(
+                                "circuit_breaker",
+                                profile.key,
+                                contract,
+                                os_number=num_os,
+                                code=code,
+                                reason=(
+                                    "Duas baixas permaneceram EM CAMPO apos "
+                                    "ApplyUpdates; auto-baixa pausada por seguranca"
+                                ),
+                            )
+                            controller.set_enabled(False)
+                            publish_progress(force=True)
+                            return summary
                     except CloseStateConflictError as exc:
                         controller.block(
                             block_key,
@@ -3659,6 +3681,13 @@ def _auto_improductive_scan(
     )
     publish_progress(force=True)
     return summary
+
+
+AUTO_IMPRODUCTIVE_UNCERTAIN_LIMIT = 2
+
+
+def _auto_improductive_should_trip_uncertain_circuit(count: int) -> bool:
+    return int(count) >= AUTO_IMPRODUCTIVE_UNCERTAIN_LIMIT
 
 
 AUTO_IMPRODUCTIVE_CLOSER = AutoImproductiveCloser(
