@@ -7,7 +7,7 @@ shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes 
 orchestration	app.py	148	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	7667a5427f368c6d
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
-shared	auto_improductive_close.py	23				280bb7e49b31cb11
+shared	auto_improductive_close.py	23				67e908956f5d6ca3
 shared	bulk_orders.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	2775b7a068f33346
 shared	cancel_all_open.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	9dde6a0f10a22ffe
 shared	CLAUDE.md			1	DOMINIUM / Claude Code	ad7a8982c5c5b42a
@@ -150,7 +150,7 @@ tests	tests/__init__.py					01ba4719c80b6fe9
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
 tests	tests/test_app.py	37	5	2		dec92061f9dc6147
 tests	tests/test_auth_store.py	7				2131129f824fbae2
-tests	tests/test_auto_improductive_close.py	10				455743237e2d0e65
+tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
 tests	tests/test_build_hostinger_node_release.py	3				121b52809dba91af
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87

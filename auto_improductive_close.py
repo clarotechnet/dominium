@@ -334,10 +334,25 @@ class AutoImproductiveCloser:
             for key, entry in list(self.blocked.items()):
                 metadata = entry.get("metadata")
                 metadata = metadata if isinstance(metadata, dict) else {}
-                report_date = str(metadata.get("report_date") or "").strip()
-                if not report_date:
-                    report_date = str(entry.get("blocked_at") or "")[:10]
-                if report_date and report_date != keep:
+                explicit_date = str(metadata.get("report_date") or "").strip()
+                reason = str(entry.get("reason") or "")
+                legacy_detector_block = (
+                    not explicit_date
+                    and any(
+                        token in reason
+                        for token in (
+                            "already_closed_with_different_code",
+                            "shared_state_contamination",
+                            "multiple_remote_close_codes",
+                        )
+                    )
+                )
+                report_date = explicit_date or str(
+                    entry.get("blocked_at") or ""
+                )[:10]
+                if legacy_detector_block or (
+                    report_date and report_date != keep
+                ):
                     self.blocked.pop(key, None)
                     removed += 1
             if removed:

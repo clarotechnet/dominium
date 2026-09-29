@@ -72,6 +72,34 @@ class AutoImproductiveCloserTests(unittest.TestCase):
             self.assertFalse(closer.is_blocked("natal:old"))
             self.assertTrue(closer.is_blocked("natal:today"))
 
+    def test_prune_removes_legacy_detector_block_but_keeps_uncertain(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            closer = AutoImproductiveCloser(
+                root / "state.json",
+                root / "history.jsonl",
+                lambda _controller: {"ok": True},
+            )
+            closer.block(
+                "natal:legacy",
+                (
+                    "already_closed; already_closed_with_different_code:409; "
+                    "remote_state_changed; operation_blocked"
+                ),
+                metadata={"contract": "1579992"},
+            )
+            closer.block(
+                "natal:uncertain",
+                "confirmation_uncertain; nao repita automaticamente",
+                metadata={"contract": "9999999"},
+            )
+
+            removed = closer.prune_blocked_for_date(dt.date.today())
+
+            self.assertEqual(removed, 1)
+            self.assertFalse(closer.is_blocked("natal:legacy"))
+            self.assertTrue(closer.is_blocked("natal:uncertain"))
+
     def test_state_persistence_retries_transient_windows_permission_error(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
