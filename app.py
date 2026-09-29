@@ -3067,8 +3067,8 @@ def _toa_record_due_minute(
     now: dt.datetime,
 ) -> int | None:
     current = now.hour * 60 + now.minute
-    window_starts: list[int] = []
     for field in ("windows", "service_windows"):
+        window_starts: list[int] = []
         values = record.get(field)
         if not isinstance(values, list):
             continue
@@ -3080,9 +3080,9 @@ def _toa_record_due_minute(
             if hour > 23 or minute > 59:
                 continue
             window_starts.append(hour * 60 + minute)
-    if window_starts:
-        due_windows = [value for value in window_starts if value <= current]
-        return max(due_windows) if due_windows else None
+        if window_starts:
+            due_windows = [value for value in window_starts if value <= current]
+            return max(due_windows) if due_windows else None
 
     slots = record.get("review_slots")
     if not isinstance(slots, list):
