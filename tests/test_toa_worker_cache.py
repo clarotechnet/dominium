@@ -27,6 +27,40 @@ class TOAWorkerCacheTests(unittest.TestCase):
             )
         )
 
+    def test_today_bucket_status_prefilters_non_completed_contracts(self):
+        self.assertFalse(
+            app._toa_registry_record_needs_lookup(
+                {"orders": [{"activity_status": "pendente"}]}
+            )
+        )
+        self.assertFalse(
+            app._toa_registry_record_needs_lookup(
+                {"orders": [{"activity_status": "iniciado"}]}
+            )
+        )
+        self.assertFalse(
+            app._toa_registry_record_needs_lookup(
+                {"orders": [{"activity_status": "em rota"}]}
+            )
+        )
+        self.assertTrue(
+            app._toa_registry_record_needs_lookup(
+                {"orders": [{"activity_status": "concluído"}]}
+            )
+        )
+        self.assertTrue(
+            app._toa_registry_record_needs_lookup(
+                {
+                    "orders": [
+                        {"activity_status": "pendente"},
+                        {"activity_status": "complete"},
+                    ]
+                }
+            )
+        )
+        self.assertTrue(app._toa_registry_record_needs_lookup({"orders": []}))
+        self.assertTrue(app._toa_registry_record_needs_lookup({}))
+
     def test_worker_reuses_completed_cache_for_24_hours_without_live_lookup(self):
         cached = {
             "freshness": {"observed_at": dt.datetime.now().astimezone().isoformat()},
