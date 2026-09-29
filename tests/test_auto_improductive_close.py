@@ -75,6 +75,28 @@ class AutoImproductiveCloserTests(unittest.TestCase):
             payload = json.loads(state.read_text(encoding="utf-8"))
             self.assertTrue(payload["enabled"])
 
+    def test_state_persistence_falls_back_to_direct_write_when_replace_stays_denied(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            state = root / "state.json"
+            history = root / "history.jsonl"
+            closer = AutoImproductiveCloser(
+                state,
+                history,
+                lambda _controller: {"ok": True},
+            )
+
+            with patch.object(
+                Path,
+                "replace",
+                side_effect=PermissionError(5, "Acesso negado"),
+            ), patch("auto_improductive_close.time.sleep"):
+                closer.set_enabled(True)
+
+            payload = json.loads(state.read_text(encoding="utf-8"))
+            self.assertTrue(payload["enabled"])
+            self.assertFalse(any(root.glob("state.json.*.tmp")))
+
     def test_run_once_persists_history(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
