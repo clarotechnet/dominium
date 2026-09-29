@@ -5,6 +5,7 @@ import json
 import logging
 import re
 import subprocess
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -17,6 +18,13 @@ TOA_HOSTS = {
     "clarobrasil.fs.ocs.oraclecloud.com",
 }
 LOOKUP_TIMEOUT_SECONDS = 90
+BUSY_RETRY_DELAYS = (0.4, 0.8, 1.2, 1.6, 2.0)
+BUSY_ERROR_CODE = "toa_consulta_em_andamento"
+
+
+class TOASecondaryBusyError(RuntimeError):
+    """The shared TOA page is already servicing another direct lookup."""
+
 
 
 def _digits(value: object) -> str:
@@ -104,26 +112,55 @@ class TOASecondarySession:
     def _direct_lookup(self, contract: str) -> dict[str, Any]:
         if not self.lookup_script.is_file():
             raise RuntimeError("Ponte CDP do TOA secundario nao localizada")
-        completed = subprocess.run(
-            ["node", str(self.lookup_script), contract],
-            cwd=str(self.root),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=LOOKUP_TIMEOUT_SECONDS,
-            check=False,
-            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
-        )
-        if completed.returncode != 0:
-            detail = (completed.stderr or completed.stdout or "Falha na consulta TOA").strip()
-            raise RuntimeError(detail[-1000:])
+
+        completed: subprocess.CompletedProcess[str] | None = None
+        for attempt in range(len(BUSY_RETRY_DELAYS) + 1):
+            completed = subprocess.run(
+                ["node", str(self.lookup_script), contract],
+                cwd=str(self.root),
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=LOOKUP_TIMEOUT_SECONDS,
+                check=False,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            )
+            if completed.returncode == 0:
+                break
+
+            detail = (
+                completed.stderr
+                or completed.stdout
+                or "Falha na consulta TOA"
+            ).strip()
+            if BUSY_ERROR_CODE not in detail:
+                raise RuntimeError(detail[-1000:])
+            if attempt >= len(BUSY_RETRY_DELAYS):
+                raise TOASecondaryBusyError(detail[-1000:])
+
+            delay = BUSY_RETRY_DELAYS[attempt]
+            self.logger.info(
+                "TOA secundario ocupado; contrato %s sera tentado novamente "
+                "em %.1fs (%s/%s)",
+                contract,
+                delay,
+                attempt + 1,
+                len(BUSY_RETRY_DELAYS),
+            )
+            time.sleep(delay)
+
+        if completed is None:
+            raise RuntimeError("Falha na consulta TOA")
         try:
             value = json.loads(completed.stdout.strip())
         except json.JSONDecodeError as exc:
             raise RuntimeError("Resposta invalida da extensao TOA") from exc
         if not isinstance(value, dict) or value.get("ok") is not True:
-            raise ValueError(_text(value.get("error") if isinstance(value, dict) else "") or "Contrato nao localizado no TOA")
+            raise ValueError(
+                _text(value.get("error") if isinstance(value, dict) else "")
+                or "Contrato nao localizado no TOA"
+            )
         return value
     @staticmethod
     def _capture(value: dict[str, Any]) -> dict[str, Any]:
