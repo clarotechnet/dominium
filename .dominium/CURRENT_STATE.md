@@ -1,5 +1,29 @@
 # DOMINIUM — CURRENT STATE
 
+## Status final validado — 2026-09-29
+
+- Runtime operacional carregado no commit `45b67bc`.
+- Auto-baixa iniciou com `enabled=true`.
+- Primeira rodada com pré-filtro + retry TOA terminou:
+  - `seconds=191.46`
+  - `ok=true`
+  - `closed=3`
+  - `bucket_waiting=468`
+  - `cache_hits=144`
+  - `live_refreshes=50`
+  - `lookup_errors=0`
+  - `toa_busy_deferred=0`
+- Caso real de `toa_consulta_em_andamento` foi resolvido por retry: contrato 1255582 aguardou e depois foi consultado com sucesso.
+- `WinError 5` de persistencia continua podendo aparecer como warning de replace atomico, mas o fallback direto impede falha da rodada.
+- Quality gate final:
+  - 732 testes Python, OK, 21 skips esperados;
+  - testes JS `test_disconnect_frontend.js`, `test_operations_monitor.js`, `test_semiauto_frontend.js` OK;
+  - Ruff critical OK;
+  - build release OK;
+  - `QUALITY_GATE_OK`.
+- O worker caiu de uma rodada antiga de 1632.13s / 520 live refreshes / 111 lookup errors para uma rodada final de 191.46s / 50 live refreshes / 0 lookup errors.
+- O workflow Hostinger ja esta filtrado para nao publicar em commits apenas de backend/worker.
+
 Atualizado em: 2026-09-29 09:54 BRT
 
 ## Regra de retomada
@@ -89,21 +113,15 @@ Avisos atuais:
 
 Hardening desses itens deve ser tratado separadamente, com teste da ponte antes de alterar privilegios.
 
-## Proximo bloco — ordem exata
+## Proximo bloco
 
-1. Verificar `logs/auto-improductive-close.jsonl`. Esperar a rodada iniciada as 09:44:09 concluir.
-2. Nao matar o processo durante ApplyUpdates/confirmacao.
-3. Depois da rodada terminar, reiniciar somente o DOMINIUM 8791 para carregar o HEAD mais novo.
-4. Confirmar startup com `enabled=True`.
-5. Confirmar primeira rodada nova:
-   - sem `WinError 5` fatal;
-   - `bucket_waiting` preenchido;
-   - `contracts_due` muito menor do que a varredura antiga;
-   - `cache_hits` / `live_refreshes` presentes;
-   - baixas improdutivas continuam confirmando normalmente.
-6. Confirmar que startup proximo de um slot de 5 min nao provoca duas coletas dos 13 buckets dentro de 120 s.
-7. Rodar `scripts/quality_gate.py` completo no HEAD final.
-8. Se tudo passar, atualizar este CURRENT_STATE removendo os pendentes concluídos.
+Este bloco foi concluido. Proximas mudancas devem partir do estado validado acima. Antes de alterar o worker, preserve:
+- janela principal do bucket como autoridade;
+- pre-filtro por status do bucket;
+- cache final de 24h;
+- retry de `toa_consulta_em_andamento`;
+- fallback de persistencia Windows;
+- `cache_only` no botao Baixa Automatica.
 
 ## Observacao de ferramentas
 
