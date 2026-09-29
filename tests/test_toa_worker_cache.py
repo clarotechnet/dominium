@@ -16,6 +16,16 @@ class TOAWorkerCacheTests(unittest.TestCase):
         self.assertIsNone(
             app._toa_record_due_minute({"windows": ["11:00 - 14:00"]}, now)
         )
+        almost_due = dt.datetime(2026, 9, 29, 10, 50).astimezone()
+        self.assertIsNone(
+            app._toa_record_due_minute(
+                {
+                    "windows": ["11:00 - 14:00"],
+                    "service_windows": ["10:45 - 11:45"],
+                },
+                almost_due,
+            )
+        )
 
     def test_worker_reuses_completed_cache_for_24_hours_without_live_lookup(self):
         cached = {
