@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-29T12:14:56+00:00",
+  "generated_at": "2026-09-29T12:18:48+00:00",
   "schema": 2,
-  "source_fingerprint": "a0d7215f3377d7cdbaef570ec6a68c153ca8ca2efae6d3d3619c31e259d64981",
+  "source_fingerprint": "629638b3bf9c6865d2fff771b54c32b63c63248b36ac35cee4deaacbed5016d9",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 337185,
-      "sha256": "7905443aa8892ec5dd42f917933f1f13d5c0b4900a6519dba0ea27ddfceb6da0",
+      "bytes": 338563,
+      "sha256": "4344cab698b90e68160d0c343e06f7668a0cc4d4c574586e3fc7762acc83a86e",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -290,7 +290,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 145
+      "symbol_count": 146
     },
     {
       "path": "auth_store.py",
@@ -4132,8 +4132,8 @@
     {
       "path": "tests/test_toa_worker_cache.py",
       "category": "tests",
-      "bytes": 1377,
-      "sha256": "5ad1ecc850c8cbf0a3c3bf42fe5e1d710115c1c7cd4549687cc0abac8dfcbe32",
+      "bytes": 2599,
+      "sha256": "83c388ff3745245775c00790328e227698b0fe289dcbbfcec98a50782a65f931",
       "summary": "",
       "imports": [
         "app",
@@ -4144,7 +4144,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 3
+      "symbol_count": 4
     },
     {
       "path": "tests/test_ui_runtime_regression.py",

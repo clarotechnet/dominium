@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-09-29T12:14:56+00:00
-- Source fingerprint: `a0d7215f3377d7cd`
+- Generated: 2026-09-29T12:18:48+00:00
+- Source fingerprint: `629638b3bf9c6865`
 - Indexed files: 252
-- Indexed symbols: 2775
+- Indexed symbols: 2777
 - API path references: 118
 
 ## Navigation rule
@@ -16,7 +16,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (145 symbols, 76 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (146 symbols, 76 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operational_store.py` (24 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE

@@ -2997,18 +2997,61 @@ def _toa_cached_document(
     return document
 
 
+def _toa_document_is_final_for_date(
+    document: dict,
+    expected_date: str,
+) -> bool:
+    relevant: list[dict] = []
+    for activity in document.get("activities", ()):
+        if not isinstance(activity, dict):
+            continue
+        if expected_date:
+            raw = str(activity.get("scheduled_date") or "").strip()
+            matched = False
+            for pattern in ("%Y-%m-%d", "%d/%m/%Y", "%d/%m/%y"):
+                try:
+                    matched = (
+                        dt.datetime.strptime(raw[:10], pattern).date().isoformat()
+                        == expected_date
+                    )
+                    break
+                except ValueError:
+                    continue
+            if not matched:
+                continue
+        relevant.append(activity)
+    return bool(relevant) and all(
+        toa_activity_is_complete(activity.get("status"))
+        for activity in relevant
+    )
+
+
 def _toa_worker_document(
     contract: str,
     *,
     expected_date: str = "",
 ) -> tuple[dict, bool]:
-    cached = _toa_cached_document(
-        contract,
-        max_age_seconds=240,
-        expected_date=expected_date,
-    )
-    if cached is not None:
-        return cached, False
+    try:
+        cached = TOA_CONNECTOR.lookup(
+            contract,
+            refresh=False,
+            allow_stale=True,
+        )
+    except (OSError, RuntimeError, ValueError):
+        cached = None
+
+    if (
+        isinstance(cached, dict)
+        and _toa_document_matches_date(cached, expected_date)
+    ):
+        if (
+            _toa_document_is_final_for_date(cached, expected_date)
+            and _toa_connector_cache_is_fresh(cached, max_age_seconds=86400)
+        ):
+            return cached, False
+        if _toa_connector_cache_is_fresh(cached, max_age_seconds=240):
+            return cached, False
+
     return (
         TOA_CONNECTOR.lookup(
             contract,
