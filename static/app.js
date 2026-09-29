@@ -2260,6 +2260,8 @@ function autoImproductiveBlockReason(reason) {
     ["remote_state_changed", "O estado da OS mudou no Imperium durante a confirmacao"],
     ["shared_state_contamination", "Resposta do Imperium misturou estados de outra operacao"],
     ["multiple_remote_close_codes", "O Imperium retornou mais de um codigo de baixa"],
+    ["unsupported_close_code_for_service", "Codigo de baixa indisponivel para este servico no Imperium"],
+    ["manual_review_required", "Revisao manual necessaria"],
     ["operation_blocked", "Protecao do Dominium bloqueou nova tentativa automatica"],
     ["confirmation", "Confirmacao da baixa ficou incerta"],
     ["uncertain", "Confirmacao da baixa ficou incerta"],

@@ -73,8 +73,10 @@ from imperium_http_api import (
 from imperium_api import (
     CAPTURED_CONTROLLER_ID,
     CloseCode,
+    CloseCodeUnavailableError,
     CloseConfirmationUncertainError,
     CloseStateConflictError,
+    CloseStateIndeterminateError,
     ImperiumAPI,
     MaterialTransferUncertainError,
     Order,
@@ -3226,6 +3228,7 @@ def _auto_improductive_scan(
         "datasnap_busy": 0,
         "lookup_errors": 0,
         "toa_busy_deferred": 0,
+        "state_deferred": 0,
         "confirmation_uncertain": 0,
         "circuit_breaker": "",
         "profiles": {},
@@ -3260,6 +3263,7 @@ def _auto_improductive_scan(
             "already_closed": 0,
             "waiting_toa": 0,
             "busy_deferred": 0,
+            "state_deferred": 0,
             "errors": 0,
         }
         summary["profiles"][profile.key] = profile_state
@@ -3634,6 +3638,24 @@ def _auto_improductive_scan(
                             controller.set_enabled(False)
                             publish_progress(force=True)
                             return summary
+                    except CloseStateIndeterminateError as exc:
+                        summary["state_deferred"] += 1
+                        profile_state["state_deferred"] += 1
+                        detail(
+                            "state_deferred",
+                            profile.key,
+                            contract,
+                            os_number=num_os,
+                            code=code,
+                            error=str(exc),
+                        )
+                        LOGGER.info(
+                            "[%s] Auto-baixa adiada: OS %s codigo %s: %s",
+                            profile.label,
+                            num_os,
+                            code,
+                            exc,
+                        )
                     except CloseStateConflictError as exc:
                         controller.block(
                             block_key,
@@ -3655,6 +3677,36 @@ def _auto_improductive_scan(
                             os_number=num_os,
                             code=code,
                             error=str(exc),
+                        )
+                    except CloseCodeUnavailableError as exc:
+                        controller.block(
+                            block_key,
+                            f"unsupported_close_code_for_service:{code}; "
+                            "manual_review_required",
+                            metadata={
+                                "profile": profile.key,
+                                "contract": contract,
+                                "id_os": order.id_os,
+                                "os_number": num_os,
+                                "code": code,
+                                "report_date": today_text,
+                            },
+                        )
+                        summary["blocked"] += 1
+                        detail(
+                            "unsupported_service_code",
+                            profile.key,
+                            contract,
+                            os_number=num_os,
+                            code=code,
+                            error=str(exc),
+                        )
+                        LOGGER.warning(
+                            "[%s] Auto-baixa enviada para revisao manual: "
+                            "OS %s codigo %s indisponivel para o servico",
+                            profile.label,
+                            num_os,
+                            code,
                         )
                     except (DataSnapError, OSError, ValueError) as exc:
                         profile_state["errors"] += 1

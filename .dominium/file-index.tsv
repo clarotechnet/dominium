@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	149	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	0ccf8690a738898a
+orchestration	app.py	149	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	d614d0bfc4c5e733
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -48,7 +48,7 @@ shared	flow_reader/server.py	11	2		DOMINIUM | MAPA DE RESPONSABILIDADE	00c885db8
 shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f388b7677c04f
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
-imperium	imperium_api.py	139		3	DOMINIUM | MAPA DE RESPONSABILIDADE	f0483867bafb3ec4
+imperium	imperium_api.py	141		3	DOMINIUM | MAPA DE RESPONSABILIDADE	fa0ab385183f7344
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 shared	import_protocol_templates.json			1		9a6465634e73b3ec
@@ -163,7 +163,7 @@ tests	tests/test_disconnect_frontend.js	4				f5e517e7af4cede6
 tests	tests/test_edge_voice.py	4				4e8791562f884964
 tests	tests/test_equipment_group_matching.py	24				46876ea91612d830
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38
-tests	tests/test_imperium_api.py	80		1		cc3bd1c0005c8f42
+tests	tests/test_imperium_api.py	83		1		6e7c3f4106cea96d
 tests	tests/test_imperium_http_api.py	25				25ab6758e210eefb
 tests	tests/test_imperium_http_plan.py	8				056547e8c6b8d815
 tests	tests/test_import_audit_history.py	3				6df23f085d3bdbda

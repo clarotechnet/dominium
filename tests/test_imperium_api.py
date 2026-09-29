@@ -9,8 +9,10 @@ from unittest.mock import MagicMock, patch
 from datasnap_client import DataSnapError
 from imperium_api import (
     _MaterialTransferReconnectRequired,
+    CloseCodeUnavailableError,
     CloseConfirmationUncertainError,
     CloseStateConflictError,
+    CloseStateIndeterminateError,
     DetailContext,
     Equipment,
     ImperiumAPI,
@@ -1974,6 +1976,43 @@ class ApplyPacketTests(unittest.TestCase):
                     b"detail",
                     requested,
                 )
+            )
+
+    def test_missing_close_code_for_service_raises_specific_error(self) -> None:
+        requested = self.api.close_code("409")
+        with self.assertRaisesRegex(
+            CloseCodeUnavailableError,
+            "nao esta disponivel para este servico",
+        ):
+            self.api._parse_close_code_id(b"no matching close code", requested)
+
+    def test_remote_status_falls_back_to_unclassified_when_order_exists_in_all(self) -> None:
+        order = Order(2163650, "2646844394", "4231440", 10, "DESCONEXAO")
+        with (
+            patch.object(self.api, "list_orders", return_value=[]),
+            patch.object(self.api, "_fetch_main_payload", return_value=b"payload"),
+            patch.object(self.api, "_parse_orders", return_value=[order]),
+        ):
+            self.assertEqual(
+                self.api._remote_order_status(order),
+                "unclassified",
+            )
+
+    def test_unclassified_remote_status_is_deferred_before_any_write(self) -> None:
+        order = Order(2163650, "2646844394", "4231440", 10, "DESCONEXAO")
+        requested = self.api.close_code("106")
+        with patch.object(
+            self.api,
+            "_remote_order_status",
+            return_value="unclassified",
+        ), self.assertRaisesRegex(
+            CloseStateIndeterminateError,
+            "remote_status_unclassified",
+        ):
+            self.api._guard_remote_close_state(
+                order,
+                b"detail",
+                requested,
             )
 
     def test_import_never_repeats_an_ambiguous_timed_out_lot(self) -> None:

@@ -117,6 +117,14 @@ class CloseStateConflictError(DataSnapError):
     """The remote order is already closed with a conflicting close code."""
 
 
+class CloseStateIndeterminateError(DataSnapError):
+    """The order exists remotely, but its current status is not classifiable yet."""
+
+
+class CloseCodeUnavailableError(DataSnapError):
+    """The requested close code is not available for the order service."""
+
+
 class _MaterialTransferReconnectRequired(OSError):
     """A material transfer was confirmed, but the current socket is no longer safe."""
 
@@ -4377,7 +4385,7 @@ class ImperiumAPI:
                 or (len(norm_desc) >= 6 and norm_target.startswith(norm_desc[:6]))
             ):
                 return id_code
-        raise DataSnapError(
+        raise CloseCodeUnavailableError(
             f"O codigo {close_code.code} nao esta disponivel para este servico"
         )
 
@@ -5038,6 +5046,16 @@ class ImperiumAPI:
             )
             if any(self._same_remote_order(order, candidate) for candidate in rows):
                 return status
+
+        all_rows = self._parse_orders(
+            self._fetch_main_payload(
+                query_date,
+                status="all",
+                service_type="all",
+            )
+        )
+        if any(self._same_remote_order(order, candidate) for candidate in all_rows):
+            return "unclassified"
         return None
 
     def _guard_remote_close_state(
@@ -5054,6 +5072,10 @@ class ImperiumAPI:
         )
         if remote_status == "field":
             return None
+        if remote_status == "unclassified":
+            raise CloseStateIndeterminateError(
+                "remote_status_unclassified; retry_later"
+            )
         if remote_status is None:
             raise CloseStateConflictError(
                 "remote_status_unknown; operation_blocked"
@@ -5085,7 +5107,7 @@ class ImperiumAPI:
             order,
             report_date=report_date,
         )
-        if remote_status in (None, "field"):
+        if remote_status in (None, "field", "unclassified"):
             return False
 
         current_code = self._detail_close_code(detail)

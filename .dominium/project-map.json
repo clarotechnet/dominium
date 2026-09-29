@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-29T16:51:47+00:00",
+  "generated_at": "2026-09-29T17:21:06+00:00",
   "schema": 2,
-  "source_fingerprint": "44a9c29630352fe4df8dea5c50d4b6e9a1f0181d7f59510089a675d6f23448f1",
+  "source_fingerprint": "0864da7750ca1e9d969e3819210622081e642fa5e908554efda0a813bbf5fe05",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 347087,
-      "sha256": "0ccf8690a738898a061a985397164b3a94a79336b1afd6038e9211b36d28c648",
+      "bytes": 349379,
+      "sha256": "d614d0bfc4c5e7337e430a4e9631d24ec369b2b668d62d36e8b7d69b5b032172",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -1033,8 +1033,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 256765,
-      "sha256": "f0483867bafb3ec48f52946476f64fcad7ec376f3351013929bbb8165776cc4b",
+      "bytes": 257535,
+      "sha256": "fa0ab385183f73448835c1e5a91d1bfb84bdc84c18934e6bd3634a3a7fa6d124",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -1072,7 +1072,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": false,
-      "symbol_count": 139
+      "symbol_count": 141
     },
     {
       "path": "imperium_http_api.py",
@@ -3115,8 +3115,8 @@
     {
       "path": "tests/test_imperium_api.py",
       "category": "tests",
-      "bytes": 73468,
-      "sha256": "cc3bd1c0005c8f42ed1bbb21c726cf459a383e118acbfcc0d76a9db830c13084",
+      "bytes": 75035,
+      "sha256": "6e7c3f4106cea96d0c34264086cb4f6a94318eee0b725c23a55e58af435ea449",
       "summary": "",
       "imports": [
         "datasnap_client",
@@ -3134,7 +3134,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": true,
-      "symbol_count": 80
+      "symbol_count": 83
     },
     {
       "path": "tests/test_imperium_http_api.py",
