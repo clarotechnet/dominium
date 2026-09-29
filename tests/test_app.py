@@ -18,6 +18,7 @@ from app import (
     _material_paste_key,
     _official_material_preparation_items,
     _record_live_technician_evidence,
+    _record_auto_improductive_close_report,
     _same_technician_name,
     _technician_by_current_name,
     _official_technician_code,
@@ -27,8 +28,62 @@ from app import (
 )
 from bulk_orders import build_bulk_preview
 from close_report import CloseReportStore
-from imperium_api import MaterialTransferUncertainError, Order
+from imperium_api import CloseCode, MaterialTransferUncertainError, Order
 from imperium_http_api import ImperiumHTTPResult
+
+
+class AutoImproductiveReportTests(unittest.TestCase):
+    def test_auto_improductive_success_is_visible_in_close_report(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            report = CloseReportStore(Path(directory), "natal")
+            profile = SimpleNamespace(
+                key="natal",
+                label="Natal / Parnamirim",
+                close_report=report,
+            )
+            order = Order(
+                id_os=2215417,
+                num_os="2658032475",
+                contract="4290080",
+                id_service=10,
+                service="VISITA TECNICA",
+            )
+            definition = CloseCode(
+                code="106",
+                wire_code="106",
+                description="CLIENTE AUSENTE",
+                id_code=1,
+                suffixes=(),
+                productive=False,
+            )
+
+            _record_auto_improductive_close_report(
+                profile,
+                order,
+                definition,
+                observation="Cliente ausente.",
+                result={"already_closed": False},
+            )
+            _record_auto_improductive_close_report(
+                profile,
+                order,
+                definition,
+                observation="Cliente ausente.",
+                result={"already_closed": False},
+            )
+
+            records = report.list(dt.date.today())
+
+            matches = [
+                item
+                for item in records
+                if item["id_os"] == order.id_os
+                and item["close_code"] == "106"
+                and item["attribution"] == "auto_improductive"
+            ]
+            self.assertEqual(len(matches), 1)
+            self.assertEqual(matches[0]["state"], "confirmed")
+            self.assertEqual(matches[0]["category_label"], "Baixada Auto")
 
 
 class AppPersistenceTests(unittest.TestCase):
