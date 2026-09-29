@@ -82,6 +82,7 @@ const state = {
   toaAutomationLoading: false,
   autoImproductiveClose: null,
   autoImproductiveLoading: false,
+  autoImproductiveAuditKind: "",
   automationTestLots: [],
   automationTestLotKey: "",
   automationTestRegistry: null,
@@ -548,6 +549,17 @@ const elements = {
   autoImproductiveClosed: document.querySelector("#autoImproductiveClosed"),
   autoImproductiveProductive: document.querySelector("#autoImproductiveProductive"),
   autoImproductiveBlocked: document.querySelector("#autoImproductiveBlocked"),
+  autoImproductiveClosedTotal: document.querySelector("#autoImproductiveClosedTotal"),
+  autoImproductivePreviousClosed: document.querySelector("#autoImproductivePreviousClosed"),
+  autoImproductiveAlreadyClosed: document.querySelector("#autoImproductiveAlreadyClosed"),
+  autoImproductiveAuditDialog: document.querySelector("#autoImproductiveAuditDialog"),
+  autoImproductiveAuditTitle: document.querySelector("#autoImproductiveAuditTitle"),
+  autoImproductiveAuditSubtitle: document.querySelector("#autoImproductiveAuditSubtitle"),
+  autoImproductiveAuditSearch: document.querySelector("#autoImproductiveAuditSearch"),
+  autoImproductiveAuditCount: document.querySelector("#autoImproductiveAuditCount"),
+  autoImproductiveAuditList: document.querySelector("#autoImproductiveAuditList"),
+  autoImproductiveAuditClose: document.querySelector("#autoImproductiveAuditClose"),
+  autoImproductiveAuditBottomClose: document.querySelector("#autoImproductiveAuditBottomClose"),
   closeQueueBadge: document.querySelector("#closeQueueBadge"),
   toaLiveSession: document.querySelector("#toaLiveSession"),
   toaLiveSessionText: document.querySelector("#toaLiveSessionText"),
@@ -2191,6 +2203,265 @@ async function runToaAutomation() {
   }
 }
 
+function autoImproductiveActiveRun(auto = state.autoImproductiveClose) {
+  if (!auto) return {};
+  if (auto.running && auto.current_run) return auto.current_run;
+  return auto.last_run || {};
+}
+
+function autoImproductivePreviousRun(auto = state.autoImproductiveClose) {
+  if (!auto) return {};
+  if (auto.running) return auto.last_run || {};
+  const history = Array.isArray(auto.history) ? auto.history : [];
+  return history[1] || {};
+}
+
+function autoImproductiveClosedDetails(run, { alreadyClosed = false } = {}) {
+  return (Array.isArray(run?.details) ? run.details : []).filter((item) =>
+    item?.kind === "closed" && Boolean(item.already_closed) === alreadyClosed
+  );
+}
+
+function autoImproductiveClosedNewCount(run) {
+  if (!run) return 0;
+  if (Number.isFinite(Number(run.closed_new))) return Number(run.closed_new);
+  return autoImproductiveClosedDetails(run).length;
+}
+
+function autoImproductiveAlreadyClosedCount(run) {
+  if (!run) return 0;
+  if (Number.isFinite(Number(run.already_closed))) return Number(run.already_closed);
+  return autoImproductiveClosedDetails(run, { alreadyClosed: true }).length;
+}
+
+function autoImproductiveProfileLabel(profileKey) {
+  const normalized = String(profileKey || "").toLowerCase();
+  const profile = (state.profiles || []).find(
+    (item) => String(item.key || "").toLowerCase() === normalized,
+  );
+  if (profile?.label) return profile.label;
+  return {
+    natal: "Natal / Parnamirim",
+    fortaleza: "Fortaleza",
+    mossoro: "Mossoro",
+    recife: "Recife",
+  }[normalized] || profileKey || "Sem cidade";
+}
+
+function autoImproductiveBlockReason(reason) {
+  const raw = String(reason || "").trim();
+  const parts = [];
+  const rules = [
+    ["already_closed_with_different_code", "Ja estava baixada no Imperium com outro codigo"],
+    ["remote_state_changed", "O estado da OS mudou no Imperium durante a confirmacao"],
+    ["shared_state_contamination", "Resposta do Imperium misturou estados de outra operacao"],
+    ["multiple_remote_close_codes", "O Imperium retornou mais de um codigo de baixa"],
+    ["operation_blocked", "Protecao do Dominium bloqueou nova tentativa automatica"],
+    ["confirmation", "Confirmacao da baixa ficou incerta"],
+    ["uncertain", "Confirmacao da baixa ficou incerta"],
+  ];
+  rules.forEach(([token, label]) => {
+    if (raw.toLowerCase().includes(token) && !parts.includes(label)) parts.push(label);
+  });
+  return parts.length ? parts.join(" · ") : raw || "Bloqueio preventivo sem motivo detalhado.";
+}
+
+function autoImproductiveAuditItems(kind) {
+  const auto = state.autoImproductiveClose || {};
+  const active = autoImproductiveActiveRun(auto);
+  const previous = autoImproductivePreviousRun(auto);
+  let items = [];
+
+  if (kind === "waiting") {
+    items = Array.isArray(active.waiting_items) ? active.waiting_items : [];
+    if (!items.length) {
+      items = (active.details || []).filter((item) => item?.kind === "waiting_toa");
+    }
+  } else if (kind === "current_closed") {
+    items = autoImproductiveClosedDetails(active);
+  } else if (kind === "previous_closed") {
+    items = autoImproductiveClosedDetails(previous);
+  } else if (kind === "productive") {
+    items = (active.details || []).filter((item) => item?.kind === "productive_ignored");
+  } else if (kind === "already_closed") {
+    items = autoImproductiveClosedDetails(active, { alreadyClosed: true });
+  } else if (kind === "blocked") {
+    items = Object.entries(auto.blocked || {}).map(([blockKey, entry]) => ({
+      kind: "blocked",
+      block_key: blockKey,
+      reason: entry?.reason || "",
+      blocked_at: entry?.blocked_at || "",
+      ...(entry?.metadata || {}),
+    }));
+  } else if (kind === "total_closed") {
+    items = (auto.recent_closed || []).filter((item) => item?.already_closed !== true);
+    if (auto.running) {
+      items = [...items, ...autoImproductiveClosedDetails(active)];
+    }
+  }
+
+  const seen = new Set();
+  return items.filter((item) => {
+    const key = [
+      item?.kind || kind,
+      item?.profile || "",
+      item?.contract || "",
+      item?.os_number || (item?.os_numbers || []).join(","),
+      item?.code || "",
+      item?.started_at || item?.blocked_at || "",
+    ].join("|");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function autoImproductiveAuditMeta(kind, item) {
+  const parts = [];
+  const osNumbers = item?.os_number
+    ? [item.os_number]
+    : Array.isArray(item?.os_numbers) ? item.os_numbers : [];
+  if (osNumbers.length) parts.push(`OS ${osNumbers.join(", ")}`);
+  if (item?.code) parts.push(`Codigo ${item.code}`);
+  const statuses = Array.isArray(item?.statuses)
+    ? item.statuses
+    : item?.status ? [item.status] : [];
+  if (statuses.length) parts.push(`Status ${statuses.join(", ")}`);
+  if (Array.isArray(item?.windows) && item.windows.length) {
+    parts.push(`Janela ${item.windows.join(", ")}`);
+  }
+  const stamp = item?.completed_at || item?.started_at || item?.blocked_at;
+  if (stamp) parts.push(formatAutomationTime(stamp));
+  if (kind === "already_closed") parts.push("Ja estava fechada");
+  return parts;
+}
+
+function autoImproductiveAuditConfig(kind) {
+  const auto = state.autoImproductiveClose || {};
+  const active = autoImproductiveActiveRun(auto);
+  const previous = autoImproductivePreviousRun(auto);
+  const historicalTotal = Number(auto.totals?.closed_new || 0)
+    + (auto.running ? autoImproductiveClosedNewCount(active) : 0);
+  return {
+    waiting: {
+      title: "Aguardando TOA",
+      subtitle: "Contratos em janela que ainda nao ficaram concluidos no TOA.",
+    },
+    current_closed: {
+      title: auto.running ? "Baixadas nesta rodada" : "Baixadas na ultima rodada",
+      subtitle: "OS que o Dominium efetivamente baixou no Imperium nesta rodada.",
+    },
+    total_closed: {
+      title: "Baixadas pelo Dominium",
+      subtitle: `Total historico: ${historicalTotal}. A lista mostra ate as 500 baixas automaticas mais recentes.`,
+    },
+    previous_closed: {
+      title: "Baixadas na rodada anterior",
+      subtitle: previous?.started_at
+        ? `Rodada iniciada em ${formatAutomationTime(previous.started_at)}.`
+        : "Ainda nao existe uma rodada anterior registrada.",
+    },
+    productive: {
+      title: "Produtivas guardadas",
+      subtitle: "Atividades produtivas identificadas e preservadas no cache; nenhuma baixa improdutiva e enviada para elas.",
+    },
+    already_closed: {
+      title: "Ja estavam baixadas",
+      subtitle: "O Dominium conferiu e o Imperium ja estava fechado; estes registros nao entram no total de baixas novas.",
+    },
+    blocked: {
+      title: "Bloqueadas",
+      subtitle: "OS protegidas contra nova tentativa automatica. O motivo abaixo explica por que cada uma foi bloqueada.",
+    },
+  }[kind] || { title: "Auditoria", subtitle: "Detalhes da auto-baixa." };
+}
+
+function renderAutoImproductiveAuditDialog() {
+  const dialog = elements.autoImproductiveAuditDialog;
+  if (!dialog || !dialog.open) return;
+  const kind = state.autoImproductiveAuditKind;
+  const config = autoImproductiveAuditConfig(kind);
+  const query = normalize(elements.autoImproductiveAuditSearch?.value || "");
+  const items = autoImproductiveAuditItems(kind).filter((item) => {
+    if (!query) return true;
+    return normalize([
+      item?.contract,
+      item?.os_number,
+      ...(item?.os_numbers || []),
+      item?.code,
+      item?.reason,
+      item?.status,
+      ...(item?.statuses || []),
+      ...(item?.windows || []),
+      item?.profile,
+    ].filter(Boolean).join(" ")).includes(query);
+  });
+
+  elements.autoImproductiveAuditTitle.textContent = config.title;
+  elements.autoImproductiveAuditSubtitle.textContent = config.subtitle;
+  elements.autoImproductiveAuditCount.textContent =
+    `${items.length} registro${items.length === 1 ? "" : "s"} exibido${items.length === 1 ? "" : "s"}`;
+
+  const rows = items.map((item) => {
+    const row = document.createElement("article");
+    row.className = "auto-improductive-audit-row";
+
+    const heading = document.createElement("div");
+    heading.className = "auto-improductive-audit-row-heading";
+    const identity = document.createElement("div");
+    const contract = document.createElement("strong");
+    contract.textContent = item?.contract ? `Contrato ${item.contract}` : "Registro operacional";
+    const profile = document.createElement("span");
+    profile.textContent = autoImproductiveProfileLabel(item?.profile);
+    identity.append(contract, profile);
+    heading.append(identity);
+
+    const meta = document.createElement("div");
+    meta.className = "auto-improductive-audit-row-meta";
+    autoImproductiveAuditMeta(kind, item).forEach((value) => {
+      const tag = document.createElement("span");
+      tag.textContent = value;
+      meta.append(tag);
+    });
+
+    row.append(heading, meta);
+
+    if (kind === "blocked") {
+      const reason = document.createElement("p");
+      reason.className = "auto-improductive-audit-reason";
+      reason.textContent = autoImproductiveBlockReason(item?.reason);
+      row.append(reason);
+      if (item?.reason && autoImproductiveBlockReason(item.reason) !== item.reason) {
+        const technical = document.createElement("small");
+        technical.className = "auto-improductive-audit-technical";
+        technical.textContent = `Tecnico: ${item.reason}`;
+        row.append(technical);
+      }
+    }
+    return row;
+  });
+
+  if (!rows.length) {
+    const empty = document.createElement("div");
+    empty.className = "auto-improductive-audit-empty";
+    empty.textContent = query
+      ? "Nenhum registro corresponde a busca."
+      : "Nenhum registro nesta categoria.";
+    rows.push(empty);
+  }
+  elements.autoImproductiveAuditList.replaceChildren(...rows);
+}
+
+function openAutoImproductiveAudit(kind) {
+  if (!elements.autoImproductiveAuditDialog) return;
+  state.autoImproductiveAuditKind = kind;
+  if (elements.autoImproductiveAuditSearch) elements.autoImproductiveAuditSearch.value = "";
+  if (!elements.autoImproductiveAuditDialog.open) {
+    elements.autoImproductiveAuditDialog.showModal();
+  }
+  renderAutoImproductiveAuditDialog();
+}
+
 function renderAutoImproductiveClose() {
   const auto = state.autoImproductiveClose;
   if (!elements.autoImproductiveStatus) return;
@@ -2206,6 +2477,14 @@ function renderAutoImproductiveClose() {
   const canControl = ["admin", "controller", "supervisor"].includes(
     String(state.authUser?.role || "").toLowerCase(),
   );
+  const active = autoImproductiveActiveRun(auto);
+  const previous = autoImproductivePreviousRun(auto);
+  const activeClosed = autoImproductiveClosedNewCount(active);
+  const activeAlreadyClosed = autoImproductiveAlreadyClosedCount(active);
+  const historicalClosed = Number(auto.totals?.closed_new || 0);
+  const totalClosed = historicalClosed + (running ? activeClosed : 0);
+  const waiting = Number(active.bucket_waiting || 0) + Number(active.waiting_toa || 0);
+
   elements.autoImproductiveStatus.className = `toa-automation-state ${
     running ? "running" : enabled ? "online" : "warning"
   }`;
@@ -2213,12 +2492,16 @@ function renderAutoImproductiveClose() {
     ? "Executando"
     : enabled ? "Ligada" : "Desligada";
 
-  const last = auto.last_run || {};
-  elements.autoImproductiveWaiting.textContent = String(last.waiting_toa || 0);
-  elements.autoImproductiveClosed.textContent = String(last.closed || 0);
+  elements.autoImproductiveWaiting.textContent = String(waiting);
+  elements.autoImproductiveClosed.textContent = String(activeClosed);
+  elements.autoImproductiveClosedTotal.textContent = String(totalClosed);
+  elements.autoImproductivePreviousClosed.textContent = String(
+    autoImproductiveClosedNewCount(previous),
+  );
+  elements.autoImproductiveAlreadyClosed.textContent = String(activeAlreadyClosed);
   if (elements.autoImproductiveProductive) {
     elements.autoImproductiveProductive.textContent = String(
-      last.productive_cached ?? last.productive_ignored ?? 0,
+      active.productive_cached ?? active.productive_ignored ?? 0,
     );
   }
   elements.autoImproductiveBlocked.textContent = String(auto.blocked_count || 0);
@@ -2245,6 +2528,8 @@ function renderAutoImproductiveClose() {
       ? "Parar novas rodadas da auto-baixa"
       : "Ativar a auto-baixa persistente a cada 5 minutos"
     : "Somente admin ou supervisor pode alterar esta automacao";
+
+  renderAutoImproductiveAuditDialog();
 }
 
 async function loadAutoImproductiveClose({ quiet = false } = {}) {
@@ -11542,6 +11827,30 @@ elements.importSelectAll?.addEventListener("change", () => {
 elements.commitImport.addEventListener("click", commitImportFile);
 elements.toaAutomationRun.addEventListener("click", runToaAutomation);
 elements.autoImproductiveToggle?.addEventListener("click", toggleAutoImproductiveClose);
+document.querySelectorAll("[data-auto-audit]").forEach((card) => {
+  const open = () => openAutoImproductiveAudit(card.dataset.autoAudit || "");
+  card.addEventListener("click", open);
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      open();
+    }
+  });
+});
+elements.autoImproductiveAuditClose?.addEventListener("click", () => {
+  if (elements.autoImproductiveAuditDialog?.open) {
+    elements.autoImproductiveAuditDialog.close();
+  }
+});
+elements.autoImproductiveAuditBottomClose?.addEventListener("click", () => {
+  if (elements.autoImproductiveAuditDialog?.open) {
+    elements.autoImproductiveAuditDialog.close();
+  }
+});
+elements.autoImproductiveAuditSearch?.addEventListener(
+  "input",
+  renderAutoImproductiveAuditDialog,
+);
 elements.automationTestLot.addEventListener("change", () => {
   state.automationTestLotKey = elements.automationTestLot.value;
   state.automationTestResult = null;
