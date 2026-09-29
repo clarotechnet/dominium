@@ -3101,6 +3101,21 @@ def _toa_record_due_minute(
     return max(due_slots) if due_slots else None
 
 
+def _toa_registry_record_needs_lookup(record: dict) -> bool:
+    orders = record.get("orders")
+    if not isinstance(orders, list):
+        return True
+    statuses = [
+        str(order.get("activity_status") or "").strip()
+        for order in orders
+        if isinstance(order, dict)
+        and str(order.get("activity_status") or "").strip()
+    ]
+    if not statuses:
+        return True
+    return any(toa_activity_is_complete(status) for status in statuses)
+
+
 def _auto_improductive_scan(
     controller: AutoImproductiveCloser,
 ) -> dict:
@@ -3117,6 +3132,7 @@ def _auto_improductive_scan(
         "waiting_toa": 0,
         "productive_ignored": 0,
         "productive_cached": 0,
+        "bucket_waiting": 0,
         "cache_hits": 0,
         "live_refreshes": 0,
         "unknown_code": 0,
@@ -3145,6 +3161,7 @@ def _auto_improductive_scan(
         profile_state = {
             "open_orders": 0,
             "contracts_due": 0,
+            "bucket_waiting": 0,
             "closed": 0,
             "waiting_toa": 0,
             "errors": 0,
@@ -3223,6 +3240,10 @@ def _auto_improductive_scan(
                     continue
                 if report_date == now.date():
                     if _toa_record_due_minute(record, now) is None:
+                        continue
+                    if not _toa_registry_record_needs_lookup(record):
+                        summary["bucket_waiting"] += 1
+                        profile_state["bucket_waiting"] += 1
                         continue
                 contract = str(record.get("contract") or "").strip()
                 if contract and contract in open_by_contract:
