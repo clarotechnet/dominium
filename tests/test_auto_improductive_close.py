@@ -97,6 +97,78 @@ class AutoImproductiveCloserTests(unittest.TestCase):
             self.assertTrue(payload["enabled"])
             self.assertFalse(any(root.glob("state.json.*.tmp")))
 
+    def test_public_state_exposes_live_progress(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            closer = AutoImproductiveCloser(
+                root / "state.json",
+                root / "history.jsonl",
+                lambda _controller: {"ok": True},
+            )
+            closer.current_run = {
+                "started_at": "2026-09-29T10:30:00-03:00",
+                "running": True,
+            }
+            closer.publish_progress(
+                {
+                    "closed_new": 2,
+                    "already_closed": 1,
+                    "productive_cached": 4,
+                    "details": [
+                        {
+                            "kind": "closed",
+                            "contract": "1234567",
+                            "already_closed": False,
+                        }
+                    ],
+                },
+                force=True,
+            )
+
+            public = closer.public_state()
+
+            self.assertEqual(public["current_run"]["closed_new"], 2)
+            self.assertEqual(public["current_run"]["already_closed"], 1)
+            self.assertEqual(
+                public["current_run"]["details"][0]["contract"],
+                "1234567",
+            )
+
+    def test_history_totals_separate_new_and_already_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            history = root / "history.jsonl"
+            rows = [
+                {
+                    "closed": 2,
+                    "details": [
+                        {"kind": "closed", "already_closed": False},
+                        {"kind": "closed", "already_closed": True},
+                    ],
+                },
+                {
+                    "closed": 1,
+                    "details": [
+                        {"kind": "closed", "already_closed": False},
+                    ],
+                },
+            ]
+            history.write_text(
+                "\n".join(json.dumps(row) for row in rows) + "\n",
+                encoding="utf-8",
+            )
+            closer = AutoImproductiveCloser(
+                root / "state.json",
+                history,
+                lambda _controller: {"ok": True},
+            )
+
+            totals = closer.public_state()["totals"]
+
+            self.assertEqual(totals["closed"], 3)
+            self.assertEqual(totals["closed_new"], 2)
+            self.assertEqual(totals["already_closed"], 1)
+
     def test_run_once_persists_history(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
