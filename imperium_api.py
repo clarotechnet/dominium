@@ -226,6 +226,7 @@ class ImperiumAPI:
         company: str = "NATAL",
         profile_key: str | None = None,
         controller_id: int = CAPTURED_CONTROLLER_ID,
+        expected_username: str | None = None,
         log_root: Path | None = None,
     ) -> None:
         self.root = root or Path(__file__).resolve().parent
@@ -243,6 +244,7 @@ class ImperiumAPI:
         if controller_id <= 0:
             raise ValueError("controller_id must be positive")
         self.controller_id = controller_id
+        self.expected_username = _normalized(expected_username or "")
         self.log_root = log_root or self.root / "logs"
         self.credentials_path = self.root / "config" / "credentials.dat"
         template_path = self.root / "protocol_templates.json"
@@ -801,6 +803,19 @@ class ImperiumAPI:
         self._operation_lock = threading.RLock()
         self._serial_owner_cache: dict[str, tuple[float, dict]] = {}
         self._equipment_group_cache: dict[str, dict | None] = {}
+
+    def _assert_writer_identity(self) -> None:
+        if not self.expected_username:
+            return
+        credentials = self._credentials()
+        actual = _normalized(credentials.get("username", ""))
+        if actual != self.expected_username:
+            raise DataSnapError(
+                "Identidade DataSnap divergente: a escrita exige o usuario "
+                f"{self.expected_username}, mas a sessao local esta configurada "
+                f"como {actual or 'DESCONHECIDO'}. Atualize a credencial antes "
+                "de executar baixa."
+            )
 
     def _credentials(self) -> dict[str, str]:
         return load_credentials(self.credentials_path)
@@ -5099,6 +5114,7 @@ class ImperiumAPI:
         confirmation_delays: tuple[float, ...] | None = None,
         report_date: dt.date | None = None,
     ) -> dict:
+        self._assert_writer_identity()
         suffix_variants = close_code.suffixes
         with self._operation_lock:
             first_apply_error: Exception | None = None
