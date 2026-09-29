@@ -121,10 +121,12 @@ class AutoImproductiveCloser:
         temporary = self.state_path.with_name(
             f"{self.state_path.name}.{threading.get_ident()}.tmp"
         )
-        temporary.write_text(
-            json.dumps(self._state_payload(), ensure_ascii=True, indent=2),
-            encoding="utf-8",
+        serialized = json.dumps(
+            self._state_payload(),
+            ensure_ascii=True,
+            indent=2,
         )
+        temporary.write_text(serialized, encoding="utf-8")
         last_error: PermissionError | None = None
         for attempt in range(6):
             try:
@@ -135,12 +137,19 @@ class AutoImproductiveCloser:
                 if attempt >= 5:
                     break
                 time.sleep(0.05 * (attempt + 1))
+
         try:
-            temporary.unlink(missing_ok=True)
-        except OSError:
-            pass
-        if last_error is not None:
-            raise last_error
+            self.state_path.write_text(serialized, encoding="utf-8")
+            self.logger.warning(
+                "Persistencia atomica do estado foi bloqueada pelo Windows; "
+                "fallback para overwrite direto aplicado: %s",
+                last_error,
+            )
+        finally:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError:
+                pass
 
     def _load_history(self) -> None:
         try:
