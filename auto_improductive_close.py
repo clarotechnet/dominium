@@ -327,6 +327,23 @@ class AutoImproductiveCloser:
                 self.blocked.pop(normalized, None)
                 self._persist_state()
 
+    def prune_blocked_for_date(self, keep_date: dt.date) -> int:
+        keep = keep_date.isoformat()
+        removed = 0
+        with self.lock:
+            for key, entry in list(self.blocked.items()):
+                metadata = entry.get("metadata")
+                metadata = metadata if isinstance(metadata, dict) else {}
+                report_date = str(metadata.get("report_date") or "").strip()
+                if not report_date:
+                    report_date = str(entry.get("blocked_at") or "")[:10]
+                if report_date and report_date != keep:
+                    self.blocked.pop(key, None)
+                    removed += 1
+            if removed:
+                self._persist_state()
+        return removed
+
     def is_blocked(self, key: str) -> bool:
         with self.lock:
             return str(key).strip() in self.blocked

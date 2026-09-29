@@ -1,3 +1,4 @@
+import datetime as dt
 import hashlib
 import struct
 import unittest
@@ -52,6 +53,86 @@ class ApplyPacketTests(unittest.TestCase):
             self.api._installer_context_from_record(record, 0),
             (284992, "ALMIR FAUSTINO"),
         )
+
+    def test_detail_close_code_ignores_digits_inside_os_number(self) -> None:
+        record = (
+            struct.pack("<I", 2214890)
+            + self.api._short_text("2658040946")
+            + self.api._short_text("1579992")
+            + struct.pack("<I", 78)
+            + self.api._short_text("RET EMTA")
+            + self.api._short_text("RETIRAR EMTA")
+            + struct.pack("<I", 6)
+            + self.api._short_text("VT - NORMAL")
+            + bytes(8)
+            + struct.pack("<I", 313363)
+            + self.api._short_text("TECNICO TESTE")
+            + b"INSTALACAO CONCLUIDA"
+        )
+        with patch.object(ImperiumAPI, "_detail_record", return_value=record):
+            self.assertEqual(self.api._detail_close_code(b"detail"), "")
+
+    def test_detail_close_code_reads_real_close_field(self) -> None:
+        record = (
+            struct.pack("<I", 2214890)
+            + self.api._short_text("2658040946")
+            + self.api._short_text("1579992")
+            + struct.pack("<I", 78)
+            + self.api._short_text("RET EMTA")
+            + self.api._short_text("RETIRAR EMTA")
+            + struct.pack("<I", 6)
+            + self.api._short_text("VT - NORMAL")
+            + bytes(8)
+            + struct.pack("<I", 7)
+            + self.api._short_text("106")
+            + self.api._short_text("CLIENTE AUSENTE")
+        )
+        with patch.object(ImperiumAPI, "_detail_record", return_value=record):
+            self.assertEqual(self.api._detail_close_code(b"detail"), "106")
+
+    def test_field_status_wins_over_prefilled_close_code(self) -> None:
+        order = Order(2214890, "2658040946", "1579992", 78, "RETIRAR EMTA")
+        requested = self.api.close_code("106")
+        with (
+            patch.object(self.api, "_remote_order_status", return_value="field"),
+            patch.object(self.api, "_detail_close_code", return_value="409"),
+        ):
+            self.assertIsNone(
+                self.api._guard_remote_close_state(
+                    order,
+                    b"detail",
+                    requested,
+                    report_date=dt.date(2026, 9, 29),
+                )
+            )
+
+    def test_confirmation_requires_leaving_field_and_matching_exact_code(self) -> None:
+        order = Order(2214890, "2658040946", "1579992", 78, "RETIRAR EMTA")
+        requested = self.api.close_code("106")
+        with (
+            patch.object(self.api, "_remote_order_status", return_value="field"),
+            patch.object(self.api, "_detail_close_code", return_value="106"),
+        ):
+            self.assertFalse(
+                self.api._confirm_remote_close_state(
+                    order,
+                    b"detail",
+                    requested,
+                    report_date=dt.date(2026, 9, 29),
+                )
+            )
+        with (
+            patch.object(self.api, "_remote_order_status", return_value="rescheduled"),
+            patch.object(self.api, "_detail_close_code", return_value="106"),
+        ):
+            self.assertTrue(
+                self.api._confirm_remote_close_state(
+                    order,
+                    b"detail",
+                    requested,
+                    report_date=dt.date(2026, 9, 29),
+                )
+            )
 
     def test_named_virtual_stock_id_finds_retorno_without_installer(self) -> None:
         payload = (
@@ -1727,6 +1808,12 @@ class ApplyPacketTests(unittest.TestCase):
             ),
             patch.object(self.api, "_lookup_close_code_id", return_value=44),
             patch.object(self.api, "_handle", return_value=1),
+            patch.object(self.api, "_guard_remote_close_state", return_value=None),
+            patch.object(
+                self.api,
+                "_confirm_remote_close_state",
+                side_effect=(False, False, False, False, False, True),
+            ),
             patch.object(self.api, "_append_audit"),
             patch("imperium_api.time.sleep") as sleep,
         ):
@@ -1768,6 +1855,8 @@ class ApplyPacketTests(unittest.TestCase):
             ),
             patch.object(self.api, "_lookup_close_code_id", return_value=44),
             patch.object(self.api, "_handle", return_value=1),
+            patch.object(self.api, "_guard_remote_close_state", return_value=None),
+            patch.object(self.api, "_confirm_remote_close_state", return_value=False),
             patch.object(self.api, "_append_audit") as append_audit,
             patch("imperium_api.time.sleep"),
             self.assertRaises(CloseConfirmationUncertainError),
@@ -1804,13 +1893,15 @@ class ApplyPacketTests(unittest.TestCase):
         with (
             patch.object(self.api, "_client", return_value=client),
             patch.object(self.api, "_fetch_detail_on", return_value=detail),
+            patch.object(self.api, "_remote_order_status", return_value="rescheduled"),
+            patch.object(self.api, "_detail_close_code", return_value="430"),
             patch.object(self.api, "_lookup_close_code_id") as lookup_close_code,
             patch.object(self.api, "_handle") as lookup_handle,
             self.assertRaisesRegex(
                 CloseStateConflictError,
                 (
-                    "already_closed; "
                     "already_closed_with_different_code:430; "
+                    "remote_status:rescheduled; "
                     "remote_state_changed; operation_blocked"
                 ),
             ),
@@ -1828,38 +1919,20 @@ class ApplyPacketTests(unittest.TestCase):
         lookup_handle.assert_not_called()
         blob_builder.assert_not_called()
 
-    def test_multiple_remote_close_codes_block_as_shared_state(self) -> None:
+    def test_prefilled_code_on_field_order_does_not_mean_closed(self) -> None:
         order = Order(2163650, "2646844394", "4231440", 10, "DESCONEXAO")
         requested = self.api.close_code("106")
-        current = self.api.close_code("430")
-        detail = b"|".join(
-            (
-                order.num_os.encode("ascii"),
-                requested.wire_code.encode("ascii"),
-                requested.description.encode("cp1252"),
-                current.wire_code.encode("ascii"),
-                current.description.encode("cp1252"),
-            )
-        )
-        client = MagicMock(name="read_only_client")
-        blob_builder = MagicMock(name="blob_builder")
-
         with (
-            patch.object(self.api, "_client", return_value=client),
-            patch.object(self.api, "_fetch_detail_on", return_value=detail),
-            self.assertRaisesRegex(
-                CloseStateConflictError,
-                "shared_state_contamination",
-            ),
+            patch.object(self.api, "_remote_order_status", return_value="field"),
+            patch.object(self.api, "_detail_close_code", return_value="430"),
         ):
-            self.api._close_order_with_builder(
-                order,
-                requested,
-                blob_builder,
+            self.assertIsNone(
+                self.api._guard_remote_close_state(
+                    order,
+                    b"detail",
+                    requested,
+                )
             )
-
-        client.request.assert_not_called()
-        blob_builder.assert_not_called()
 
     def test_import_never_repeats_an_ambiguous_timed_out_lot(self) -> None:
         preview = SimpleNamespace(orders=(object(),))

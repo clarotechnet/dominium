@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-29T13:57:17+00:00",
+  "generated_at": "2026-09-29T14:41:45+00:00",
   "schema": 2,
-  "source_fingerprint": "44f70203e7889fa6afa6fe0e1b2df5ce6adc25eb895f17f2bfc45a15c283db3d",
+  "source_fingerprint": "147e1fb2bf0175930f36bba3d13f2a38b745ba5043f6f134fd775ddd599b19b2",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 345274,
-      "sha256": "4c6a69e5a917868c40074d61b8199bb2da0fad51a6cdd27acee4e0d3361459de",
+      "bytes": 345747,
+      "sha256": "7667a5427f368c6db59bc4005cbaab685ed644e73cb3b39f3365c67417d441e9",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -347,8 +347,8 @@
     {
       "path": "auto_improductive_close.py",
       "category": "shared",
-      "bytes": 14559,
-      "sha256": "96913202e3d54d350807c408521a575ccdbf6b5b7dc849ac011ea3e00de79201",
+      "bytes": 15296,
+      "sha256": "280bb7e49b31cb116c3f6cf434cca3d3129dcba1d86175997a0a81a048b9c236",
       "summary": "",
       "imports": [
         "__future__",
@@ -365,7 +365,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 22
+      "symbol_count": 23
     },
     {
       "path": "bulk_orders.py",
@@ -1033,8 +1033,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 252244,
-      "sha256": "c3fe586020655e76397974757f7a0a5b947ee42c80792060fa0eabb73dfb036f",
+      "bytes": 256025,
+      "sha256": "d8ddc4eb607774ceef8efba1cab04c5cdb4248f9d78f5e971d8cdd3c5baebaff",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -1072,7 +1072,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": false,
-      "symbol_count": 135
+      "symbol_count": 138
     },
     {
       "path": "imperium_http_api.py",
@@ -2874,8 +2874,8 @@
     {
       "path": "tests/test_auto_improductive_close.py",
       "category": "tests",
-      "bytes": 6932,
-      "sha256": "860e14eeb3199c66549a06775149c32c6207d0f8e592371005342fed5ed55ce0",
+      "bytes": 7820,
+      "sha256": "455743237e2d0e65ab39880d4e6b35408038f47f2ee029fc139c212881199604",
       "summary": "",
       "imports": [
         "auto_improductive_close",
@@ -2889,7 +2889,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 9
+      "symbol_count": 10
     },
     {
       "path": "tests/test_build_hostinger_node_release.py",
@@ -3115,11 +3115,12 @@
     {
       "path": "tests/test_imperium_api.py",
       "category": "tests",
-      "bytes": 68504,
-      "sha256": "85f345d7101df526509585c102ec988d2d5661e4c224cf900a32920d74353338",
+      "bytes": 71794,
+      "sha256": "7d3f520f7189d61a820bb99adf53582cb418348b033f62260ed7418e26973cd5",
       "summary": "",
       "imports": [
         "datasnap_client",
+        "datetime",
         "decimal",
         "hashlib",
         "imperium_api",
@@ -3133,7 +3134,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": true,
-      "symbol_count": 72
+      "symbol_count": 76
     },
     {
       "path": "tests/test_imperium_http_api.py",
@@ -3195,8 +3196,8 @@
     {
       "path": "tests/test_improductive_catalog_close.py",
       "category": "tests",
-      "bytes": 2090,
-      "sha256": "ca5c5519773f660b37c88f8382a92077fd5dc37912f9dc3ede2f6f97db6d3182",
+      "bytes": 2158,
+      "sha256": "34a290574b15bc9ac207046a77e2dfe7dc132d89e7857ad2a56b37b3d2a05720",
       "summary": "",
       "imports": [
         "imperium_api",
@@ -4145,8 +4146,8 @@
     {
       "path": "tests/test_ui_runtime_regression.py",
       "category": "tests",
-      "bytes": 1893,
-      "sha256": "ab89badeba546f10ffcf6037e8b722410a8f1b0830988c6acac17014fa077420",
+      "bytes": 2841,
+      "sha256": "7b91c3c890b6ee770d9383113db4f7d611486c92cecccb48fefb268408d917f4",
       "summary": "",
       "imports": [
         "pathlib",
@@ -4158,7 +4159,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 5
+      "symbol_count": 7
     },
     {
       "path": "tests/test_web_auth_config.py",

@@ -19,10 +19,11 @@ class ImproductiveCatalogCloseTests(unittest.TestCase):
         api.delta_suffix_variants = (b"simple-a", b"simple-b")
         captured = {}
 
-        def close_order(order, code, *, observation=""):
+        def close_order(order, code, *, observation="", report_date=None):
             captured["order"] = order
             captured["code"] = code
             captured["observation"] = observation
+            captured["report_date"] = report_date
             return {"ok": True, "code": code.code}
 
         api.close_order = close_order

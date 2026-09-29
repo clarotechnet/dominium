@@ -4906,12 +4906,14 @@ class ImperiumAPI:
         description: str,
         *,
         observation: str = "",
+        report_date: dt.date | None = None,
     ) -> dict:
         """Close an improductive code using the validated simple close layout.
 
         The simple DataSnap delta is already shared by 106, 125 and 301. The
-        service-specific IdCodigoBaixa is resolved live before ApplyUpdates and
-        the requested code is confirmed from a fresh order detail afterwards.
+        service-specific IdCodigoBaixa is resolved live before ApplyUpdates.
+        Confirmation requires the OS to leave EM CAMPO and the exact close-code
+        field in a fresh order detail to match the requested code.
         """
         normalized = str(code).strip()
         if not re.fullmatch(r"\d{3}", normalized):
@@ -4926,6 +4928,7 @@ class ImperiumAPI:
                 order,
                 existing,
                 observation=observation,
+                report_date=report_date,
             )
 
         label = " ".join(str(description or "").strip().split())
@@ -4947,57 +4950,142 @@ class ImperiumAPI:
             order,
             dynamic,
             observation=observation,
+            report_date=report_date,
         )
 
-    @staticmethod
-    def _is_closed(order: Order, detail: bytes, close_code: CloseCode) -> bool:
-        norm_detail = detail.upper()
-        norm_desc = close_code.description.upper().encode("cp1252", errors="replace")
-        return (
-            order.num_os.encode("ascii") in detail
-            and close_code.wire_code.encode("ascii") in detail
-            and (
-                not norm_desc
-                or norm_desc in norm_detail
-                or (len(norm_desc) >= 6 and norm_desc[:6] in norm_detail)
-            )
-        )
+    @classmethod
+    def _detail_close_code(cls, detail: bytes) -> str:
+        """Read the actual close-code field from the order record.
 
-    def _detect_applied_close_codes(
-        self,
+        A close code must never be inferred from an arbitrary byte substring:
+        values such as "409" can occur inside an OS number, while close-code
+        descriptions also exist in DataSnap metadata. The real field is the
+        short-text value after IdCodigoBaixa in the record layout.
+        """
+        record = cls._detail_record(detail)
+        if len(record) < 32:
+            raise DataSnapError("The order detail record is incomplete")
+
+        position = 4  # IdOS
+        _, position = cls._read_short_text(record, position)  # NumOs
+        _, position = cls._read_short_text(record, position)  # Contrato
+        position += 4  # IdServico
+        _, position = cls._read_short_text(record, position)  # CodigoServico
+        _, position = cls._read_short_text(record, position)  # Servico
+        position += 4  # IdTurnoInstalacao
+        _, position = cls._read_short_text(record, position)  # Turno
+        position += 8  # HoraIni, HoraFim
+
+        if position + 4 >= len(record):
+            return ""
+        id_code = struct.unpack_from("<I", record, position)[0]
+        if id_code <= 0 or id_code > 1_000_000:
+            return ""
+        try:
+            code, next_position = cls._read_short_text(record, position + 4)
+            description, _ = cls._read_short_text(record, next_position)
+        except DataSnapError:
+            return ""
+        if not re.fullmatch(r"\d{3}", code) or not description.strip():
+            return ""
+        return code
+
+    @classmethod
+    def _is_closed(
+        cls,
         order: Order,
         detail: bytes,
-    ) -> tuple[CloseCode, ...]:
-        return tuple(
-            close_code
-            for close_code in self.close_codes.values()
-            if self._is_closed(order, detail, close_code)
+        close_code: CloseCode,
+    ) -> bool:
+        del order
+        return cls._detail_close_code(detail) == close_code.code
+
+    @staticmethod
+    def _same_remote_order(left: Order, right: Order) -> bool:
+        return (
+            left.id_os == right.id_os
+            and left.num_os == right.num_os
+            and left.contract == right.contract
         )
+
+    def _remote_order_status(
+        self,
+        order: Order,
+        *,
+        report_date: dt.date | None = None,
+    ) -> str | None:
+        query_date = report_date or dt.date.today()
+        for status in ("field", "completed", "canceled", "rescheduled"):
+            rows = self.list_orders(
+                query_date,
+                status=status,
+                service_type="all",
+            )
+            if any(self._same_remote_order(order, candidate) for candidate in rows):
+                return status
+        return None
 
     def _guard_remote_close_state(
         self,
         order: Order,
         detail: bytes,
         requested_close_code: CloseCode,
+        *,
+        report_date: dt.date | None = None,
     ) -> CloseCode | None:
-        applied = self._detect_applied_close_codes(order, detail)
-        if not applied:
+        remote_status = self._remote_order_status(
+            order,
+            report_date=report_date,
+        )
+        if remote_status == "field":
             return None
-        if len(applied) > 1:
-            detected = ",".join(sorted(code.code for code in applied))
+        if remote_status is None:
             raise CloseStateConflictError(
-                "shared_state_contamination; "
-                f"multiple_remote_close_codes:{detected}; operation_blocked"
+                "remote_status_unknown; operation_blocked"
             )
 
-        current = applied[0]
-        if current.code != requested_close_code.code:
+        current_code = self._detail_close_code(detail)
+        if current_code == requested_close_code.code:
+            return requested_close_code
+        if current_code:
             raise CloseStateConflictError(
-                "already_closed; "
-                f"already_closed_with_different_code:{current.code}; "
+                f"already_closed_with_different_code:{current_code}; "
+                f"remote_status:{remote_status}; "
                 "remote_state_changed; operation_blocked"
             )
-        return current
+        raise CloseStateConflictError(
+            f"remote_status:{remote_status}; "
+            "close_code_unconfirmed; remote_state_changed; operation_blocked"
+        )
+
+    def _confirm_remote_close_state(
+        self,
+        order: Order,
+        detail: bytes,
+        requested_close_code: CloseCode,
+        *,
+        report_date: dt.date | None = None,
+    ) -> bool:
+        remote_status = self._remote_order_status(
+            order,
+            report_date=report_date,
+        )
+        if remote_status in (None, "field"):
+            return False
+
+        current_code = self._detail_close_code(detail)
+        if current_code == requested_close_code.code:
+            return True
+        if current_code:
+            raise CloseStateConflictError(
+                f"already_closed_with_different_code:{current_code}; "
+                f"remote_status:{remote_status}; "
+                "remote_state_changed; operation_blocked"
+            )
+        raise CloseStateConflictError(
+            f"remote_status:{remote_status}; "
+            "close_code_unconfirmed; remote_state_changed; operation_blocked"
+        )
 
     def _close_order_with_builder(
         self,
@@ -5007,6 +5095,7 @@ class ImperiumAPI:
         *,
         apply_timeout: float = 10.0,
         confirmation_delays: tuple[float, ...] | None = None,
+        report_date: dt.date | None = None,
     ) -> dict:
         suffix_variants = close_code.suffixes
         with self._operation_lock:
@@ -5044,6 +5133,7 @@ class ImperiumAPI:
                             order,
                             detail,
                             close_code,
+                            report_date=report_date,
                         )
                         if applied_close_code is not None:
                             result = (
@@ -5178,6 +5268,7 @@ class ImperiumAPI:
 
                 confirmation = b""
                 confirmation_read = False
+                confirmed = False
                 final_confirmation_error = None
                 active_confirmation_delays = (
                     (0.0,)
@@ -5212,14 +5303,24 @@ class ImperiumAPI:
                         )
                         confirmation_read = True
                         final_confirmation_error = None
-                        if self._is_closed(order, confirmation, close_code):
+                        confirmed = self._confirm_remote_close_state(
+                            order,
+                            confirmation,
+                            close_code,
+                            report_date=report_date,
+                        )
+                        if confirmed:
                             break
                         LOGGER.warning(
-                            "IdOS %s: codigo %s ainda nao apareceu na tentativa %s",
+                            "IdOS %s: permanece em campo na tentativa %s de confirmacao",
                             order.id_os,
-                            close_code.code,
                             attempt,
                         )
+                    except CloseStateConflictError:
+                        if client is not None:
+                            client.close()
+                            client = None
+                        raise
                     except (DataSnapError, OSError, socket.timeout) as exc:
                         final_confirmation_error = exc
                         LOGGER.warning(
@@ -5235,7 +5336,7 @@ class ImperiumAPI:
                 if client is not None:
                     client.close()
 
-                if self._is_closed(order, confirmation, close_code):
+                if confirmed:
                     result = (
                         "SUCESSO_APOS_TIMEOUT"
                         if apply_error is not None or variant_index > 1
@@ -5293,6 +5394,7 @@ class ImperiumAPI:
         code: str | CloseCode = DEFAULT_CODE,
         *,
         observation: str = "",
+        report_date: dt.date | None = None,
     ) -> dict:
         if isinstance(code, CloseCode):
             close_code = code
@@ -5324,6 +5426,7 @@ class ImperiumAPI:
                 detail,
                 suffix,
             ),
+            report_date=report_date,
         )
 
     def close_productive(

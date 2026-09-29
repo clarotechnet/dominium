@@ -3202,7 +3202,8 @@ def _auto_improductive_scan(
     controller: AutoImproductiveCloser,
 ) -> dict:
     now = dt.datetime.now().astimezone()
-    scan_dates = (now.date() - dt.timedelta(days=1), now.date())
+    scan_dates = (now.date(),)
+    controller.prune_blocked_for_date(now.date())
     improductive_codes = {
         code: definition
         for code, definition in OFFICIAL_CLOSE_CODES.items()
@@ -3523,7 +3524,9 @@ def _auto_improductive_scan(
                             )
                         continue
 
-                    block_key = f"{profile.key}:{order.id_os}:{code}"
+                    block_key = (
+                        f"{profile.key}:{today_text}:{order.id_os}:{code}"
+                    )
                     if controller.is_blocked(block_key):
                         summary["blocked"] += 1
                         detail(
@@ -3558,6 +3561,7 @@ def _auto_improductive_scan(
                             code,
                             definition.description,
                             observation=observation,
+                            report_date=now.date(),
                         )
                         _record_auto_improductive_close_report(
                             profile,
@@ -3595,6 +3599,7 @@ def _auto_improductive_scan(
                                 "id_os": order.id_os,
                                 "os_number": num_os,
                                 "code": code,
+                                "report_date": today_text,
                             },
                         )
                         summary["blocked"] += 1
@@ -3616,6 +3621,7 @@ def _auto_improductive_scan(
                                 "id_os": order.id_os,
                                 "os_number": num_os,
                                 "code": code,
+                                "report_date": today_text,
                             },
                         )
                         summary["blocked"] += 1
@@ -3662,6 +3668,7 @@ AUTO_IMPRODUCTIVE_CLOSER = AutoImproductiveCloser(
     interval_seconds=300,
     logger=LOGGER,
 )
+AUTO_IMPRODUCTIVE_CLOSER.prune_blocked_for_date(dt.date.today())
 
 TOA_AUTOMATION = TOAAutomation(ROOT, _automatic_toa_import, logger=LOGGER)
 
@@ -4743,7 +4750,12 @@ def _start_close_confirmation(
                 checks += 1
                 try:
                     detail = profile.api._fetch_detail(order.id_os, timeout=25.0)
-                    if profile.api._is_closed(order, detail, close_code):
+                    if profile.api._confirm_remote_close_state(
+                        order,
+                        detail,
+                        close_code,
+                        report_date=report_date,
+                    ):
                         now = dt.datetime.now().astimezone().isoformat(timespec="seconds")
                         confirmed_record = profile.close_report.update(
                             request_id,

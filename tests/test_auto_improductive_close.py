@@ -47,6 +47,31 @@ class AutoImproductiveCloserTests(unittest.TestCase):
             self.assertEqual(public["blocked_count"], 1)
             self.assertTrue(reloaded.is_blocked("natal:123"))
 
+    def test_prune_blocked_for_date_removes_previous_day_only(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            closer = AutoImproductiveCloser(
+                root / "state.json",
+                root / "history.jsonl",
+                lambda _controller: {"ok": True},
+            )
+            closer.block(
+                "natal:old",
+                "old",
+                metadata={"report_date": "2026-09-28"},
+            )
+            closer.block(
+                "natal:today",
+                "today",
+                metadata={"report_date": "2026-09-29"},
+            )
+
+            removed = closer.prune_blocked_for_date(dt.date(2026, 9, 29))
+
+            self.assertEqual(removed, 1)
+            self.assertFalse(closer.is_blocked("natal:old"))
+            self.assertTrue(closer.is_blocked("natal:today"))
+
     def test_state_persistence_retries_transient_windows_permission_error(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

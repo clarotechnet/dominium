@@ -2252,7 +2252,11 @@ function autoImproductiveBlockReason(reason) {
   const raw = String(reason || "").trim();
   const parts = [];
   const rules = [
-    ["already_closed_with_different_code", "Ja estava baixada no Imperium com outro codigo"],
+    ["already_closed_with_different_code", "A OS saiu de campo com outro codigo no Imperium"],
+    ["remote_status:rescheduled", "Status atual no Imperium: reagendada"],
+    ["remote_status:canceled", "Status atual no Imperium: cancelada"],
+    ["remote_status:completed", "Status atual no Imperium: concluida"],
+    ["remote_status_unknown", "O status atual da OS nao pôde ser confirmado"],
     ["remote_state_changed", "O estado da OS mudou no Imperium durante a confirmacao"],
     ["shared_state_contamination", "Resposta do Imperium misturou estados de outra operacao"],
     ["multiple_remote_close_codes", "O Imperium retornou mais de um codigo de baixa"],

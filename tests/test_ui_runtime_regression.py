@@ -25,6 +25,33 @@ class UIRuntimeRegressionTests(unittest.TestCase):
         self.assertIn("recent_closed", app)
         self.assertIn("current_run", app)
 
+    def test_auto_improductive_worker_only_scans_current_day(self):
+        source = (ROOT / "app.py").read_text(encoding="utf-8")
+        self.assertIn("scan_dates = (now.date(),)", source)
+        self.assertNotIn(
+            "scan_dates = (now.date() - dt.timedelta(days=1), now.date())",
+            source,
+        )
+        self.assertIn(
+            'f"{profile.key}:{today_text}:{order.id_os}:{code}"',
+            source,
+        )
+        self.assertIn(
+            "AUTO_IMPRODUCTIVE_CLOSER.prune_blocked_for_date(dt.date.today())",
+            source,
+        )
+
+    def test_blocked_audit_does_not_claim_closed_from_code_alone(self):
+        app = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+        self.assertIn(
+            "A OS saiu de campo com outro codigo no Imperium",
+            app,
+        )
+        self.assertNotIn(
+            "Ja estava baixada no Imperium com outro codigo",
+            app,
+        )
+
     def test_hostinger_runtime_exposes_registration_through_operational_backend(self):
         server = (ROOT / "deploy" / "hostinger-web" / "server.js").read_text(encoding="utf-8")
         self.assertIn("registration_enabled: true", server)

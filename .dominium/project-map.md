@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-09-29T13:57:17+00:00
-- Source fingerprint: `44f70203e7889fa6`
+- Generated: 2026-09-29T14:41:45+00:00
+- Source fingerprint: `147e1fb2bf017593`
 - Indexed files: 251
-- Indexed symbols: 2799
+- Indexed symbols: 2810
 - API path references: 118
 
 ## Navigation rule
@@ -74,7 +74,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## imperium
 
 - `.imperium-project.json`
-- `imperium_api.py` (135 symbols, 3 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `imperium_api.py` (138 symbols, 3 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `imperium_http_api.py` (37 symbols, 2 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `imperium_http_plan.py` (9 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `installer_change.py` (5 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -102,7 +102,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.
 - `auth_store.py` (28 symbols) - Autenticacao local do DOMINIUM.
 - `auth_store_postgres.py` (18 symbols) - Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.
-- `auto_improductive_close.py` (22 symbols)
+- `auto_improductive_close.py` (23 symbols)
 - `bulk_orders.py` (2 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `cancel_all_open.py` (3 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `CLAUDE.md` (1 DataSnap methods) - DOMINIUM / Claude Code

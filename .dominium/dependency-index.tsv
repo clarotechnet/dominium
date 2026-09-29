@@ -605,6 +605,7 @@ struct	tests/test_flow_reader.py
 unittest	tests/test_flow_reader.py
 zipfile	tests/test_flow_reader.py
 datasnap_client	tests/test_imperium_api.py
+datetime	tests/test_imperium_api.py
 decimal	tests/test_imperium_api.py
 hashlib	tests/test_imperium_api.py
 imperium_api	tests/test_imperium_api.py
