@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-09-29T14:45:33+00:00
-- Source fingerprint: `3b5825d01b597214`
+- Generated: 2026-09-29T16:35:18+00:00
+- Source fingerprint: `5c847685decaa603`
 - Indexed files: 251
-- Indexed symbols: 2811
+- Indexed symbols: 2818
 - API path references: 118
 
 ## Navigation rule
@@ -16,7 +16,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (148 symbols, 76 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (149 symbols, 76 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operational_store.py` (24 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -74,7 +74,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## imperium
 
 - `.imperium-project.json`
-- `imperium_api.py` (138 symbols, 3 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `imperium_api.py` (139 symbols, 3 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `imperium_http_api.py` (37 symbols, 2 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `imperium_http_plan.py` (9 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `installer_change.py` (5 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE

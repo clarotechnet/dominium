@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	148	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	7667a5427f368c6d
+orchestration	app.py	149	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	0ccf8690a738898a
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -26,7 +26,7 @@ tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para mig
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	18	1		d5cfd6020264880c
+tooling-deploy	deploy/hostinger-web/server.js	41	18	1		929afdb2ae6768ac
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -48,7 +48,7 @@ shared	flow_reader/server.py	11	2		DOMINIUM | MAPA DE RESPONSABILIDADE	00c885db8
 shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f388b7677c04f
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
-imperium	imperium_api.py	138		3	DOMINIUM | MAPA DE RESPONSABILIDADE	d8ddc4eb607774ce
+imperium	imperium_api.py	139		3	DOMINIUM | MAPA DE RESPONSABILIDADE	d00fdac713f3b261
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 shared	import_protocol_templates.json			1		9a6465634e73b3ec
@@ -163,7 +163,7 @@ tests	tests/test_disconnect_frontend.js	4				f5e517e7af4cede6
 tests	tests/test_edge_voice.py	4				4e8791562f884964
 tests	tests/test_equipment_group_matching.py	24				46876ea91612d830
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38
-tests	tests/test_imperium_api.py	76		1		7d3f520f7189d61a
+tests	tests/test_imperium_api.py	79		1		a839fa8700a55de7
 tests	tests/test_imperium_http_api.py	25				25ab6758e210eefb
 tests	tests/test_imperium_http_plan.py	8				056547e8c6b8d815
 tests	tests/test_import_audit_history.py	3				6df23f085d3bdbda
@@ -191,7 +191,7 @@ tests	tests/test_operational_store.py	5				1245242d685ecf66
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
-tests	tests/test_semiauto_frontend.js	19				b9c1c5401e45b654
+tests	tests/test_semiauto_frontend.js	19				9327c9752e46275b
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
@@ -214,7 +214,7 @@ tests	tests/test_toa_live.py	26		1		c296ffdcf69eaca9
 tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
 tests	tests/test_toa_secondary_session.py	7				9d5ca5c257461780
-tests	tests/test_toa_worker_cache.py	5				9a28c1b3df84fc92
+tests	tests/test_toa_worker_cache.py	7				84d409c3fed69bd5
 tests	tests/test_ui_runtime_regression.py	7	1			7b91c3c890b6ee77
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb
