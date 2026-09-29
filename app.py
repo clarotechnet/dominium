@@ -3129,6 +3129,8 @@ def _auto_improductive_scan(
     summary = {
         "ok": True,
         "closed": 0,
+        "closed_new": 0,
+        "already_closed": 0,
         "waiting_toa": 0,
         "productive_ignored": 0,
         "productive_cached": 0,
@@ -3142,18 +3144,22 @@ def _auto_improductive_scan(
         "toa_busy_deferred": 0,
         "profiles": {},
         "details": [],
+        "waiting_items": [],
     }
     seen_targets: set[tuple[str, int, str]] = set()
 
+    def publish_progress(*, force: bool = False) -> None:
+        controller.publish_progress(summary, force=force)
+
     def detail(kind: str, profile: str, contract: str, **extra: object) -> None:
-        if len(summary["details"]) >= 200:
-            return
-        summary["details"].append({
-            "kind": kind,
-            "profile": profile,
-            "contract": contract,
-            **extra,
-        })
+        if len(summary["details"]) < 200:
+            summary["details"].append({
+                "kind": kind,
+                "profile": profile,
+                "contract": contract,
+                **extra,
+            })
+        publish_progress()
 
     for profile in PROFILES.values():
         if not controller.is_enabled():
@@ -3164,6 +3170,8 @@ def _auto_improductive_scan(
             "contracts_due": 0,
             "bucket_waiting": 0,
             "closed": 0,
+            "closed_new": 0,
+            "already_closed": 0,
             "waiting_toa": 0,
             "busy_deferred": 0,
             "errors": 0,
@@ -3240,16 +3248,34 @@ def _auto_improductive_scan(
             for record in state.get("records", []):
                 if not isinstance(record, dict):
                     continue
+                contract = str(record.get("contract") or "").strip()
+                if not contract or contract not in open_by_contract:
+                    continue
                 if report_date == now.date():
                     if _toa_record_due_minute(record, now) is None:
                         continue
                     if not _toa_registry_record_needs_lookup(record):
                         summary["bucket_waiting"] += 1
                         profile_state["bucket_waiting"] += 1
+                        if len(summary["waiting_items"]) < 1500:
+                            statuses = sorted({
+                                str(order.get("activity_status") or "").strip()
+                                for order in record.get("orders", [])
+                                if isinstance(order, dict)
+                                and str(order.get("activity_status") or "").strip()
+                            })
+                            summary["waiting_items"].append({
+                                "kind": "bucket_waiting",
+                                "profile": profile.key,
+                                "contract": contract,
+                                "statuses": statuses,
+                                "windows": list(record.get("windows") or ()),
+                                "os_numbers": sorted(
+                                    open_by_contract.get(contract, {}).keys()
+                                ),
+                            })
                         continue
-                contract = str(record.get("contract") or "").strip()
-                if contract and contract in open_by_contract:
-                    registry_records.append(record)
+                registry_records.append(record)
 
         contract_priority: dict[str, int] = {}
         contract_dates: dict[str, str] = {}
@@ -3275,6 +3301,7 @@ def _auto_improductive_scan(
             key=lambda contract: (-contract_priority[contract], contract),
         )
         profile_state["contracts_due"] = len(due_contracts)
+        publish_progress()
 
         for contract in due_contracts:
             if not controller.is_enabled():
@@ -3340,6 +3367,19 @@ def _auto_improductive_scan(
                 if not toa_activity_is_complete(activity.get("status")):
                     summary["waiting_toa"] += 1
                     profile_state["waiting_toa"] += 1
+                    if len(summary["waiting_items"]) < 1500:
+                        summary["waiting_items"].append({
+                            "kind": "waiting_toa",
+                            "profile": profile.key,
+                            "contract": contract,
+                            "status": str(activity.get("status") or ""),
+                            "scheduled_date": str(
+                                activity.get("scheduled_date") or ""
+                            ),
+                            "os_numbers": sorted(
+                                open_by_contract.get(contract, {}).keys()
+                            ),
+                        })
                     detail(
                         "waiting_toa",
                         profile.key,
@@ -3438,8 +3478,15 @@ def _auto_improductive_scan(
                             observation=observation,
                         )
                         controller.unblock(block_key)
+                        already_closed = bool(result.get("already_closed"))
                         summary["closed"] += 1
                         profile_state["closed"] += 1
+                        if already_closed:
+                            summary["already_closed"] += 1
+                            profile_state["already_closed"] += 1
+                        else:
+                            summary["closed_new"] += 1
+                            profile_state["closed_new"] += 1
                         detail(
                             "closed",
                             profile.key,
@@ -3447,7 +3494,7 @@ def _auto_improductive_scan(
                             os_number=num_os,
                             id_os=order.id_os,
                             code=code,
-                            already_closed=bool(result.get("already_closed")),
+                            already_closed=already_closed,
                         )
                     except CloseConfirmationUncertainError as exc:
                         controller.block(
@@ -3515,6 +3562,7 @@ def _auto_improductive_scan(
         int(value.get("errors", 0)) == 0
         for value in summary["profiles"].values()
     )
+    publish_progress(force=True)
     return summary
 
 
