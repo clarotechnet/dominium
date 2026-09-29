@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-29T16:35:18+00:00",
+  "generated_at": "2026-09-29T16:51:47+00:00",
   "schema": 2,
-  "source_fingerprint": "5c847685decaa603b64fa53b13a64090a8264d0fa8686e129102d47bc8fefdc0",
+  "source_fingerprint": "44a9c29630352fe4df8dea5c50d4b6e9a1f0181d7f59510089a675d6f23448f1",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -667,7 +667,7 @@
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
       "bytes": 40346,
-      "sha256": "929afdb2ae6768ac5ffe38e8b1e973b136d4ae7dbe2ce0a03f6d7d8794ce63e7",
+      "sha256": "d5cfd6020264880c05e741ad8b45d353101066010a0fbbefe1f380d88611479a",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1033,8 +1033,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 256919,
-      "sha256": "d00fdac713f3b261aab722b29aba8545c51821d20c75f953df9e6f2cacdd8344",
+      "bytes": 256765,
+      "sha256": "f0483867bafb3ec48f52946476f64fcad7ec376f3351013929bbb8165776cc4b",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -3115,8 +3115,8 @@
     {
       "path": "tests/test_imperium_api.py",
       "category": "tests",
-      "bytes": 73025,
-      "sha256": "a839fa8700a55de7f49d1a374ef5b0fa3b3cc25bd1edfc8c69dd0e803bfc20fe",
+      "bytes": 73468,
+      "sha256": "cc3bd1c0005c8f42ed1bbb21c726cf459a383e118acbfcc0d76a9db830c13084",
       "summary": "",
       "imports": [
         "datasnap_client",
@@ -3134,7 +3134,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": true,
-      "symbol_count": 79
+      "symbol_count": 80
     },
     {
       "path": "tests/test_imperium_http_api.py",

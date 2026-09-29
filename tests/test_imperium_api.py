@@ -282,11 +282,22 @@ class ApplyPacketTests(unittest.TestCase):
         self.assertEqual(SERVICE_TYPE, "TODOS")
         self.assertEqual(STATUS, "EM CAMPO")
 
-    def test_main_query_uses_datasnap_status_3_for_field_orders(self) -> None:
+    def test_main_query_uses_datasnap_status_1_for_field_orders(self) -> None:
         status_field = "Status".encode("utf-16le")
         query = self.api._main_query_for(
             self.api.captured_date,
             status="field",
+            service_type="all",
+        )
+
+        self.assertIn(status_field + struct.pack("<II", 8, 1) + b"1", query)
+        self.assertNotIn(status_field + struct.pack("<II", 8, 1) + b"3", query)
+
+    def test_main_query_uses_datasnap_status_3_for_canceled_orders(self) -> None:
+        status_field = "Status".encode("utf-16le")
+        query = self.api._main_query_for(
+            self.api.captured_date,
+            status="canceled",
             service_type="all",
         )
 
