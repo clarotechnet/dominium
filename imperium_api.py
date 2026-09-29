@@ -244,7 +244,7 @@ class ImperiumAPI:
         if controller_id <= 0:
             raise ValueError("controller_id must be positive")
         self.controller_id = controller_id
-        self.expected_username = _normalized(expected_username or "")
+        self.expected_username = normalize_text(expected_username or "")
         self.log_root = log_root or self.root / "logs"
         self.credentials_path = self.root / "config" / "credentials.dat"
         template_path = self.root / "protocol_templates.json"
@@ -808,7 +808,7 @@ class ImperiumAPI:
         if not self.expected_username:
             return
         credentials = self._credentials()
-        actual = _normalized(credentials.get("username", ""))
+        actual = normalize_text(credentials.get("username", ""))
         if actual != self.expected_username:
             raise DataSnapError(
                 "Identidade DataSnap divergente: a escrita exige o usuario "
