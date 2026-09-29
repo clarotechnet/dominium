@@ -2290,13 +2290,26 @@ function autoImproductiveAuditItems(kind) {
   } else if (kind === "already_closed") {
     items = autoImproductiveClosedDetails(active, { alreadyClosed: true });
   } else if (kind === "blocked") {
-    items = Object.entries(auto.blocked || {}).map(([blockKey, entry]) => ({
-      kind: "blocked",
-      block_key: blockKey,
-      reason: entry?.reason || "",
-      blocked_at: entry?.blocked_at || "",
-      ...(entry?.metadata || {}),
-    }));
+    const now = new Date();
+    const today = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0"),
+      String(now.getDate()).padStart(2, "0"),
+    ].join("-");
+    items = Object.entries(auto.blocked || {})
+      .filter(([, entry]) => {
+        const reportDate = String(
+          entry?.metadata?.report_date || entry?.blocked_at || "",
+        ).slice(0, 10);
+        return !reportDate || reportDate === today;
+      })
+      .map(([blockKey, entry]) => ({
+        kind: "blocked",
+        block_key: blockKey,
+        reason: entry?.reason || "",
+        blocked_at: entry?.blocked_at || "",
+        ...(entry?.metadata || {}),
+      }));
   } else if (kind === "total_closed") {
     items = (auto.recent_closed || []).filter((item) => item?.already_closed !== true);
     if (auto.running) {
