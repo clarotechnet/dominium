@@ -16,6 +16,7 @@ class TOASecondarySessionTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         self.session = TOASecondarySession(Path(self.temp.name))
+        self.session.lookup_script.write_text("// test fixture", encoding="utf-8")
 
     def tearDown(self) -> None:
         self.temp.cleanup()
