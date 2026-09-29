@@ -88,6 +88,7 @@ class AutoImproductiveCloser:
         self.blocked: dict[str, dict[str, Any]] = {}
         self.last_run: dict[str, Any] | None = None
         self.history: list[dict[str, Any]] = []
+        self.recent_closed: list[dict[str, Any]] = []
         self.history_totals: dict[str, int] = {
             "runs": 0,
             "closed": 0,
@@ -207,11 +208,22 @@ class AutoImproductiveCloser:
             "closed_new": closed_new_total,
             "already_closed": already_closed_total,
         }
+        recent_closed: list[dict[str, Any]] = []
+        for item in all_runs:
+            for detail in item.get("details", []):
+                if not isinstance(detail, dict) or detail.get("kind") != "closed":
+                    continue
+                recent_closed.append({
+                    **detail,
+                    "started_at": item.get("started_at"),
+                    "completed_at": item.get("completed_at"),
+                })
         loaded = all_runs[-HISTORY_LIMIT:]
         with self.lock:
             self.history = loaded
             self.last_run = loaded[-1] if loaded else None
             self.history_totals = totals
+            self.recent_closed = recent_closed[-500:]
 
     def _append_history(self, value: dict[str, Any]) -> None:
         self.history_path.parent.mkdir(parents=True, exist_ok=True)
@@ -234,6 +246,15 @@ class AutoImproductiveCloser:
             self.history_totals["already_closed"] += int(
                 value.get("already_closed") or 0
             )
+            for detail in value.get("details", []):
+                if not isinstance(detail, dict) or detail.get("kind") != "closed":
+                    continue
+                self.recent_closed.append({
+                    **detail,
+                    "started_at": value.get("started_at"),
+                    "completed_at": value.get("completed_at"),
+                })
+            self.recent_closed = self.recent_closed[-500:]
 
     def publish_progress(
         self,
@@ -337,6 +358,7 @@ class AutoImproductiveCloser:
                     for item in reversed(self.history[-10:])
                 ],
                 "totals": dict(self.history_totals),
+                "recent_closed": copy.deepcopy(self.recent_closed),
                 "blocked_count": len(self.blocked),
                 "blocked": copy.deepcopy(self.blocked),
             }
