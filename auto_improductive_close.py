@@ -173,16 +173,39 @@ class AutoImproductiveCloser:
                 continue
             if isinstance(value, dict):
                 all_runs.append(value)
+        closed_total = 0
+        closed_new_total = 0
+        already_closed_total = 0
+        for item in all_runs:
+            closed_total += int(item.get("closed") or 0)
+            details = item.get("details")
+            closed_details = [
+                detail
+                for detail in details
+                if isinstance(details, list)
+                and isinstance(detail, dict)
+                and detail.get("kind") == "closed"
+            ] if isinstance(details, list) else []
+            if closed_details:
+                closed_new_total += sum(
+                    1 for detail in closed_details
+                    if detail.get("already_closed") is not True
+                )
+                already_closed_total += sum(
+                    1 for detail in closed_details
+                    if detail.get("already_closed") is True
+                )
+            else:
+                closed_new_total += int(
+                    item.get("closed_new", item.get("closed") or 0) or 0
+                )
+                already_closed_total += int(item.get("already_closed") or 0)
+
         totals = {
             "runs": len(all_runs),
-            "closed": sum(int(item.get("closed") or 0) for item in all_runs),
-            "closed_new": sum(
-                int(item.get("closed_new", item.get("closed") or 0) or 0)
-                for item in all_runs
-            ),
-            "already_closed": sum(
-                int(item.get("already_closed") or 0) for item in all_runs
-            ),
+            "closed": closed_total,
+            "closed_new": closed_new_total,
+            "already_closed": already_closed_total,
         }
         loaded = all_runs[-HISTORY_LIMIT:]
         with self.lock:
