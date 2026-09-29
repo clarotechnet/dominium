@@ -370,8 +370,10 @@ class AutoImproductiveCloser:
                 self.running = False
         try:
             self._append_history(run)
+        except OSError:
+            self.logger.exception(
+                "Auto-baixa improdutiva: falha ao persistir historico"
+            )
         finally:
             with self.lock:
                 self.current_run = None
-        except OSError:
-            self.logger.exception("Auto-baixa improdutiva: falha ao persistir historico")
