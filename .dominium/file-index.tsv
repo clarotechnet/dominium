@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	146	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	62eca072ccceda4c
+orchestration	app.py	147	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	1edba10ffe28009a
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	21				b6536208f4d645d5
@@ -14,10 +14,8 @@ shared	CLAUDE.md			1	DOMINIUM / Claude Code	ad7a8982c5c5b42a
 shared	close_report.py	15			DOMINIUM | MAPA DE RESPONSABILIDADE	7639b2cf9981442b
 shared	close_report_excel.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	db6f655647eeb923
 toa	Conectar TOA.cmd					5b1f2a4fb8c3ec37
-shared	config/auto_improductive_close_state.json					c2fe936b724ebef8
 shared	config/official_close_code_catalog/Tabela_codigo_baixa0711.catalog.json			1		c1f98a79ea40eb4e
 shared	config/technicians.json			2		f1135f8c8fd7e9a8
-toa	config/toa_bucket_collection_state.json					d98c3d52e0bf4231
 toa	Configurar TOA.cmd					4c723142074ed214
 toa	Configurar_Coletor_TOA.cmd					62f43e9861a81020
 toa	configurar_toa_credenciais.py	1			DOMINIUM | MAPA DE RESPONSABILIDADE	53d47e7046687d82
@@ -215,7 +213,7 @@ tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
 tests	tests/test_toa_live.py	26		1		c296ffdcf69eaca9
 tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
-tests	tests/test_toa_worker_cache.py	4				2d379766dff3b812
+tests	tests/test_toa_worker_cache.py	5				9a28c1b3df84fc92
 tests	tests/test_ui_runtime_regression.py	4	1			600cd21094e6bd49
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb

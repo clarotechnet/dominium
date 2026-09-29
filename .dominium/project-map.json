@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-29T12:47:19+00:00",
+  "generated_at": "2026-09-29T12:51:55+00:00",
   "schema": 2,
-  "source_fingerprint": "3ec84016092beb70c02b87883fd5e86ded36346fd20acbcd6f87ceef9b82d7d6",
+  "source_fingerprint": "b78c6097af2a56820fd577bb1f2cb276bce6332bd09bcab6908f99f9687be92f",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 338579,
-      "sha256": "62eca072ccceda4ce4bce2831cf85d08afa446ed9426c2e9f098d723aba3204d",
+      "bytes": 339329,
+      "sha256": "1edba10ffe28009a5625ffa2ae09059b07560f0150e7a8946974f1dea44cf239",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -290,7 +290,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 146
+      "symbol_count": 147
     },
     {
       "path": "auth_store.py",
@@ -475,19 +475,6 @@
       "symbol_count": 0
     },
     {
-      "path": "config/auto_improductive_close_state.json",
-      "category": "shared",
-      "bytes": 15541,
-      "sha256": "c2fe936b724ebef8f64356b84c623c818df103739e76501f8ebaeb1fc83439af",
-      "summary": "",
-      "imports": [],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
       "path": "config/official_close_code_catalog/Tabela_codigo_baixa0711.catalog.json",
       "category": "shared",
       "bytes": 81325,
@@ -515,19 +502,6 @@
         "TECHNET.xlsx",
         "TOA_Inventario_Consolidado.xlsx"
       ],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
-      "path": "config/toa_bucket_collection_state.json",
-      "category": "toa",
-      "bytes": 2620,
-      "sha256": "d98c3d52e0bf4231297be1583e6afcf3abca68e41a75ba563bc1cf532f39b8ba",
-      "summary": "",
-      "imports": [],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
     },
@@ -4133,8 +4107,8 @@
     {
       "path": "tests/test_toa_worker_cache.py",
       "category": "tests",
-      "bytes": 2930,
-      "sha256": "2d379766dff3b8124777c8a1ddb247cd2b496ca2126c542574e24bf01e77a9d8",
+      "bytes": 4108,
+      "sha256": "9a28c1b3df84fc92f5fab43815be06551b84562ce7538d591055c929512864f5",
       "summary": "",
       "imports": [
         "app",
@@ -4145,7 +4119,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 4
+      "symbol_count": 5
     },
     {
       "path": "tests/test_ui_runtime_regression.py",

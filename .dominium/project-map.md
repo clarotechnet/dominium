@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-09-29T12:47:19+00:00
-- Source fingerprint: `3ec84016092beb70`
-- Indexed files: 252
-- Indexed symbols: 2782
+- Generated: 2026-09-29T12:51:55+00:00
+- Source fingerprint: `b78c6097af2a5682`
+- Indexed files: 250
+- Indexed symbols: 2784
 - API path references: 118
 
 ## Navigation rule
@@ -16,7 +16,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (146 symbols, 76 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (147 symbols, 76 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operational_store.py` (24 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -25,7 +25,6 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## toa
 
 - `Conectar TOA.cmd`
-- `config/toa_bucket_collection_state.json`
 - `Configurar TOA.cmd`
 - `Configurar_Coletor_TOA.cmd`
 - `configurar_toa_credenciais.py` (1 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -153,7 +152,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 84 files
+- shared: 83 files
 - tooling-deploy: 24 files
 - docs: 5 files
 - tests: 70 files
