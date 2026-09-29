@@ -36,6 +36,8 @@ config/official_stock_audit/
 config/toa_automation_state.json
 config/toa_contract_registry.json
 config/disconnect_automation_state.json
+config/auto_improductive_close_state.json
+config/toa_bucket_collection_state.json
 
 # Dependency/build caches and local integration credentials
 **/node_modules/
