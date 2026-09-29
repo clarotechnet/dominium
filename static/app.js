@@ -546,6 +546,7 @@ const elements = {
   autoImproductiveNext: document.querySelector("#autoImproductiveNext"),
   autoImproductiveWaiting: document.querySelector("#autoImproductiveWaiting"),
   autoImproductiveClosed: document.querySelector("#autoImproductiveClosed"),
+  autoImproductiveProductive: document.querySelector("#autoImproductiveProductive"),
   autoImproductiveBlocked: document.querySelector("#autoImproductiveBlocked"),
   closeQueueBadge: document.querySelector("#closeQueueBadge"),
   toaLiveSession: document.querySelector("#toaLiveSession"),
@@ -2215,6 +2216,11 @@ function renderAutoImproductiveClose() {
   const last = auto.last_run || {};
   elements.autoImproductiveWaiting.textContent = String(last.waiting_toa || 0);
   elements.autoImproductiveClosed.textContent = String(last.closed || 0);
+  if (elements.autoImproductiveProductive) {
+    elements.autoImproductiveProductive.textContent = String(
+      last.productive_cached ?? last.productive_ignored ?? 0,
+    );
+  }
   elements.autoImproductiveBlocked.textContent = String(auto.blocked_count || 0);
 
   if (!enabled) {
@@ -7738,7 +7744,7 @@ function renderSemiAutoAgenda() {
     || "";
   elements.semiAutoAgendaChoose.disabled = state.semiAutoAgendaLoading || state.semiAutoRunning;
   elements.semiAutoAgendaChoose.querySelector("span").textContent = state.semiAutoAgendaLoading
-    ? "Lendo agenda..." : "Carregar agenda CSV/XLSX";
+    ? "Lendo agenda..." : "Carregar agenda manual (opcional)";
   elements.semiAutoAgendaName.textContent = sourceMode === "bucket"
     ? "Dominium automatico · buckets TOA"
     : filename || "Nenhuma agenda carregada";
