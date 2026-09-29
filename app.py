@@ -398,6 +398,7 @@ class ProfileRuntime:
             company=self.label,
             profile_key=self.key,
             controller_id=self.controller_id or CAPTURED_CONTROLLER_ID,
+            expected_username="DOMINIUM",
             log_root=self.log_root,
         )
         self.close_report = CloseReportStore(self.log_root, self.key)
