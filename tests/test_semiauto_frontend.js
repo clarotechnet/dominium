@@ -82,7 +82,8 @@ assert.deepEqual(
 const worker = extractFunction("runSemiAutoQueue");
 assert.match(worker, /\/api\/toa-live\/lookup/);
 assert.match(worker, /prefer_cached:\s*true/);
-assert.match(worker, /cache_max_age_seconds:\s*420/);
+assert.match(worker, /cache_only:\s*true/);
+assert.match(worker, /cache_max_age_seconds:\s*86400/);
 assert.match(worker, /semiAutoRefreshActiveOrders/);
 assert.match(worker, /semiAutoJobDueNow/);
 assert.doesNotMatch(worker, /\/close/);
@@ -177,6 +178,12 @@ assert.doesNotMatch(agendaRecordsSource, /agenda_only/);
 assert.match(source, /const bucketRecords = allRecords\.filter/);
 assert.match(source, /const sourceMode = manualRecords\.length \? "manual" : \(bucketRecords\.length \? "bucket" : ""\)/);
 assert.match(source, /const records = manualRecords\.length \? manualRecords : bucketRecords/);
+
+const queueRunner = extractFunction("runSemiAutoQueue");
+assert.match(queueRunner, /cache_only:\s*true/);
+assert.match(queueRunner, /cache_max_age_seconds:\s*86400/);
+assert.match(queueRunner, /if \(state\.autoCloseMode\) break/);
+assert.match(extractFunction("semiAutoScheduleToaRetry"), /if \(state\.autoCloseMode\) return false/);
 
 const queueBuilder = extractFunction("semiAutoBuildJobs");
 assert.match(queueBuilder, /semiAutoJobRouteLabel/);

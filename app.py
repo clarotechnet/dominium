@@ -53,7 +53,6 @@ from api_security import (
 from auth_store import AuthError, AuthStore
 from auto_improductive_close import (
     AutoImproductiveCloser,
-    review_record_is_due,
     toa_activity_is_complete,
 )
 from bulk_orders import DEFAULT_SERVICE, build_bulk_preview
@@ -2953,6 +2952,112 @@ def _collect_toa_bucket_registry(
     }
 
 
+def _toa_document_matches_date(document: dict, expected_date: str) -> bool:
+    expected = str(expected_date or "").strip()
+    if not expected:
+        return True
+    for activity in document.get("activities", ()):
+        if not isinstance(activity, dict):
+            continue
+        raw = str(activity.get("scheduled_date") or "").strip()
+        for pattern in ("%Y-%m-%d", "%d/%m/%Y", "%d/%m/%y"):
+            try:
+                parsed = dt.datetime.strptime(raw[:10], pattern).date().isoformat()
+                if parsed == expected:
+                    return True
+                break
+            except ValueError:
+                continue
+    return False
+
+
+def _toa_cached_document(
+    contract: str,
+    *,
+    max_age_seconds: int,
+    expected_date: str = "",
+) -> dict | None:
+    try:
+        document = TOA_CONNECTOR.lookup(
+            contract,
+            refresh=False,
+            allow_stale=True,
+        )
+    except (OSError, RuntimeError, ValueError):
+        return None
+    if not isinstance(document, dict):
+        return None
+    if not _toa_connector_cache_is_fresh(
+        document,
+        max_age_seconds=max_age_seconds,
+    ):
+        return None
+    if not _toa_document_matches_date(document, expected_date):
+        return None
+    return document
+
+
+def _toa_worker_document(
+    contract: str,
+    *,
+    expected_date: str = "",
+) -> tuple[dict, bool]:
+    cached = _toa_cached_document(
+        contract,
+        max_age_seconds=240,
+        expected_date=expected_date,
+    )
+    if cached is not None:
+        return cached, False
+    return (
+        TOA_CONNECTOR.lookup(
+            contract,
+            refresh=True,
+            allow_stale=False,
+        ),
+        True,
+    )
+
+
+def _toa_record_due_minute(
+    record: dict,
+    now: dt.datetime,
+) -> int | None:
+    current = now.hour * 60 + now.minute
+    window_starts: list[int] = []
+    for field in ("windows", "service_windows"):
+        values = record.get(field)
+        if not isinstance(values, list):
+            continue
+        for raw_window in values:
+            match = re.search(r"(?<!\d)(\d{1,2}):(\d{2})", str(raw_window or ""))
+            if not match:
+                continue
+            hour, minute = map(int, match.groups())
+            if hour > 23 or minute > 59:
+                continue
+            window_starts.append(hour * 60 + minute)
+    if window_starts:
+        due_windows = [value for value in window_starts if value <= current]
+        return max(due_windows) if due_windows else None
+
+    slots = record.get("review_slots")
+    if not isinstance(slots, list):
+        return None
+    due_slots: list[int] = []
+    for raw_slot in slots:
+        match = re.fullmatch(r"(\d{1,2}):(\d{2})", str(raw_slot or "").strip())
+        if not match:
+            continue
+        hour, minute = map(int, match.groups())
+        if hour > 23 or minute > 59:
+            continue
+        value = hour * 60 + minute
+        if value <= current:
+            due_slots.append(value)
+    return max(due_slots) if due_slots else None
+
+
 def _auto_improductive_scan(
     controller: AutoImproductiveCloser,
 ) -> dict:
@@ -2969,6 +3074,8 @@ def _auto_improductive_scan(
         "waiting_toa": 0,
         "productive_ignored": 0,
         "productive_cached": 0,
+        "cache_hits": 0,
+        "live_refreshes": 0,
         "unknown_code": 0,
         "blocked": 0,
         "datasnap_busy": 0,
@@ -3072,17 +3179,35 @@ def _auto_improductive_scan(
                 if not isinstance(record, dict):
                     continue
                 if report_date == now.date():
-                    if not review_record_is_due(record, now):
+                    if _toa_record_due_minute(record, now) is None:
                         continue
                 contract = str(record.get("contract") or "").strip()
                 if contract and contract in open_by_contract:
                     registry_records.append(record)
 
-        due_contracts = sorted({
-            str(record.get("contract") or "").strip()
-            for record in registry_records
-            if str(record.get("contract") or "").strip()
-        })
+        contract_priority: dict[str, int] = {}
+        contract_dates: dict[str, str] = {}
+        today_text = now.date().isoformat()
+        for record in registry_records:
+            contract = str(record.get("contract") or "").strip()
+            if not contract:
+                continue
+            record_date = str(record.get("date") or "").strip()
+            due_minute = (
+                _toa_record_due_minute(record, now)
+                if record_date == today_text
+                else -1
+            )
+            if record_date == today_text and due_minute is None:
+                continue
+            previous = contract_priority.get(contract)
+            if previous is None or int(due_minute) > previous:
+                contract_priority[contract] = int(due_minute)
+                contract_dates[contract] = record_date
+        due_contracts = sorted(
+            contract_priority,
+            key=lambda contract: (-contract_priority[contract], contract),
+        )
         profile_state["contracts_due"] = len(due_contracts)
 
         for contract in due_contracts:
@@ -3090,11 +3215,14 @@ def _auto_improductive_scan(
                 summary["stopped"] = True
                 return summary
             try:
-                document = TOA_CONNECTOR.lookup(
+                document, refreshed = _toa_worker_document(
                     contract,
-                    refresh=True,
-                    allow_stale=False,
+                    expected_date=contract_dates.get(contract, ""),
                 )
+                if refreshed:
+                    summary["live_refreshes"] += 1
+                else:
+                    summary["cache_hits"] += 1
             except Exception as exc:
                 summary["lookup_errors"] += 1
                 profile_state["errors"] += 1
@@ -6185,6 +6313,10 @@ class PanelHandler(BaseHTTPRequestHandler):
                 )
                 lookup_started_at = time.monotonic()
                 prefer_cached = body.get("prefer_cached") is True
+                cache_only = body.get("cache_only") is True
+                expected_date = str(body.get("expected_date") or "").strip()
+                if expected_date and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", expected_date):
+                    raise ValueError("Data esperada do cache TOA invalida")
                 try:
                     cache_max_age_seconds = int(
                         body.get("cache_max_age_seconds", 420)
@@ -6193,29 +6325,22 @@ class PanelHandler(BaseHTTPRequestHandler):
                     raise ValueError("Tempo maximo de cache invalido") from exc
                 cache_max_age_seconds = max(
                     60,
-                    min(cache_max_age_seconds, 900),
+                    min(cache_max_age_seconds, 86400 if cache_only else 900),
                 )
                 result = None
-                if prefer_cached:
-                    try:
-                        cached_document = TOA_CONNECTOR.lookup(
-                            contract,
-                            refresh=False,
-                            allow_stale=True,
-                        )
-                    except (OSError, RuntimeError, ValueError):
-                        cached_document = None
-                    if (
-                        isinstance(cached_document, dict)
-                        and _toa_connector_cache_is_fresh(
-                            cached_document,
-                            max_age_seconds=cache_max_age_seconds,
-                        )
-                    ):
+                if prefer_cached or cache_only:
+                    cached_document = _toa_cached_document(
+                        contract,
+                        max_age_seconds=cache_max_age_seconds,
+                        expected_date=expected_date,
+                    )
+                    if cached_document is not None:
                         result = _connector_document_to_live_lookup(
                             cached_document,
                             time.monotonic() - lookup_started_at,
                         )
+                    elif cache_only:
+                        raise ValueError("toa_cache_not_ready")
 
                 if result is None:
                     if TOA_CONNECTOR.cloud_client.configured:

@@ -8228,6 +8228,7 @@ function semiAutoPendingConfirmationCandidates() {
 const SEMI_AUTO_TOA_RETRY_MS = 5 * 60 * 1000;
 
 function semiAutoScheduleToaRetry(job, now = Date.now()) {
+  if (state.autoCloseMode) return false;
   if (!job || job.skipCategory !== "toa_pending") return false;
   job.toaRetryCount = Number(job.toaRetryCount || 0) + 1;
   job.toaRetryAt = now + SEMI_AUTO_TOA_RETRY_MS;
@@ -9270,6 +9271,13 @@ function semiAutoClassifySkip(job, payload) {
 
 function semiAutoClassifyErrorSkip(job, error) {
   const msg = String(error?.message || "");
+  if (msg.includes("toa_cache_not_ready")) {
+    return {
+      category: "toa_cache_pending",
+      title: "Aguardando coletor TOA",
+      detail: "O worker de 24h ainda nao gravou um retrato valido deste contrato para a janela atual.",
+    };
+  }
   if (msg.includes("OUTSIDE DMV ROUTE TREE") || msg.includes("FORA DA ROTA")) {
     return {
       category: "toa_other_route",
@@ -9601,6 +9609,7 @@ async function runSemiAutoQueue() {
         item.state === "pending" && semiAutoJobDueNow(item, now)
       ));
       if (!job) {
+        if (state.autoCloseMode) break;
         const nextWindow = state.semiAutoJobs.find((item) => (
           item.state === "pending" && item.windowStart < 1440
         ));
@@ -9636,7 +9645,9 @@ async function runSemiAutoQueue() {
             query: job.contract,
             expected_profile_key: profile,
             prefer_cached: true,
-            cache_max_age_seconds: 420,
+            cache_only: true,
+            cache_max_age_seconds: 86400,
+            expected_date: elements.date.value,
           }),
           timeoutMs: 300000,
         });
@@ -9719,7 +9730,7 @@ async function runSemiAutoQueue() {
         renderSemiAutoQueue();
         renderToaLiveStatus();
       }
-      await sleep(1000);
+      await sleep(state.autoCloseMode ? 25 : 1000);
     }
   } finally {
     state.semiAutoWorker = false;

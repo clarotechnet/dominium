@@ -91,6 +91,56 @@ class TOAContractRegistryTests(unittest.TestCase):
         self.assertEqual(tuple(state["review_times"]), DEFAULT_REVIEW_TIMES)
         self.assertEqual(json.loads(self.path.read_text())["version"], 1)
 
+    def test_later_bucket_collection_adds_new_contract_without_resetting_existing_state(self) -> None:
+        first_batch = FakePreview((
+            FakeOrder(
+                "1000001", "2026-09-29", "NATAL", "Z1", "TECNICO UM",
+                "08:00 - 11:00", "", "9001",
+            ),
+            FakeOrder(
+                "1000002", "2026-09-29", "NATAL", "Z2", "TECNICO DOIS",
+                "11:00 - 14:00", "", "9002",
+            ),
+        ))
+        later_batch = FakePreview((
+            FakeOrder(
+                "1000001", "2026-09-29", "NATAL", "Z1", "TECNICO UM",
+                "08:00 - 11:00", "", "9001",
+            ),
+            FakeOrder(
+                "1000002", "2026-09-29", "NATAL", "Z2", "TECNICO DOIS",
+                "11:00 - 14:00", "", "9002",
+            ),
+            FakeOrder(
+                "1000003", "2026-09-29", "NATAL", "Z3", "TECNICO VT",
+                "15:00 - 18:00", "", "9003",
+            ),
+        ))
+
+        self.registry.record_preview(
+            first_batch,
+            profile="natal",
+            target="rn",
+            source="bucket-12h55.csv",
+            seen_at="2026-09-29T12:55:00",
+        )
+        self.registry.record_preview(
+            later_batch,
+            profile="natal",
+            target="rn",
+            source="bucket-13h00.csv",
+            seen_at="2026-09-29T13:00:00",
+        )
+
+        state = self.registry.public_state(profile="natal", date="2026-09-29")
+        by_contract = {item["contract"]: item for item in state["records"]}
+        self.assertEqual(set(by_contract), {"1000001", "1000002", "1000003"})
+        self.assertEqual(by_contract["1000001"]["first_seen_at"], "2026-09-29T12:55:00")
+        self.assertEqual(by_contract["1000001"]["last_seen_at"], "2026-09-29T13:00:00")
+        self.assertEqual(by_contract["1000003"]["first_seen_at"], "2026-09-29T13:00:00")
+        self.assertEqual(by_contract["1000003"]["windows"], ["15:00 - 18:00"])
+        self.assertEqual(by_contract["1000003"]["os_numbers"], ["9003"])
+
     def test_two_digit_csv_date_is_preserved(self) -> None:
         preview = FakePreview((
             FakeOrder(

@@ -4,8 +4,8 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	136	76	40	DOMINIUM | MAPA DE RESPONSABILIDADE	cfd173fd5792741c
-shared	auth_store.py	28			Autenticacao local do DOMINIUM.	3767cb9484eaea2d
+orchestration	app.py	145	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	7905443aa8892ec5
+shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	21				224e8f5e1d25d7dd
 shared	bulk_orders.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	2775b7a068f33346
@@ -14,8 +14,10 @@ shared	CLAUDE.md			1	DOMINIUM / Claude Code	ad7a8982c5c5b42a
 shared	close_report.py	15			DOMINIUM | MAPA DE RESPONSABILIDADE	7639b2cf9981442b
 shared	close_report_excel.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	db6f655647eeb923
 toa	Conectar TOA.cmd					5b1f2a4fb8c3ec37
+shared	config/auto_improductive_close_state.json					8d1979a5afbd0996
 shared	config/official_close_code_catalog/Tabela_codigo_baixa0711.catalog.json			1		c1f98a79ea40eb4e
 shared	config/technicians.json			2		f1135f8c8fd7e9a8
+toa	config/toa_bucket_collection_state.json					aad08f6981db8eac
 toa	Configurar TOA.cmd					4c723142074ed214
 toa	Configurar_Coletor_TOA.cmd					62f43e9861a81020
 toa	configurar_toa_credenciais.py	1			DOMINIUM | MAPA DE RESPONSABILIDADE	53d47e7046687d82
@@ -26,7 +28,7 @@ tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para mig
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	40	18	1		5570e14e8ac6b13c
+tooling-deploy	deploy/hostinger-web/server.js	41	18	1		d5cfd6020264880c
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -114,6 +116,7 @@ shared	requirements-voice.txt				Voz neural gratuita dos alertas TEC1. A voz loc
 shared	requirements-web.txt				Runtime do DOMINIUM web em producao	a9f5230558034692
 tooling-deploy	scripts/bootstrap_admin.py	2				578b01fcd9f2bce3
 tooling-deploy	scripts/build_hostinger_frontend.py	3				376de6598486d1b3
+tooling-deploy	scripts/build_hostinger_node_release.py	4				04070301e0058c72
 tooling-deploy	scripts/build_web_release.py	8		1		12c3694527509ac1
 tooling-deploy	scripts/check_supabase_ready.py	1				ef416758e6102aca
 tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
@@ -126,12 +129,13 @@ tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
-frontend	static/index.html		1			6170879f49033035
+frontend	static/impeccable.css					1ee5b4c5d97f7a64
+frontend	static/index.html		1			0d06905ab4de31cb
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	10			DOMINIUM | MAPA DE RESPONSABILIDADE	674603136f3f4a4f
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/styles.css					f342ccea7202721b
+frontend	static/styles.css					d4dc4043b93ca091
 frontend	static/theme-init.js					97eb92ef899f8dcf
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
@@ -147,8 +151,9 @@ shared	technician_directory.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	c428cc21c
 tests	tests/__init__.py					01ba4719c80b6fe9
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
 tests	tests/test_app.py	35	5	2		d9d48f2fbb14cd0b
-tests	tests/test_auth_store.py	7				5be2b71f2ba58bcf
+tests	tests/test_auth_store.py	7				2131129f824fbae2
 tests	tests/test_auto_improductive_close.py	5				bd9232ece3712b71
+tests	tests/test_build_hostinger_node_release.py	3				121b52809dba91af
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87
 tests	tests/test_city_scope_integration.py	18				e81c1bf0df38ecdc
@@ -188,21 +193,21 @@ tests	tests/test_operational_store.py	5				1245242d685ecf66
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
-tests	tests/test_semiauto_frontend.js	19				5a3fb6281ca05630
+tests	tests/test_semiauto_frontend.js	19				b9c1c5401e45b654
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
 tests	tests/test_supabase_sdk_compat.py	2				49269ce926869e84
 tests	tests/test_technician_directory.py	5				d78aba13b7ad30e2
 tests	tests/test_toa_agenda.py	4				169f9c78410dfd88
-tests	tests/test_toa_automation.py	13				96f4a2bc505351d5
+tests	tests/test_toa_automation.py	16				c2798eefbccb0ae3
 tests	tests/test_toa_bridge_server.py					8984c15b56c098d9
 tests	tests/test_toa_browser.py	11				5166c5f3bfc2648b
 tests	tests/test_toa_capture.py	36		2		e5e27b0eedd3ae4c
 tests	tests/test_toa_capture_panel.py	7				d5a0869de1ff3b0f
 tests	tests/test_toa_cloud_client.py	7				fa7633bf20afbda8
-tests	tests/test_toa_connector.py	9				d0fdbfda30bc5c1c
-tests	tests/test_toa_contract_registry.py	11				6e71b7328d1d9f1b
+tests	tests/test_toa_connector.py	9				0b0027f6f3c21936
+tests	tests/test_toa_contract_registry.py	12				24da45304414f57e
 tests	tests/test_toa_datalake_store.py	5				9a077ca9a38c9926
 tests	tests/test_toa_discovery_browser.py	3				cc0d9dd8e053328f
 tests	tests/test_toa_import.py	15		1		28ef082b0cc1d01f
@@ -210,6 +215,8 @@ tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
 tests	tests/test_toa_live.py	26		1		c296ffdcf69eaca9
 tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
+tests	tests/test_toa_worker_cache.py	3				5ad1ecc850c8cbf0
+tests	tests/test_ui_runtime_regression.py	4	1			600cd21094e6bd49
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb
 toa	toa-discovery/core.js	25			DOMINIUM | MAPA DE RESPONSABILIDADE	9e149f8465bb638e
@@ -224,13 +231,13 @@ toa	toa-discovery/service-worker.js	16			DOMINIUM | MAPA DE RESPONSABILIDADE	b1f
 toa	toa-discovery/service-worker.test.js					0344a84018ff6265
 toa	toa-discovery/test.js					c5d100ed71c457c7
 toa	toa_agenda.py	11			DOMINIUM | MAPA DE RESPONSABILIDADE	09c04d200370200e
-toa	toa_automation.py	22			DOMINIUM | MAPA DE RESPONSABILIDADE	06aa6724e98c1429
+toa	toa_automation.py	31			DOMINIUM | MAPA DE RESPONSABILIDADE	a127b5f0536d08b5
 toa	toa_bridge_server.py	21		1	Bridge local escutando na porta 8787.	6db7265c92cf23fe
 toa	toa_browser.py	10			DOMINIUM | MAPA DE RESPONSABILIDADE	a964b5fa73cbe312
 toa	toa_capture.py	29		1	Read-only validator for TECHCAP V5.6 capture exports.	d0cd1fa03bac20aa
 toa	toa_capture_panel.py	10		2	DOMINIUM | MAPA DE RESPONSABILIDADE	a1fdf7495ee34cb2
 toa	toa_cloud_client.py	9			Cliente da fila privada Cloudflare usada pelo DOMINIUM primario.	431148a4b1391254
-toa	toa_connector.py	25		2	API local, sanitizada e somente leitura para dados operacionais do TOA.	c8196559e0ceb7af
+toa	toa_connector.py	25		2	API local, sanitizada e somente leitura para dados operacionais do TOA.	455092548c5ae402
 toa	toa_context.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	43ac572adde029a8
 toa	toa_contract_registry.py	15			DOMINIUM | MAPA DE RESPONSABILIDADE	a1ed2fe41f6f3222
 toa	toa_datalake_store.py	19			DOMINIUM | MAPA DE RESPONSABILIDADE	f7c80584d8f7687e
@@ -240,6 +247,7 @@ toa	toa_import.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	32013568e2e200cf
 toa	toa_inventory.py	11			DOMINIUM | MAPA DE RESPONSABILIDADE	4a753ed25a0c24b3
 toa	toa_live.py	34		8	DOMINIUM | MAPA DE RESPONSABILIDADE	0fc34001a55c7c28
 toa	toa_local_collector.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	88bb369658f48698
+toa	toa_secondary_bucket_export.mjs	2		2		9f4a0fb9a6f478cc
 toa	toa_secondary_direct_lookup.mjs					c8ef3f34279460bf
 toa	toa_secondary_session.py	14				655850be32fd4666
 toa	verify_toa_cloud_bridge.py	3			Teste online seguro da ponte Cloudflare/D1 sem expor as chaves.	99d1169ad8c2856a

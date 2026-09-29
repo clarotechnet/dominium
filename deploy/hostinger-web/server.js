@@ -716,7 +716,7 @@ async function auditAuth(user, action, result, req, target = "", metadata = {}) 
 function authPublicState() {
   return {
     auth_backend: "supabase",
-    registration_enabled: false,
+    registration_enabled: true,
     bootstrap_required: false,
     bootstrap_allowed: false,
   };
@@ -755,12 +755,43 @@ app.get("/api/auth/session", async (req, res) => {
   }
 });
 
-app.post("/api/auth/register", (_req, res) => {
-  res.set("cache-control", "no-store").status(403).json({
-    ok: false,
-    error: "Cadastro publico desabilitado",
-    registration_enabled: false,
-  });
+const registrationAttempts = new Map();
+function registrationRateLimited(req) {
+  const key = String(req.ip || req.socket?.remoteAddress || "");
+  const now = Date.now();
+  const row = registrationAttempts.get(key) || { count: 0, start: now };
+  if (now - row.start > 15 * 60_000) {
+    row.count = 0;
+    row.start = now;
+  }
+  row.count += 1;
+  registrationAttempts.set(key, row);
+  return row.count > 8;
+}
+
+app.post("/api/auth/register", async (req, res) => {
+  if (registrationRateLimited(req)) {
+    return res.status(429).json({
+      ok: false,
+      error: "Muitas tentativas de cadastro; tente novamente em alguns minutos",
+    });
+  }
+  try {
+    const payload = await edgeAuthAction("register", req.body || {});
+    res.set("cache-control", "no-store").status(201).json({
+      ok: true,
+      authenticated: false,
+      user: payload.user || null,
+      csrf_token: "",
+      ...authPublicState(),
+    });
+  } catch (error) {
+    const status = Number(error?.statusCode || 400);
+    res.status(status >= 400 && status < 600 ? status : 400).json({
+      ok: false,
+      error: String(error?.message || "Nao foi possivel criar o cadastro agora"),
+    });
+  }
 });
 
 app.post("/api/auth/login", async (req, res) => {

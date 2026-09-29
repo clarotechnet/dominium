@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-09-28T18:25:25+00:00
-- Source fingerprint: `9e23c4e1c4d992a6`
-- Indexed files: 244
-- Indexed symbols: 2736
-- API path references: 117
+- Generated: 2026-09-29T12:14:56+00:00
+- Source fingerprint: `a0d7215f3377d7cd`
+- Indexed files: 252
+- Indexed symbols: 2775
+- API path references: 118
 
 ## Navigation rule
 
@@ -16,7 +16,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (136 symbols, 76 API paths, 40 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (145 symbols, 76 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operational_store.py` (24 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -25,6 +25,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## toa
 
 - `Conectar TOA.cmd`
+- `config/toa_bucket_collection_state.json`
 - `Configurar TOA.cmd`
 - `Configurar_Coletor_TOA.cmd`
 - `configurar_toa_credenciais.py` (1 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -50,7 +51,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `toa-discovery/service-worker.test.js`
 - `toa-discovery/test.js`
 - `toa_agenda.py` (11 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
-- `toa_automation.py` (22 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `toa_automation.py` (31 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_bridge_server.py` (21 symbols, 1 DataSnap methods) - Bridge local escutando na porta 8787.
 - `toa_browser.py` (10 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_capture.py` (29 symbols, 1 DataSnap methods) - Read-only validator for TECHCAP V5.6 capture exports.
@@ -66,6 +67,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `toa_inventory.py` (11 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_live.py` (34 symbols, 8 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_local_collector.py` (13 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `toa_secondary_bucket_export.mjs` (2 symbols, 2 DataSnap methods)
 - `toa_secondary_direct_lookup.mjs`
 - `toa_secondary_session.py` (14 symbols)
 - `verify_toa_cloud_bridge.py` (3 symbols) - Teste online seguro da ponte Cloudflare/D1 sem expor as chaves.
@@ -84,6 +86,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## frontend
 
+- `static/impeccable.css`
 - `static/index.html` (1 API paths)
 - `static/LUCIDE-LICENSE.txt` - ISC License
 - `static/lucide.min.js` (1 symbols)
@@ -150,10 +153,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 83 files
-- tooling-deploy: 23 files
+- shared: 84 files
+- tooling-deploy: 24 files
 - docs: 5 files
-- tests: 67 files
+- tests: 70 files
 
 ## Search indexes
 

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-28T18:25:25+00:00",
+  "generated_at": "2026-09-29T12:14:56+00:00",
   "schema": 2,
-  "source_fingerprint": "9e23c4e1c4d992a6e64090d53939253f7a788f3a5ab46addbd49785d9f40772e",
+  "source_fingerprint": "a0d7215f3377d7cdbaef570ec6a68c153ca8ca2efae6d3d3619c31e259d64981",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 322233,
-      "sha256": "cfd173fd5792741c67e6ce3025d8598a5fb9d81549359431774f529065c4feff",
+      "bytes": 337185,
+      "sha256": "7905443aa8892ec5dd42f917933f1f13d5c0b4900a6519dba0ea27ddfceb6da0",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -252,6 +252,10 @@
         "TOA_AUTOMATION.stop",
         "TOA_BRIDGE_SERVER.start",
         "TOA_BRIDGE_SERVER.stop",
+        "TOA_BUCKET_AUTOMATION.public_state",
+        "TOA_BUCKET_AUTOMATION.start",
+        "TOA_BUCKET_AUTOMATION.stop",
+        "TOA_BUCKET_AUTOMATION.trigger",
         "TOA_CAPTURE_CATALOG.analyze",
         "TOA_CAPTURE_CATALOG.public_state",
         "TOA_CONNECTOR.cloud_client",
@@ -286,13 +290,13 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 136
+      "symbol_count": 145
     },
     {
       "path": "auth_store.py",
       "category": "shared",
-      "bytes": 26645,
-      "sha256": "3767cb9484eaea2d296a7740778fa8d0b334ec0b2a91fcc43f260c021c4a3d8d",
+      "bytes": 26643,
+      "sha256": "373b039733be460c041a199ce5f810413999c6a5e9f8049adcb2fd0795af1d7b",
       "summary": "Autenticacao local do DOMINIUM.",
       "imports": [
         "__future__",
@@ -471,6 +475,19 @@
       "symbol_count": 0
     },
     {
+      "path": "config/auto_improductive_close_state.json",
+      "category": "shared",
+      "bytes": 15174,
+      "sha256": "8d1979a5afbd099655d9c91f82e072a3abae7bc8c23f6f331958a6dd02a00497",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "config/official_close_code_catalog/Tabela_codigo_baixa0711.catalog.json",
       "category": "shared",
       "bytes": 81325,
@@ -498,6 +515,19 @@
         "TECHNET.xlsx",
         "TOA_Inventario_Consolidado.xlsx"
       ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "config/toa_bucket_collection_state.json",
+      "category": "toa",
+      "bytes": 2548,
+      "sha256": "aad08f6981db8eac4360dbd60ee16cbcc3ef78ed4f77b287f5f18d3471603b12",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
     },
@@ -661,8 +691,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 39539,
-      "sha256": "5570e14e8ac6b13cf4d6870dfb7cf85ae0f51f5584d85b3fc8252cb0bb37893b",
+      "bytes": 40346,
+      "sha256": "d5cfd6020264880c05e741ad8b45d353101066010a0fbbefe1f380d88611479a",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -696,7 +726,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": false,
-      "symbol_count": 40
+      "symbol_count": 41
     },
     {
       "path": "deploy/legacy-vps/README-VPS.md",
@@ -2212,6 +2242,27 @@
       "symbol_count": 3
     },
     {
+      "path": "scripts/build_hostinger_node_release.py",
+      "category": "tooling-deploy",
+      "bytes": 3833,
+      "sha256": "04070301e0058c72cc97fe4ed854cdc71600c18b5fc70bc3846396af0de37748",
+      "summary": "",
+      "imports": [
+        "__future__",
+        "datetime",
+        "hashlib",
+        "json",
+        "pathlib",
+        "shutil",
+        "zipfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 4
+    },
+    {
       "path": "scripts/build_web_release.py",
       "category": "tooling-deploy",
       "bytes": 5702,
@@ -2463,10 +2514,23 @@
       "symbol_count": 1
     },
     {
+      "path": "static/impeccable.css",
+      "category": "frontend",
+      "bytes": 34761,
+      "sha256": "1ee5b4c5d97f7a647e9fd5e272849a0d2fa727f9124d3a5213089168a9521274",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 100682,
-      "sha256": "6170879f490330357ea06f4347730b11bbe4ec527e07d7efa86f7a79065d1025",
+      "bytes": 100915,
+      "sha256": "0d06905ab4de31cb38776201b3c52e1c013de357437c9e18478d927fcee7deef",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2533,7 +2597,7 @@
       "path": "static/styles.css",
       "category": "frontend",
       "bytes": 176674,
-      "sha256": "f342ccea7202721babc780ba49129e03b53bc8f8c45bb6c47cfb8e9f36505d74",
+      "sha256": "d4dc4043b93ca0914d0a4b030d5abed3d69177206099254917239a1a121139e5",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -2817,8 +2881,8 @@
     {
       "path": "tests/test_auth_store.py",
       "category": "tests",
-      "bytes": 3754,
-      "sha256": "5be2b71f2ba58bcf9be436717d0c10cf935de58fa7be0592b03fde521271ac8d",
+      "bytes": 3731,
+      "sha256": "2131129f824fbae2700592f249304a1915794d3af867d6694f18a6a908e2e193",
       "summary": "",
       "imports": [
         "auth_store",
@@ -2851,6 +2915,25 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 5
+    },
+    {
+      "path": "tests/test_build_hostinger_node_release.py",
+      "category": "tests",
+      "bytes": 1452,
+      "sha256": "121b52809dba91afa68f997327211686a1c928263d18fce634558c26c10785bb",
+      "summary": "",
+      "imports": [
+        "pathlib",
+        "scripts",
+        "tempfile",
+        "unittest",
+        "zipfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 3
     },
     {
       "path": "tests/test_build_web_release.py",
@@ -3630,8 +3713,8 @@
     {
       "path": "tests/test_semiauto_frontend.js",
       "category": "tests",
-      "bytes": 27776,
-      "sha256": "5a3fb6281ca05630264e821feb79bd5fe4f571ec6cea813cf67ed6cf924d1ef5",
+      "bytes": 28671,
+      "sha256": "b9c1c5401e45b6547b5b9e0f9d1b3d99f8649865f0450512493f95bca87e37f0",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -3760,8 +3843,8 @@
     {
       "path": "tests/test_toa_automation.py",
       "category": "tests",
-      "bytes": 4222,
-      "sha256": "96f4a2bc505351d58394d0a61f050ac0321dc91dcbbe9f8df014d345de80066c",
+      "bytes": 6466,
+      "sha256": "c2798eefbccb0ae32b24d788c70d9583f06e20c1ab988388a72007eba9989d64",
       "summary": "",
       "imports": [
         "app",
@@ -3775,7 +3858,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 13
+      "symbol_count": 16
     },
     {
       "path": "tests/test_toa_bridge_server.py",
@@ -3870,8 +3953,8 @@
     {
       "path": "tests/test_toa_connector.py",
       "category": "tests",
-      "bytes": 6382,
-      "sha256": "d0fdbfda30bc5c1cf43dbc3813642bade9a642c3f731463a6e620845d1482e36",
+      "bytes": 6747,
+      "sha256": "0b0027f6f3c21936f42850315ddfec33a16dc866b90b1866c87eb4028edb3906",
       "summary": "",
       "imports": [
         "json",
@@ -3889,8 +3972,8 @@
     {
       "path": "tests/test_toa_contract_registry.py",
       "category": "tests",
-      "bytes": 7282,
-      "sha256": "6e71b7328d1d9f1bf0bc91f602adcc26caf7f7d7c0b5e0580e107b871e3e0ddb",
+      "bytes": 9320,
+      "sha256": "24da45304414f57e90960c274cf6b10e53ab8158f711379ce5b8907906d77560",
       "summary": "",
       "imports": [
         "dataclasses",
@@ -3904,7 +3987,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 11
+      "symbol_count": 12
     },
     {
       "path": "tests/test_toa_datalake_store.py",
@@ -4045,6 +4128,41 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 10
+    },
+    {
+      "path": "tests/test_toa_worker_cache.py",
+      "category": "tests",
+      "bytes": 1377,
+      "sha256": "5ad1ecc850c8cbf0a3c3bf42fe5e1d710115c1c7cd4549687cc0abac8dfcbe32",
+      "summary": "",
+      "imports": [
+        "app",
+        "datetime",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 3
+    },
+    {
+      "path": "tests/test_ui_runtime_regression.py",
+      "category": "tests",
+      "bytes": 1290,
+      "sha256": "600cd21094e6bd49fece12fdce8a5dd7978cc4103fc7a9dc92b45e5cced317de",
+      "summary": "",
+      "imports": [
+        "pathlib",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/auth/register"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 4
     },
     {
       "path": "tests/test_web_auth_config.py",
@@ -4260,19 +4378,24 @@
     {
       "path": "toa_automation.py",
       "category": "toa",
-      "bytes": 20352,
-      "sha256": "06aa6724e98c1429a1cddf1769d655d4cf64f43bd0aed4d57d6206b4656dfc71",
+      "bytes": 27705,
+      "sha256": "a127b5f0536d08b54572e9df31ebe1e37640954a87698ba328cb49311b8cbf7b",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
+        "base64",
         "collections",
+        "csv",
         "datasnap_client",
         "datetime",
+        "io",
         "json",
         "logging",
+        "openpyxl",
         "pathlib",
         "re",
         "selenium",
         "shutil",
+        "subprocess",
         "tempfile",
         "threading",
         "time",
@@ -4282,7 +4405,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 22
+      "symbol_count": 31
     },
     {
       "path": "toa_bridge_server.py",
@@ -4413,8 +4536,8 @@
     {
       "path": "toa_connector.py",
       "category": "toa",
-      "bytes": 20114,
-      "sha256": "c8196559e0ceb7afd5498fe72b966bd9f60d1a241ec9b411e02d73b612129e88",
+      "bytes": 20398,
+      "sha256": "455092548c5ae4028f7b61ee8d054dcbc0b7356fa5d1da3a6c2479cf0a077ddc",
       "summary": "API local, sanitizada e somente leitura para dados operacionais do TOA.",
       "imports": [
         "__future__",
@@ -4647,6 +4770,22 @@
       "symbol_count": 13
     },
     {
+      "path": "toa_secondary_bucket_export.mjs",
+      "category": "toa",
+      "bytes": 2968,
+      "sha256": "9f4a0fb9a6f478ccdab5abecf664da559c8c58629f4e0a902c4344ca71b364cf",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TNTOAAutoExport.discoverBuckets",
+        "TNTOAAutoExport.exportRoute"
+      ],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
       "path": "toa_secondary_direct_lookup.mjs",
       "category": "toa",
       "bytes": 1162,
@@ -4765,6 +4904,8 @@
     "TEMPLATE_PATH.read_text",
     "TENANT_PATHS.items",
     "TENANT_PATHS.values",
+    "TNTOAAutoExport.discoverBuckets",
+    "TNTOAAutoExport.exportRoute",
     "TOACaptureLot.from_dict",
     "TOACaptureLot.from_path",
     "TOACloudClient.from_environment",
@@ -4779,6 +4920,10 @@
     "TOA_AUTOMATION.trigger",
     "TOA_BRIDGE_SERVER.start",
     "TOA_BRIDGE_SERVER.stop",
+    "TOA_BUCKET_AUTOMATION.public_state",
+    "TOA_BUCKET_AUTOMATION.start",
+    "TOA_BUCKET_AUTOMATION.stop",
+    "TOA_BUCKET_AUTOMATION.trigger",
     "TOA_CAPTURE_CATALOG.analyze",
     "TOA_CAPTURE_CATALOG.public_state",
     "TOA_CONNECTOR.cloud_client",
