@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-29T12:44:00+00:00",
+  "generated_at": "2026-09-29T12:47:19+00:00",
   "schema": 2,
-  "source_fingerprint": "8fec351cb065e59097d112a77594c3c87d1fa4caf190608bab44ae92ce260f76",
+  "source_fingerprint": "3ec84016092beb70c02b87883fd5e86ded36346fd20acbcd6f87ceef9b82d7d6",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -477,8 +477,8 @@
     {
       "path": "config/auto_improductive_close_state.json",
       "category": "shared",
-      "bytes": 15173,
-      "sha256": "2bb02025f9917a91eb1002b23745f340f29bae148bed51735c49d879e1e38408",
+      "bytes": 15541,
+      "sha256": "c2fe936b724ebef8f64356b84c623c818df103739e76501f8ebaeb1fc83439af",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -521,8 +521,8 @@
     {
       "path": "config/toa_bucket_collection_state.json",
       "category": "toa",
-      "bytes": 2596,
-      "sha256": "f8c4315dc6c6d9ab6a7f24ff97af46fb6f5eb947451bc9864e044e9b62731932",
+      "bytes": 2620,
+      "sha256": "d98c3d52e0bf4231297be1583e6afcf3abca68e41a75ba563bc1cf532f39b8ba",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -3843,11 +3843,12 @@
     {
       "path": "tests/test_toa_automation.py",
       "category": "tests",
-      "bytes": 7283,
-      "sha256": "78a2335441d8dfebe1e0f8e64e2975501ef22f212afcc49957ad010a3bb7971c",
+      "bytes": 8159,
+      "sha256": "eb0dbbba300956048ed3fa378e07f8521e7e274dd8bf96087e7cb0240ddc59c9",
       "summary": "",
       "imports": [
         "app",
+        "datetime",
         "pathlib",
         "tempfile",
         "threading",
@@ -3858,7 +3859,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 17
+      "symbol_count": 18
     },
     {
       "path": "tests/test_toa_bridge_server.py",
@@ -4378,8 +4379,8 @@
     {
       "path": "toa_automation.py",
       "category": "toa",
-      "bytes": 27705,
-      "sha256": "c0720a4bfbe3e7c3f813e4d548d16791a7f8126fbc44cfbdf2cd737cebf33443",
+      "bytes": 28547,
+      "sha256": "1748c5ede16d0e5684bad4cade65ce649fc33eb6ec7d6f7ec386801a72227092",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -4405,7 +4406,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 31
+      "symbol_count": 32
     },
     {
       "path": "toa_bridge_server.py",

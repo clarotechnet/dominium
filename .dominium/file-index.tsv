@@ -14,10 +14,10 @@ shared	CLAUDE.md			1	DOMINIUM / Claude Code	ad7a8982c5c5b42a
 shared	close_report.py	15			DOMINIUM | MAPA DE RESPONSABILIDADE	7639b2cf9981442b
 shared	close_report_excel.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	db6f655647eeb923
 toa	Conectar TOA.cmd					5b1f2a4fb8c3ec37
-shared	config/auto_improductive_close_state.json					2bb02025f9917a91
+shared	config/auto_improductive_close_state.json					c2fe936b724ebef8
 shared	config/official_close_code_catalog/Tabela_codigo_baixa0711.catalog.json			1		c1f98a79ea40eb4e
 shared	config/technicians.json			2		f1135f8c8fd7e9a8
-toa	config/toa_bucket_collection_state.json					f8c4315dc6c6d9ab
+toa	config/toa_bucket_collection_state.json					d98c3d52e0bf4231
 toa	Configurar TOA.cmd					4c723142074ed214
 toa	Configurar_Coletor_TOA.cmd					62f43e9861a81020
 toa	configurar_toa_credenciais.py	1			DOMINIUM | MAPA DE RESPONSABILIDADE	53d47e7046687d82
@@ -200,7 +200,7 @@ tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
 tests	tests/test_supabase_sdk_compat.py	2				49269ce926869e84
 tests	tests/test_technician_directory.py	5				d78aba13b7ad30e2
 tests	tests/test_toa_agenda.py	4				169f9c78410dfd88
-tests	tests/test_toa_automation.py	17				78a2335441d8dfeb
+tests	tests/test_toa_automation.py	18				eb0dbbba30095604
 tests	tests/test_toa_bridge_server.py					8984c15b56c098d9
 tests	tests/test_toa_browser.py	11				5166c5f3bfc2648b
 tests	tests/test_toa_capture.py	36		2		e5e27b0eedd3ae4c
@@ -231,7 +231,7 @@ toa	toa-discovery/service-worker.js	16			DOMINIUM | MAPA DE RESPONSABILIDADE	b1f
 toa	toa-discovery/service-worker.test.js					0344a84018ff6265
 toa	toa-discovery/test.js					c5d100ed71c457c7
 toa	toa_agenda.py	11			DOMINIUM | MAPA DE RESPONSABILIDADE	09c04d200370200e
-toa	toa_automation.py	31			DOMINIUM | MAPA DE RESPONSABILIDADE	c0720a4bfbe3e7c3
+toa	toa_automation.py	32			DOMINIUM | MAPA DE RESPONSABILIDADE	1748c5ede16d0e56
 toa	toa_bridge_server.py	21		1	Bridge local escutando na porta 8787.	6db7265c92cf23fe
 toa	toa_browser.py	10			DOMINIUM | MAPA DE RESPONSABILIDADE	a964b5fa73cbe312
 toa	toa_capture.py	29		1	Read-only validator for TECHCAP V5.6 capture exports.	d0cd1fa03bac20aa

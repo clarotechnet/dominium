@@ -806,6 +806,7 @@ io	tests/test_toa_agenda.py
 toa_agenda	tests/test_toa_agenda.py
 unittest	tests/test_toa_agenda.py
 app	tests/test_toa_automation.py
+datetime	tests/test_toa_automation.py
 pathlib	tests/test_toa_automation.py
 tempfile	tests/test_toa_automation.py
 threading	tests/test_toa_automation.py

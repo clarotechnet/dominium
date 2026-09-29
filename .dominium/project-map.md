@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-09-29T12:44:00+00:00
-- Source fingerprint: `8fec351cb065e590`
+- Generated: 2026-09-29T12:47:19+00:00
+- Source fingerprint: `3ec84016092beb70`
 - Indexed files: 252
-- Indexed symbols: 2780
+- Indexed symbols: 2782
 - API path references: 118
 
 ## Navigation rule
@@ -51,7 +51,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `toa-discovery/service-worker.test.js`
 - `toa-discovery/test.js`
 - `toa_agenda.py` (11 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
-- `toa_automation.py` (31 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `toa_automation.py` (32 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_bridge_server.py` (21 symbols, 1 DataSnap methods) - Bridge local escutando na porta 8787.
 - `toa_browser.py` (10 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_capture.py` (29 symbols, 1 DataSnap methods) - Read-only validator for TECHCAP V5.6 capture exports.
