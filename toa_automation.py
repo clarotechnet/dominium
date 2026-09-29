@@ -508,6 +508,31 @@ class TOAAutomation:
         )
         temporary.replace(self.state_path)
 
+    def _scheduled_slot_is_covered(
+        self,
+        slot: str,
+        now: dt.datetime,
+        *,
+        debounce_seconds: int = 120,
+    ) -> bool:
+        with self.lock:
+            if slot in self.executed_slots:
+                return True
+            covered = self.running
+            if not covered and isinstance(self.last_run, dict):
+                completed_text = str(self.last_run.get("completed_at") or "").strip()
+                try:
+                    completed_at = dt.datetime.fromisoformat(completed_text)
+                except ValueError:
+                    completed_at = None
+                if completed_at is not None:
+                    age = (now - completed_at).total_seconds()
+                    covered = 0 <= age <= debounce_seconds
+            if covered:
+                self.executed_slots.add(slot)
+                self._persist_slots()
+            return covered
+
     def _load_history(self) -> list[dict[str, Any]]:
         try:
             lines = self.history_path.read_text(encoding="utf-8").splitlines()[-50:]
@@ -574,9 +599,7 @@ class TOAAutomation:
                 not self.requires_credentials or self.credentials_path.is_file()
             ):
                 slot = f"{now.date().isoformat()}T{minute}"
-                with self.lock:
-                    already_executed = slot in self.executed_slots
-                if not already_executed:
+                if not self._scheduled_slot_is_covered(slot, now):
                     self.trigger("agendada", slot)
             self.stop_event.wait(5)
 
