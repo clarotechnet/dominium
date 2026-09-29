@@ -117,7 +117,7 @@ from toa_import import (
     unpack_toa_content,
 )
 from toa_inventory import parse_toa_clipboard
-from toa_secondary_session import TOASecondarySession
+from toa_secondary_session import TOASecondaryBusyError, TOASecondarySession
 from toa_local_collector import TOALocalCollector
 from toa_bridge_server import ToaBridgeServer
 
@@ -3139,6 +3139,7 @@ def _auto_improductive_scan(
         "blocked": 0,
         "datasnap_busy": 0,
         "lookup_errors": 0,
+        "toa_busy_deferred": 0,
         "profiles": {},
         "details": [],
     }
@@ -3164,6 +3165,7 @@ def _auto_improductive_scan(
             "bucket_waiting": 0,
             "closed": 0,
             "waiting_toa": 0,
+            "busy_deferred": 0,
             "errors": 0,
         }
         summary["profiles"][profile.key] = profile_state
@@ -3287,6 +3289,16 @@ def _auto_improductive_scan(
                     summary["live_refreshes"] += 1
                 else:
                     summary["cache_hits"] += 1
+            except TOASecondaryBusyError as exc:
+                summary["toa_busy_deferred"] += 1
+                profile_state["busy_deferred"] += 1
+                detail(
+                    "toa_busy_deferred",
+                    profile.key,
+                    contract,
+                    error=str(exc),
+                )
+                continue
             except Exception as exc:
                 summary["lookup_errors"] += 1
                 profile_state["errors"] += 1
