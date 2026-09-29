@@ -125,7 +125,22 @@ class AutoImproductiveCloser:
             json.dumps(self._state_payload(), ensure_ascii=True, indent=2),
             encoding="utf-8",
         )
-        temporary.replace(self.state_path)
+        last_error: PermissionError | None = None
+        for attempt in range(6):
+            try:
+                temporary.replace(self.state_path)
+                return
+            except PermissionError as exc:
+                last_error = exc
+                if attempt >= 5:
+                    break
+                time.sleep(0.05 * (attempt + 1))
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError:
+            pass
+        if last_error is not None:
+            raise last_error
 
     def _load_history(self) -> None:
         try:
