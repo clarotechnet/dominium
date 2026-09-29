@@ -65,9 +65,11 @@ STATUS = "EM CAMPO"
 SERVICE_TYPE = "TODOS"
 ORDER_STATUS_FILTERS = {
     "all": "%",
-    "field": "1",
+    # Verified against live Imperium on 2026-09-29 in Fortaleza and Recife:
+    # DataSnap Status=3 returns the exact orders shown as EM CAMPO in the UI.
+    "field": "3",
     "completed": "2",
-    "canceled": "3",
+    "canceled": "1",
     "rescheduled": "4",
 }
 ORDER_STATUS_LABELS = {
