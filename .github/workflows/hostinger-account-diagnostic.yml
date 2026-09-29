@@ -3,6 +3,11 @@ name: Deploy Hostinger DOMINIUM
 on:
   push:
     branches: [main]
+    paths:
+      - "static/**"
+      - "deploy/hostinger-web/**"
+      - "scripts/build_hostinger_node_release.py"
+      - ".github/workflows/hostinger-account-diagnostic.yml"
   workflow_dispatch:
 
 permissions:
