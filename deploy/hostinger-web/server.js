@@ -24,9 +24,9 @@ const PROFILES = {
   recife: { label: "RECIFE", port: 599 },
 };
 const STATUS_VALUES = {
-  field: "1",
+  field: "3",
   completed: "2",
-  canceled: "3",
+  canceled: "1",
   rescheduled: "4",
 };
 const STATUS_LABELS = {
