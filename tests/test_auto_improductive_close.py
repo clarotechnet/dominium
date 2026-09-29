@@ -2,6 +2,7 @@ import datetime as dt
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from auto_improductive_close import (
@@ -45,6 +46,34 @@ class AutoImproductiveCloserTests(unittest.TestCase):
             self.assertTrue(public["enabled"])
             self.assertEqual(public["blocked_count"], 1)
             self.assertTrue(reloaded.is_blocked("natal:123"))
+
+    def test_state_persistence_retries_transient_windows_permission_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            state = root / "state.json"
+            history = root / "history.jsonl"
+            closer = AutoImproductiveCloser(
+                state,
+                history,
+                lambda _controller: {"ok": True},
+            )
+            original_replace = Path.replace
+            attempts = {"count": 0}
+
+            def flaky_replace(path, target):
+                attempts["count"] += 1
+                if attempts["count"] < 3:
+                    raise PermissionError(5, "Acesso negado")
+                return original_replace(path, target)
+
+            with patch.object(Path, "replace", new=flaky_replace), patch(
+                "auto_improductive_close.time.sleep"
+            ):
+                closer.set_enabled(True)
+
+            self.assertEqual(attempts["count"], 3)
+            payload = json.loads(state.read_text(encoding="utf-8"))
+            self.assertTrue(payload["enabled"])
 
     def test_run_once_persists_history(self):
         with tempfile.TemporaryDirectory() as directory:
