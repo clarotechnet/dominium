@@ -2968,6 +2968,7 @@ def _auto_improductive_scan(
         "closed": 0,
         "waiting_toa": 0,
         "productive_ignored": 0,
+        "productive_cached": 0,
         "unknown_code": 0,
         "blocked": 0,
         "datasnap_busy": 0,
@@ -3177,6 +3178,7 @@ def _auto_improductive_scan(
                         known = OFFICIAL_CLOSE_CODES.get(code)
                         if known is not None and known.productive:
                             summary["productive_ignored"] += 1
+                            summary["productive_cached"] += 1
                             detail(
                                 "productive_ignored",
                                 profile.key,
