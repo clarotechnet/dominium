@@ -9,6 +9,10 @@ const source = fs.readFileSync(
   "utf8",
 );
 
+const auditItems = extractFunction("autoImproductiveAuditItems");
+assert.match(auditItems, /entry\?\.metadata\?\.report_date/);
+assert.match(auditItems, /reportDate === today/);
+
 const imperiumMatch = extractFunction("toaLiveImperiumMatch");
 assert.match(imperiumMatch, /if \(exact\) return exact;/);
 assert.doesNotMatch(imperiumMatch, /matches\.length === 1/);
