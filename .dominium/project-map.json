@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-29T13:29:19+00:00",
+  "generated_at": "2026-09-29T13:57:17+00:00",
   "schema": 2,
-  "source_fingerprint": "8acbe78d942f1371e329ede1dab0693e144ff03e6d1dc6e2d33177a58a5d7ae6",
+  "source_fingerprint": "44f70203e7889fa6afa6fe0e1b2df5ce6adc25eb895f17f2bfc45a15c283db3d",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 339774,
-      "sha256": "8216377e2ee0d4e8e4de62323f069a41c0f1602e2ed4369eef6fe2b4360b035a",
+      "bytes": 345274,
+      "sha256": "4c6a69e5a917868c40074d61b8199bb2da0fad51a6cdd27acee4e0d3361459de",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -290,7 +290,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 147
+      "symbol_count": 148
     },
     {
       "path": "auth_store.py",
@@ -347,11 +347,12 @@
     {
       "path": "auto_improductive_close.py",
       "category": "shared",
-      "bytes": 10113,
-      "sha256": "b6536208f4d645d53630c17bd4dba91f1376d6c6281254f61ad413e86c3e8909",
+      "bytes": 14559,
+      "sha256": "96913202e3d54d350807c408521a575ccdbf6b5b7dc849ac011ea3e00de79201",
       "summary": "",
       "imports": [
         "__future__",
+        "copy",
         "datetime",
         "json",
         "logging",
@@ -364,7 +365,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 21
+      "symbol_count": 22
     },
     {
       "path": "bulk_orders.py",
@@ -2503,8 +2504,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 100915,
-      "sha256": "0d06905ab4de31cb38776201b3c52e1c013de357437c9e18478d927fcee7deef",
+      "bytes": 104107,
+      "sha256": "16ebf853992c30ef7f49cb24124524757c016c942b30103d469fa41c6faabb4b",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2570,8 +2571,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 176674,
-      "sha256": "d4dc4043b93ca0914d0a4b030d5abed3d69177206099254917239a1a121139e5",
+      "bytes": 180364,
+      "sha256": "054f5c492211ee9d3f877b027036f85d71d5b73d39dfb17f06aa50d1b3c7d436",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -2820,8 +2821,8 @@
     {
       "path": "tests/test_app.py",
       "category": "tests",
-      "bytes": 40611,
-      "sha256": "d9d48f2fbb14cd0bda89a7188532a8a9dfc980e07651d37d9448fceaff0212d6",
+      "bytes": 42525,
+      "sha256": "dec92061f9dc61477e2f1c0279868ca26dea83df7edfda09d4ea6c0e9ae04fba",
       "summary": "",
       "imports": [
         "app",
@@ -2850,7 +2851,7 @@
         "TECHNICIANS.resolve"
       ],
       "entrypoint": true,
-      "symbol_count": 35
+      "symbol_count": 37
     },
     {
       "path": "tests/test_auth_store.py",
@@ -2873,8 +2874,8 @@
     {
       "path": "tests/test_auto_improductive_close.py",
       "category": "tests",
-      "bytes": 4405,
-      "sha256": "628a8cdd2af044ad86aa224a10834ee4ac0a3d57f16f9782bd2cf674a11f7993",
+      "bytes": 6932,
+      "sha256": "860e14eeb3199c66549a06775149c32c6207d0f8e592371005342fed5ed55ce0",
       "summary": "",
       "imports": [
         "auto_improductive_close",
@@ -2888,7 +2889,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 7
+      "symbol_count": 9
     },
     {
       "path": "tests/test_build_hostinger_node_release.py",
@@ -4144,8 +4145,8 @@
     {
       "path": "tests/test_ui_runtime_regression.py",
       "category": "tests",
-      "bytes": 1290,
-      "sha256": "600cd21094e6bd49fece12fdce8a5dd7978cc4103fc7a9dc92b45e5cced317de",
+      "bytes": 1893,
+      "sha256": "ab89badeba546f10ffcf6037e8b722410a8f1b0830988c6acac17014fa077420",
       "summary": "",
       "imports": [
         "pathlib",
@@ -4157,7 +4158,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 4
+      "symbol_count": 5
     },
     {
       "path": "tests/test_web_auth_config.py",

@@ -89,6 +89,7 @@ re	auth_store_postgres.py
 secrets	auth_store_postgres.py
 typing	auth_store_postgres.py
 __future__	auto_improductive_close.py
+copy	auto_improductive_close.py
 datetime	auto_improductive_close.py
 json	auto_improductive_close.py
 logging	auto_improductive_close.py

@@ -4,10 +4,10 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	147	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	8216377e2ee0d4e8
+orchestration	app.py	148	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	4c6a69e5a917868c
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
-shared	auto_improductive_close.py	21				b6536208f4d645d5
+shared	auto_improductive_close.py	22				96913202e3d54d35
 shared	bulk_orders.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	2775b7a068f33346
 shared	cancel_all_open.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	9dde6a0f10a22ffe
 shared	CLAUDE.md			1	DOMINIUM / Claude Code	ad7a8982c5c5b42a
@@ -128,12 +128,12 @@ imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			0d06905ab4de31cb
+frontend	static/index.html		1			16ebf853992c30ef
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	10			DOMINIUM | MAPA DE RESPONSABILIDADE	674603136f3f4a4f
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/styles.css					d4dc4043b93ca091
+frontend	static/styles.css					054f5c492211ee9d
 frontend	static/theme-init.js					97eb92ef899f8dcf
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
@@ -148,9 +148,9 @@ shared	supabase_schema.sql					f4c24a6069098221
 shared	technician_directory.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	c428cc21c4d30f17
 tests	tests/__init__.py					01ba4719c80b6fe9
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
-tests	tests/test_app.py	35	5	2		d9d48f2fbb14cd0b
+tests	tests/test_app.py	37	5	2		dec92061f9dc6147
 tests	tests/test_auth_store.py	7				2131129f824fbae2
-tests	tests/test_auto_improductive_close.py	7				628a8cdd2af044ad
+tests	tests/test_auto_improductive_close.py	9				860e14eeb3199c66
 tests	tests/test_build_hostinger_node_release.py	3				121b52809dba91af
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87
@@ -215,7 +215,7 @@ tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
 tests	tests/test_toa_secondary_session.py	7				9d5ca5c257461780
 tests	tests/test_toa_worker_cache.py	5				9a28c1b3df84fc92
-tests	tests/test_ui_runtime_regression.py	4	1			600cd21094e6bd49
+tests	tests/test_ui_runtime_regression.py	5	1			ab89badeba546f10
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb
 toa	toa-discovery/core.js	25			DOMINIUM | MAPA DE RESPONSABILIDADE	9e149f8465bb638e
