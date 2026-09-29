@@ -877,6 +877,12 @@ types	tests/test_toa_live_lookup.py
 unittest	tests/test_toa_live_lookup.py
 toa_local_collector	tests/test_toa_local_collector.py
 unittest	tests/test_toa_local_collector.py
+json	tests/test_toa_secondary_session.py
+pathlib	tests/test_toa_secondary_session.py
+subprocess	tests/test_toa_secondary_session.py
+tempfile	tests/test_toa_secondary_session.py
+toa_secondary_session	tests/test_toa_secondary_session.py
+unittest	tests/test_toa_secondary_session.py
 app	tests/test_toa_worker_cache.py
 datetime	tests/test_toa_worker_cache.py
 unittest	tests/test_toa_worker_cache.py
@@ -1046,6 +1052,7 @@ logging	toa_secondary_session.py
 pathlib	toa_secondary_session.py
 re	toa_secondary_session.py
 subprocess	toa_secondary_session.py
+time	toa_secondary_session.py
 typing	toa_secondary_session.py
 urllib	toa_secondary_session.py
 __future__	verify_toa_cloud_bridge.py

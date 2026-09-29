@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	147	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	1edba10ffe28009a
+orchestration	app.py	147	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	8216377e2ee0d4e8
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	21				b6536208f4d645d5
@@ -213,6 +213,7 @@ tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
 tests	tests/test_toa_live.py	26		1		c296ffdcf69eaca9
 tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
+tests	tests/test_toa_secondary_session.py	7				9d5ca5c257461780
 tests	tests/test_toa_worker_cache.py	5				9a28c1b3df84fc92
 tests	tests/test_ui_runtime_regression.py	4	1			600cd21094e6bd49
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
@@ -247,5 +248,5 @@ toa	toa_live.py	34		8	DOMINIUM | MAPA DE RESPONSABILIDADE	0fc34001a55c7c28
 toa	toa_local_collector.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	88bb369658f48698
 toa	toa_secondary_bucket_export.mjs	2		2		9f4a0fb9a6f478cc
 toa	toa_secondary_direct_lookup.mjs					c8ef3f34279460bf
-toa	toa_secondary_session.py	14				655850be32fd4666
+toa	toa_secondary_session.py	15				6cd2c12208d43c98
 toa	verify_toa_cloud_bridge.py	3			Teste online seguro da ponte Cloudflare/D1 sem expor as chaves.	99d1169ad8c2856a

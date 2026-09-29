@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-09-29T12:51:55+00:00
-- Source fingerprint: `b78c6097af2a5682`
-- Indexed files: 250
-- Indexed symbols: 2784
+- Generated: 2026-09-29T13:29:19+00:00
+- Source fingerprint: `8acbe78d942f1371`
+- Indexed files: 251
+- Indexed symbols: 2792
 - API path references: 118
 
 ## Navigation rule
@@ -68,7 +68,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `toa_local_collector.py` (13 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_secondary_bucket_export.mjs` (2 symbols, 2 DataSnap methods)
 - `toa_secondary_direct_lookup.mjs`
-- `toa_secondary_session.py` (14 symbols)
+- `toa_secondary_session.py` (15 symbols)
 - `verify_toa_cloud_bridge.py` (3 symbols) - Teste online seguro da ponte Cloudflare/D1 sem expor as chaves.
 
 ## imperium
@@ -155,7 +155,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - shared: 83 files
 - tooling-deploy: 24 files
 - docs: 5 files
-- tests: 70 files
+- tests: 71 files
 
 ## Search indexes
 

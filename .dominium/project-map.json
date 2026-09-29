@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-29T12:51:55+00:00",
+  "generated_at": "2026-09-29T13:29:19+00:00",
   "schema": 2,
-  "source_fingerprint": "b78c6097af2a56820fd577bb1f2cb276bce6332bd09bcab6908f99f9687be92f",
+  "source_fingerprint": "8acbe78d942f1371e329ede1dab0693e144ff03e6d1dc6e2d33177a58a5d7ae6",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 339329,
-      "sha256": "1edba10ffe28009a5625ffa2ae09059b07560f0150e7a8946974f1dea44cf239",
+      "bytes": 339774,
+      "sha256": "8216377e2ee0d4e8e4de62323f069a41c0f1602e2ed4369eef6fe2b4360b035a",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -4105,6 +4105,26 @@
       "symbol_count": 10
     },
     {
+      "path": "tests/test_toa_secondary_session.py",
+      "category": "tests",
+      "bytes": 2431,
+      "sha256": "9d5ca5c257461780e36aa058fcda49cb54aae9567f03514443cec019bfbd35f1",
+      "summary": "",
+      "imports": [
+        "json",
+        "pathlib",
+        "subprocess",
+        "tempfile",
+        "toa_secondary_session",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 7
+    },
+    {
       "path": "tests/test_toa_worker_cache.py",
       "category": "tests",
       "bytes": 4108,
@@ -4776,8 +4796,8 @@
     {
       "path": "toa_secondary_session.py",
       "category": "toa",
-      "bytes": 8622,
-      "sha256": "655850be32fd46665d8d3eb1768eab37404317001be696c03061ddb017985d2e",
+      "bytes": 9751,
+      "sha256": "6cd2c12208d43c98d7a560823615a70fdc6317562c44fb6140ab8487161d14ae",
       "summary": "",
       "imports": [
         "__future__",
@@ -4787,6 +4807,7 @@
         "pathlib",
         "re",
         "subprocess",
+        "time",
         "typing",
         "urllib"
       ],
@@ -4794,7 +4815,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 14
+      "symbol_count": 15
     },
     {
       "path": "verify_toa_cloud_bridge.py",
