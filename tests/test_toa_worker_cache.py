@@ -5,6 +5,14 @@ from unittest.mock import Mock, patch
 import app
 
 
+class AutoImproductiveCircuitBreakerTests(unittest.TestCase):
+    def test_uncertain_circuit_breaker_trips_on_second_write(self) -> None:
+        self.assertFalse(app._auto_improductive_should_trip_uncertain_circuit(0))
+        self.assertFalse(app._auto_improductive_should_trip_uncertain_circuit(1))
+        self.assertTrue(app._auto_improductive_should_trip_uncertain_circuit(2))
+        self.assertTrue(app._auto_improductive_should_trip_uncertain_circuit(3))
+
+
 class TOAWorkerCacheTests(unittest.TestCase):
     def test_due_minute_respects_current_window(self):
         now = dt.datetime(2026, 9, 29, 9, 20).astimezone()
