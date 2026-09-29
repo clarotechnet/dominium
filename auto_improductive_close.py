@@ -217,6 +217,7 @@ class AutoImproductiveCloser:
         self.history_path.parent.mkdir(parents=True, exist_ok=True)
         persisted = dict(value)
         persisted.pop("audit_items", None)
+        persisted.pop("waiting_items", None)
         with self.history_path.open("a", encoding="utf-8") as stream:
             stream.write(
                 json.dumps(persisted, ensure_ascii=True, separators=(",", ":"))
