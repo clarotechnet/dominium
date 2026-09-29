@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-29T12:18:48+00:00",
+  "generated_at": "2026-09-29T12:38:24+00:00",
   "schema": 2,
-  "source_fingerprint": "629638b3bf9c6865d2fff771b54c32b63c63248b36ac35cee4deaacbed5016d9",
+  "source_fingerprint": "75ac49cf292219dc86b9f0c73e084a4dfd5809a7541244ae5a9a9407f3d28363",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 338563,
-      "sha256": "4344cab698b90e68160d0c343e06f7668a0cc4d4c574586e3fc7762acc83a86e",
+      "bytes": 338579,
+      "sha256": "62eca072ccceda4ce4bce2831cf85d08afa446ed9426c2e9f098d723aba3204d",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -347,8 +347,8 @@
     {
       "path": "auto_improductive_close.py",
       "category": "shared",
-      "bytes": 9322,
-      "sha256": "224e8f5e1d25d7dd46f49d45f469c0146c5cb4f5b5fa06a500d0adc082b05345",
+      "bytes": 9801,
+      "sha256": "08bb1b391dc5a2ecb118beda901460be2f6fb333635c9d558318b26d73920005",
       "summary": "",
       "imports": [
         "__future__",
@@ -477,8 +477,8 @@
     {
       "path": "config/auto_improductive_close_state.json",
       "category": "shared",
-      "bytes": 15174,
-      "sha256": "8d1979a5afbd099655d9c91f82e072a3abae7bc8c23f6f331958a6dd02a00497",
+      "bytes": 15173,
+      "sha256": "2bb02025f9917a91eb1002b23745f340f29bae148bed51735c49d879e1e38408",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -521,8 +521,8 @@
     {
       "path": "config/toa_bucket_collection_state.json",
       "category": "toa",
-      "bytes": 2548,
-      "sha256": "aad08f6981db8eac4360dbd60ee16cbcc3ef78ed4f77b287f5f18d3471603b12",
+      "bytes": 2572,
+      "sha256": "2d74ab94664c552358a474e4ded565addaa4e15685ce9b86d0f1c9a474921837",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -2899,8 +2899,8 @@
     {
       "path": "tests/test_auto_improductive_close.py",
       "category": "tests",
-      "bytes": 2427,
-      "sha256": "bd9232ece3712b7173bd500e65a14dd36b13651ec1a0c9186c77bb420b1ea102",
+      "bytes": 3550,
+      "sha256": "5377161bf65a5f59b53ffdbc2d8c4db0d3343380894373ffdaa158d6afa759d5",
       "summary": "",
       "imports": [
         "auto_improductive_close",
@@ -2914,7 +2914,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 5
+      "symbol_count": 6
     },
     {
       "path": "tests/test_build_hostinger_node_release.py",
@@ -4132,8 +4132,8 @@
     {
       "path": "tests/test_toa_worker_cache.py",
       "category": "tests",
-      "bytes": 2599,
-      "sha256": "83c388ff3745245775c00790328e227698b0fe289dcbbfcec98a50782a65f931",
+      "bytes": 2930,
+      "sha256": "2d379766dff3b8124777c8a1ddb247cd2b496ca2126c542574e24bf01e77a9d8",
       "summary": "",
       "imports": [
         "app",
