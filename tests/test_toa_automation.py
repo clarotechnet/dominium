@@ -1,3 +1,4 @@
+import datetime as dt
 import tempfile
 import threading
 import unittest
@@ -143,6 +144,29 @@ class TOAAutomationTests(unittest.TestCase):
 
             BlockingExporter.release.set()
             automation.worker_thread.join(timeout=3)
+
+    def test_recent_completed_collection_covers_next_scheduled_slot(self):
+        routes = ({"route": "NTL-DMV_ADM", "target": "rn", "label": "Natal"},)
+        with tempfile.TemporaryDirectory() as directory:
+            automation = TOAAutomation(
+                Path(directory),
+                lambda _route, _path: {"status": "vazia"},
+                routes=routes,
+                exporter_factory=FakeExporter,
+            )
+            slot = "2026-09-29T09:45"
+            automation.last_run = {
+                "completed_at": "2026-09-29T09:44:20",
+                "ok": True,
+            }
+
+            covered = automation._scheduled_slot_is_covered(
+                slot,
+                dt.datetime(2026, 9, 29, 9, 45, 0),
+            )
+
+            self.assertTrue(covered)
+            self.assertIn(slot, automation.executed_slots)
 
     def test_bucket_collection_header_only_is_read_only_empty_snapshot(self):
         headers = (
