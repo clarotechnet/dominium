@@ -1047,12 +1047,42 @@ function updateAccountAttribution() {
     : `Nao vinculado em ${state.profile.toUpperCase()}`;
 }
 
+function resetAuthSuccessMotion() {
+  const gate = elements.authGate;
+  const submit = elements.authLoginSubmit;
+  gate?.classList.remove("auth-success", "auth-exit");
+  gate?.removeAttribute("aria-busy");
+  submit?.classList.remove("auth-confirmed");
+  const label = submit?.querySelector("span");
+  if (label) label.textContent = "Entrar com seguranca";
+}
+
+async function playAuthSuccess() {
+  const gate = elements.authGate;
+  const submit = elements.authLoginSubmit;
+  if (!gate || !submit) return;
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  gate.classList.remove("auth-exit");
+  gate.classList.add("auth-success");
+  gate.setAttribute("aria-busy", "true");
+  submit.classList.add("auth-confirmed");
+  const label = submit.querySelector("span");
+  if (label) label.textContent = "Acesso confirmado";
+
+  await sleep(reducedMotion ? 20 : 680);
+  gate.classList.add("auth-exit");
+  await sleep(reducedMotion ? 20 : 360);
+}
+
 function hideAuthGate() {
   elements.authGate.classList.add("hidden");
   document.documentElement.classList.remove("auth-pending");
+  resetAuthSuccessMotion();
 }
 
 function showAuthGate(message = "") {
+  resetAuthSuccessMotion();
   elements.authGate.classList.remove("hidden");
   document.documentElement.classList.add("auth-pending");
   if (message) setAuthMessage(message);
@@ -1340,6 +1370,7 @@ elements.authLoginForm.addEventListener("submit", async (event) => {
     });
     elements.authLoginPassword.value = "";
     applyAuthUser(payload.user, payload.csrf_token);
+    await playAuthSuccess();
     hideAuthGate();
     if (!state.authReady) {
       state.authReady = true;
@@ -4660,6 +4691,113 @@ function creationFailureReasons(result, limit = 3) {
   return reasons.slice(0, limit);
 }
 
+function createdOrderTargets(result) {
+  const seen = new Set();
+  return (Array.isArray(result?.orders) ? result.orders : [])
+    .filter((row) => (row.imported || row.already_existed) && row.os_number && row.contract)
+    .map((row) => ({
+      osNumber: String(row.os_number).replace(/\s+/g, ""),
+      contract: String(row.contract).trim(),
+    }))
+    .filter((target) => {
+      const key = `${target.osNumber}|${target.contract}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+function recognizedCreatedOrders(targets) {
+  const recognized = new Set();
+  state.orders.forEach((order) => {
+    const osNumber = String(order.num_os || "").replace(/\s+/g, "");
+    const contract = String(order.contract || "").trim();
+    targets.forEach((target) => {
+      if (target.osNumber === osNumber && target.contract === contract) {
+        recognized.add(`${target.osNumber}|${target.contract}`);
+      }
+    });
+  });
+  return recognized;
+}
+
+async function reconcileCreatedOrders(result, operationToken = "") {
+  const targets = createdOrderTargets(result);
+  if (!targets.length) return { recognized: 0, total: 0, complete: true };
+
+  const profileKey = state.profile;
+  const profileEpoch = state.profileEpoch;
+  const delays = [0, 350, 650, 1100, 1800, 2800];
+  let recognized = new Set();
+
+  for (const delay of delays) {
+    if (profileKey !== state.profile || profileEpoch !== state.profileEpoch) {
+      return { recognized: recognized.size, total: targets.length, complete: false, aborted: true };
+    }
+    if (delay) await sleep(delay);
+    if (operationToken) {
+      operationVisualState(
+        "searching",
+        "Confirmando OS no Imperium",
+        targets.length === 1
+          ? `Aguardando a OS ${targets[0].osNumber} aparecer na lista operacional`
+          : `Aguardando ${targets.length} ordens aparecerem na lista operacional`,
+        operationToken,
+      );
+    }
+    await loadOrders({ preserveSelection: true, quiet: true, visual: false });
+    recognized = recognizedCreatedOrders(targets);
+    if (recognized.size === targets.length) break;
+  }
+
+  const recognizedKeys = recognized;
+  (Array.isArray(result?.orders) ? result.orders : []).forEach((row) => {
+    const key = `${String(row.os_number || "").replace(/\s+/g, "")}|${String(row.contract || "").trim()}`;
+    row.recognized = recognizedKeys.has(key);
+  });
+
+  return {
+    recognized: recognized.size,
+    total: targets.length,
+    complete: recognized.size === targets.length,
+  };
+}
+
+function scheduleCreatedOrderReconciliation(result) {
+  const targets = createdOrderTargets(result);
+  if (!targets.length) return;
+
+  const profileKey = state.profile;
+  const profileEpoch = state.profileEpoch;
+  const delays = [4000, 8000, 15000];
+
+  const runAttempt = async (attempt) => {
+    if (profileKey !== state.profile || profileEpoch !== state.profileEpoch) return;
+    await loadOrders({ preserveSelection: true, quiet: true, visual: false });
+    const recognized = recognizedCreatedOrders(targets);
+    if (recognized.size === targets.length) {
+      (Array.isArray(result?.orders) ? result.orders : []).forEach((row) => {
+        const key = `${String(row.os_number || "").replace(/\s+/g, "")}|${String(row.contract || "").trim()}`;
+        row.recognized = recognized.has(key);
+      });
+      render();
+      showToast(
+        targets.length === 1
+          ? `OS ${targets[0].osNumber} reconhecida automaticamente no Dominium.`
+          : `${targets.length} OS reconhecidas automaticamente no Dominium.`,
+        "success",
+      );
+      return;
+    }
+    const nextAttempt = attempt + 1;
+    if (nextAttempt < delays.length) {
+      window.setTimeout(() => void runAttempt(nextAttempt), delays[nextAttempt]);
+    }
+  };
+
+  window.setTimeout(() => void runAttempt(0), delays[0]);
+}
+
 async function prepareCreatedOrderClose(order, requestedCode) {
   const definition = state.closeCodes.find(
     (item) => item.code === String(requestedCode || ""),
@@ -4772,6 +4910,12 @@ async function createBulkOrders() {
     || !technician || !state.nativeCreationServices.includes(service) || !definition
   ) return;
 
+  const operationToken = operationVisualState(
+    "working",
+    contracts.length === 1 ? "Criando OS no Imperium" : `Criando ${contracts.length} OS no Imperium`,
+    `${technician.technician_name} · ${service}`,
+  );
+
   state.bulkCreateLoading = true;
   state.bulkCreateResult = null;
   state.bulkCreateRequestId = state.bulkCreateRequestId
@@ -4795,16 +4939,57 @@ async function createBulkOrders() {
     result.close_code = elements.bulkCloseCode.value;
     state.bulkCreateResult = result;
     state.bulkCreateRequestId = null;
+
+    const reconciliation = await reconcileCreatedOrders(result, operationToken);
+    result.reconciliation = reconciliation;
     const failures = creationFailureReasons(result, 1);
+
+    if (result.not_imported) {
+      operationVisualState(
+        "error",
+        "Criação concluída com atenção",
+        failures[0] || `${result.not_imported} OS não foram criadas`,
+        operationToken,
+      );
+    } else if (reconciliation.total && reconciliation.complete) {
+      operationVisualState(
+        "success",
+        reconciliation.total === 1 ? "OS reconhecida no Dominium" : "OS reconhecidas no Dominium",
+        reconciliation.total === 1
+          ? `OS ${createdOrderTargets(result)[0]?.osNumber || ""} confirmada na lista do Imperium`
+          : `${reconciliation.recognized} ordens confirmadas na lista do Imperium`,
+        operationToken,
+      );
+    } else {
+      operationVisualState(
+        "success",
+        "Criação confirmada no Imperium",
+        reconciliation.total
+          ? `${reconciliation.recognized} de ${reconciliation.total} ordens já sincronizadas; o Dominium continuará atualizando`
+          : "A operação foi recebida e confirmada",
+        operationToken,
+      );
+    }
+
+    const synchronizationPending = reconciliation.total > 0 && !reconciliation.complete;
+    if (synchronizationPending) scheduleCreatedOrderReconciliation(result);
     showToast(
       failures.length
         ? failures[0]
-        : `${result.imported || 0} OS criadas; `
-        + `${result.already_existing || 0} ja existentes; `
-        + `${result.not_imported || 0} nao criadas.`,
-      result.not_imported ? "error" : "success",
+        : synchronizationPending
+          ? `OS criada no Imperium; ${reconciliation.recognized}/${reconciliation.total} já reconhecidas no Dominium.`
+          : `${result.imported || 0} OS criadas; `
+            + `${result.already_existing || 0} ja existentes; `
+            + `${result.not_imported || 0} nao criadas.`,
+      result.not_imported ? "error" : synchronizationPending ? "warning" : "success",
     );
   } catch (error) {
+    operationVisualState(
+      "error",
+      "Falha ao criar OS",
+      error.message,
+      operationToken,
+    );
     state.bulkCreateResult = {
       ok: false,
       uncertain: Boolean(error.uncertain),

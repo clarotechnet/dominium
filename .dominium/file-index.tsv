@@ -133,7 +133,7 @@ frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	40ab771c94198e86
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/styles.css					9b3cea0f61c2ea62
+frontend	static/styles.css					fe9ba41744b9ceb4
 frontend	static/theme-init.js					97eb92ef899f8dcf
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
@@ -215,7 +215,7 @@ tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
 tests	tests/test_toa_secondary_session.py	7				9d5ca5c257461780
 tests	tests/test_toa_worker_cache.py	7				84d409c3fed69bd5
-tests	tests/test_ui_runtime_regression.py	9	1			e7bb2ac14e567a26
+tests	tests/test_ui_runtime_regression.py	11	2			2885c224bf3b5c0e
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb
 toa	toa-discovery/core.js	25			DOMINIUM | MAPA DE RESPONSABILIDADE	9e149f8465bb638e

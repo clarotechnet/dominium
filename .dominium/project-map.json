@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-30T17:43:52+00:00",
+  "generated_at": "2026-09-30T20:06:32+00:00",
   "schema": 2,
-  "source_fingerprint": "63e1825f27133cefb9e27bfa3cf3b4a8b7916b8e687201ae08509f21371e3e93",
+  "source_fingerprint": "29a48166ba480d66cd267a7fa3802d471db7546909656f6a82963f13be5984c2",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -2571,8 +2571,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 193282,
-      "sha256": "9b3cea0f61c2ea62eb1acd1f42233dfcc6054088f0207af875b271d42010c2ae",
+      "bytes": 196508,
+      "sha256": "fe9ba41744b9ceb467f4e051e244185ec1d1cd5918605ea2ad51e9e93759c327",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -4146,20 +4146,21 @@
     {
       "path": "tests/test_ui_runtime_regression.py",
       "category": "tests",
-      "bytes": 4264,
-      "sha256": "e7bb2ac14e567a261b017bc11c0eb9b88f3c37e625b258f127580dc633eb0667",
+      "bytes": 5843,
+      "sha256": "2885c224bf3b5c0e4f5988e21b4ba5bfa7a3e0e2f06dde9b13cfbc0f6a9176ef",
       "summary": "",
       "imports": [
         "pathlib",
         "unittest"
       ],
       "endpoints": [
+        "/api/auth/login",
         "/api/auth/register"
       ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 9
+      "symbol_count": 11
     },
     {
       "path": "tests/test_web_auth_config.py",

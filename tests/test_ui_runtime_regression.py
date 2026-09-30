@@ -77,6 +77,33 @@ class UIRuntimeRegressionTests(unittest.TestCase):
         self.assertIn('toast.setAttribute("aria-live"', app)
         self.assertIn(".toast-progress", styles)
 
+    def test_login_success_animation_runs_after_real_authentication(self):
+        app = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+        styles = (ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+        login_response = app.index('const payload = await authApi("/api/auth/login"')
+        success_motion = app.index("await playAuthSuccess()", login_response)
+        hide_gate = app.index("hideAuthGate();", success_motion)
+        self.assertLess(login_response, success_motion)
+        self.assertLess(success_motion, hide_gate)
+        self.assertIn('gate.classList.add("auth-success")', app)
+        self.assertIn("#authLoginSubmit.auth-confirmed", styles)
+        self.assertIn("@keyframes auth-success-card", styles)
+        self.assertIn(".auth-gate.auth-exit", styles)
+
+    def test_created_orders_are_reconciled_back_into_live_order_list(self):
+        app = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+        self.assertIn("async function reconcileCreatedOrders", app)
+        self.assertIn(
+            'await loadOrders({ preserveSelection: true, quiet: true, visual: false })',
+            app,
+        )
+        self.assertIn("const reconciliation = await reconcileCreatedOrders(result, operationToken)", app)
+        self.assertIn("scheduleCreatedOrderReconciliation(result)", app)
+        self.assertIn("const delays = [4000, 8000, 15000]", app)
+        self.assertIn('"Criando OS no Imperium"', app)
+        self.assertIn('"OS reconhecida no Dominium"', app)
+        self.assertIn('"Confirmando OS no Imperium"', app)
+
     def test_hostinger_runtime_exposes_registration_through_operational_backend(self):
         server = (ROOT / "deploy" / "hostinger-web" / "server.js").read_text(encoding="utf-8")
         self.assertIn("registration_enabled: true", server)
