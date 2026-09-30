@@ -48,7 +48,7 @@ shared	flow_reader/server.py	11	2		DOMINIUM | MAPA DE RESPONSABILIDADE	00c885db8
 shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f388b7677c04f
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
-imperium	imperium_api.py	141		3	DOMINIUM | MAPA DE RESPONSABILIDADE	4b2901b0ca358411
+imperium	imperium_api.py	141		3	DOMINIUM | MAPA DE RESPONSABILIDADE	81b5781c2b91339b
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 shared	import_protocol_templates.json			1		9a6465634e73b3ec
@@ -131,9 +131,9 @@ frontend	static/impeccable.css					1ee5b4c5d97f7a64
 frontend	static/index.html		1			16ebf853992c30ef
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
-frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	40ab771c94198e86
+frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/styles.css					fe9ba41744b9ceb4
+frontend	static/styles.css					fdf43ee7205da97b
 frontend	static/theme-init.js					97eb92ef899f8dcf
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
@@ -163,7 +163,7 @@ tests	tests/test_disconnect_frontend.js	4				f5e517e7af4cede6
 tests	tests/test_edge_voice.py	4				4e8791562f884964
 tests	tests/test_equipment_group_matching.py	24				46876ea91612d830
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38
-tests	tests/test_imperium_api.py	84		1		06854df32ea783f2
+tests	tests/test_imperium_api.py	85		1		a555860e601a871a
 tests	tests/test_imperium_http_api.py	25				25ab6758e210eefb
 tests	tests/test_imperium_http_plan.py	8				056547e8c6b8d815
 tests	tests/test_import_audit_history.py	3				6df23f085d3bdbda
@@ -173,7 +173,7 @@ tests	tests/test_installer_reassignment.py	19	1			e571ea08992a6d7b
 tests	tests/test_manual_materials.py	14				13ebf22bf45dd258
 tests	tests/test_material_matching.py	33				f7a01b4226d11747
 tests	tests/test_material_writeoff.py	16				4d6bdafc337eb87a
-tests	tests/test_native_orders.py	19		2		aad9802e44267483
+tests	tests/test_native_orders.py	19		2		5c6e534e26a7d8de
 tests	tests/test_official_close.py	8				9d4b733270930e68
 tests	tests/test_official_close_code_catalog.py	9		1		dbabe02e00041d80
 tests	tests/test_official_close_code_reconciliation.py	13				5e245e74532a146f
@@ -215,7 +215,7 @@ tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
 tests	tests/test_toa_secondary_session.py	7				9d5ca5c257461780
 tests	tests/test_toa_worker_cache.py	7				84d409c3fed69bd5
-tests	tests/test_ui_runtime_regression.py	11	2			2885c224bf3b5c0e
+tests	tests/test_ui_runtime_regression.py	11	2			c100dee0203b06d6
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb
 toa	toa-discovery/core.js	25			DOMINIUM | MAPA DE RESPONSABILIDADE	9e149f8465bb638e

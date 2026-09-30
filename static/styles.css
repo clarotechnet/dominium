@@ -7054,6 +7054,7 @@ dialog {
 .operation-orb-hud[data-phase="searching"] { --orb-accent: #ff4058; --orb-glow: rgba(255,64,88,.24); }
 .operation-orb-hud[data-phase="working"] { --orb-accent: #ff6a2a; --orb-glow: rgba(255,106,42,.23); }
 .operation-orb-hud[data-phase="solving"] { --orb-accent: #ffb13b; --orb-glow: rgba(255,177,59,.22); }
+.operation-orb-hud[data-phase="busy"] { --orb-accent: #9ca6b4; --orb-glow: rgba(156,166,180,.18); }
 .operation-orb-hud[data-phase="success"] { --orb-accent: #36d883; --orb-glow: rgba(54,216,131,.23); }
 .operation-orb-hud[data-phase="error"] { --orb-accent: #ff3347; --orb-glow: rgba(255,51,71,.30); }
 

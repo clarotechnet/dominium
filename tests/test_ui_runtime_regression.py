@@ -65,7 +65,10 @@ class UIRuntimeRegressionTests(unittest.TestCase):
         self.assertIn("Executando lote de ${orders.length} baixas", app)
         self.assertIn("operationOrbHud", motion)
         self.assertIn("hud.dataset.phase = phase", motion)
+        self.assertIn('"busy"', motion)
+        self.assertIn('"Imperium ocupado"', app)
         self.assertIn(".operation-orb-hud", styles)
+        self.assertIn('[data-phase="busy"]', styles)
         self.assertIn('[data-phase="success"]', styles)
         self.assertIn("@media (prefers-reduced-motion: reduce)", styles)
 
@@ -90,19 +93,22 @@ class UIRuntimeRegressionTests(unittest.TestCase):
         self.assertIn("@keyframes auth-success-card", styles)
         self.assertIn(".auth-gate.auth-exit", styles)
 
-    def test_created_orders_are_reconciled_back_into_live_order_list(self):
+    def test_created_orders_use_server_confirmation_and_refresh_silently(self):
         app = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
-        self.assertIn("async function reconcileCreatedOrders", app)
+        self.assertIn("function mergeConfirmedCreatedOrders", app)
+        self.assertIn("function reconcileCreatedOrders", app)
+        self.assertIn("row.recognized = true", app)
+        self.assertIn("id_os: idOs", app)
+        self.assertIn("const reconciliation = reconcileCreatedOrders(result)", app)
+        self.assertIn("scheduleCreatedOrderReconciliation(result)", app)
+        self.assertIn("const delays = [0, 1200, 2800, 5500]", app)
         self.assertIn(
             'await loadOrders({ preserveSelection: true, quiet: true, visual: false })',
             app,
         )
-        self.assertIn("const reconciliation = await reconcileCreatedOrders(result, operationToken)", app)
-        self.assertIn("scheduleCreatedOrderReconciliation(result)", app)
-        self.assertIn("const delays = [4000, 8000, 15000]", app)
         self.assertIn('"Criando OS no Imperium"', app)
         self.assertIn('"OS reconhecida no Dominium"', app)
-        self.assertIn('"Confirmando OS no Imperium"', app)
+        self.assertNotIn('"Confirmando OS no Imperium"', app)
 
     def test_hostinger_runtime_exposes_registration_through_operational_backend(self):
         server = (ROOT / "deploy" / "hostinger-web" / "server.js").read_text(encoding="utf-8")

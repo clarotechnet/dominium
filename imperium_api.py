@@ -956,18 +956,29 @@ class ImperiumAPI:
         orders: list[Order] = []
         seen: set[int] = set()
 
-        for match in re.finditer(rb"[\x01-\x14](\d{1,20})", payload):
-            num_os_bytes = match.group(1)
-            if payload[match.start()] != len(num_os_bytes):
+        # O campo NumOS e length-prefixed. A maioria das OS e somente numerica,
+        # mas o cadastro manual validado pelo Imperium usa "CONTRATO CONTRATO"
+        # (ex.: "5363244 5363244"). O parser antigo usava \d+ e descartava
+        # silenciosamente essas OS, impedindo a confirmacao pos-criacao.
+        for match in re.finditer(rb"[\x01-\x14]\d", payload):
+            field_start = match.start()
+            num_os_length = payload[field_start]
+            value_start = field_start + 1
+            value_end = value_start + num_os_length
+            if value_end > len(payload):
                 continue
-            id_position = match.start() - 4
+            num_os_bytes = payload[value_start:value_end]
+            if not re.fullmatch(rb"\d+(?: \d+)*", num_os_bytes):
+                continue
+
+            id_position = field_start - 4
             if id_position < 0:
                 continue
             id_os = struct.unpack_from("<I", payload, id_position)[0]
             if id_os <= 0 or id_os > 0x0FFFFFFF or id_os in seen:
                 continue
 
-            position = match.end()
+            position = value_end
             try:
                 contract_length = payload[position]
                 position += 1
@@ -5955,10 +5966,11 @@ class ImperiumAPI:
         contract: str,
         os_number: str,
         query_date: dt.date | None = None,
-        delays: tuple[float, ...] = (0.5, 1.5, 3.0, 5.0, 8.0, 13.0, 20.0),
-    ) -> tuple[bool, Exception | None]:
+        delays: tuple[float, ...] = (0.4, 0.8, 1.2, 1.8, 3.0, 5.0, 8.0, 13.0, 20.0),
+    ) -> tuple[Order | None, Exception | None]:
         query_date = query_date or dt.date.today()
         last_error: Exception | None = None
+        compact_os = re.sub(r"\s+", "", os_number)
         for attempt, delay in enumerate(delays, start=1):
             if delay:
                 time.sleep(delay)
@@ -5977,11 +5989,14 @@ class ImperiumAPI:
             matches = [
                 order
                 for order in orders
-                if re.sub(r"\s+", "", order.num_os)
-                == re.sub(r"\s+", "", os_number)
+                if re.sub(r"\s+", "", order.num_os) == compact_os
             ]
-            if any(order.contract == contract for order in matches):
-                return True, None
+            confirmed = next(
+                (order for order in matches if order.contract == contract),
+                None,
+            )
+            if confirmed is not None:
+                return confirmed, None
             if matches:
                 raise DataSnapError(
                     f"A OS {os_number} apareceu vinculada a outro contrato"
@@ -5992,7 +6007,7 @@ class ImperiumAPI:
                 attempt,
                 len(delays),
             )
-        return False, last_error
+        return None, last_error
 
     @staticmethod
     def _native_creation_result(rows: list[dict], *, uncertain: bool = False) -> dict:
@@ -6112,6 +6127,8 @@ class ImperiumAPI:
                         imported=False,
                         already_existed=True,
                         import_status="JA EXISTIA; NAO DUPLICADA",
+                        id_os=int(existing.id_os) if existing is not None else None,
+                        recognized=existing is not None,
                     )
                     rows.append(row)
                     continue
@@ -6174,16 +6191,21 @@ class ImperiumAPI:
                         exc,
                     )
 
-                confirmed, confirmation_error = self._confirm_native_order(
+                confirmed_order, confirmation_error = self._confirm_native_order(
                     order.contract,
                     order.os_number,
                     query_date=order_date,
                 )
-                if confirmed:
+                if confirmed_order is not None:
                     status = "CRIADA"
                     if write_error is not None:
                         status = "CRIADA; CONFIRMADA APOS RESPOSTA INCOMPLETA"
-                    row.update(imported=True, import_status=status)
+                    row.update(
+                        imported=True,
+                        import_status=status,
+                        id_os=int(confirmed_order.id_os),
+                        recognized=True,
+                    )
                     rows.append(row)
                     continue
 

@@ -2110,6 +2110,32 @@ class ApplyPacketTests(unittest.TestCase):
         self.assertEqual(len(orders), 1)
         self.assertEqual(orders[0].id_os, 54321)
 
+    def test_manual_order_number_with_space_is_parsed_from_dataset(self) -> None:
+        payload = bytearray(120)
+        payload[:4] = b"\xc0\xc0\x61\x01"
+        os_number = b"5363244 5363244"
+        contract = b"5363244"
+        service = b"CORRECAO ESTOQUE"
+        row = (
+            struct.pack("<I", 987654)
+            + bytes([len(os_number)])
+            + os_number
+            + bytes([len(contract)])
+            + contract
+            + struct.pack("<I", 208)
+            + bytes([len(service)])
+            + service
+        )
+        payload[40 : 40 + len(row)] = row
+
+        orders = self.api._parse_orders(bytes(payload))
+
+        self.assertEqual(len(orders), 1)
+        self.assertEqual(orders[0].id_os, 987654)
+        self.assertEqual(orders[0].num_os, "5363244 5363244")
+        self.assertEqual(orders[0].contract, "5363244")
+        self.assertEqual(orders[0].service, "CORRECAO ESTOQUE")
+
     def test_empty_dataset_marker_returns_no_orders(self) -> None:
         payload = b"\xc0\xc0\x60" + bytes(77)
 

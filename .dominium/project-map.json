@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-30T20:06:32+00:00",
+  "generated_at": "2026-09-30T20:32:34+00:00",
   "schema": 2,
-  "source_fingerprint": "29a48166ba480d66cd267a7fa3802d471db7546909656f6a82963f13be5984c2",
+  "source_fingerprint": "a556d877c91c82f9eb3748d12f88c5b895319d2c7dfd3652f8fe61d1ea7c724e",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -1033,8 +1033,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 257657,
-      "sha256": "4b2901b0ca3584111bdc7d1ef79b6553edfb044cdd949997c3ad0bb1ded0c0af",
+      "bytes": 258708,
+      "sha256": "81b5781c2b91339b192fe679348545413f912bf5ea272f385476f5bb7b9098c5",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -2545,8 +2545,8 @@
     {
       "path": "static/motion-ui.js",
       "category": "frontend",
-      "bytes": 9925,
-      "sha256": "40ab771c94198e865e3fa0df553d2d05d5da3fec3dd273e3125f82d80c4041c0",
+      "bytes": 10087,
+      "sha256": "16eb80367d94b05dd97d151669985c5f3c41c6550d3e1cd68f8ba4a7b028885d",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [],
       "endpoints": [],
@@ -2571,8 +2571,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 196508,
-      "sha256": "fe9ba41744b9ceb467f4e051e244185ec1d1cd5918605ea2ad51e9e93759c327",
+      "bytes": 196608,
+      "sha256": "fdf43ee7205da97b77ac45a491b3112b90ce40d705b75f735500bfe7f6f624b7",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -3115,8 +3115,8 @@
     {
       "path": "tests/test_imperium_api.py",
       "category": "tests",
-      "bytes": 76111,
-      "sha256": "06854df32ea783f2a9a49d5070a08073f90f9379ca48b1da3adf538c172e9350",
+      "bytes": 77030,
+      "sha256": "a555860e601a871a202e49802b0b6c39555d0cc3075b7b22e02618c5d3dd7c33",
       "summary": "",
       "imports": [
         "datasnap_client",
@@ -3134,7 +3134,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": true,
-      "symbol_count": 84
+      "symbol_count": 85
     },
     {
       "path": "tests/test_imperium_http_api.py",
@@ -3315,8 +3315,8 @@
     {
       "path": "tests/test_native_orders.py",
       "category": "tests",
-      "bytes": 15817,
-      "sha256": "aad9802e4426748332263e13fb73e8f5716fe9969d5f7912bde7c6d89348f9f3",
+      "bytes": 15889,
+      "sha256": "5c6e534e26a7d8de60a5015bc2932cd32c046e237ec0ffc1e1b07511a601679f",
       "summary": "",
       "imports": [
         "base64",
@@ -4146,8 +4146,8 @@
     {
       "path": "tests/test_ui_runtime_regression.py",
       "category": "tests",
-      "bytes": 5843,
-      "sha256": "2885c224bf3b5c0e4f5988e21b4ba5bfa7a3e0e2f06dde9b13cfbc0f6a9176ef",
+      "bytes": 6127,
+      "sha256": "c100dee0203b06d6ebc68ff25365b292480f450f1d4c03ee2656d590f8efb2fd",
       "summary": "",
       "imports": [
         "pathlib",

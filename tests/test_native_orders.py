@@ -354,7 +354,7 @@ class NativeOrderProtocolTests(unittest.TestCase):
             type(
                 "OrderStub",
                 (),
-                {"num_os": "31212333121233", "contract": "3121233"},
+                {"id_os": 987654, "num_os": "31212333121233", "contract": "3121233"},
             )()
         ]
 
@@ -364,7 +364,8 @@ class NativeOrderProtocolTests(unittest.TestCase):
             delays=(0.0,),
         )
 
-        self.assertTrue(confirmed)
+        self.assertIsNotNone(confirmed)
+        self.assertEqual(confirmed.id_os, 987654)
         self.assertIsNone(error)
 
     def test_native_confirmation_waits_for_late_server_visibility(self) -> None:

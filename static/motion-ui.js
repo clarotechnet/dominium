@@ -218,7 +218,7 @@ function ensureOperationHud() {
 
 function renderOperationState(payload = {}) {
   const hud = ensureOperationHud();
-  const phase = ["searching", "working", "solving", "success", "error"].includes(payload.phase)
+  const phase = ["searching", "working", "solving", "busy", "success", "error"].includes(payload.phase)
     ? payload.phase
     : "working";
   clearTimeout(operationHudHideTimer);
@@ -235,15 +235,16 @@ function renderOperationState(payload = {}) {
     phase === "searching" ? "Buscando dados em tempo real"
       : phase === "working" ? "Executando a etapa solicitada"
         : phase === "solving" ? "Validando respostas e consistência"
-          : phase === "success" ? "Operação confirmada"
-            : "A operação precisa de atenção"
+          : phase === "busy" ? "Outra rotina segura está usando o Imperium"
+            : phase === "success" ? "Operação confirmada"
+              : "A operação precisa de atenção"
   );
-  hud.querySelector(".orb-core-glyph").textContent = phase === "success" ? "✓" : phase === "error" ? "×" : "";
+  hud.querySelector(".orb-core-glyph").textContent = phase === "success" ? "✓" : phase === "error" ? "×" : phase === "busy" ? "…" : "";
   hud.classList.remove("hidden", "operation-orb-leaving");
   hud.classList.add("operation-orb-visible");
 
-  if (phase === "success" || phase === "error") {
-    const delay = phase === "success" ? 1100 : 1800;
+  if (phase === "success" || phase === "error" || phase === "busy") {
+    const delay = phase === "success" ? 1100 : phase === "busy" ? 1450 : 1800;
     operationHudHideTimer = window.setTimeout(() => {
       if (payload.token && activeOperationToken && payload.token !== activeOperationToken) return;
       hud.classList.add("operation-orb-leaving");

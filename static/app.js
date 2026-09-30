@@ -1454,7 +1454,7 @@ elements.accountLogout.addEventListener("click", async () => {
 let operationVisualSequence = 0;
 
 function operationVisualState(phase, label, detail = "", token = "") {
-  const normalizedPhase = ["searching", "working", "solving", "success", "error"].includes(phase)
+  const normalizedPhase = ["searching", "working", "solving", "busy", "success", "error"].includes(phase)
     ? phase
     : "working";
   const operationToken = token || `operation-${Date.now()}-${++operationVisualSequence}`;
@@ -1541,10 +1541,14 @@ async function request(url, options = {}) {
       finalError = new Error(`O painel excedeu ${timeoutSeconds} segundos; consulte o terminal`);
     }
     if (operationToken) {
+      const operationBusy = finalError?.status === 409
+        && normalize(finalError?.message).includes("OUTRA OPERACAO ESTA EM ANDAMENTO");
       operationVisualState(
-        "error",
-        operation.errorLabel || "Operação interrompida",
-        finalError.message,
+        operationBusy ? "busy" : "error",
+        operationBusy ? "Imperium ocupado" : operation.errorLabel || "Operação interrompida",
+        operationBusy
+          ? "Outra rotina está concluindo; os dados atuais foram mantidos"
+          : finalError.message,
         operationToken,
       );
     }
@@ -4721,45 +4725,52 @@ function recognizedCreatedOrders(targets) {
   return recognized;
 }
 
-async function reconcileCreatedOrders(result, operationToken = "") {
-  const targets = createdOrderTargets(result);
-  if (!targets.length) return { recognized: 0, total: 0, complete: true };
+function mergeConfirmedCreatedOrders(result) {
+  const rows = Array.isArray(result?.orders) ? result.orders : [];
+  let merged = 0;
 
-  const profileKey = state.profile;
-  const profileEpoch = state.profileEpoch;
-  const delays = [0, 350, 650, 1100, 1800, 2800];
-  let recognized = new Set();
+  rows.forEach((row) => {
+    if (!(row.imported || row.already_existed) || !row.os_number || !row.contract) return;
+    row.recognized = true;
 
-  for (const delay of delays) {
-    if (profileKey !== state.profile || profileEpoch !== state.profileEpoch) {
-      return { recognized: recognized.size, total: targets.length, complete: false, aborted: true };
+    const idOs = Number(row.id_os || 0);
+    if (!idOs) return;
+
+    const created = {
+      id_os: idOs,
+      num_os: String(row.os_number),
+      contract: String(row.contract),
+      service: String(row.os_type || result?.service || ""),
+      technician: String(row.technician || result?.technician || ""),
+      status: "EM CAMPO",
+      city: String(row.city || ""),
+    };
+    const index = state.orders.findIndex((order) =>
+      Number(order.id_os) === idOs
+      || (
+        String(order.num_os).replace(/\s+/g, "") === created.num_os.replace(/\s+/g, "")
+        && String(order.contract) === created.contract
+      )
+    );
+    if (index >= 0) {
+      state.orders[index] = { ...created, ...state.orders[index], id_os: idOs };
+    } else {
+      state.orders.unshift(created);
     }
-    if (delay) await sleep(delay);
-    if (operationToken) {
-      operationVisualState(
-        "searching",
-        "Confirmando OS no Imperium",
-        targets.length === 1
-          ? `Aguardando a OS ${targets[0].osNumber} aparecer na lista operacional`
-          : `Aguardando ${targets.length} ordens aparecerem na lista operacional`,
-        operationToken,
-      );
-    }
-    await loadOrders({ preserveSelection: true, quiet: true, visual: false });
-    recognized = recognizedCreatedOrders(targets);
-    if (recognized.size === targets.length) break;
-  }
-
-  const recognizedKeys = recognized;
-  (Array.isArray(result?.orders) ? result.orders : []).forEach((row) => {
-    const key = `${String(row.os_number || "").replace(/\s+/g, "")}|${String(row.contract || "").trim()}`;
-    row.recognized = recognizedKeys.has(key);
+    merged += 1;
   });
 
+  return merged;
+}
+
+function reconcileCreatedOrders(result) {
+  const targets = createdOrderTargets(result);
+  const recognized = mergeConfirmedCreatedOrders(result);
   return {
-    recognized: recognized.size,
+    recognized: Math.max(recognized, targets.length),
     total: targets.length,
-    complete: recognized.size === targets.length,
+    complete: true,
+    serverConfirmed: true,
   };
 }
 
@@ -4769,24 +4780,14 @@ function scheduleCreatedOrderReconciliation(result) {
 
   const profileKey = state.profile;
   const profileEpoch = state.profileEpoch;
-  const delays = [4000, 8000, 15000];
+  const delays = [0, 1200, 2800, 5500];
 
   const runAttempt = async (attempt) => {
     if (profileKey !== state.profile || profileEpoch !== state.profileEpoch) return;
     await loadOrders({ preserveSelection: true, quiet: true, visual: false });
     const recognized = recognizedCreatedOrders(targets);
     if (recognized.size === targets.length) {
-      (Array.isArray(result?.orders) ? result.orders : []).forEach((row) => {
-        const key = `${String(row.os_number || "").replace(/\s+/g, "")}|${String(row.contract || "").trim()}`;
-        row.recognized = recognized.has(key);
-      });
       render();
-      showToast(
-        targets.length === 1
-          ? `OS ${targets[0].osNumber} reconhecida automaticamente no Dominium.`
-          : `${targets.length} OS reconhecidas automaticamente no Dominium.`,
-        "success",
-      );
       return;
     }
     const nextAttempt = attempt + 1;
@@ -4806,16 +4807,38 @@ async function prepareCreatedOrderClose(order, requestedCode) {
     showToast("Selecione um codigo de baixa valido.", "error");
     return;
   }
-  await loadOrders();
-  const match = state.orders.find((candidate) =>
-    String(candidate.num_os) === String(order.os_number)
-    && String(candidate.contract) === String(order.contract)
+  await loadOrders({ preserveSelection: true, quiet: true, visual: false });
+  const compactTarget = String(order.os_number || "").replace(/\s+/g, "");
+  let match = state.orders.find((candidate) =>
+    (
+      Number(order.id_os || 0) > 0
+      && Number(candidate.id_os) === Number(order.id_os)
+    )
+    || (
+      String(candidate.num_os || "").replace(/\s+/g, "") === compactTarget
+      && String(candidate.contract) === String(order.contract)
+    )
   );
+
+  if (!match && Number(order.id_os || 0) > 0) {
+    match = {
+      id_os: Number(order.id_os),
+      num_os: String(order.os_number),
+      contract: String(order.contract),
+      service: String(order.os_type || state.bulkCreateResult?.service || ""),
+      technician: String(order.technician || state.bulkCreateResult?.technician || ""),
+      status: "EM CAMPO",
+      city: String(order.city || ""),
+    };
+    state.orders.unshift(match);
+  }
+
   if (!match) {
     showToast(
-      `A OS ${order.os_number} ainda nao apareceu na lista de hoje.`,
-      "error",
+      `A OS ${order.os_number} foi criada, mas o IdOS ainda nao ficou disponivel no Dominium.`,
+      "warning",
     );
+    scheduleCreatedOrderReconciliation(state.bulkCreateResult);
     return;
   }
   state.closeCode = definition.code;
@@ -4940,9 +4963,10 @@ async function createBulkOrders() {
     state.bulkCreateResult = result;
     state.bulkCreateRequestId = null;
 
-    const reconciliation = await reconcileCreatedOrders(result, operationToken);
+    const reconciliation = reconcileCreatedOrders(result);
     result.reconciliation = reconciliation;
     const failures = creationFailureReasons(result, 1);
+    if (reconciliation.total) scheduleCreatedOrderReconciliation(result);
 
     if (result.not_imported) {
       operationVisualState(
@@ -4951,37 +4975,31 @@ async function createBulkOrders() {
         failures[0] || `${result.not_imported} OS não foram criadas`,
         operationToken,
       );
-    } else if (reconciliation.total && reconciliation.complete) {
+    } else if (reconciliation.total) {
       operationVisualState(
         "success",
         reconciliation.total === 1 ? "OS reconhecida no Dominium" : "OS reconhecidas no Dominium",
         reconciliation.total === 1
-          ? `OS ${createdOrderTargets(result)[0]?.osNumber || ""} confirmada na lista do Imperium`
-          : `${reconciliation.recognized} ordens confirmadas na lista do Imperium`,
+          ? `OS ${createdOrderTargets(result)[0]?.osNumber || ""} confirmada pelo Imperium`
+          : `${reconciliation.recognized} ordens confirmadas pelo Imperium`,
         operationToken,
       );
     } else {
       operationVisualState(
         "success",
         "Criação confirmada no Imperium",
-        reconciliation.total
-          ? `${reconciliation.recognized} de ${reconciliation.total} ordens já sincronizadas; o Dominium continuará atualizando`
-          : "A operação foi recebida e confirmada",
+        "A operação foi recebida e confirmada",
         operationToken,
       );
     }
 
-    const synchronizationPending = reconciliation.total > 0 && !reconciliation.complete;
-    if (synchronizationPending) scheduleCreatedOrderReconciliation(result);
     showToast(
       failures.length
         ? failures[0]
-        : synchronizationPending
-          ? `OS criada no Imperium; ${reconciliation.recognized}/${reconciliation.total} já reconhecidas no Dominium.`
-          : `${result.imported || 0} OS criadas; `
-            + `${result.already_existing || 0} ja existentes; `
-            + `${result.not_imported || 0} nao criadas.`,
-      result.not_imported ? "error" : synchronizationPending ? "warning" : "success",
+        : `${result.imported || 0} OS criadas; `
+          + `${result.already_existing || 0} ja existentes; `
+          + `${result.not_imported || 0} nao criadas.`,
+      result.not_imported ? "error" : "success",
     );
   } catch (error) {
     operationVisualState(
