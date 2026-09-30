@@ -2015,6 +2015,35 @@ class ApplyPacketTests(unittest.TestCase):
                 requested,
             )
 
+    def test_import_uses_bounded_fast_timeout(self) -> None:
+        for order_count, expected_timeout in ((1, 15.0), (60, 45.0)):
+            preview = SimpleNamespace(orders=tuple(object() for _ in range(order_count)))
+            with (
+                patch.object(
+                    self.api.import_protocol,
+                    "build_packet",
+                    return_value=b"packet",
+                ),
+                patch.object(
+                    self.api.import_protocol,
+                    "chunks",
+                    return_value=(b"packet",),
+                ),
+                patch.object(
+                    self.api,
+                    "_send_import_packet",
+                    return_value=b"result",
+                ) as sender,
+                patch.object(
+                    self.api.import_protocol,
+                    "parse_result",
+                    return_value={"ok": True},
+                ),
+            ):
+                self.api.import_toa(preview)
+
+            self.assertEqual(sender.call_args.args[1], expected_timeout)
+
     def test_import_never_repeats_an_ambiguous_timed_out_lot(self) -> None:
         preview = SimpleNamespace(orders=(object(),))
         with (

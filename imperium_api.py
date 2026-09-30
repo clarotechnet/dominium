@@ -6318,7 +6318,12 @@ class ImperiumAPI:
     def import_toa(self, preview: TOAPreview) -> dict:
         packet = self.import_protocol.build_packet(preview)
         chunks = self.import_protocol.chunks(packet)
-        final_timeout = min(300.0, max(180.0, len(preview.orders) * 0.5))
+        single_order = len(preview.orders) == 1
+        final_timeout = (
+            15.0
+            if single_order
+            else min(120.0, max(45.0, len(preview.orders) * 0.25))
+        )
         LOGGER.info(
             "Importacao TOA: enviando %s OS em %s blocos (%s bytes)",
             len(preview.orders),
