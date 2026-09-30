@@ -131,9 +131,9 @@ frontend	static/impeccable.css					1ee5b4c5d97f7a64
 frontend	static/index.html		1			16ebf853992c30ef
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
-frontend	static/motion-ui.js	10			DOMINIUM | MAPA DE RESPONSABILIDADE	674603136f3f4a4f
+frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	40ab771c94198e86
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/styles.css					054f5c492211ee9d
+frontend	static/styles.css					9b3cea0f61c2ea62
 frontend	static/theme-init.js					97eb92ef899f8dcf
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
@@ -198,7 +198,7 @@ tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
 tests	tests/test_supabase_sdk_compat.py	2				49269ce926869e84
 tests	tests/test_technician_directory.py	5				d78aba13b7ad30e2
 tests	tests/test_toa_agenda.py	4				169f9c78410dfd88
-tests	tests/test_toa_automation.py	18				eb0dbbba30095604
+tests	tests/test_toa_automation.py	18				6ce27533d3da1a4d
 tests	tests/test_toa_bridge_server.py					8984c15b56c098d9
 tests	tests/test_toa_browser.py	11				5166c5f3bfc2648b
 tests	tests/test_toa_capture.py	36		2		e5e27b0eedd3ae4c
@@ -215,7 +215,7 @@ tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
 tests	tests/test_toa_secondary_session.py	7				9d5ca5c257461780
 tests	tests/test_toa_worker_cache.py	7				84d409c3fed69bd5
-tests	tests/test_ui_runtime_regression.py	7	1			7b91c3c890b6ee77
+tests	tests/test_ui_runtime_regression.py	9	1			e7bb2ac14e567a26
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb
 toa	toa-discovery/core.js	25			DOMINIUM | MAPA DE RESPONSABILIDADE	9e149f8465bb638e

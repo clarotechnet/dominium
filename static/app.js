@@ -1420,6 +1420,24 @@ elements.accountLogout.addEventListener("click", async () => {
   }
 });
 
+let operationVisualSequence = 0;
+
+function operationVisualState(phase, label, detail = "", token = "") {
+  const normalizedPhase = ["searching", "working", "solving", "success", "error"].includes(phase)
+    ? phase
+    : "working";
+  const operationToken = token || `operation-${Date.now()}-${++operationVisualSequence}`;
+  document.dispatchEvent(new CustomEvent("dominium:operation-state", {
+    detail: {
+      token: operationToken,
+      phase: normalizedPhase,
+      label: String(label || "Processando operação"),
+      detail: String(detail || ""),
+    },
+  }));
+  return operationToken;
+}
+
 function secureRequestOptions(options = {}) {
   const normalized = { ...options };
   if (String(normalized.method || "GET").toUpperCase() === "POST") {
@@ -1437,9 +1455,20 @@ function secureRequestOptions(options = {}) {
 
 async function request(url, options = {}) {
   const controller = new AbortController();
-  const { timeoutMs = 120000, ...fetchOptions } = options;
+  const {
+    timeoutMs = 120000,
+    operation = null,
+    ...fetchOptions
+  } = options;
   const securedOptions = secureRequestOptions(fetchOptions);
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const operationToken = operation
+    ? operationVisualState(
+      operation.phase || "working",
+      operation.label || "Processando operação",
+      operation.detail || "",
+    )
+    : "";
   try {
     const response = await fetch(url, { ...securedOptions, signal: controller.signal });
     let payload;
@@ -1465,13 +1494,30 @@ async function request(url, options = {}) {
       error.payload = payload;
       throw error;
     }
+    if (operationToken) {
+      operationVisualState(
+        "success",
+        operation.successLabel || "Operação concluída",
+        operation.successDetail || "",
+        operationToken,
+      );
+    }
     return payload;
   } catch (error) {
+    let finalError = error;
     if (error.name === "AbortError") {
       const timeoutSeconds = Math.ceil(timeoutMs / 1000);
-      throw new Error(`O painel excedeu ${timeoutSeconds} segundos; consulte o terminal`);
+      finalError = new Error(`O painel excedeu ${timeoutSeconds} segundos; consulte o terminal`);
     }
-    throw error;
+    if (operationToken) {
+      operationVisualState(
+        "error",
+        operation.errorLabel || "Operação interrompida",
+        finalError.message,
+        operationToken,
+      );
+    }
+    throw finalError;
   } finally {
     clearTimeout(timeout);
   }
@@ -1668,11 +1714,90 @@ function setConnection(label, kind = "") {
 }
 
 let toastTimer;
+let toastExitTimer;
+
+function dismissToast(immediate = false) {
+  clearTimeout(toastTimer);
+  clearTimeout(toastExitTimer);
+
+  const toast = elements.toast;
+  if (!toast) return;
+
+  if (immediate) {
+    toast.className = "toast hidden";
+    toast.replaceChildren();
+    return;
+  }
+
+  if (toast.classList.contains("hidden") || toast.classList.contains("toast-leaving")) {
+    return;
+  }
+
+  toast.classList.add("toast-leaving");
+  toastExitTimer = setTimeout(() => {
+    toast.className = "toast hidden";
+    toast.replaceChildren();
+  }, 280);
+}
+
 function showToast(message, kind = "") {
   clearTimeout(toastTimer);
-  elements.toast.textContent = message;
-  elements.toast.className = `toast ${kind}`.trim();
-  toastTimer = setTimeout(() => elements.toast.classList.add("hidden"), 4500);
+  clearTimeout(toastExitTimer);
+
+  const toast = elements.toast;
+  if (!toast) return;
+
+  const normalizedKind = ["error", "success", "warning", "info"].includes(kind)
+    ? kind
+    : "info";
+  const variants = {
+    error: { title: "Atenção", glyph: "!", duration: 6500 },
+    warning: { title: "Aviso", glyph: "!", duration: 5500 },
+    success: { title: "Concluído", glyph: "✓", duration: 4200 },
+    info: { title: "Dominium", glyph: "i", duration: 4600 },
+  };
+  const variant = variants[normalizedKind];
+
+  const icon = document.createElement("span");
+  icon.className = "toast-icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = variant.glyph;
+
+  const content = document.createElement("span");
+  content.className = "toast-content";
+
+  const title = document.createElement("strong");
+  title.className = "toast-title";
+  title.textContent = variant.title;
+
+  const detail = document.createElement("span");
+  detail.className = "toast-message";
+  detail.textContent = String(message ?? "");
+
+  content.append(title, detail);
+
+  const close = document.createElement("button");
+  close.className = "toast-close";
+  close.type = "button";
+  close.setAttribute("aria-label", "Fechar notificação");
+  close.textContent = "×";
+  close.addEventListener("click", () => dismissToast(false));
+
+  const progress = document.createElement("span");
+  progress.className = "toast-progress";
+  progress.setAttribute("aria-hidden", "true");
+  progress.append(document.createElement("span"));
+
+  toast.replaceChildren(icon, content, close, progress);
+  toast.className = `toast ${normalizedKind}`;
+  toast.style.setProperty("--toast-duration", `${variant.duration}ms`);
+  toast.setAttribute("role", normalizedKind === "error" ? "alert" : "status");
+  toast.setAttribute("aria-live", normalizedKind === "error" ? "assertive" : "polite");
+
+  void toast.offsetWidth;
+  toast.classList.add("toast-enter");
+
+  toastTimer = setTimeout(() => dismissToast(false), variant.duration);
 }
 
 function visibleOrders() {
@@ -2192,6 +2317,12 @@ async function runToaAutomation() {
     state.toaAutomation = await request("/api/toa-automation/run", {
       method: "POST",
       timeoutMs: 15000,
+      operation: {
+        phase: "working",
+        label: "Iniciando importação automática",
+        detail: "Preparando as rotas do TOA",
+        successLabel: "Importação em execução",
+      },
     });
     showToast("Importacao automatica iniciada. Acompanhe as rotas nesta tela.", "success");
   } catch (error) {
@@ -3430,6 +3561,12 @@ async function previewImportFile() {
         filename: state.importFile.name,
         content_base64: await fileAsBase64(state.importFile),
       }),
+      operation: {
+        phase: "searching",
+        label: "Analisando arquivo TOA",
+        detail: "Validando escopo, contratos e ordens",
+        successLabel: "Arquivo analisado",
+      },
     });
     state.importPreview = payload;
     state.selectedImportOs = new Set((payload.orders || []).map((o) => String(o.os_number)));
@@ -3488,6 +3625,12 @@ async function commitImportFile() {
         only_os_numbers: osNumbersToSend,
       }),
       timeoutMs: 300000,
+      operation: {
+        phase: "working",
+        label: "Importando ordens no Imperium",
+        detail: "Enviando o lote validado do TOA",
+        successLabel: "Importação enviada",
+      },
     });
     const returned = new Map((payload.orders || []).map((order) => [
       `${order.os_number}|${order.contract}`,
@@ -3600,7 +3743,15 @@ async function loadStockTechnicians() {
     const officialSource = state.stockSource === "official";
     const payload = await request(
       apiUrl(officialSource ? "/api/imperium-official/stocks" : "/api/stock/technicians"),
-      { timeoutMs: 120000 },
+      {
+        timeoutMs: 120000,
+        operation: {
+          phase: "searching",
+          label: "Consultando estoques",
+          detail: officialSource ? "Lendo a API oficial do Imperium" : "Consultando a base operacional",
+          successLabel: "Estoques atualizados",
+        },
+      },
     );
     if (profileKey !== state.profile) return;
     state.stockTechnicians = officialSource
@@ -4063,7 +4214,15 @@ async function loadTechnicianStock() {
       apiUrl(officialSource
         ? `/api/imperium-official/stocks/${encodeURIComponent(stockId)}/items`
         : `/api/stock?stock_id=${encodeURIComponent(stockId)}`),
-      { timeoutMs: 180000 },
+      {
+        timeoutMs: 180000,
+        operation: {
+          phase: "searching",
+          label: "Consultando estoque do técnico",
+          detail: officialSource ? "Lendo saldo pela API oficial" : "Validando saldo no Imperium",
+          successLabel: "Estoque atualizado",
+        },
+      },
     );
     if (
       profileKey !== state.profile
@@ -4859,7 +5018,15 @@ async function loadIntelligence({ quiet = false } = {}) {
   try {
     state.intelligence = await request(
       `/api/intelligence?date=${encodeURIComponent(elements.intelligenceDate.value || localDate())}&days=${encodeURIComponent(elements.intelligenceDays.value || "7")}`,
-      { timeoutMs: 20000 },
+      {
+        timeoutMs: 20000,
+        operation: quiet ? null : {
+          phase: "solving",
+          label: "Montando Central Inteligente",
+          detail: "Cruzando bases, produtividade e sinais operacionais",
+          successLabel: "Central atualizada",
+        },
+      },
     );
   } catch (error) {
     if (!quiet) showToast(`Nao foi possivel montar a inteligencia: ${error.message}`, "error");
@@ -4897,6 +5064,12 @@ async function runSerialAudit() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ date: elements.intelligenceDate.value || localDate() }),
       timeoutMs: 480000,
+      operation: {
+        phase: "solving",
+        label: "Auditando seriais",
+        detail: "Comparando TOA, Imperium e estoque",
+        successLabel: "Auditoria concluída",
+      },
     });
     const mismatches = Number(state.serialAudit.summary?.mismatch || 0);
     showToast(mismatches ? `${mismatches} divergencia(s) de serial encontrada(s).` : "Auditoria concluida sem divergencias.", mismatches ? "warning" : "success");
@@ -6490,7 +6663,7 @@ function render() {
   renderServerLogs();
 }
 
-async function loadOrders({ preserveSelection = false, quiet = false } = {}) {
+async function loadOrders({ preserveSelection = false, quiet = false, visual = true } = {}) {
   if (state.loading) return false;
   const profileKey = state.profile;
   state.loading = true;
@@ -6509,7 +6682,15 @@ async function loadOrders({ preserveSelection = false, quiet = false } = {}) {
       `/api/orders?date=${encodeURIComponent(elements.date.value)}`
       + `&status=${encodeURIComponent(status)}`
       + `&service_type=${encodeURIComponent(serviceType)}`,
-    ), { timeoutMs: status === "all" ? 300000 : 180000 });
+    ), {
+      timeoutMs: status === "all" ? 300000 : 180000,
+      operation: quiet || !visual ? null : {
+        phase: "searching",
+        label: "Consultando ordens no Imperium",
+        detail: status === "all" ? "Carregando todos os estados da operação" : "Buscando a lista operacional atual",
+        successLabel: "Ordens atualizadas",
+      },
+    });
     if (profileKey !== state.profile) return false;
     state.orders = payload.orders;
     state.monitorLastUpdatedAt = new Date().toISOString();
@@ -10309,6 +10490,12 @@ async function lookupToaLiveContract() {
         expected_profile_key: requestedProfile,
       }),
       timeoutMs: 300000,
+      operation: {
+        phase: "searching",
+        label: `Buscando ${query} no TOA`,
+        detail: "Consultando atividades, equipamentos e janelas operacionais",
+        successLabel: "Consulta TOA concluída",
+      },
     });
     if (
       state.profile !== requestedProfile
@@ -10878,6 +11065,12 @@ async function processMaterialPaste() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
         timeoutMs: 60000,
+        operation: {
+          phase: "solving",
+          label: "Validando miscelâneas do TOA",
+          detail: "Conferindo equivalência, saldo e vínculo com a OS",
+          successLabel: "Materiais analisados",
+        },
       },
     );
     if (state.pendingProductive?.order.id_os !== pending.order.id_os) return;
@@ -10959,6 +11152,11 @@ async function loadMaterialInventory(order) {
   state.materialEquivalenceConfirmed = false;
   elements.materialEquivalenceConfirm.checked = false;
   state.materialLoading = true;
+  const materialOperationToken = operationVisualState(
+    "solving",
+    "Validando estoque e miscelâneas",
+    `OS ${order.num_os} · conferindo técnico e estoque RETORNO`,
+  );
   refreshMaterialControls();
   try {
     let payload = null;
@@ -10977,7 +11175,15 @@ async function loadMaterialInventory(order) {
         throw err;
       }
     }
-    if (state.pendingProductive?.order.id_os !== order.id_os) return;
+    if (state.pendingProductive?.order.id_os !== order.id_os) {
+      operationVisualState(
+        "success",
+        "Validação encerrada",
+        "A seleção da OS mudou durante a consulta",
+        materialOperationToken,
+      );
+      return;
+    }
     state.materialInventory = [...(payload?.materials || [])].sort((a, b) => (
       `${a.code} ${a.name}`.localeCompare(`${b.code} ${b.name}`)
     ));
@@ -10986,9 +11192,29 @@ async function loadMaterialInventory(order) {
       : payload?.return_stock_name
         ? "Saldos do tecnico e do RETORNO conferidos"
         : "Saldo do tecnico conferido";
+    operationVisualState(
+      payload?.return_stock_error ? "error" : "success",
+      payload?.return_stock_error ? "Estoque exige atenção" : "Estoque validado",
+      state.materialNotice,
+      materialOperationToken,
+    );
   } catch (error) {
-    if (state.pendingProductive?.order.id_os !== order.id_os) return;
+    if (state.pendingProductive?.order.id_os !== order.id_os) {
+      operationVisualState(
+        "success",
+        "Validação encerrada",
+        "A seleção da OS mudou durante a consulta",
+        materialOperationToken,
+      );
+      return;
+    }
     state.materialError = error.message;
+    operationVisualState(
+      "error",
+      "Falha na validação de estoque",
+      error.message,
+      materialOperationToken,
+    );
     console.error("Falha ao consultar estoque de miscelaneas", error);
   } finally {
     if (state.pendingProductive?.order.id_os === order.id_os) {
@@ -11503,6 +11729,13 @@ async function processOrders(orders, closeCode, equipment = null) {
   state.stopped = false;
   elements.runbar.classList.remove("hidden");
   elements.pause.textContent = "Pausar";
+  const closeOperationToken = operationVisualState(
+    "working",
+    orders.length === 1
+      ? `Executando baixa da OS ${orders[0].num_os}`
+      : `Executando lote de ${orders.length} baixas`,
+    `Código ${definition.code} · aguardando Imperium`,
+  );
   let processed = 0;
   let failed = 0;
   let pending = 0;
@@ -11515,6 +11748,12 @@ async function processOrders(orders, closeCode, equipment = null) {
     elements.runTitle.textContent = `Baixando OS ${order.num_os}`;
     elements.runDetail.textContent = `${processed + 1} de ${orders.length}`;
     elements.progress.style.width = `${Math.round((processed / orders.length) * 100)}%`;
+    operationVisualState(
+      "solving",
+      `Baixando OS ${order.num_os}`,
+      `${processed + 1} de ${orders.length} · código ${definition.code} · validando confirmação`,
+      closeOperationToken,
+    );
     try {
       const result = await submitClose(order, definition, equipment || {});
       if (result?.pending_confirmation) {
@@ -11565,9 +11804,31 @@ async function processOrders(orders, closeCode, equipment = null) {
   state.running = false;
   state.paused = false;
   elements.pause.textContent = "Pausar";
-  await loadOrders({ preserveSelection: true });
+  await loadOrders({ preserveSelection: true, visual: false });
   render();
   const successful = processed - failed - pending;
+  if (state.stopped || failed) {
+    operationVisualState(
+      "error",
+      state.stopped ? "Baixa interrompida" : "Baixa concluída com atenção",
+      `${successful} concluídas · ${pending} aguardando · ${failed} falharam`,
+      closeOperationToken,
+    );
+  } else if (pending) {
+    operationVisualState(
+      "success",
+      "Solicitações recebidas",
+      `${pending} OS aguardando confirmação do Imperium`,
+      closeOperationToken,
+    );
+  } else {
+    operationVisualState(
+      "success",
+      "Baixas concluídas",
+      `${processed} OS confirmadas com código ${definition.code}`,
+      closeOperationToken,
+    );
+  }
   if (state.stopped && failed) {
     elements.runTitle.textContent = "Lote interrompido";
     elements.runDetail.textContent = `${successful} concluídas; ${failed} falharam`;

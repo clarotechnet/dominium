@@ -52,6 +52,31 @@ class UIRuntimeRegressionTests(unittest.TestCase):
             app,
         )
 
+    def test_operation_orbs_are_bound_to_real_frontend_states(self):
+        app = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+        motion = (ROOT / "static" / "motion-ui.js").read_text(encoding="utf-8")
+        styles = (ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+
+        self.assertIn('CustomEvent("dominium:operation-state"', app)
+        self.assertIn("Montando Central Inteligente", app)
+        self.assertIn("Consultando ordens no Imperium", app)
+        self.assertIn("Buscando ${query} no TOA", app)
+        self.assertIn("Validando estoque e miscelâneas", app)
+        self.assertIn("Executando lote de ${orders.length} baixas", app)
+        self.assertIn("operationOrbHud", motion)
+        self.assertIn("hud.dataset.phase = phase", motion)
+        self.assertIn(".operation-orb-hud", styles)
+        self.assertIn('[data-phase="success"]', styles)
+        self.assertIn("@media (prefers-reduced-motion: reduce)", styles)
+
+    def test_animated_toast_keeps_accessibility_controls(self):
+        app = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
+        styles = (ROOT / "static" / "styles.css").read_text(encoding="utf-8")
+        self.assertIn("dismissToast", app)
+        self.assertIn('close.setAttribute("aria-label", "Fechar notificação")', app)
+        self.assertIn('toast.setAttribute("aria-live"', app)
+        self.assertIn(".toast-progress", styles)
+
     def test_hostinger_runtime_exposes_registration_through_operational_backend(self):
         server = (ROOT / "deploy" / "hostinger-web" / "server.js").read_text(encoding="utf-8")
         self.assertIn("registration_enabled: true", server)

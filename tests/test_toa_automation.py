@@ -136,7 +136,7 @@ class TOAAutomationTests(unittest.TestCase):
                 routes=routes,
                 exporter_factory=BlockingExporter,
             )
-            slot = "2026-09-29T09:40"
+            slot = f"{dt.date.today().isoformat()}T09:40"
 
             self.assertTrue(automation.trigger("startup"))
             self.assertFalse(automation.trigger("agendada", slot))
@@ -154,15 +154,19 @@ class TOAAutomationTests(unittest.TestCase):
                 routes=routes,
                 exporter_factory=FakeExporter,
             )
-            slot = "2026-09-29T09:45"
+            today = dt.date.today()
+            slot = f"{today.isoformat()}T09:45"
             automation.last_run = {
-                "completed_at": "2026-09-29T09:44:20",
+                "completed_at": dt.datetime.combine(
+                    today,
+                    dt.time(9, 44, 20),
+                ).isoformat(),
                 "ok": True,
             }
 
             covered = automation._scheduled_slot_is_covered(
                 slot,
-                dt.datetime(2026, 9, 29, 9, 45, 0),
+                dt.datetime.combine(today, dt.time(9, 45, 0)),
             )
 
             self.assertTrue(covered)

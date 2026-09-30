@@ -148,6 +148,118 @@ document.addEventListener("dominium:toa-status", (event) => {
   animateStatus(event.detail?.element, event.detail?.kind || "");
 });
 
+let operationHud;
+let operationHudHideTimer;
+let activeOperationToken = "";
+
+function ensureOperationHud() {
+  if (operationHud?.isConnected) return operationHud;
+
+  const hud = document.createElement("aside");
+  hud.className = "operation-orb-hud hidden";
+  hud.id = "operationOrbHud";
+  hud.setAttribute("role", "status");
+  hud.setAttribute("aria-live", "polite");
+  hud.setAttribute("aria-atomic", "true");
+
+  const visual = document.createElement("div");
+  visual.className = "operation-orb-visual";
+  visual.setAttribute("aria-hidden", "true");
+
+  const orb = document.createElement("div");
+  orb.className = "thinking-orb";
+  ["a", "b", "c"].forEach((name) => {
+    const ring = document.createElement("span");
+    ring.className = `orb-ring orb-ring-${name}`;
+    orb.append(ring);
+  });
+
+  const cloud = document.createElement("span");
+  cloud.className = "orb-particle-cloud";
+  const particleCount = 28;
+  for (let index = 0; index < particleCount; index += 1) {
+    const particle = document.createElement("i");
+    particle.className = "orb-particle";
+    const angle = (index / particleCount) * Math.PI * 2;
+    const band = ((index * 7) % 11) / 10;
+    const radius = 13 + (band * 23);
+    particle.style.setProperty("--orb-x", (Math.cos(angle) * radius).toFixed(2));
+    particle.style.setProperty("--orb-y", (Math.sin(angle) * radius * (0.58 + (band * 0.28))).toFixed(2));
+    particle.style.setProperty("--orb-delay", `${-(index * 43)}ms`);
+    particle.style.setProperty("--orb-scale", (0.62 + (band * 0.72)).toFixed(2));
+    cloud.append(particle);
+  }
+  orb.append(cloud);
+
+  const core = document.createElement("span");
+  core.className = "orb-core";
+  const glyph = document.createElement("span");
+  glyph.className = "orb-core-glyph";
+  core.append(glyph);
+  orb.append(core);
+  visual.append(orb);
+
+  const copy = document.createElement("div");
+  copy.className = "operation-orb-copy";
+  const eyebrow = document.createElement("span");
+  eyebrow.className = "operation-orb-eyebrow";
+  eyebrow.textContent = "DOMINIUM EM AÇÃO";
+  const label = document.createElement("strong");
+  label.className = "operation-orb-label";
+  const detail = document.createElement("small");
+  detail.className = "operation-orb-detail";
+  copy.append(eyebrow, label, detail);
+
+  hud.append(visual, copy);
+  document.body.append(hud);
+  operationHud = hud;
+  return hud;
+}
+
+function renderOperationState(payload = {}) {
+  const hud = ensureOperationHud();
+  const phase = ["searching", "working", "solving", "success", "error"].includes(payload.phase)
+    ? payload.phase
+    : "working";
+  clearTimeout(operationHudHideTimer);
+
+  if (["searching", "working", "solving"].includes(phase)) {
+    activeOperationToken = payload.token || activeOperationToken;
+  } else if (payload.token && activeOperationToken && payload.token !== activeOperationToken) {
+    return;
+  }
+
+  hud.dataset.phase = phase;
+  hud.querySelector(".operation-orb-label").textContent = payload.label || "Processando operação";
+  hud.querySelector(".operation-orb-detail").textContent = payload.detail || (
+    phase === "searching" ? "Buscando dados em tempo real"
+      : phase === "working" ? "Executando a etapa solicitada"
+        : phase === "solving" ? "Validando respostas e consistência"
+          : phase === "success" ? "Operação confirmada"
+            : "A operação precisa de atenção"
+  );
+  hud.querySelector(".orb-core-glyph").textContent = phase === "success" ? "✓" : phase === "error" ? "×" : "";
+  hud.classList.remove("hidden", "operation-orb-leaving");
+  hud.classList.add("operation-orb-visible");
+
+  if (phase === "success" || phase === "error") {
+    const delay = phase === "success" ? 1100 : 1800;
+    operationHudHideTimer = window.setTimeout(() => {
+      if (payload.token && activeOperationToken && payload.token !== activeOperationToken) return;
+      hud.classList.add("operation-orb-leaving");
+      window.setTimeout(() => {
+        hud.classList.add("hidden");
+        hud.classList.remove("operation-orb-visible", "operation-orb-leaving");
+        activeOperationToken = "";
+      }, 320);
+    }, delay);
+  }
+}
+
+document.addEventListener("dominium:operation-state", (event) => {
+  renderOperationState(event.detail || {});
+});
+
 document.addEventListener("pointerover", (event) => {
   if (!enabled() || event.pointerType === "touch") return;
   const button = event.target.closest("button:not(:disabled)");
@@ -162,7 +274,12 @@ document.addEventListener("pointerout", (event) => {
   animate(button, { scale: 1 }, { duration: 0.1 });
 });
 
-globalThis.DOMINIUM_MOTION = { toggleDetails };
+globalThis.DOMINIUM_MOTION = {
+  toggleDetails,
+  operation(payload = {}) {
+    renderOperationState(payload);
+  },
+};
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", enterWorkspace, { once: true });

@@ -1289,6 +1289,8 @@ enterWorkspace	function	static/motion-ui.js	71	-
 revealCards	function	static/motion-ui.js	82	-
 toggleDetails	function	static/motion-ui.js	100	-
 animateStatus	function	static/motion-ui.js	130	-
+ensureOperationHud	function	static/motion-ui.js	155	-
+renderOperationState	function	static/motion-ui.js	219	-
 initDominiumMonitor	function	static/operations-monitor.js	17	-
 buildApi	function	static/operations-monitor.js	21	-
 text	function	static/operations-monitor.js	39	-
@@ -2231,8 +2233,8 @@ test_custom_storage_names_isolate_bucket_collection	method	tests/test_toa_automa
 test_second_trigger_is_rejected_while_worker_is_running	method	tests/test_toa_automation.py	112	TOAAutomationTests
 test_scheduled_slot_is_consumed_when_another_collection_is_already_running	method	tests/test_toa_automation.py	129	TOAAutomationTests
 test_recent_completed_collection_covers_next_scheduled_slot	method	tests/test_toa_automation.py	148	TOAAutomationTests
-test_bucket_collection_header_only_is_read_only_empty_snapshot	method	tests/test_toa_automation.py	171	TOAAutomationTests
-test_header_only_csv_is_valid_empty_route_and_never_reaches_imperium	method	tests/test_toa_automation.py	190	TOAAutomationTests
+test_bucket_collection_header_only_is_read_only_empty_snapshot	method	tests/test_toa_automation.py	175	TOAAutomationTests
+test_header_only_csv_is_valid_empty_route_and_never_reaches_imperium	method	tests/test_toa_automation.py	194	TOAAutomationTests
 _Element	class	tests/test_toa_browser.py	8	-
 __init__	method	tests/test_toa_browser.py	9	_Element
 is_displayed	method	tests/test_toa_browser.py	13	_Element
@@ -2413,7 +2415,9 @@ test_registration_ui_keeps_six_character_minimum	method	tests/test_ui_runtime_re
 test_auto_improductive_audit_drilldown_is_present	method	tests/test_ui_runtime_regression.py	17	UIRuntimeRegressionTests
 test_auto_improductive_worker_only_scans_current_day	method	tests/test_ui_runtime_regression.py	28	UIRuntimeRegressionTests
 test_blocked_audit_does_not_claim_closed_from_code_alone	method	tests/test_ui_runtime_regression.py	44	UIRuntimeRegressionTests
-test_hostinger_runtime_exposes_registration_through_operational_backend	method	tests/test_ui_runtime_regression.py	55	UIRuntimeRegressionTests
+test_operation_orbs_are_bound_to_real_frontend_states	method	tests/test_ui_runtime_regression.py	55	UIRuntimeRegressionTests
+test_animated_toast_keeps_accessibility_controls	method	tests/test_ui_runtime_regression.py	72	UIRuntimeRegressionTests
+test_hostinger_runtime_exposes_registration_through_operational_backend	method	tests/test_ui_runtime_regression.py	80	UIRuntimeRegressionTests
 WebAuthConfigTests	class	tests/test_web_auth_config.py	10	-
 state	method	tests/test_web_auth_config.py	11	WebAuthConfigTests
 test_web_mode_disables_public_bootstrap_and_registration_by_default	method	tests/test_web_auth_config.py	19	WebAuthConfigTests

@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-09-30T12:51:19+00:00
-- Source fingerprint: `53193787193628f4`
+- Generated: 2026-09-30T17:43:52+00:00
+- Source fingerprint: `63e1825f27133cef`
 - Indexed files: 251
-- Indexed symbols: 2825
+- Indexed symbols: 2829
 - API path references: 118
 
 ## Navigation rule
@@ -89,7 +89,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/index.html` (1 API paths)
 - `static/LUCIDE-LICENSE.txt` - ISC License
 - `static/lucide.min.js` (1 symbols)
-- `static/motion-ui.js` (10 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `static/motion-ui.js` (12 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `static/operations-monitor.js` (34 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `static/styles.css`
 - `static/theme-init.js`

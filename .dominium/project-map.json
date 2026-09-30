@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-30T12:51:19+00:00",
+  "generated_at": "2026-09-30T17:43:52+00:00",
   "schema": 2,
-  "source_fingerprint": "53193787193628f4b5bcd8fb98a356c9de1cd046312488a219259ab772a8eb80",
+  "source_fingerprint": "63e1825f27133cefb9e27bfa3cf3b4a8b7916b8e687201ae08509f21371e3e93",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -2545,15 +2545,15 @@
     {
       "path": "static/motion-ui.js",
       "category": "frontend",
-      "bytes": 5605,
-      "sha256": "674603136f3f4a4ffb9b84cddc0691954bc5841db0aee4adf95b632d75486f1c",
+      "bytes": 9925,
+      "sha256": "40ab771c94198e865e3fa0df553d2d05d5da3fec3dd273e3125f82d80c4041c0",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 10
+      "symbol_count": 12
     },
     {
       "path": "static/operations-monitor.js",
@@ -2571,8 +2571,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 180364,
-      "sha256": "054f5c492211ee9d3f877b027036f85d71d5b73d39dfb17f06aa50d1b3c7d436",
+      "bytes": 193282,
+      "sha256": "9b3cea0f61c2ea62eb1acd1f42233dfcc6054088f0207af875b271d42010c2ae",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -3819,8 +3819,8 @@
     {
       "path": "tests/test_toa_automation.py",
       "category": "tests",
-      "bytes": 8159,
-      "sha256": "eb0dbbba300956048ed3fa378e07f8521e7e274dd8bf96087e7cb0240ddc59c9",
+      "bytes": 8332,
+      "sha256": "6ce27533d3da1a4de32d0ec0208a573165b03af067faec7b798108429aaafca0",
       "summary": "",
       "imports": [
         "app",
@@ -4146,8 +4146,8 @@
     {
       "path": "tests/test_ui_runtime_regression.py",
       "category": "tests",
-      "bytes": 2841,
-      "sha256": "7b91c3c890b6ee770d9383113db4f7d611486c92cecccb48fefb268408d917f4",
+      "bytes": 4264,
+      "sha256": "e7bb2ac14e567a261b017bc11c0eb9b88f3c37e625b258f127580dc633eb0667",
       "summary": "",
       "imports": [
         "pathlib",
@@ -4159,7 +4159,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 7
+      "symbol_count": 9
     },
     {
       "path": "tests/test_web_auth_config.py",
