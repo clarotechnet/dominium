@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-01T12:20:50+00:00",
+  "generated_at": "2026-10-01T13:08:06+00:00",
   "schema": 2,
-  "source_fingerprint": "a556d877c91c82f9eb3748d12f88c5b895319d2c7dfd3652f8fe61d1ea7c724e",
+  "source_fingerprint": "ae3fa31ec7947962e68227d37da377a75b550161058ac3e78079bc3dd6d7c8f0",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 349379,
-      "sha256": "d614d0bfc4c5e7337e430a4e9631d24ec369b2b668d62d36e8b7d69b5b032172",
+      "bytes": 349184,
+      "sha256": "c4a1c2bc2eb9021f75a39f99af6d5b0ee0894c9d4e1d4ab78b68426c5480018f",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -2947,8 +2947,8 @@
     {
       "path": "tests/test_city_scope_integration.py",
       "category": "tests",
-      "bytes": 18044,
-      "sha256": "e81c1bf0df38ecdc9ba0a29f9148444eb6affea6d6fc5dcbb13cd81e7e726f3d",
+      "bytes": 18007,
+      "sha256": "02411a9b3190bb77786ef8fd99a7ae6edb4afbf7d6710a2e3557a4bd9cada5ed",
       "summary": "",
       "imports": [
         "app",

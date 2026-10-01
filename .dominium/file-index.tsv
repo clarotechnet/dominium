@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	149	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	d614d0bfc4c5e733
+orchestration	app.py	149	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	c4a1c2bc2eb9021f
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -154,7 +154,7 @@ tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
 tests	tests/test_build_hostinger_node_release.py	3				121b52809dba91af
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87
-tests	tests/test_city_scope_integration.py	18				e81c1bf0df38ecdc
+tests	tests/test_city_scope_integration.py	18				02411a9b3190bb77
 tests	tests/test_close_report.py	15				125242a6d2cff245
 tests	tests/test_close_report_excel.py	5				36de3899cae4ba75
 tests	tests/test_configure_imperium_credentials.py	4				931f61ff4157fbfa

@@ -120,7 +120,7 @@ class CityScopeIntegrationTests(unittest.TestCase):
                 SimpleNamespace(key="natal"),
             )
 
-    def test_import_preview_excludes_only_foreign_city_rows(self) -> None:
+    def test_import_preview_preserves_cross_city_rows_from_valid_bucket(self) -> None:
         content = self.csv(city="RECIFE") + self.csv(city="NATAL").split(
             b"\n", 1
         )[1]
@@ -131,27 +131,24 @@ class CityScopeIntegrationTests(unittest.TestCase):
             SimpleNamespace(key="recife", label="RECIFE"),
         )
 
-        self.assertEqual([order.city for order in preview.orders], ["RECIFE"])
-        self.assertEqual(len(preview.scope_exclusions), 1)
         self.assertEqual(
-            preview.scope_exclusions[0],
-            {
-                "os_number": "100",
-                "contract": "123",
-                "city": "NATAL",
-                "state": "RN",
-                "service": "DESCONEXAO",
-                "reason": "city_scope_mismatch",
-            },
+            [order.city for order in preview.orders],
+            ["RECIFE", "NATAL"],
+        )
+        self.assertEqual(preview.scope_exclusions, ())
+
+    def test_import_preview_preserves_only_cross_city_row_when_bucket_matches_profile(self) -> None:
+        preview = app._scoped_import_preview(
+            self.csv(city="NATAL"),
+            "Atividades-JCR-DMV_ADM_23_07_26.csv",
+            SimpleNamespace(key="recife", label="RECIFE"),
         )
 
-    def test_import_preview_blocks_file_with_only_foreign_cities(self) -> None:
-        with self.assertRaisesRegex(OperationBlocked, "city_scope_mismatch"):
-            app._scoped_import_preview(
-                self.csv(city="NATAL"),
-                "Atividades-JCR-DMV_ADM_23_07_26.csv",
-                SimpleNamespace(key="recife", label="RECIFE"),
-            )
+        self.assertEqual(len(preview.orders), 1)
+        self.assertEqual(preview.orders[0].city, "NATAL")
+        self.assertEqual(preview.import_scope.import_origin, "JCR")
+        self.assertEqual(preview.import_scope.expected_profile_key, "recife")
+        self.assertEqual(preview.scope_exclusions, ())
 
     def test_import_preview_accepts_official_csv_without_activity_id(self) -> None:
         content = (

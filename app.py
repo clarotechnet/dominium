@@ -522,44 +522,36 @@ def _scoped_import_preview(
     scope = ImportScope.from_source(filename, content, batch_id=batch_id)
     scope.validate_target(profile.key, scope.expected_city)
     preview = TECHNICIANS.enrich_preview(parse_toa_csv(content, filename))
-    blockers: list[str] = []
-    scoped_orders = []
-    scope_exclusions = list(preview.scope_exclusions)
+    # A origem do bucket define a praca operacional. A cidade presente na OS
+    # descreve o endereco da atividade e pode legitimamente divergir da praca
+    # (por exemplo, retirada em outro municipio). Portanto, uma OS nunca deve
+    # ser descartada apenas por order.city se veio de um bucket DMV valido
+    # para o perfil selecionado.
+    cross_city_orders: list[object] = []
     for order in preview.orders:
         try:
             scope.validate_target(profile.key, order.city)
         except OperationBlocked as exc:
             if exc.blockers == ("city_scope_mismatch",):
-                scope_exclusions.append(
-                    {
-                        "os_number": order.os_number,
-                        "contract": order.contract,
-                        "city": order.city,
-                        "state": order.state,
-                        "service": order.os_type,
-                        "reason": "city_scope_mismatch",
-                    }
-                )
+                cross_city_orders.append(order)
                 continue
-            blockers.extend(exc.blockers)
-            continue
-        scoped_orders.append(order)
-    if not scoped_orders:
-        blockers.append("city_scope_mismatch")
-    if blockers:
-        raise OperationBlocked(blockers)
-    if scope_exclusions:
-        LOGGER.warning(
-            "[%s] Importacao %s: %s OS fora do escopo foram excluidas do lote",
+            raise
+
+    if cross_city_orders:
+        LOGGER.info(
+            "[%s] Importacao %s: %s OS com cidade divergente preservadas "
+            "porque a origem do bucket (%s) define a praca",
             profile.label,
             filename,
-            len(scope_exclusions),
+            len(cross_city_orders),
+            scope.import_origin,
         )
+
     return replace(
         preview,
-        orders=tuple(scoped_orders),
+        orders=tuple(preview.orders),
         import_scope=scope,
-        scope_exclusions=tuple(scope_exclusions),
+        scope_exclusions=tuple(preview.scope_exclusions),
     )
 
 
