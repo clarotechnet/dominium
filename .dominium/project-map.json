@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-30T20:32:34+00:00",
+  "generated_at": "2026-10-01T11:52:39+00:00",
   "schema": 2,
-  "source_fingerprint": "a556d877c91c82f9eb3748d12f88c5b895319d2c7dfd3652f8fe61d1ea7c724e",
+  "source_fingerprint": "8416972e072a8575435f5884b80d850d328c9e7ffff558c0edc87aa147140400",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -666,8 +666,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 40346,
-      "sha256": "d5cfd6020264880c05e741ad8b45d353101066010a0fbbefe1f380d88611479a",
+      "bytes": 40672,
+      "sha256": "1b28ea7a4691e3bf706bc68068d4b74f0cb9f367e899b49c11ab6ce40d53dc9c",
       "summary": "",
       "imports": [],
       "endpoints": [
