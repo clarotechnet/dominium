@@ -529,13 +529,8 @@ app.use((error, req, res, next) => {
 const SUPABASE_URL = "https://haqzzxpocwzntyudrbch.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_s__p_R64LRUZ_Vk4Cid5BQ_ajAJkSn7";
 const AUTH_EMAIL_DOMAIN = "auth.dominium.invalid";
-const LEGACY_OPERATION_ORIGIN = "https://count-success-prisoner-mandate.trycloudflare.com";
-const DIRECT_OPERATION_ORIGIN = "https://citizenship-energy-label-conflict.trycloudflare.com";
-const configuredOperationOrigin = String(process.env.DOMINIUM_OPERATION_ORIGIN || "").trim();
 const DOMINIUM_OPERATION_ORIGIN = String(
-  configuredOperationOrigin && configuredOperationOrigin !== LEGACY_OPERATION_ORIGIN
-    ? configuredOperationOrigin
-    : DIRECT_OPERATION_ORIGIN,
+  process.env.DOMINIUM_OPERATION_ORIGIN || "https://count-success-prisoner-mandate.trycloudflare.com",
 ).replace(/\/+$/, "");
 const DOMINIUM_AUTH_OPS_URL = SUPABASE_URL + "/functions/v1/dominium-auth-ops";
 const SESSION_IDLE_MS = 8 * 60 * 60 * 1000;
