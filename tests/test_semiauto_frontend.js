@@ -653,4 +653,8 @@ assert.equal(reconcileState.semiAutoJobs[0].imperiumSeen, true);
 assert.deepEqual(reconcileState.semiAutoJobs[0].osNumbers, ["31"]);
 assert.match(reconcileState.semiAutoJobs[0].message, /retomando baixa automática/i);
 
+const agendaRefreshSection = source.slice(source.indexOf('document.addEventListener("visibilitychange"'));
+assert.match(agendaRefreshSection, /loadSemiAutoAgenda\(\{ quiet: true \}\)/);
+assert.match(agendaRefreshSection, /loadSemiAutoAgenda\(\{ quiet: true \}\);\n\}, 60000\);/);
+
 console.log("semiautomatic review-only frontend tests: ok");

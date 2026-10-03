@@ -12682,6 +12682,7 @@ document.addEventListener("visibilitychange", () => {
     loadToaAutomation({ quiet: true });
     loadAutoImproductiveClose({ quiet: true });
     loadToaLiveStatus({ quiet: true });
+    loadSemiAutoAgenda({ quiet: true });
   }
 });
 
@@ -12694,6 +12695,9 @@ setInterval(() => {
 setInterval(() => {
   if (state.authReady) loadToaLiveStatus({ quiet: true });
 }, 20000);
+setInterval(() => {
+  if (state.authReady) loadSemiAutoAgenda({ quiet: true });
+}, 60000);
 setInterval(() => {
   if (state.activeModule === "history") loadServerLogs({ quiet: true });
 }, 7500);

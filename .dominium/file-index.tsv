@@ -191,7 +191,7 @@ tests	tests/test_operational_store.py	5				1245242d685ecf66
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
-tests	tests/test_semiauto_frontend.js	19				9327c9752e46275b
+tests	tests/test_semiauto_frontend.js	19				44a6652d8752bfc1
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
