@@ -741,6 +741,7 @@ class ImperiumAPI:
                 description="CONTROLE REMOTO COM DEFEITO - TROCA",
                 id_code=121,
                 suffixes=(remote_control_suffix,),
+                productive=True,
             ),
         }
         if chip_suffixes:

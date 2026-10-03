@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-01T13:08:06+00:00",
+  "generated_at": "2026-10-03T11:52:09+00:00",
   "schema": 2,
-  "source_fingerprint": "ae3fa31ec7947962e68227d37da377a75b550161058ac3e78079bc3dd6d7c8f0",
+  "source_fingerprint": "ae6a3713ba7b6ffde54bd576d9d569e4e8c314a19d47c15fe52fc65383e58e11",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 349184,
-      "sha256": "c4a1c2bc2eb9021f75a39f99af6d5b0ee0894c9d4e1d4ab78b68426c5480018f",
+      "bytes": 349498,
+      "sha256": "6e6c615dc274967b844860901631588fc7d34a63d4c103f905b6960dd610f4ef",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -290,7 +290,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 149
+      "symbol_count": 150
     },
     {
       "path": "auth_store.py",
@@ -1033,8 +1033,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 258708,
-      "sha256": "81b5781c2b91339b192fe679348545413f912bf5ea272f385476f5bb7b9098c5",
+      "bytes": 258741,
+      "sha256": "3ec10d22a1c5d7330750a47426e664c9386e0701fb09be7edfa9a538f47ca336",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -4584,8 +4584,8 @@
     {
       "path": "toa_contract_registry.py",
       "category": "toa",
-      "bytes": 13737,
-      "sha256": "a1ed2fe41f6f3222775d399822cdce82ea896300375cfb2cf0b6e07421b273c9",
+      "bytes": 14645,
+      "sha256": "643a5826dbdfa1a575d126454fbdf6f3e4342896908ed82c3013a071c1965ae6",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "datetime",
@@ -4602,7 +4602,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 15
+      "symbol_count": 17
     },
     {
       "path": "toa_datalake_store.py",

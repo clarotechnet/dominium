@@ -427,6 +427,17 @@ class ProfileRuntime:
     def serialized_transfer_enabled(self) -> bool:
         return self.close_enabled and self.api.serialized_transfer_enabled
 
+    @property
+    def official_close_enabled(self) -> bool:
+        credentials_path = ROOT / "config" / "imperium_http_credentials.dat"
+        if not credentials_path.is_file():
+            return False
+        try:
+            load_credentials(credentials_path)
+        except (DataSnapError, OSError, ValueError, UnicodeError):
+            return False
+        return True
+
     def public_dict(self) -> dict:
         return {
             "key": self.key,
@@ -437,9 +448,7 @@ class ProfileRuntime:
             "native_creation_enabled": self.native_creation_enabled,
             "installer_change_enabled": self.installer_change_enabled,
             "serialized_transfer_enabled": self.serialized_transfer_enabled,
-            "official_close_enabled": (
-                ROOT / "config" / "imperium_http_credentials.dat"
-            ).is_file(),
+            "official_close_enabled": self.official_close_enabled,
             "native_creation_services": self.api.native_creation_services(),
         }
 

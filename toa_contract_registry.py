@@ -79,16 +79,33 @@ class TOAContractRegistry:
 
     def __init__(self, path: Path) -> None:
         self.path = path.resolve()
+        self.pending_path = self.path.with_name(f"{self.path.name}.pending")
         self.lock = threading.RLock()
 
+    @staticmethod
+    def _valid_payload(payload: object) -> bool:
+        return isinstance(payload, dict) and isinstance(payload.get("records"), dict)
+
     def _load(self) -> dict[str, Any]:
-        try:
-            payload = json.loads(self.path.read_text(encoding="utf-8"))
-        except (FileNotFoundError, OSError, json.JSONDecodeError):
+        candidates: list[tuple[int, dict[str, Any]]] = []
+        for candidate in (self.path, self.pending_path):
+            try:
+                payload = json.loads(candidate.read_text(encoding="utf-8"))
+                if not self._valid_payload(payload):
+                    continue
+                try:
+                    modified = candidate.stat().st_mtime_ns
+                except OSError:
+                    modified = 0
+                candidates.append((modified, payload))
+            except (FileNotFoundError, OSError, json.JSONDecodeError):
+                continue
+        if not candidates:
             return {"version": 1, "records": {}}
-        if not isinstance(payload, dict) or not isinstance(payload.get("records"), dict):
-            return {"version": 1, "records": {}}
-        return payload
+        return max(candidates, key=lambda item: item[0])[1]
+
+    def _replace_primary(self, temporary: Path) -> None:
+        temporary.replace(self.path)
 
     def _save(self, payload: dict[str, Any]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -102,11 +119,16 @@ class TOAContractRegistry:
         try:
             for attempt in range(12):
                 try:
-                    temporary.replace(self.path)
+                    self._replace_primary(temporary)
+                    try:
+                        self.pending_path.unlink(missing_ok=True)
+                    except OSError:
+                        pass
                     return
                 except PermissionError:
                     if attempt >= 11:
-                        raise
+                        temporary.replace(self.pending_path)
+                        return
                     time.sleep(min(0.05 * (attempt + 1), 0.25))
         finally:
             try:

@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	149	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	c4a1c2bc2eb9021f
+orchestration	app.py	150	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	6e6c615dc274967b
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -48,7 +48,7 @@ shared	flow_reader/server.py	11	2		DOMINIUM | MAPA DE RESPONSABILIDADE	00c885db8
 shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f388b7677c04f
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
-imperium	imperium_api.py	141		3	DOMINIUM | MAPA DE RESPONSABILIDADE	81b5781c2b91339b
+imperium	imperium_api.py	141		3	DOMINIUM | MAPA DE RESPONSABILIDADE	3ec10d22a1c5d733
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 shared	import_protocol_templates.json			1		9a6465634e73b3ec
@@ -238,7 +238,7 @@ toa	toa_capture_panel.py	10		2	DOMINIUM | MAPA DE RESPONSABILIDADE	a1fdf7495ee34
 toa	toa_cloud_client.py	9			Cliente da fila privada Cloudflare usada pelo DOMINIUM primario.	431148a4b1391254
 toa	toa_connector.py	25		2	API local, sanitizada e somente leitura para dados operacionais do TOA.	455092548c5ae402
 toa	toa_context.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	43ac572adde029a8
-toa	toa_contract_registry.py	15			DOMINIUM | MAPA DE RESPONSABILIDADE	a1ed2fe41f6f3222
+toa	toa_contract_registry.py	17			DOMINIUM | MAPA DE RESPONSABILIDADE	643a5826dbdfa1a5
 toa	toa_datalake_store.py	19			DOMINIUM | MAPA DE RESPONSABILIDADE	f7c80584d8f7687e
 toa	toa_discovery_browser.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	70da7424e3e7a77f
 toa	toa_discovery_check.py	1			DOMINIUM | MAPA DE RESPONSABILIDADE	780c396748a6abe3
