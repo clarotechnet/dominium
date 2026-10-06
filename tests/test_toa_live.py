@@ -359,18 +359,25 @@ class TOALiveCaptureTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "nao capturou"):
             capture_payload_from_storage({"order": [], "items": {}}, "4231016")
 
-    def test_live_lookup_clears_only_visual_queue_before_adding_contract(self) -> None:
+    def test_legacy_visual_lookup_is_blocked_before_touching_the_page(self) -> None:
         session = TOALiveSession(Path.cwd())
         driver = _ScriptDriver()
         session._driver = driver
 
-        session._start_single_lookup_locked("412774867")
+        with self.assertRaisesRegex(RuntimeError, "Pesquisa visual TECHCAP desativada"):
+            session._start_single_lookup_locked("412774867")
 
-        script, arguments = driver.calls[0]
-        self.assertEqual(arguments, ("412774867",))
-        self.assertLess(script.index("clearQueue"), script.index("addContracts"))
-        self.assertIn("clearQueue('APAGAR')", script)
-        self.assertNotIn("clearBatch", script)
+        self.assertEqual(driver.calls, [])
+
+    def test_legacy_collector_injection_is_blocked(self) -> None:
+        session = TOALiveSession(Path.cwd())
+        driver = _ScriptDriver()
+        session._driver = driver
+
+        with self.assertRaisesRegex(RuntimeError, "Pesquisa visual TECHCAP desativada"):
+            session._inject_collector_locked()
+
+        self.assertEqual(driver.calls, [])
 
 
 class CloudSnapshotLookupTests(unittest.TestCase):

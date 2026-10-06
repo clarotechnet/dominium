@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-03T12:23:19+00:00",
+  "generated_at": "2026-10-06T20:27:28+00:00",
   "schema": 2,
-  "source_fingerprint": "303100beaa83f519b5bb2ae23fe8a85482451663982caac535e340ba57a8c32a",
+  "source_fingerprint": "ede1c53cdd29187ffc51cb98bffe201274de6e32e0c4352290fcf1b6c3ffe191",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 349498,
-      "sha256": "6e6c615dc274967b844860901631588fc7d34a63d4c103f905b6960dd610f4ef",
+      "bytes": 349550,
+      "sha256": "6c7f0917502ac673a4d6c25279f9d3215f09ffbd89cf726aff3e8fe3f23adc01",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -666,8 +666,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 40346,
-      "sha256": "d5cfd6020264880c05e741ad8b45d353101066010a0fbbefe1f380d88611479a",
+      "bytes": 40672,
+      "sha256": "1b28ea7a4691e3bf706bc68068d4b74f0cb9f367e899b49c11ab6ce40d53dc9c",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1280,8 +1280,8 @@
     {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/content-main.js",
       "category": "shared",
-      "bytes": 110759,
-      "sha256": "8d916f5a998a60cb608f41a0e6d8737ed8933397a7a1192c29ed3857faba6388",
+      "bytes": 111603,
+      "sha256": "fb07d74b0c91bc835f7755e667f1edf4e9526e686a2b699bdde870c032a404b1",
       "summary": "content-main.js - Roda no world: MAIN",
       "imports": [],
       "endpoints": [],
@@ -3233,8 +3233,8 @@
     {
       "path": "tests/test_installer_reassignment.py",
       "category": "tests",
-      "bytes": 17625,
-      "sha256": "e571ea08992a6d7b7375209b6d1da319e9960a98bec2ea5dd64a9f4abee9f63a",
+      "bytes": 18267,
+      "sha256": "0822801264d594155c2418ffef632fe1a4d71178ca39509557dbc9cbe3375652",
       "summary": "",
       "imports": [
         "app",
@@ -3250,7 +3250,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 19
+      "symbol_count": 20
     },
     {
       "path": "tests/test_manual_materials.py",
@@ -4043,8 +4043,8 @@
     {
       "path": "tests/test_toa_live.py",
       "category": "tests",
-      "bytes": 18625,
-      "sha256": "c296ffdcf69eaca96b5be53ad188f105edcfba87c3ba288090ae93301311c8d9",
+      "bytes": 18838,
+      "sha256": "d2308d1bedea07a3384a95abdcdde7998d9a7024d72796eb7d039013a413e1ab",
       "summary": "",
       "imports": [
         "app",
@@ -4062,7 +4062,7 @@
         "TOACaptureLot.from_dict"
       ],
       "entrypoint": true,
-      "symbol_count": 26
+      "symbol_count": 27
     },
     {
       "path": "tests/test_toa_live_lookup.py",
@@ -4714,8 +4714,8 @@
     {
       "path": "toa_live.py",
       "category": "toa",
-      "bytes": 31538,
-      "sha256": "0fc34001a55c7c28e08b0910192e29c184935e769d19a101ff2cb94a25346220",
+      "bytes": 30821,
+      "sha256": "06aef1bd07886d55aafcadca1c2b543295b82d6df1aa0fc77494ab6855896b36",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "datetime",
@@ -4733,12 +4733,7 @@
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [
-        "TECHCAP.addContracts",
-        "TECHCAP.automationState",
-        "TECHCAP.clearQueue",
         "TECHCAP.queueList",
-        "TECHCAP.startQueue",
-        "TECHCAP.state",
         "TECHCAP_TOA_V5_6_FLUXO_OS_PARA_OS.txt",
         "TOACaptureLot.from_dict"
       ],
@@ -4886,11 +4881,7 @@
     "TDtmOrdemServico.AS_Execute",
     "TDtmOrdemServico.AS_GetRecords",
     "TEAM_PROFILES.get",
-    "TECHCAP.addContracts",
-    "TECHCAP.automationState",
-    "TECHCAP.clearQueue",
     "TECHCAP.queueList",
-    "TECHCAP.startQueue",
     "TECHCAP.state",
     "TECHCAP_TOA_V5_6_FLUXO_OS_PARA_OS.txt",
     "TECHNET.xlsx",

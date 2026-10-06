@@ -54,6 +54,12 @@ class InstallerReassignmentTests(unittest.TestCase):
                 "installer_id": 339183,
                 "technician_name": "SONERREGILSON",
             },
+            {
+                "stock_id": 314,
+                "stock_name": "ALTAMIR AVILA",
+                "installer_id": 338735,
+                "technician_name": "ALTAMIR AVILA",
+            },
         ]
         self.order = Order(
             1837422,
@@ -120,6 +126,16 @@ class InstallerReassignmentTests(unittest.TestCase):
         )
         self.assertIsNotNone(tech)
         self.assertEqual(tech["installer_id"], 339183)
+        self.assertEqual(method, "explicit_alias")
+
+    def test_resolve_explicit_alias_sidney_altamir(self) -> None:
+        tech, method = _resolve_imperium_installer_for_toa(
+            self.profile,
+            {"name": "SIDNEY DOMINGOS DA SILVA", "login": "Z509114"},
+        )
+        self.assertIsNotNone(tech)
+        self.assertEqual(tech["installer_id"], 338735)
+        self.assertEqual(tech["technician_name"], "ALTAMIR AVILA")
         self.assertEqual(method, "explicit_alias")
 
     def test_resolve_returns_none_when_technician_not_found(self) -> None:

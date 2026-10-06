@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	150	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	6e6c615dc274967b
+orchestration	app.py	150	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	6c7f0917502ac673
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -26,7 +26,7 @@ tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para mig
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	18	1		d5cfd6020264880c
+tooling-deploy	deploy/hostinger-web/server.js	41	18	1		1b28ea7a4691e3bf
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -61,7 +61,7 @@ shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76				b8274ffc7dfb2fbb
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-isolated.js	1			content-isolated.js - Roda no world: ISOLATED	3aa2ece3a08e2b62
-shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-main.js	107		2	content-main.js - Roda no world: MAIN	8d916f5a998a60cb
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-main.js	107		2	content-main.js - Roda no world: MAIN	fb07d74b0c91bc83
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/disconnect-inventory.js	4				8eb127a43fa75b41
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/manifest.json					f9aa3c97637b20df
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/offscreen-worker.js	1				e1d01dab03adfe17
@@ -169,7 +169,7 @@ tests	tests/test_imperium_http_plan.py	8				056547e8c6b8d815
 tests	tests/test_import_audit_history.py	3				6df23f085d3bdbda
 tests	tests/test_improductive_catalog_close.py	4				34a290574b15bc9a
 tests	tests/test_installer_change.py	11				c0e798b009cdfd15
-tests	tests/test_installer_reassignment.py	19	1			e571ea08992a6d7b
+tests	tests/test_installer_reassignment.py	20	1			0822801264d59415
 tests	tests/test_manual_materials.py	14				13ebf22bf45dd258
 tests	tests/test_material_matching.py	33				f7a01b4226d11747
 tests	tests/test_material_writeoff.py	16				4d6bdafc337eb87a
@@ -210,7 +210,7 @@ tests	tests/test_toa_datalake_store.py	5				9a077ca9a38c9926
 tests	tests/test_toa_discovery_browser.py	3				cc0d9dd8e053328f
 tests	tests/test_toa_import.py	15		1		28ef082b0cc1d01f
 tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
-tests	tests/test_toa_live.py	26		1		c296ffdcf69eaca9
+tests	tests/test_toa_live.py	27		1		d2308d1bedea07a3
 tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
 tests	tests/test_toa_secondary_session.py	7				9d5ca5c257461780
@@ -244,7 +244,7 @@ toa	toa_discovery_browser.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	70da7424e3e
 toa	toa_discovery_check.py	1			DOMINIUM | MAPA DE RESPONSABILIDADE	780c396748a6abe3
 toa	toa_import.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	32013568e2e200cf
 toa	toa_inventory.py	11			DOMINIUM | MAPA DE RESPONSABILIDADE	4a753ed25a0c24b3
-toa	toa_live.py	34		8	DOMINIUM | MAPA DE RESPONSABILIDADE	0fc34001a55c7c28
+toa	toa_live.py	34		3	DOMINIUM | MAPA DE RESPONSABILIDADE	06aef1bd07886d55
 toa	toa_local_collector.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	88bb369658f48698
 toa	toa_secondary_bucket_export.mjs	2		2		9f4a0fb9a6f478cc
 toa	toa_secondary_direct_lookup.mjs					c8ef3f34279460bf
