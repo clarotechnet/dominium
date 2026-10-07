@@ -129,6 +129,110 @@ class TOALiveLookupTests(unittest.TestCase):
         )
         self.assertEqual(chip_task["close_code"], "706")
 
+    def test_live_lookup_keeps_all_imperium_statuses_for_contract(self) -> None:
+        field = Order(
+            2220113,
+            "2659933184",
+            "3721176",
+            10,
+            "INSTALACAO DE CABO GPON",
+            status="EM CAMPO",
+        )
+        rescheduled_a = Order(
+            2220112,
+            "2659933173",
+            "3721176",
+            11,
+            "MUDANCA DE PACOTE",
+            status="REAGENDADA",
+        )
+        rescheduled_b = Order(
+            2220114,
+            "2659933195",
+            "3721176",
+            11,
+            "MUDANCA DE PACOTE",
+            status="REAGENDADA",
+        )
+        by_status = {
+            "field": [field],
+            "completed": [],
+            "canceled": [],
+            "rescheduled": [rescheduled_a, rescheduled_b],
+        }
+        profile = SimpleNamespace(
+            key="natal",
+            label="Natal",
+            cache_lock=threading.RLock(),
+            order_cache={},
+            cache_date=None,
+            cache_generation=0,
+            installer_overrides={},
+            api=SimpleNamespace(
+                list_orders=lambda _date, *, status, service_type: list(by_status[status]),
+            ),
+        )
+        result = {
+            "results": [{
+                "aid": "201916210",
+                "contract": "3721176",
+                "scheduled_date": "2026-10-07",
+                "city": "NATAL",
+                "tasks": [
+                    {"os_number": "2659933173", "close_code": "108", "status": "N"},
+                    {"os_number": "2659933195", "close_code": "108", "status": "N"},
+                ],
+            }],
+        }
+        gate = SimpleNamespace(acquire=lambda **_kwargs: True, release=lambda: None)
+        field_row = {
+            **field.to_dict(),
+            "approved_state_hash": "field-state",
+            "operation_blockers": [],
+            "operation_identity": {
+                "project_id": "IMPERIUM_OLLAMA",
+                "profile_key": "natal",
+                "city": "NATAL",
+                "contract": "3721176",
+                "activity_id": "201916210",
+            },
+        }
+
+        with (
+            patch("app.OPERATION_GATE", gate),
+            patch("app._reconcile_failures"),
+            patch("app._enrich_orders", return_value=[field_row]),
+            patch("app._record_operational_orders"),
+        ):
+            info = _refresh_live_lookup_imperium_cache(profile, result)
+
+        result["imperium_refresh"] = info
+        with (
+            patch("app._enrich_orders", return_value=[field_row]),
+            patch("app.TOA_CONTRACTS.public_state", return_value={"records": []}),
+            patch("app.OPERATIONAL_STORE.contract", return_value={}),
+        ):
+            matched = _match_live_capture_to_orders(profile, result)
+
+        capture = matched["results"][0]
+        self.assertEqual(
+            {row["num_os"]: row["status"] for row in capture["imperium_all_orders"]},
+            {
+                "2659933184": "EM CAMPO",
+                "2659933173": "REAGENDADA",
+                "2659933195": "REAGENDADA",
+            },
+        )
+        tasks = {task["os_number"]: task for task in capture["tasks"]}
+        self.assertEqual(set(tasks), {"2659933184", "2659933173", "2659933195"})
+        self.assertEqual(tasks["2659933173"]["imperium_status"], "REAGENDADA")
+        self.assertEqual(tasks["2659933195"]["imperium_status"], "REAGENDADA")
+        self.assertEqual(tasks["2659933184"]["imperium_status"], "EM CAMPO")
+        self.assertTrue(tasks["2659933184"]["imperium_only"])
+        self.assertEqual(tasks["2659933184"]["close_code"], "")
+        self.assertEqual(tasks["2659933184"]["status"], "NAO LOCALIZADA NA CAPTURA TOA")
+        self.assertEqual(profile.order_cache, {2220113: field})
+
     def test_live_lookup_refreshes_field_cache_when_toa_os_is_missing(self) -> None:
         order = Order(
             2214730,

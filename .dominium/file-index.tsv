@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	150	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	6c7f0917502ac673
+orchestration	app.py	150	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	68f6c0e6488676bb
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -211,7 +211,7 @@ tests	tests/test_toa_discovery_browser.py	3				cc0d9dd8e053328f
 tests	tests/test_toa_import.py	15		1		28ef082b0cc1d01f
 tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
 tests	tests/test_toa_live.py	27		1		d2308d1bedea07a3
-tests	tests/test_toa_live_lookup.py	14		1		adc623f2dedf332a
+tests	tests/test_toa_live_lookup.py	15		1		dee51f885f154318
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
 tests	tests/test_toa_secondary_session.py	7				9d5ca5c257461780
 tests	tests/test_toa_worker_cache.py	7				84d409c3fed69bd5

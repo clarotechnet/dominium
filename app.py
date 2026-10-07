@@ -1744,7 +1744,21 @@ def _match_live_capture_to_orders(
         capture_date = _live_capture_iso_date(capture.get("scheduled_date"))
         refresh_info = result.get("imperium_refresh")
         refresh_info = refresh_info if isinstance(refresh_info, dict) else {}
-        refresh_missing = set(refresh_info.get("missing_after") or ())
+        refresh_missing_all = set(refresh_info.get("missing_after_all") or ())
+        all_status_rows = result.get("imperium_all_orders")
+        all_status_rows = all_status_rows if isinstance(all_status_rows, list) else []
+        all_contract_orders = [
+            dict(order)
+            for order in all_status_rows
+            if isinstance(order, dict)
+            and str(order.get("contract") or "").strip() == contract
+        ]
+        all_status_by_os = {
+            str(order.get("num_os") or "").strip(): order
+            for order in all_contract_orders
+            if str(order.get("num_os") or "").strip()
+        }
+        capture["imperium_all_orders"] = all_contract_orders
         operational_record = OPERATIONAL_STORE.contract(
             contract,
             profile=profile.key,
@@ -1869,60 +1883,79 @@ def _match_live_capture_to_orders(
             if str(order.get("num_os") or "").strip()
         }
 
-        # Inherit default close code from existing activity tasks
-        default_close_code = ""
-        for t in capture.get("tasks", []):
-            if isinstance(t, dict) and t.get("close_code"):
-                default_close_code = str(t["close_code"]).strip()
-                break
-
         existing_task_numbers = {
             str(task.get("os_number") or "").strip()
             for task in capture.get("tasks", [])
             if isinstance(task, dict) and str(task.get("os_number") or "").strip()
         }
 
-        # Include other OSs from the same contract that are active in Imperium
-        for order in current_contract_matches:
+        # Never hide an Imperium OS merely because it is not present in the
+        # current TOA task list or because its status is not EM CAMPO.  These
+        # synthetic rows are display-only: no close code is guessed.
+        for order in all_contract_orders:
             num_os = str(order.get("num_os") or "").strip()
-            if num_os and num_os not in existing_task_numbers:
-                existing_task_numbers.add(num_os)
-                capture.setdefault("tasks", []).append({
-                    "os_number": num_os,
-                    "service": str(order.get("service") or "").strip(),
-                    "status": "EM CAMPO",
-                    "close_code": default_close_code or "409",
-                    "source": "imperium_contract",
-                    "imperium_field": True,
-                    "imperium_status": str(order.get("status") or "EM CAMPO").strip(),
-                })
+            if not num_os or num_os in existing_task_numbers:
+                continue
+            existing_task_numbers.add(num_os)
+            imperium_status = str(order.get("status") or "NAO INFORMADO").strip()
+            capture.setdefault("tasks", []).append({
+                "os_number": num_os,
+                "service": str(order.get("service") or "").strip(),
+                "status": "NAO LOCALIZADA NA CAPTURA TOA",
+                "close_code": "",
+                "source": "imperium_contract_status",
+                "imperium_only": True,
+                "imperium_field": imperium_status.upper() == "EM CAMPO",
+                "imperium_status": imperium_status,
+                "imperium_status_source": "current_all_status_snapshot",
+            })
 
         for task in capture.get("tasks", []):
             if not isinstance(task, dict):
                 continue
             os_number = str(task.get("os_number") or "").strip()
             current_order = matches_by_os.get(os_number)
+            status_order = all_status_by_os.get(os_number)
             history_order = last_imperium_by_os.get(os_number)
             historical_match = bool(
                 current_order
                 and current_order.get("operation_source") == "imperium_history"
             )
             task_key = f"{contract}:{os_number}"
-            task["imperium_field"] = current_order is not None and not historical_match
+            current_status = str(
+                (status_order or {}).get("status")
+                or (
+                    (current_order or {}).get("status")
+                    if current_order is not None and not historical_match
+                    else ""
+                )
+                or ""
+            ).strip()
+            task["imperium_field"] = bool(
+                current_status.upper() == "EM CAMPO"
+                and (
+                    status_order is not None
+                    or (current_order is not None and not historical_match)
+                )
+            )
             if current_order is not None and not historical_match:
                 task["imperium_status"] = str(
                     current_order.get("status") or "EM CAMPO"
                 ).strip()
                 task["imperium_status_source"] = "current_field_cache"
+            elif status_order is not None:
+                task["imperium_status"] = current_status or "NAO INFORMADO"
+                task["imperium_status_source"] = "current_all_status_snapshot"
+                task["imperium_read_only"] = bool(status_order.get("read_only"))
             elif refresh_info.get("busy"):
                 task["imperium_status"] = "NAO CONFIRMADA - IMPERIUM OCUPADO"
                 task["imperium_status_source"] = "refresh_busy"
             elif refresh_info.get("error"):
                 task["imperium_status"] = "NAO CONFIRMADA - FALHA NA ATUALIZACAO"
                 task["imperium_status_source"] = "refresh_error"
-            elif refresh_info.get("refreshed") and task_key in refresh_missing:
-                task["imperium_status"] = "NAO ESTA EM CAMPO"
-                task["imperium_status_source"] = "current_field_refresh"
+            elif refresh_info.get("refreshed") and task_key in refresh_missing_all:
+                task["imperium_status"] = "NAO LOCALIZADA NO IMPERIUM"
+                task["imperium_status_source"] = "current_all_status_refresh"
             elif history_order is not None:
                 last_status = str(
                     history_order.get("imperium_status") or "OBSERVADA"
@@ -1936,20 +1969,21 @@ def _match_live_capture_to_orders(
                 task["imperium_status"] = "NAO CONFIRMADA NO CACHE ATUAL"
                 task["imperium_status_source"] = "unconfirmed"
         if refresh_info.get("busy") and any(
-            not bool(task.get("imperium_field"))
+            not bool(task.get("imperium_status"))
+            or str(task.get("imperium_status_source")) == "refresh_busy"
             for task in capture.get("tasks", [])
             if isinstance(task, dict)
         ):
             capture.setdefault("validation_warnings", []).append(
-                "Imperium ocupado; a situacao atual da OS ainda nao foi confirmada."
+                "Imperium ocupado; a situacao atual de todas as OS ainda nao foi confirmada."
             )
         elif refresh_info.get("refreshed") and any(
-            str(task.get("imperium_status_source")) == "current_field_refresh"
+            str(task.get("imperium_status_source")) == "current_all_status_refresh"
             for task in capture.get("tasks", [])
             if isinstance(task, dict)
         ):
             capture.setdefault("validation_warnings", []).append(
-                "A OS nao apareceu na lista EM CAMPO apos atualizar o Imperium."
+                "Uma ou mais OS do TOA nao foram localizadas em nenhum estado atual do Imperium."
             )
         capture["operation_blockers"] = list(dict.fromkeys(blockers))
     result["profile"] = profile.key
@@ -2106,22 +2140,43 @@ def _refresh_live_lookup_imperium_cache(
     profile: ProfileRuntime,
     result: dict,
 ) -> dict:
+    """Refresh the field cache and attach a complete current Imperium snapshot.
+
+    The field cache remains the only source that can authorize a close.  The
+    all-status snapshot is display-only and exists so a TOA lookup never hides
+    an OS merely because it is REAGENDADA, CONCLUIDA or CANCELADA.
+    """
     wanted = _live_lookup_task_keys(result)
+    contracts = {
+        str(capture.get("contract") or "").strip()
+        for capture in result.get("results", [])
+        if isinstance(capture, dict) and str(capture.get("contract") or "").strip()
+    }
     with profile.cache_lock:
-        current = {
+        current_field = {
             (str(order.contract).strip(), str(order.num_os).strip())
             for order in profile.order_cache.values()
         }
-    missing_before = wanted - current
+    missing_before = wanted - current_field
     info = {
-        "attempted": bool(missing_before),
+        "attempted": bool(contracts),
         "refreshed": False,
         "busy": False,
         "error": "",
-        "missing_before": sorted(f"{contract}:{os_number}" for contract, os_number in missing_before),
-        "missing_after": sorted(f"{contract}:{os_number}" for contract, os_number in missing_before),
+        "missing_before": sorted(
+            f"{contract}:{os_number}" for contract, os_number in missing_before
+        ),
+        "missing_after": sorted(
+            f"{contract}:{os_number}" for contract, os_number in missing_before
+        ),
+        "missing_after_all": sorted(
+            f"{contract}:{os_number}" for contract, os_number in wanted
+        ),
+        "status_counts": {},
+        "all_status_count": 0,
     }
-    if not missing_before:
+    result["imperium_all_orders"] = []
+    if not contracts:
         return info
     if not OPERATION_GATE.acquire(timeout=5.0):
         info["busy"] = True
@@ -2129,42 +2184,85 @@ def _refresh_live_lookup_imperium_cache(
 
     try:
         date = dt.date.today()
-        orders = profile.api.list_orders(
-            date,
-            status="field",
-            service_type="all",
-        )
+        all_by_id: dict[int, Order] = {}
+        field_orders: list[Order] = []
+        status_counts: dict[str, int] = {}
+        for current_status in ("field", "completed", "canceled", "rescheduled"):
+            rows = profile.api.list_orders(
+                date,
+                status=current_status,
+                service_type="all",
+            )
+            status_counts[current_status] = len(rows)
+            if current_status == "field":
+                field_orders = list(rows)
+            for order in rows:
+                all_by_id[order.id_os] = order
+
         with profile.cache_lock:
             profile.order_cache.clear()
-            profile.order_cache.update({order.id_os: order for order in orders})
+            profile.order_cache.update({
+                order.id_os: order for order in field_orders
+            })
             profile.cache_date = date
             profile.cache_generation = getattr(profile, "cache_generation", 0) + 1
-        _reconcile_failures(profile, orders)
-        rows = _enrich_orders(profile, date, orders)
-        _record_operational_orders(profile, rows)
-        current = {
+
+        _reconcile_failures(profile, field_orders)
+        field_rows = _enrich_orders(profile, date, field_orders)
+        _record_operational_orders(profile, field_rows)
+
+        all_status_rows = []
+        for order in all_by_id.values():
+            if str(order.contract).strip() not in contracts:
+                continue
+            row = order.to_dict()
+            row["read_only"] = str(order.status).strip().upper() != "EM CAMPO"
+            row["operation_source"] = "imperium_status_snapshot"
+            all_status_rows.append(row)
+        all_status_rows.sort(
+            key=lambda row: (
+                str(row.get("contract") or ""),
+                str(row.get("num_os") or ""),
+                int(row.get("id_os") or 0),
+            )
+        )
+        result["imperium_all_orders"] = all_status_rows
+
+        current_field_keys = {
             (str(order.contract).strip(), str(order.num_os).strip())
-            for order in orders
+            for order in field_orders
         }
-        missing_after = wanted - current
+        current_all_keys = {
+            (str(order.contract).strip(), str(order.num_os).strip())
+            for order in all_by_id.values()
+        }
+        missing_after_field = wanted - current_field_keys
+        missing_after_all = wanted - current_all_keys
         info.update({
             "refreshed": True,
-            "count": len(orders),
+            "count": len(field_orders),
+            "all_status_count": len(all_by_id),
+            "status_counts": status_counts,
             "missing_after": sorted(
                 f"{contract}:{os_number}"
-                for contract, os_number in missing_after
+                for contract, os_number in missing_after_field
+            ),
+            "missing_after_all": sorted(
+                f"{contract}:{os_number}"
+                for contract, os_number in missing_after_all
             ),
         })
         LOGGER.info(
-            "[%s] Consulta TOA atualizou cache Imperium: %s OS em campo; %s tarefa(s) ainda ausentes",
+            "[%s] Consulta TOA atualizou Imperium: %s EM CAMPO; %s OS em todos os estados; %s tarefa(s) ausentes do Imperium",
             profile.label,
-            len(orders),
-            len(missing_after),
+            len(field_orders),
+            len(all_by_id),
+            len(missing_after_all),
         )
     except (DataSnapError, OSError) as exc:
         info["error"] = str(exc)
         LOGGER.warning(
-            "[%s] Nao foi possivel atualizar cache Imperium durante consulta TOA: %s",
+            "[%s] Nao foi possivel atualizar snapshot Imperium durante consulta TOA: %s",
             profile.label,
             exc,
         )

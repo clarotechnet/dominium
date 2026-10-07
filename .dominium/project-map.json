@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-06T20:27:28+00:00",
+  "generated_at": "2026-10-07T19:35:39+00:00",
   "schema": 2,
-  "source_fingerprint": "ede1c53cdd29187ffc51cb98bffe201274de6e32e0c4352290fcf1b6c3ffe191",
+  "source_fingerprint": "29bd7b0c206160cba7f20e22015b641ebe80cd612d88de62adaf0a27ba3119a4",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 349550,
-      "sha256": "6c7f0917502ac673a4d6c25279f9d3215f09ffbd89cf726aff3e8fe3f23adc01",
+      "bytes": 353693,
+      "sha256": "68f6c0e6488676bb07a17d2630f19420f793bcaf6c828a4978aa8da152d424ac",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -4067,8 +4067,8 @@
     {
       "path": "tests/test_toa_live_lookup.py",
       "category": "tests",
-      "bytes": 16115,
-      "sha256": "adc623f2dedf332a204338f1a6679637561db3b5ce7b63f2721ff4601084201d",
+      "bytes": 19947,
+      "sha256": "dee51f885f154318133cf1dcd24ecef4e2f1dae70fbdc7e7dc812add46024023",
       "summary": "",
       "imports": [
         "app",
@@ -4088,7 +4088,7 @@
         "TOA_CONTRACTS.public_state"
       ],
       "entrypoint": true,
-      "symbol_count": 14
+      "symbol_count": 15
     },
     {
       "path": "tests/test_toa_local_collector.py",

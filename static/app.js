@@ -8120,6 +8120,11 @@ function toaLiveImperiumMatch(capture, task) {
   return null;
 }
 
+function toaLiveAnyImperiumMatch(capture, task) {
+  const matches = capture?.imperium_all_orders || [];
+  return matches.find((order) => String(order.num_os) === String(task?.os_number)) || null;
+}
+
 function operationDraftKey(order) {
   const identity = order?.operation_identity || {};
   if (
@@ -10584,8 +10589,15 @@ function toaLiveCaptureCard(capture, requestedOs) {
     if (isRequested) row.classList.add("requested");
     const details = automationNode("div");
     const match = toaLiveImperiumMatch(capture, task);
+    const displayMatch = toaLiveAnyImperiumMatch(capture, task);
+    const imperiumStatus = String(
+      task.imperium_status || displayMatch?.status || (match ? "EM CAMPO" : "NAO LOCALIZADA"),
+    ).trim();
+    const isField = normalize(imperiumStatus) === normalize("EM CAMPO");
+    const displayOnly = Boolean(task.imperium_only);
     const service = String(
-      task.service || task.os_type || match?.service || capture.work_type || "Servico nao informado",
+      task.service || task.os_type || displayMatch?.service || match?.service
+      || capture.work_type || "Servico nao informado",
     ).replace(/^\s*\d+\s*-\s*/, "").trim();
     details.append(
       automationNode("strong", "", `OS ${task.os_number || "-"}${isRequested ? " | PESQUISADA" : ""}`),
@@ -10593,26 +10605,31 @@ function toaLiveCaptureCard(capture, requestedOs) {
       automationNode(
         "span",
         "",
-        `Codigo ${task.close_code || "-"} | TOA ${task.status || "-"} | Imperium ${task.imperium_status || (match ? "EM CAMPO" : "FORA DA LISTA EM CAMPO")}`,
+        `Codigo ${task.close_code || "-"} | TOA ${task.status || "-"} | Imperium ${imperiumStatus}`,
       ),
     );
     const actions = automationNode("div", "semi-auto-item-actions");
+    const canPrepare = Boolean(match && isField && task.close_code && !displayOnly);
     const closeBtn = automationNode("button", "button primary compact", "Baixar esta OS");
     closeBtn.type = "button";
-    closeBtn.disabled = !match || !task.close_code || !state.closeEnabled;
-    closeBtn.title = match
+    closeBtn.disabled = !canPrepare || !state.closeEnabled;
+    closeBtn.title = canPrepare
       ? "Abrir editor e enviar a baixa desta OS imediatamente"
-      : "OS nao localizada na lista atual do Imperium";
+      : displayOnly
+        ? "OS encontrada no Imperium, mas sem tarefa/codigo de baixa na captura atual do TOA"
+        : !isField
+          ? `OS esta ${imperiumStatus} no Imperium; somente OS EM CAMPO pode ser baixada`
+          : "OS nao possui correspondencia operacional valida para baixa";
     closeBtn.addEventListener("click", () => {
       prepareToaLiveClose(capture, task, { openEditor: true });
     });
 
     const prepareBtn = automationNode("button", "button secondary compact", "Preparar no editor");
     prepareBtn.type = "button";
-    prepareBtn.disabled = !match || !task.close_code;
-    prepareBtn.title = match
+    prepareBtn.disabled = !canPrepare;
+    prepareBtn.title = canPrepare
       ? "Carregar estes dados no editor sem abrir o modal de baixa imediatamente"
-      : "OS nao localizada na lista atual do Imperium";
+      : closeBtn.title;
     prepareBtn.addEventListener("click", () => {
       prepareToaLiveClose(capture, task, { openEditor: false });
     });
