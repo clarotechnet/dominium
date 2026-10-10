@@ -35,15 +35,16 @@ tooling-deploy	deploy/supabase-hosted/supabase/config.toml					04a1ca9302799337
 tooling-deploy	deploy/windows-server/caddy-snippet.txt				Adicionar ao docker/Caddyfile do stack dominium-toa no servidor:	5bfc12f4f66ede0c
 tooling-deploy	deploy/windows-server/README.md				DOMINIUM no servidor Windows	bdb24de6348883c3
 tooling-deploy	deploy/windows-server/start-dominium.ps1					07dbc429acea36ce
+shared	desc_order_verifier.py	7			Fail-closed, read-only Imperium order/installer checks for the DESC relay.	17c0924ca8229612
 shared	desc_review_proxy.py	10	1		Authenticated Dominium boundary to the Bot's existing DESC review service.	9c4afb6e6dd2d9c4
-shared	desc_review_relay.py	5			Small, authenticated HTTPS-tunnel relay; exposes only DESC review routes.	d247408234740e73
+shared	desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	79346c1e1b556a5d
 orchestration	disconnect_automation.py	26			DOMINIUM | MAPA DE RESPONSABILIDADE	b4aaf01ad3a34fad
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
 docs	docs/reference/DOMINIUM X IMPERIUM Especificacoes_requisicoes.txt				﻿================================================================================	0888eec3d49a2ab5
 docs	docs/reference/GUIA_API_OFICIAL_TOA_E_IMPERIUM.txt				GUIA OPERACIONAL - APIs OFICIAIS DO TOA E DO IMPERIUM	f786a457b0065170
 docs	docs/reference/LEIA-ME-LOCAL.txt				PAINEL DIRETO DE BAIXA DE OS - IMPERIUM	0be0563222de776d
 docs	docs/reference/TOA_CONNECTOR_API.md				DOMINIUM TOA Connector	a1c7cfee4cf9ed29
-docs	docs/superpowers/plans/2026-10-10-dominium-desc-progress.md				Progresso e evidências	253dcfc3a3b70cfb
+docs	docs/superpowers/plans/2026-10-10-dominium-desc-progress.md				Progresso e evidências	eb0079f794820147
 docs	docs/superpowers/plans/2026-10-10-dominium-desc.md				Dominium e DESCONEXÃO Implementation Plan	5d89722ce6d50003
 docs	docs/superpowers/specs/2026-10-10-dominium-desc-design.md				Dominium: novo visual e DESCONEXÃO	8fb2f29706ba9060
 shared	edge_voice.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	32f7dbf35b7da5a8
@@ -61,6 +62,16 @@ shared	import_protocol_templates.json			1		9a6465634e73b3ec
 shared	import_technicians_xlsx.py	4		1	DOMINIUM | MAPA DE RESPONSABILIDADE	341a4f747dde9502
 imperium	installer_change.py	5			DOMINIUM | MAPA DE RESPONSABILIDADE	18de9230c2938c1e
 shared	installer_change_protocol_templates.json			1		f69d1e6915145bd3
+shared	integrations/desc_review_bot/README.md				DESC — vínculo WhatsApp / Imperium	2e37b10767d75f89
+shared	integrations/desc_review_bot/src/descReview/core.js	19				8bac5edd1b8475a9
+shared	integrations/desc_review_bot/src/descReview/orderClient.js	1				c058133fa2d5f124
+shared	integrations/desc_review_bot/src/descReview/orderEvidence.js	1				c2cde9ca6e3e700d
+shared	integrations/desc_review_bot/src/descReview/server.js	19				712802d6b3a6ee5b
+shared	integrations/desc_review_bot/src/descReview/tests/order-client.test.js					e594aea531054fb6
+shared	integrations/desc_review_bot/src/descReview/tests/order-evidence.test.js	3				9959f6643b705f28
+shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
+shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
+shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
 shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
@@ -128,21 +139,21 @@ tooling-deploy	scripts/configure_supabase_hosted.py	1				f4637b027d3a1889
 tooling-deploy	scripts/deploy_supabase.ps1					ae66340ccd4c0380
 tooling-deploy	scripts/generate_agent_context.py	20		1		99f386dde01ec92f
 tooling-deploy	scripts/install_agent_context_hooks.py	2				3f284e6102d8feeb
-tooling-deploy	scripts/quality_gate.py	5				1e02e9dbf1ac810a
+tooling-deploy	scripts/quality_gate.py	5				b6d5bb1c225d1b4b
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
-frontend	static/disconnection.js	13	5			0495d908b3fe1a69
+frontend	static/disconnection.js	13	5			30aabb915c6adc86
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			40fc59faba60ade3
+frontend	static/index.html		1			8c70c15822a5b943
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
 frontend	static/styles.css					fdf43ee7205da97b
 frontend	static/theme-init.js					97eb92ef899f8dcf
-frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	baf256d99302f8d3
+frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	e6eec4e58e90488e
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
 shared	stock_protocol_templates.json			2		d4310f519e27cc25
@@ -155,7 +166,8 @@ shared	supabase_auth_store.py	28				127a75071634aba0
 shared	supabase_schema.sql					f4c24a6069098221
 shared	technician_directory.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	c428cc21c4d30f17
 tests	tests/__init__.py					01ba4719c80b6fe9
-tests	tests/qa_disconnection_browser.js	1	5			bf6f10d2cd805252
+tests	tests/qa_disconnection_browser.js	1	6			513566fce070a1c2
+tests	tests/qa_workspace_browser.js	1	3			9e5faa386308b743
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
 tests	tests/test_app.py	37	5	2		dec92061f9dc6147
 tests	tests/test_auth_store.py	7				2131129f824fbae2
@@ -167,8 +179,9 @@ tests	tests/test_city_scope_integration.py	18				02411a9b3190bb77
 tests	tests/test_close_report.py	15				125242a6d2cff245
 tests	tests/test_close_report_excel.py	5				36de3899cae4ba75
 tests	tests/test_configure_imperium_credentials.py	4				931f61ff4157fbfa
+tests	tests/test_desc_order_verifier.py	24				1a425dadf4202442
 tests	tests/test_desc_review_proxy.py	14	7			fbeca0b498b64149
-tests	tests/test_desc_review_relay.py	5				97c59817f79a89b1
+tests	tests/test_desc_review_relay.py	14	1			6beb0bd0caf2ad7e
 tests	tests/test_disconnect_automation.py	22				243f0edcb0dcc000
 tests	tests/test_disconnect_frontend.js	4				f5e517e7af4cede6
 tests	tests/test_disconnection_access.py	5	4			dad77e116461224d
@@ -184,6 +197,7 @@ tests	tests/test_import_audit_history.py	3				6df23f085d3bdbda
 tests	tests/test_improductive_catalog_close.py	4				34a290574b15bc9a
 tests	tests/test_installer_change.py	11				c0e798b009cdfd15
 tests	tests/test_installer_reassignment.py	20	1			0822801264d59415
+tests	tests/test_intelligence_frontend.js	6				ccd4a4f46b3303ac
 tests	tests/test_manual_materials.py	14				13ebf22bf45dd258
 tests	tests/test_material_matching.py	33				f7a01b4226d11747
 tests	tests/test_material_writeoff.py	16				4d6bdafc337eb87a
@@ -229,7 +243,7 @@ tests	tests/test_toa_live_lookup.py	15		1		dee51f885f154318
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
 tests	tests/test_toa_secondary_session.py	7				9d5ca5c257461780
 tests	tests/test_toa_worker_cache.py	7				84d409c3fed69bd5
-tests	tests/test_ui_runtime_regression.py	11	2			c100dee0203b06d6
+tests	tests/test_ui_runtime_regression.py	11	2			5f410632ef3473f4
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb
 toa	toa-discovery/core.js	25			DOMINIUM | MAPA DE RESPONSABILIDADE	9e149f8465bb638e

@@ -58,7 +58,12 @@ class UIRuntimeRegressionTests(unittest.TestCase):
         styles = (ROOT / "static" / "styles.css").read_text(encoding="utf-8")
 
         self.assertIn('CustomEvent("dominium:operation-state"', app)
-        self.assertIn("Montando Central Inteligente", app)
+        intelligence = app.split("async function loadIntelligence(", 1)[1].split(
+            "async function loadHealthCheck(", 1
+        )[0]
+        self.assertNotIn("operation:", intelligence)
+        self.assertIn("[404, 501].includes(error.status)", intelligence)
+        self.assertIn("Produtividade indisponivel nesta implantacao", intelligence)
         self.assertIn("Consultando ordens no Imperium", app)
         self.assertIn("Buscando ${query} no TOA", app)
         self.assertIn("Validando estoque e miscelâneas", app)

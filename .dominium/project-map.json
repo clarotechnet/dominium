@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-10T13:22:48+00:00",
+  "generated_at": "2026-10-10T14:12:37+00:00",
   "schema": 2,
-  "source_fingerprint": "5676def6babed661207dcf8201b035f9519e4ca4f269da50fc19f027f01a0ea0",
+  "source_fingerprint": "e43eac7dee371e9ee80b56d351fc874dd6bb826a3ce16fbb245b4ca354053f3f",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -816,6 +816,27 @@
       "symbol_count": 0
     },
     {
+      "path": "desc_order_verifier.py",
+      "category": "shared",
+      "bytes": 7036,
+      "sha256": "17c0924ca8229612f850fa28f1bf44a266454059142bf151f29e46c251915ff4",
+      "summary": "Fail-closed, read-only Imperium order/installer checks for the DESC relay.",
+      "imports": [
+        "__future__",
+        "datetime",
+        "imperium_api",
+        "inspect",
+        "pathlib",
+        "re",
+        "threading"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
+    },
+    {
       "path": "desc_review_proxy.py",
       "category": "shared",
       "bytes": 5981,
@@ -845,12 +866,13 @@
     {
       "path": "desc_review_relay.py",
       "category": "shared",
-      "bytes": 3685,
-      "sha256": "d247408234740e73336f0e9fcf0bffab4f7a49202cc4a356b0eb46eed0d23cfa",
-      "summary": "Small, authenticated HTTPS-tunnel relay; exposes only DESC review routes.",
+      "bytes": 5112,
+      "sha256": "79346c1e1b556a5d7aed15fd9e57f4e9f255c3b7f614877d949692fb553cb634",
+      "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
       "imports": [
         "__future__",
         "argparse",
+        "desc_order_verifier",
         "desc_review_proxy",
         "hmac",
         "http",
@@ -859,13 +881,16 @@
         "os",
         "pathlib",
         "secrets",
+        "sys",
         "urllib"
       ],
       "endpoints": [],
-      "env_vars": [],
+      "env_vars": [
+        "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
+      ],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 5
+      "symbol_count": 6
     },
     {
       "path": "disconnect_automation.py",
@@ -957,8 +982,8 @@
     {
       "path": "docs/superpowers/plans/2026-10-10-dominium-desc-progress.md",
       "category": "docs",
-      "bytes": 1260,
-      "sha256": "253dcfc3a3b70cfb4e88337b7c75032db95f843fda1e99bfc3af2c6b61e22e0a",
+      "bytes": 2568,
+      "sha256": "eb0079f7948201478749e133aacfd6fa8cadf0f93053967b3f05db896c0511c3",
       "summary": "Progresso e evidências",
       "imports": [],
       "endpoints": [],
@@ -1308,6 +1333,136 @@
       "datasnap_methods": [
         "TDtmOrdemServico.AS_Execute"
       ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/desc_review_bot/README.md",
+      "category": "shared",
+      "bytes": 1206,
+      "sha256": "2e37b10767d75f893cccdf1ba2dbf10c94a1c747d81103b01b41b466d293939f",
+      "summary": "DESC — vínculo WhatsApp / Imperium",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/desc_review_bot/src/descReview/core.js",
+      "category": "shared",
+      "bytes": 19151,
+      "sha256": "8bac5edd1b8475a94494152a8e639384d3e528528345d50a7a31aa5849ff4c04",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 19
+    },
+    {
+      "path": "integrations/desc_review_bot/src/descReview/orderClient.js",
+      "category": "shared",
+      "bytes": 1842,
+      "sha256": "c058133fa2d5f12427ec52b8416ae0f2cf873665c4399ae80eb853b219a7138e",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "integrations/desc_review_bot/src/descReview/orderEvidence.js",
+      "category": "shared",
+      "bytes": 2538,
+      "sha256": "c2cde9ca6e3e700dd944fd279955e3f82be2146b1e706cde14e2a8146685229e",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "integrations/desc_review_bot/src/descReview/server.js",
+      "category": "shared",
+      "bytes": 16804,
+      "sha256": "712802d6b3a6ee5bd8b34db47ac5bea432285d6dc8dc23205fd888efcb1946b6",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 19
+    },
+    {
+      "path": "integrations/desc_review_bot/src/descReview/tests/order-client.test.js",
+      "category": "shared",
+      "bytes": 2065,
+      "sha256": "e594aea531054fb65d18821db0d374cb86057c0dfabe707e000b6e905ef34f12",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/desc_review_bot/src/descReview/tests/order-evidence.test.js",
+      "category": "shared",
+      "bytes": 4740,
+      "sha256": "9959f6643b705f280691fe233f19ab925bb81e5dd17cb9ae83e45b228e787494",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
+      "path": "integrations/desc_review_photo/photoLookup.js",
+      "category": "shared",
+      "bytes": 6883,
+      "sha256": "2af2fd85596b356eb1802282c457229e2412f72ffcfc73841cd456d41fbd20f6",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
+      "path": "integrations/desc_review_photo/README.md",
+      "category": "shared",
+      "bytes": 1157,
+      "sha256": "8fc9d77ff256d4f9ead9e3a2fe9ea708774bf44c90bae36c3d3bed4aee8b1fb7",
+      "summary": "Leitor existente do Atlas na captura DESC",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/desc_review_photo/tests/primary-reader.test.js",
+      "category": "shared",
+      "bytes": 2156,
+      "sha256": "f2ab0d68f4cfacfbd3bdca27290541326525e537e475a5afcfc349964421563c",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
     },
@@ -2505,8 +2660,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 5451,
-      "sha256": "1e02e9dbf1ac810ab284c2e8046e9fcbdeb829e714dcdad183a3465ac2877f55",
+      "bytes": 5505,
+      "sha256": "b6d5bb1c225d1b4b1c16cf0fc12c2568da3b10aaaafa0f5718669f8692df8a0c",
       "summary": "",
       "imports": [
         "__future__",
@@ -2606,8 +2761,8 @@
     {
       "path": "static/disconnection.js",
       "category": "frontend",
-      "bytes": 14477,
-      "sha256": "0495d908b3fe1a692be4b7f04862b481b3b40a6e811e9bc308fabba5aef60bab",
+      "bytes": 15370,
+      "sha256": "30aabb915c6adc863b60b153d38d96f80864f29c10a40b213c0dec007edfec08",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2638,8 +2793,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 108625,
-      "sha256": "40fc59faba60ade3c78ba27b7386e3b9e37e98512c8216673b83f571d3e9be2d",
+      "bytes": 108680,
+      "sha256": "8c70c15822a5b943ac9046c98686cf4678817e7dc694a0c73b6b06c0dfd5a8ef",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2731,8 +2886,8 @@
     {
       "path": "static/workspace.css",
       "category": "frontend",
-      "bytes": 15199,
-      "sha256": "baf256d99302f8d3e40287e765950f168fc8581a94b033e5e7b1e7c4c46bfa1a",
+      "bytes": 16148,
+      "sha256": "e6eec4e58e90488e27d99cd2065ea6f22bad5ea5d0f666bd6da23fa2d31aacc7",
       "summary": "Shared workspace: the original Technet image, floating glass and Dominium red. */",
       "imports": [],
       "endpoints": [],
@@ -2945,8 +3100,8 @@
     {
       "path": "tests/qa_disconnection_browser.js",
       "category": "tests",
-      "bytes": 6600,
-      "sha256": "bf6f10d2cd8052520f902ad5ae04be4db033b3abcd42c7941a9a23a458708e09",
+      "bytes": 8251,
+      "sha256": "513566fce070a1c2535d994e0915e313a7496cd63c5fa9d91969a58d5f78b5ac",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2954,9 +3109,31 @@
         "/api/disconnection/decision",
         "/api/disconnection/photo/",
         "/api/disconnection/report.xlsx",
-        "/api/disconnection/state"
+        "/api/disconnection/state",
+        "/api/disconnection/technician"
       ],
       "env_vars": [
+        "DOMINIUM_QA_BASE_SHA",
+        "PLAYWRIGHT_MODULE"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "tests/qa_workspace_browser.js",
+      "category": "tests",
+      "bytes": 5738,
+      "sha256": "9e5faa386308b743cce8664cbab7117a77ae87c0bf5b12eaebe17d372b3e5b36",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/auth/session",
+        "/api/health-check",
+        "/api/intelligence"
+      ],
+      "env_vars": [
+        "DOMINIUM_QA_ARTIFACT_DIR",
         "PLAYWRIGHT_MODULE"
       ],
       "datasnap_methods": [],
@@ -3192,6 +3369,26 @@
       "symbol_count": 4
     },
     {
+      "path": "tests/test_desc_order_verifier.py",
+      "category": "tests",
+      "bytes": 8953,
+      "sha256": "1a425dadf4202442834517db0ffd9c7172ff709bc57e00a863aec5da0a0a119d",
+      "summary": "",
+      "imports": [
+        "datetime",
+        "desc_order_verifier",
+        "imperium_api",
+        "importlib",
+        "pathlib",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 24
+    },
+    {
       "path": "tests/test_desc_review_proxy.py",
       "category": "tests",
       "bytes": 4991,
@@ -3223,23 +3420,28 @@
     {
       "path": "tests/test_desc_review_relay.py",
       "category": "tests",
-      "bytes": 1908,
-      "sha256": "97c59817f79a89b1b85eecaf3a9a1b74c20b950ea6500bc660f49b4d9a804311",
+      "bytes": 7485,
+      "sha256": "6beb0bd0caf2ad7e7f62b18b98940a534b861fbed93f610cb6abd5c88d69393c",
       "summary": "",
       "imports": [
+        "desc_order_verifier",
         "desc_review_proxy",
         "desc_review_relay",
         "http",
+        "imperium_api",
         "json",
+        "tests",
         "threading",
         "unittest",
         "urllib"
       ],
-      "endpoints": [],
+      "endpoints": [
+        "/api/disconnection/order-check"
+      ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 5
+      "symbol_count": 14
     },
     {
       "path": "tests/test_disconnect_automation.py",
@@ -3529,6 +3731,19 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 20
+    },
+    {
+      "path": "tests/test_intelligence_frontend.js",
+      "category": "tests",
+      "bytes": 4563,
+      "sha256": "ccd4a4f46b3303ac35b425e2b5047d7cd6972e45520c0375a5c9c2f3bc10f75e",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 6
     },
     {
       "path": "tests/test_manual_materials.py",
@@ -4424,8 +4639,8 @@
     {
       "path": "tests/test_ui_runtime_regression.py",
       "category": "tests",
-      "bytes": 6127,
-      "sha256": "c100dee0203b06d6ebc68ff25365b292480f450f1d4c03ee2656d590f8efb2fd",
+      "bytes": 6422,
+      "sha256": "5f410632ef3473f43afe0b36d6a678c7861c9212929de870de536387c611ca63",
       "summary": "",
       "imports": [
         "pathlib",
@@ -5123,12 +5338,15 @@
     "DOMINIUM_DESC_REVIEW_ORIGIN",
     "DOMINIUM_DESC_REVIEW_TOKEN",
     "DOMINIUM_HTTPS",
+    "DOMINIUM_IMPERIUM_RUNTIME_ROOT",
     "DOMINIUM_INGEST_TOKEN",
     "DOMINIUM_LOCAL_TOA_AUTOMATION",
     "DOMINIUM_OPERATION_ORIGIN",
     "DOMINIUM_PROJECT_ROOT",
     "DOMINIUM_PROXY_TOKEN",
     "DOMINIUM_PUBLIC_ORIGIN",
+    "DOMINIUM_QA_ARTIFACT_DIR",
+    "DOMINIUM_QA_BASE_SHA",
     "DOMINIUM_SUPABASE_BRIDGE_TOKEN",
     "DOMINIUM_TOA_AUTOMATION_REMOTE",
     "DOMINIUM_TOA_BRIDGE_LOOKUP_TIMEOUT",

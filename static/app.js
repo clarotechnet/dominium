@@ -197,6 +197,7 @@ const state = {
   sidebarCollapsed: localStorage.getItem("dominium-sidebar-collapsed") === "1",
   intelligence: null,
   intelligenceLoading: false,
+  intelligenceError: "",
   healthCheck: null,
   healthLoading: false,
   serialAudit: null,
@@ -1511,7 +1512,9 @@ async function request(url, options = {}) {
     try {
       payload = await response.json();
     } catch {
-      throw new Error(`Resposta inválida do painel (${response.status})`);
+      const error = new Error(`Resposta inválida do painel (${response.status})`);
+      error.status = response.status;
+      throw error;
     }
     if (!response.ok || payload.ok === false) {
       if (response.status === 401 && payload.authentication_required) {
@@ -5116,30 +5119,42 @@ function renderHealthCheck() {
   if (!payload) {
     elements.healthBaseGrid.innerHTML = `<div class="intelligence-empty">${state.healthLoading ? "Testando conectividade..." : "Teste ainda nao executado."}</div>`;
     elements.healthNavStatus.textContent = state.healthLoading ? "Testando bases" : "Bases e produtividade";
+    elements.healthNavStatus.dataset.tone = "neutral";
+    elements.healthCheckedAt.textContent = "Teste ainda nao concluido";
     return;
   }
-  elements.healthNavStatus.textContent = payload.offline
+  elements.healthNavStatus.textContent = !payload.bases.length ? "Bases sem leitura" : payload.offline
     ? `${payload.offline} base${payload.offline === 1 ? "" : "s"} offline`
     : `${payload.online} bases online`;
-  elements.healthNavStatus.dataset.tone = payload.offline ? "danger" : "success";
+  elements.healthNavStatus.dataset.tone = !payload.bases.length ? "neutral" : payload.offline ? "danger" : "success";
   elements.healthBaseGrid.innerHTML = (payload.bases || []).map((base) => `
     <article class="health-base ${base.online ? "online" : "offline"}">
       <span class="health-pulse" aria-hidden="true"></span>
-      <div><strong>${escapeHtml(base.label)}</strong><small>${escapeHtml(base.host)}:${escapeHtml(base.port)}</small></div>
-      <div class="health-latency"><b>${base.online ? `${escapeHtml(base.latency_ms)} ms` : "OFFLINE"}</b><small>${base.online ? "DataSnap respondeu" : escapeHtml(base.error || "Sem resposta")}</small></div>
+      <div><strong>${escapeHtml(base.label || base.profile || "Base")}</strong>${base.host ? `<small>${escapeHtml(base.host)}${base.port != null ? `:${escapeHtml(base.port)}` : ""}</small>` : ""}</div>
+      <div class="health-latency"><b>${base.online ? base.latency_ms != null ? `${escapeHtml(base.latency_ms)} ms` : "ONLINE" : "OFFLINE"}</b><small>${base.online ? "DataSnap respondeu" : escapeHtml(base.error || "Sem resposta")}</small></div>
     </article>
-  `).join("");
-  elements.healthCheckedAt.textContent = `${payload.cached ? "Leitura em cache" : "Teste direto"} · ${formatDateTime(payload.checked_at)}`;
+  `).join("") || '<div class="intelligence-empty">Nenhuma base retornada pelo teste.</div>';
+  elements.healthCheckedAt.textContent = `${payload.cached ? "Leitura em cache" : "Teste direto"}${payload.checked_at ? ` · ${formatDateTime(payload.checked_at)}` : " · Horario nao informado"}`;
   if (globalThis.lucide) globalThis.lucide.createIcons();
 }
 
 function renderIntelligence() {
   const payload = state.intelligence;
   elements.intelligenceRefresh.disabled = state.intelligenceLoading;
-  elements.intelligencePdf.disabled = state.intelligenceLoading;
+  elements.intelligencePdf.disabled = state.intelligenceLoading || !payload;
   elements.intelligenceRefresh.classList.toggle("is-loading", state.intelligenceLoading);
   renderHealthCheck();
-  if (!payload) return;
+  if (!payload) {
+    [elements.intelligenceSuccessRate, elements.intelligenceConfirmed, elements.intelligenceProblems, elements.intelligenceAverageTime].forEach((element) => { element.textContent = "—"; });
+    elements.intelligenceScoreRing.style.setProperty("--score", "0deg");
+    elements.intelligencePeriodLabel.textContent = "Sem leitura de produtividade";
+    elements.intelligenceGenerated.textContent = state.intelligenceError || (state.intelligenceLoading ? "Consultando produtividade..." : "Aguardando atualizacao");
+    elements.basePerformanceList.innerHTML = '<div class="intelligence-empty">Dados de produtividade indisponiveis.</div>';
+    elements.intelligenceTechnicianBody.innerHTML = "";
+    elements.intelligenceTechnicianEmpty.textContent = "Dados de produtividade indisponiveis.";
+    elements.intelligenceTechnicianEmpty.classList.toggle("hidden", false);
+    return;
+  }
   const summary = payload.summary || {};
   const success = Number(summary.success_rate || 0);
   elements.intelligenceSuccessRate.textContent = `${success.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
@@ -5150,7 +5165,7 @@ function renderIntelligence() {
   elements.intelligencePeriodLabel.textContent = payload.days === 1
     ? `Operacao de ${new Date(`${payload.end_date}T12:00:00`).toLocaleDateString("pt-BR")}`
     : `${payload.days} dias · ${new Date(`${payload.start_date}T12:00:00`).toLocaleDateString("pt-BR")} a ${new Date(`${payload.end_date}T12:00:00`).toLocaleDateString("pt-BR")}`;
-  elements.intelligenceGenerated.textContent = `Atualizado ${formatDateTime(payload.generated_at)}`;
+  elements.intelligenceGenerated.textContent = `Atualizado ${formatDateTime(payload.generated_at)}${state.intelligenceError ? ` · ${state.intelligenceError}` : ""}`;
 
   elements.basePerformanceList.innerHTML = (payload.bases || []).map((base) => `
     <article class="base-performance-row">
@@ -5176,6 +5191,7 @@ function renderIntelligence() {
     </tr>
   `).join("");
   elements.intelligenceTechnicianEmpty.classList.toggle("hidden", technicians.length > 0);
+  elements.intelligenceTechnicianEmpty.textContent = "Nenhuma baixa encontrada neste periodo.";
 }
 
 function serialAuditStatusLabel(status) {
@@ -5222,22 +5238,21 @@ function renderSerialAudit() {
 async function loadIntelligence({ quiet = false } = {}) {
   if (state.intelligenceLoading) return;
   state.intelligenceLoading = true;
+  state.intelligenceError = "";
   renderIntelligence();
   try {
     state.intelligence = await request(
       `/api/intelligence?date=${encodeURIComponent(elements.intelligenceDate.value || localDate())}&days=${encodeURIComponent(elements.intelligenceDays.value || "7")}`,
-      {
-        timeoutMs: 20000,
-        operation: quiet ? null : {
-          phase: "solving",
-          label: "Montando Central Inteligente",
-          detail: "Cruzando bases, produtividade e sinais operacionais",
-          successLabel: "Central atualizada",
-        },
-      },
+      { timeoutMs: 20000 },
     );
   } catch (error) {
-    if (!quiet) showToast(`Nao foi possivel montar a inteligencia: ${error.message}`, "error");
+    if ([404, 501].includes(error.status)) {
+      state.intelligence = null;
+      state.intelligenceError = "Produtividade indisponivel nesta implantacao. A conectividade das bases continua abaixo.";
+    } else {
+      state.intelligenceError = "Nao foi possivel atualizar a produtividade.";
+      if (!quiet) showToast(`Nao foi possivel montar a inteligencia: ${error.message}`, "error");
+    }
   } finally {
     state.intelligenceLoading = false;
     renderIntelligence();
@@ -5249,10 +5264,18 @@ async function loadHealthCheck({ fresh = false, quiet = false } = {}) {
   state.healthLoading = true;
   renderHealthCheck();
   try {
-    state.healthCheck = await request(`/api/health-check${fresh ? "?refresh=1" : ""}`, { timeoutMs: 20000 });
+    const payload = await request(`/api/health-check${fresh ? "?refresh=1" : ""}`, { timeoutMs: 20000 });
+    const bases = (Array.isArray(payload.bases) ? payload.bases : Array.isArray(payload.results) ? payload.results : []).map((base) => ({
+      ...base, latency_ms: base.latency_ms ?? base.elapsed_ms,
+    }));
+    state.healthCheck = {
+      ...payload, bases, checked_at: payload.checked_at || payload.generated_at,
+      online: bases.filter((base) => base.online).length,
+      offline: bases.filter((base) => !base.online).length,
+    };
     if (fresh && !quiet) showToast(
-      state.healthCheck.offline ? `${state.healthCheck.offline} base(s) sem resposta.` : "As quatro bases estao online.",
-      state.healthCheck.offline ? "warning" : "success",
+      !bases.length ? "Nenhuma base retornada pelo teste." : state.healthCheck.offline ? `${state.healthCheck.offline} base(s) sem resposta.` : `${state.healthCheck.online} base(s) online.`,
+      !bases.length || state.healthCheck.offline ? "warning" : "success",
     );
   } catch (error) {
     if (!quiet) showToast(`Health check indisponivel: ${error.message}`, "error");

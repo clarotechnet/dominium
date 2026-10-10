@@ -119,6 +119,10 @@ endpoint	path
 /api/disconnection/photo/	tests/qa_disconnection_browser.js
 /api/disconnection/report.xlsx	tests/qa_disconnection_browser.js
 /api/disconnection/state	tests/qa_disconnection_browser.js
+/api/disconnection/technician	tests/qa_disconnection_browser.js
+/api/auth/session	tests/qa_workspace_browser.js
+/api/health-check	tests/qa_workspace_browser.js
+/api/intelligence	tests/qa_workspace_browser.js
 /api/auth/login	tests/test_api_security.py
 /api/auth/register	tests/test_api_security.py
 /api/imperium-official/session?profile=natal	tests/test_app.py
@@ -133,6 +137,7 @@ endpoint	path
 /api/disconnection/session	tests/test_desc_review_proxy.py
 /api/disconnection/state	tests/test_desc_review_proxy.py
 /api/disconnection/state?url=http://attacker	tests/test_desc_review_proxy.py
+/api/disconnection/order-check	tests/test_desc_review_relay.py
 /api/disconnection/decision	tests/test_disconnection_access.py
 /api/disconnection/photo/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg	tests/test_disconnection_access.py
 /api/disconnection/session	tests/test_disconnection_access.py
