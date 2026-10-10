@@ -15,6 +15,7 @@
 # A ordem executavel abaixo foi preservada para evitar regressao.
 # =============================================================================
 import argparse
+from desc_review_proxy import DescReviewProxy, ProxyError
 import base64
 import csv
 import datetime as dt
@@ -5083,6 +5084,37 @@ class ExclusiveThreadingHTTPServer(ThreadingHTTPServer):
 # DOMINIUM COMPARTILHADO | SERVIDOR HTTP, ROTAS E PONTE ENTRE OS DOMINIOS
 # =============================================================================
 class PanelHandler(BaseHTTPRequestHandler):
+    def _desc_request(self, method: str, path: str) -> None:
+        user = self._current_user() or {}
+        if user.get('role') not in {'admin', 'controller'}:
+            self._json(HTTPStatus.FORBIDDEN, {'ok': False, 'error': 'DESCONEXÃO exige perfil operacional'})
+            return
+        try:
+            DescReviewProxy.route(method, path)
+        except ProxyError as error:
+            self._json(HTTPStatus.BAD_REQUEST, {'ok': False, 'error': str(error)})
+            return
+        try:
+            proxy = getattr(self.server, 'desc_review_proxy', None)
+            if proxy is None:
+                proxy = DescReviewProxy()
+                self.server.desc_review_proxy = proxy
+            body = self._body() if method == 'POST' else None
+            actor = str(user.get('display_name') or user.get('username') or user.get('id') or '')
+            response = proxy.forward(method, path, body, actor=actor)
+            if method == 'POST':
+                self._auth_audit('desc_review', str(response.status), target=str((body or {}).get('id', '')))
+            self.send_response(response.status)
+            self.send_header('Content-Type', response.content_type)
+            self.send_header('Content-Length', str(len(response.body)))
+            self.send_header('Cache-Control', 'no-store')
+            self.end_headers()
+            self.wfile.write(response.body)
+        except (ProxyError, ValueError) as error:
+            self._json(HTTPStatus.SERVICE_UNAVAILABLE, {'ok': False, 'error': str(error)})
+        except OSError:
+            LOGGER.warning('Conexão DESC encerrada pelo navegador')
+
     server_version = "DOMINIUM"
     sys_version = ""
 
@@ -5425,6 +5457,9 @@ class PanelHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         if not self._security_preflight("GET", parsed.path):
+            return
+        if parsed.path.startswith('/api/disconnection/'):
+            self._desc_request('GET', self.path)
             return
         try:
             if parsed.path in (
@@ -6269,6 +6304,9 @@ class PanelHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
         if not self._security_preflight("POST", parsed.path):
+            return
+        if parsed.path.startswith('/api/disconnection/'):
+            self._desc_request('POST', self.path)
             return
         if parsed.path == "/api/auth/register":
             try:

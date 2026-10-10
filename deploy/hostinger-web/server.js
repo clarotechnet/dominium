@@ -955,6 +955,9 @@ const OPERATIONAL_PROXY_HEADER_ALLOWLIST = [
   "x-request-id",
 ];
 
+const { createDisconnectionMiddleware } = require('./disconnection-proxy');
+app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }));
+
 async function proxyOperationalRequest(req, res, next) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 120000);

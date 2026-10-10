@@ -11,7 +11,9 @@ class TOADiscoveryBrowserTests(unittest.TestCase):
         self.assertIn("toa-discovery", str(toa_discovery_browser.EXTENSION_PATH))
 
     @patch("toa_discovery_browser._targets")
-    def test_reuses_existing_discovery_browser(self, targets):
+    @patch("toa_discovery_browser.CHROME_PATH")
+    def test_reuses_existing_discovery_browser(self, chrome_path, targets):
+        chrome_path.is_file.return_value = True
         targets.return_value = [
             {"url": "chrome-extension://abc/service-worker.js"},
             {"url": "https://clarobrasil.etadirect.com/"},

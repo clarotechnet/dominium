@@ -43,6 +43,8 @@ jobs:
           cache-dependency-path: deploy/hostinger-web/package-lock.json
 
       - name: Validar runtime e montar release
+        env:
+          DOMINIUM_DESC_REVIEW_CONNECTION: ${{ secrets.DOMINIUM_DESC_REVIEW_CONNECTION }}
         shell: bash
         run: |
           set -euo pipefail

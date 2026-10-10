@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-07T19:35:39+00:00",
+  "generated_at": "2026-10-10T13:22:48+00:00",
   "schema": 2,
-  "source_fingerprint": "29bd7b0c206160cba7f20e22015b641ebe80cd612d88de62adaf0a27ba3119a4",
+  "source_fingerprint": "5676def6babed661207dcf8201b035f9519e4ca4f269da50fc19f027f01a0ea0",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 353693,
-      "sha256": "68f6c0e6488676bb07a17d2630f19420f793bcaf6c828a4978aa8da152d424ac",
+      "bytes": 355630,
+      "sha256": "0cc3b05c9f8d1d4af1cba18d35917d25f0b2cafb7d40696fe92aa081af92d1df",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -110,6 +110,7 @@
         "dataclasses",
         "datasnap_client",
         "datetime",
+        "desc_review_proxy",
         "difflib",
         "disconnect_automation",
         "edge_voice",
@@ -171,6 +172,7 @@
         "/api/close-report/export.xlsx",
         "/api/disconnect-automation",
         "/api/disconnect-automation/",
+        "/api/disconnection/",
         "/api/failures",
         "/api/health-check",
         "/api/imperium-official/",
@@ -290,7 +292,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 150
+      "symbol_count": 151
     },
     {
       "path": "auth_store.py",
@@ -625,6 +627,24 @@
       "symbol_count": 0
     },
     {
+      "path": "deploy/hostinger-web/disconnection-proxy.js",
+      "category": "tooling-deploy",
+      "bytes": 3871,
+      "sha256": "55176c79fb1fc54d49d41b482bff3f14f05270fc6aeee60df349bcc4c25b7aaa",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/disconnection/"
+      ],
+      "env_vars": [
+        "DOMINIUM_DESC_REVIEW_ORIGIN",
+        "DOMINIUM_DESC_REVIEW_TOKEN"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
       "path": "deploy/hostinger-web/package-lock.json",
       "category": "tooling-deploy",
       "bytes": 31045,
@@ -666,8 +686,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 40672,
-      "sha256": "1b28ea7a4691e3bf706bc68068d4b74f0cb9f367e899b49c11ab6ce40d53dc9c",
+      "bytes": 40833,
+      "sha256": "2fca73583881a369393bdb7b7b5adca448597a021207bb8e28101cb747930ad5",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -680,6 +700,7 @@
         "/api/auth/session",
         "/api/auth/users",
         "/api/diagnostics",
+        "/api/disconnection",
         "/api/health-check",
         "/api/import-targets",
         "/api/orders",
@@ -795,6 +816,58 @@
       "symbol_count": 0
     },
     {
+      "path": "desc_review_proxy.py",
+      "category": "shared",
+      "bytes": 5981,
+      "sha256": "9c4afb6e6dd2d9c4b27bddf0c97f957664d0a79aad2b803bbe412d536ff57117",
+      "summary": "Authenticated Dominium boundary to the Bot's existing DESC review service.",
+      "imports": [
+        "__future__",
+        "dataclasses",
+        "json",
+        "os",
+        "pathlib",
+        "re",
+        "threading",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/disconnection/"
+      ],
+      "env_vars": [
+        "DOMINIUM_DESC_REVIEW_ACCESS_FILE",
+        "DOMINIUM_DESC_REVIEW_ORIGIN"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 10
+    },
+    {
+      "path": "desc_review_relay.py",
+      "category": "shared",
+      "bytes": 3685,
+      "sha256": "d247408234740e73336f0e9fcf0bffab4f7a49202cc4a356b0eb46eed0d23cfa",
+      "summary": "Small, authenticated HTTPS-tunnel relay; exposes only DESC review routes.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "desc_review_proxy",
+        "hmac",
+        "http",
+        "json",
+        "logging",
+        "os",
+        "pathlib",
+        "secrets",
+        "urllib"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 5
+    },
+    {
       "path": "disconnect_automation.py",
       "category": "orchestration",
       "bytes": 23604,
@@ -874,6 +947,45 @@
       "bytes": 1726,
       "sha256": "a1c7cfee4cf9ed2960b0d60f03d551dc0fbf584d4466c1eca63bff8fefa4af06",
       "summary": "DOMINIUM TOA Connector",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-10-dominium-desc-progress.md",
+      "category": "docs",
+      "bytes": 1260,
+      "sha256": "253dcfc3a3b70cfb4e88337b7c75032db95f843fda1e99bfc3af2c6b61e22e0a",
+      "summary": "Progresso e evidências",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-10-dominium-desc.md",
+      "category": "docs",
+      "bytes": 2009,
+      "sha256": "5d89722ce6d500035a17175b009eadd67ddc27c65ea5375df3d4071c6e841ad1",
+      "summary": "Dominium e DESCONEXÃO Implementation Plan",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/superpowers/specs/2026-10-10-dominium-desc-design.md",
+      "category": "docs",
+      "bytes": 2616,
+      "sha256": "8fb2f29706ba906018352a26bbe77700eeff378cd597863cd14112d0dca06f35",
+      "summary": "Dominium: novo visual e DESCONEXÃO",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -2219,20 +2331,23 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 3833,
-      "sha256": "04070301e0058c72cc97fe4ed854cdc71600c18b5fc70bc3846396af0de37748",
+      "bytes": 4463,
+      "sha256": "6ae17b448815882363ba780ddf4524079657eb8ff66c06f19ccfbb18beeae707",
       "summary": "",
       "imports": [
         "__future__",
         "datetime",
         "hashlib",
         "json",
+        "os",
         "pathlib",
         "shutil",
         "zipfile"
       ],
       "endpoints": [],
-      "env_vars": [],
+      "env_vars": [
+        "DOMINIUM_DESC_REVIEW_CONNECTION"
+      ],
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 4
@@ -2390,8 +2505,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 5340,
-      "sha256": "cc96500385c6fc7c5c287498b5d01bd61b8610253a77b4015d06721c3eb7fb15",
+      "bytes": 5451,
+      "sha256": "1e02e9dbf1ac810ab284c2e8046e9fcbdeb829e714dcdad183a3465ac2877f55",
       "summary": "",
       "imports": [
         "__future__",
@@ -2489,6 +2604,25 @@
       "symbol_count": 1
     },
     {
+      "path": "static/disconnection.js",
+      "category": "frontend",
+      "bytes": 14477,
+      "sha256": "0495d908b3fe1a692be4b7f04862b481b3b40a6e811e9bc308fabba5aef60bab",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/disconnection/",
+        "/api/disconnection/photo/",
+        "/api/disconnection/report.xlsx?month=",
+        "/api/disconnection/state",
+        "/api/disconnection/technician"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 13
+    },
+    {
       "path": "static/impeccable.css",
       "category": "frontend",
       "bytes": 34761,
@@ -2504,8 +2638,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 104107,
-      "sha256": "16ebf853992c30ef7f49cb24124524757c016c942b30103d469fa41c6faabb4b",
+      "bytes": 108625,
+      "sha256": "40fc59faba60ade3c78ba27b7386e3b9e37e98512c8216673b83f571d3e9be2d",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2587,6 +2721,19 @@
       "bytes": 227,
       "sha256": "97eb92ef899f8dcf33acc7e14839620ca081c8c15f811868c3441e9050c526a0",
       "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "static/workspace.css",
+      "category": "frontend",
+      "bytes": 15199,
+      "sha256": "baf256d99302f8d3e40287e765950f168fc8581a94b033e5e7b1e7c4c46bfa1a",
+      "summary": "Shared workspace: the original Technet image, floating glass and Dominium red. */",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -2794,6 +2941,27 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "tests/qa_disconnection_browser.js",
+      "category": "tests",
+      "bytes": 6600,
+      "sha256": "bf6f10d2cd8052520f902ad5ae04be4db033b3abcd42c7941a9a23a458708e09",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/auth/session",
+        "/api/disconnection/decision",
+        "/api/disconnection/photo/",
+        "/api/disconnection/report.xlsx",
+        "/api/disconnection/state"
+      ],
+      "env_vars": [
+        "PLAYWRIGHT_MODULE"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
     },
     {
       "path": "tests/test_api_security.py",
@@ -3024,6 +3192,56 @@
       "symbol_count": 4
     },
     {
+      "path": "tests/test_desc_review_proxy.py",
+      "category": "tests",
+      "bytes": 4991,
+      "sha256": "fbeca0b498b641497760c28e7f3d9abc8ea3158f26b7d2b4c92a9c7d8e4f0eda",
+      "summary": "",
+      "imports": [
+        "desc_review_proxy",
+        "http",
+        "json",
+        "pathlib",
+        "tempfile",
+        "threading",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/disconnection/../session",
+        "/api/disconnection/decision",
+        "/api/disconnection/photo/",
+        "/api/disconnection/photo/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg",
+        "/api/disconnection/session",
+        "/api/disconnection/state",
+        "/api/disconnection/state?url=http://attacker"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 14
+    },
+    {
+      "path": "tests/test_desc_review_relay.py",
+      "category": "tests",
+      "bytes": 1908,
+      "sha256": "97c59817f79a89b1b85eecaf3a9a1b74c20b950ea6500bc660f49b4d9a804311",
+      "summary": "",
+      "imports": [
+        "desc_review_proxy",
+        "desc_review_relay",
+        "http",
+        "json",
+        "threading",
+        "unittest",
+        "urllib"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
       "path": "tests/test_disconnect_automation.py",
       "category": "tests",
       "bytes": 10851,
@@ -3055,6 +3273,66 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 4
+    },
+    {
+      "path": "tests/test_disconnection_access.py",
+      "category": "tests",
+      "bytes": 2122,
+      "sha256": "dad77e116461224d880424657ad1adb70087664c2127b10a0b2a8a93518f9f77",
+      "summary": "",
+      "imports": [
+        "app",
+        "desc_review_proxy",
+        "http",
+        "io",
+        "types",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/disconnection/decision",
+        "/api/disconnection/photo/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg",
+        "/api/disconnection/session",
+        "/api/disconnection/state"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
+      "path": "tests/test_disconnection_frontend.js",
+      "category": "tests",
+      "bytes": 1279,
+      "sha256": "ec784610dee725db4bd347fef8616cfe80645e9be5e609e3310e23eb7106f4d2",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/disconnection/photo/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "tests/test_disconnection_hostinger.js",
+      "category": "tests",
+      "bytes": 3143,
+      "sha256": "c63be0f05e8f87abd951b47e260114cde773d76aa2a298a14a3c59474d32f41d",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/disconnection/decision",
+        "/api/disconnection/photo/../secret",
+        "/api/disconnection/report.xlsx?month=2026-99",
+        "/api/disconnection/session",
+        "/api/disconnection/state",
+        "/api/disconnection/state?url=evil"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_edge_voice.py",
@@ -3115,8 +3393,8 @@
     {
       "path": "tests/test_imperium_api.py",
       "category": "tests",
-      "bytes": 77030,
-      "sha256": "a555860e601a871a202e49802b0b6c39555d0cc3075b7b22e02618c5d3dd7c33",
+      "bytes": 77285,
+      "sha256": "06cc74dc3a92ff00f5fd5d5c397e19bbdce0a234895734277ac3abea5dd96806",
       "summary": "",
       "imports": [
         "datasnap_client",
@@ -3134,7 +3412,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": true,
-      "symbol_count": 85
+      "symbol_count": 86
     },
     {
       "path": "tests/test_imperium_http_api.py",
@@ -3987,8 +4265,8 @@
     {
       "path": "tests/test_toa_discovery_browser.py",
       "category": "tests",
-      "bytes": 962,
-      "sha256": "cc0d9dd8e053328f8beec6e722136c4772d3519b1d4e4774e5a3aa0df8dc4a8d",
+      "bytes": 1071,
+      "sha256": "f5606883d40c3cc1bf3c61038172b35188acd827c307bb0aaea77b429d7ba200",
       "summary": "",
       "imports": [
         "toa_discovery_browser",
@@ -4840,6 +5118,10 @@
     "DOMINIUM_AUTH_EMAIL_DOMAIN",
     "DOMINIUM_CHROMEDRIVER",
     "DOMINIUM_DATABASE_URL",
+    "DOMINIUM_DESC_REVIEW_ACCESS_FILE",
+    "DOMINIUM_DESC_REVIEW_CONNECTION",
+    "DOMINIUM_DESC_REVIEW_ORIGIN",
+    "DOMINIUM_DESC_REVIEW_TOKEN",
     "DOMINIUM_HTTPS",
     "DOMINIUM_INGEST_TOKEN",
     "DOMINIUM_LOCAL_TOA_AUTOMATION",
@@ -4860,6 +5142,7 @@
     "DOMINIUM_WEB_MODE",
     "IMPERIUM_DATASNAP_PASSWORD",
     "IMPERIUM_DATASNAP_USERNAME",
+    "PLAYWRIGHT_MODULE",
     "PORT",
     "SUPABASE_ACCESS_TOKEN",
     "SUPABASE_DB_PASSWORD",

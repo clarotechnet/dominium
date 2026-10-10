@@ -3,6 +3,7 @@ from __future__ import annotations
 import datetime as dt
 import hashlib
 import json
+import os
 import shutil
 import zipfile
 from pathlib import Path
@@ -14,6 +15,7 @@ STATIC = ROOT / "static"
 DEFAULT_OUTPUT = ROOT / "output" / "hostinger-node-release"
 
 RUNTIME_FILES = (
+    "disconnection-proxy.js",
     "server.js",
     "package.json",
     "package-lock.json",
@@ -59,6 +61,15 @@ def build(output: Path = DEFAULT_OUTPUT) -> tuple[Path, Path]:
     if output.exists():
         shutil.rmtree(output)
     output.mkdir(parents=True)
+
+    # Server-only configuration supplied by the encrypted deployment secret.
+    # It is absent from source, static assets, and ordinary downloadable releases.
+    connection = os.environ.get("DOMINIUM_DESC_REVIEW_CONNECTION", "").strip()
+    if connection:
+        value = json.loads(connection)
+        if set(value) != {"origin", "token"} or not str(value['origin']).startswith('https://') or len(str(value['token'])) < 43:
+            raise ValueError("Invalid private DESC connection")
+        (output / ".desc-review-connection.json").write_text(json.dumps(value), encoding="utf-8")
 
     entries: list[dict[str, object]] = []
 

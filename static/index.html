@@ -8,6 +8,7 @@
   <script src="/theme-init.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/impeccable.css">
+  <link rel="stylesheet" href="/workspace.css?v=20261010-desc1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -112,6 +113,10 @@
         <span><strong>Ordens de servico</strong><small>Consulta</small></span>
       </button>
       <p class="side-nav-label side-nav-section">Producao</p>
+      <button class="side-nav-item" id="disconnectionModule" type="button">
+        <i data-lucide="unplug" aria-hidden="true"></i>
+        <span><strong>DESCONEXÃO</strong><small>WhatsApp · Atlas</small></span>
+      </button>
       <button class="side-nav-item" id="importsModule" type="button">
         <i data-lucide="upload" aria-hidden="true"></i>
         <span><strong>Importar CSV</strong><small>TOA</small></span>
@@ -174,6 +179,30 @@
     </aside>
 
   <main>
+    <section class="disconnection-workspace hidden" id="disconnectionWorkspace" aria-label="Desconexão pelo WhatsApp">
+      <header class="workspace-heading desc-heading">
+        <div><p class="section-label">WHATSAPP · TOA · ATLAS</p><h2>Desconexão</h2><p class="workspace-description">Da mensagem do técnico à conferência da baixa.</p></div>
+        <div class="desc-heading-actions"><span class="desc-mode" id="descMode">Conectando ao Bot</span><button class="button secondary" id="descReload" type="button"><i data-lucide="refresh-cw" aria-hidden="true"></i>Atualizar</button><button class="button secondary" id="descExport" type="button"><i data-lucide="download" aria-hidden="true"></i>Relatório</button></div>
+      </header>
+      <p class="desc-alert hidden" id="descError" role="alert"></p>
+      <section class="desc-metrics" aria-label="Resumo da desconexão">
+        <article><span>Recebendo</span><strong id="descReceived">—</strong><small>Mensagens e consultas</small><i data-lucide="message-circle" aria-hidden="true"></i></article>
+        <article><span>Para revisar</span><strong id="descReady">—</strong><small>Evidências reunidas</small><i data-lucide="scan-line" aria-hidden="true"></i></article>
+        <article><span>Conferência</span><strong id="descBlocked">—</strong><small>Pontos a resolver</small><i data-lucide="circle-alert" aria-hidden="true"></i></article>
+        <article><span>Revisadas</span><strong id="descDone">—</strong><small>Simulações e baixas</small><i data-lucide="clipboard-check" aria-hidden="true"></i></article>
+      </section>
+      <div class="desc-board">
+        <aside class="desc-inbox" aria-label="Lotes recebidos">
+          <div class="desc-inbox-heading"><h3>Recebidos</h3><span id="descCount">— lotes</span></div>
+          <label class="desc-search"><i data-lucide="search" aria-hidden="true"></i><input id="descSearch" type="search" placeholder="Contrato, técnico ou OS" aria-label="Pesquisar contrato, técnico ou OS"></label>
+          <div class="desc-filters"><select id="descState" aria-label="Situação do lote"><option value="all">Todas as situações</option><option value="buffering">Recebendo</option><option value="processing">Consultando</option><option value="review">Para revisar</option><option value="blocked">Conferência</option><option value="simulated">Simulada</option><option value="executed">Baixa confirmada</option><option value="rejected">Recusada</option></select><select id="descGroup" aria-label="Grupo do WhatsApp"><option value="">Todos os grupos</option></select></div>
+          <div class="desc-list" id="descList"></div><p class="desc-updated" id="descUpdated">Aguardando conexão</p>
+        </aside>
+        <section class="desc-detail" id="descDetail" aria-label="Fotos e conferência do contrato"></section>
+      </div>
+      <dialog class="desc-photo-dialog" id="descPhotoDialog" aria-label="Foto enviada pelo técnico"><button class="button secondary" id="descPhotoClose" type="button" aria-label="Fechar foto"><i data-lucide="x" aria-hidden="true"></i>Fechar</button><img id="descPhotoLarge" alt="Foto do equipamento enviada pelo técnico"></dialog>
+      <dialog class="desc-tech-dialog" id="descTechDialog" aria-labelledby="descTechTitle"><h3 id="descTechTitle">Vincular técnico</h3><p class="desc-muted">Informe o recurso real do Imperium e o login TOA deste remetente.</p><form id="descTechForm"><label>Remetente WhatsApp<input name="sender" readonly required></label><label>Nome do técnico<input name="name" required maxlength="100"></label><label>Recurso Imperium<input name="imperium_id" required inputmode="numeric" pattern="[0-9]+"></label><label>Login TOA<input name="toa_login" maxlength="80"></label><label class="desc-checkbox"><input type="checkbox" name="freelancer">Freelancer de entrega de chip</label><p class="desc-alert hidden" id="descTechError" role="alert"></p><div class="desc-detail-actions"><button class="button secondary" type="button" id="descTechCancel">Cancelar</button><button class="button primary" type="submit">Salvar vínculo</button></div></form></dialog>
+    </section>
     <section class="dashboard-workspace" id="dashboardWorkspace" aria-label="Visao geral">
       <header class="workspace-heading dashboard-heading">
         <div>
@@ -1995,7 +2024,8 @@
 
   <script src="/lucide.min.js"></script>
   <script src="/operations-monitor.js"></script>
-  <script src="/app.js"></script>
+  <script src="/disconnection.js?v=20261010-desc1"></script>
+  <script src="/app.js?v=20261010-desc1"></script>
   <script type="module" src="/motion-ui.js"></script>
 </body>
 </html>

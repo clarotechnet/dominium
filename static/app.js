@@ -47,7 +47,9 @@ const state = {
     { code: "0", description: "CANCELAMENTO", productive: false },
   ],
   failures: [],
-  activeModule: window.location.hash === "#monitor"
+  activeModule: window.location.hash === "#desconexao"
+    ? "disconnection"
+    : window.location.hash === "#monitor"
     ? "close"
     : window.location.hash === "#inteligencia"
       ? "intelligence"
@@ -850,7 +852,9 @@ function apiUrlForProfile(path, profile) {
 function updateAddress() {
   const url = new URL(window.location.href);
   url.searchParams.set("profile", state.profile);
-  url.hash = state.activeModule === "monitor"
+  url.hash = state.activeModule === "disconnection"
+    ? "desconexao"
+    : state.activeModule === "monitor"
     ? "monitor"
     : state.activeModule === "intelligence"
       ? "inteligencia"
@@ -1082,6 +1086,7 @@ function hideAuthGate() {
 }
 
 function showAuthGate(message = "") {
+  document.dispatchEvent(new CustomEvent("dominium:auth-cleared"));
   resetAuthSuccessMotion();
   elements.authGate.classList.remove("hidden");
   document.documentElement.classList.add("auth-pending");
@@ -3274,7 +3279,7 @@ function setModule(module) {
     || state.stockWriteoffLoading
     || ![
       "dashboard", "monitor", "orders", "stock", "technicians", "bulk", "imports",
-      "automation-test", "close", "report", "history", "intelligence", "database",
+      "automation-test", "close", "report", "history", "intelligence", "database", "disconnection",
     ].includes(module)
   ) return;
   if (module !== "stock" && state.stockSource === "official") {
@@ -6832,6 +6837,7 @@ function render() {
   elements.reportWorkspace.classList.toggle("hidden", state.activeModule !== "report");
   elements.databaseWorkspace.classList.toggle("hidden", state.activeModule !== "database");
   elements.historyWorkspace.classList.toggle("hidden", state.activeModule !== "history");
+  document.getElementById("disconnectionWorkspace").classList.toggle("hidden", state.activeModule !== "disconnection");
   elements.dashboardModule.classList.toggle("active", state.activeModule === "dashboard");
   elements.monitorModule?.classList.toggle("active", state.activeModule === "monitor");
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
@@ -6847,6 +6853,7 @@ function render() {
   elements.reportModule.classList.toggle("active", state.activeModule === "report");
   elements.databaseModule.classList.toggle("active", state.activeModule === "database");
   elements.historyModule.classList.toggle("active", state.activeModule === "history");
+  document.getElementById("disconnectionModule").classList.toggle("active", state.activeModule === "disconnection");
   renderDashboard();
   renderOperationsMonitor();
   renderImportPreview();
@@ -12081,6 +12088,7 @@ elements.bulkCreateDate.value = localDate();
 elements.refresh.addEventListener("click", () => loadOrders());
 elements.sidebarToggle.addEventListener("click", toggleSidebar);
 elements.dashboardModule.addEventListener("click", () => setModule("dashboard"));
+document.getElementById("disconnectionModule").addEventListener("click", () => setModule("disconnection"));
 elements.monitorModule?.addEventListener("click", () => setModule("monitor"));
 elements.ordersModule.addEventListener("click", () => setModule("orders"));
 elements.stockModule.addEventListener("click", () => setModule("stock"));
@@ -12771,9 +12779,15 @@ async function initialize() {
     state.profileSwitching = false;
     renderProfileTabs();
     render();
+    if (state.activeModule === "disconnection") disconnectionController?.activate();
   }
 }
 
+const disconnectionController = globalThis.DominiumDisconnection?.mount({
+  request,
+  requestBlob: async (...args) => (await requestBlob(...args)).blob,
+  getUser: () => state.authUser,
+});
 bootstrapAuthentication();
 window.setTimeout(() => {
   if (state.authReady) showTermsOnFirstVisit();

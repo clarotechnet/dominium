@@ -463,7 +463,6 @@ class ApplyPacketTests(unittest.TestCase):
         expected = {
             "306": "N\u00c3O RESIDE NO ENDERE\u00c7O",
             "312": "N\u00c3O SOLICITOU SERVI\u00c7O",
-            "512": "CONTROLE REMOTO COM DEFEITO - TROCA",
         }
 
         for code, description in expected.items():
@@ -472,6 +471,12 @@ class ApplyPacketTests(unittest.TestCase):
                 self.assertFalse(close_code.productive)
                 self.assertEqual(close_code.description, description)
                 self.assertTrue(close_code.suffixes[0])
+
+    def test_remote_control_replacement_keeps_productive_metadata(self) -> None:
+        definition = self.api.close_code("512")
+        self.assertTrue(definition.productive)
+        self.assertEqual(definition.description, "CONTROLE REMOTO COM DEFEITO - TROCA")
+        self.assertTrue(definition.suffixes[0])
 
     def test_status_exposes_manual_close_codes_to_the_workspace(self) -> None:
         with (
