@@ -279,7 +279,7 @@ _decode_wire_message	function	datasnap_client.py	294	-
 sha	function	deploy/hostinger-web/disconnection-proxy.js	5	-
 readConnection	function	deploy/hostinger-web/disconnection-proxy.js	6	-
 allowedRoute	function	deploy/hostinger-web/disconnection-proxy.js	11	-
-createDisconnectionMiddleware	function	deploy/hostinger-web/disconnection-proxy.js	21	-
+createDisconnectionMiddleware	function	deploy/hostinger-web/disconnection-proxy.js	22	-
 getCredentials	function	deploy/hostinger-web/server.js	52	-
 packU32	function	deploy/hostinger-web/server.js	58	-
 packDouble	function	deploy/hostinger-web/server.js	64	-
@@ -1364,10 +1364,11 @@ mount	function	static/disconnection.js	12	-
 find	function	static/disconnection.js	16	-
 filters	function	static/disconnection.js	18	-
 render	function	static/disconnection.js	19	-
-equipmentList	function	static/disconnection.js	57	-
-load	function	static/disconnection.js	58	-
-act	function	static/disconnection.js	72	-
-schedule	function	static/disconnection.js	96	-
+equipmentList	function	static/disconnection.js	58	-
+load	function	static/disconnection.js	59	-
+act	function	static/disconnection.js	74	-
+today	function	static/disconnection.js	84	-
+schedule	function	static/disconnection.js	101	-
 Uu	function	static/lucide.min.js	8	-
 stagger	function	static/motion-ui.js	17	-
 animationFrames	function	static/motion-ui.js	21	-

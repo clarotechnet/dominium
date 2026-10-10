@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-10T14:12:37+00:00",
+  "generated_at": "2026-10-10T17:14:40+00:00",
   "schema": 2,
-  "source_fingerprint": "e43eac7dee371e9ee80b56d351fc874dd6bb826a3ce16fbb245b4ca354053f3f",
+  "source_fingerprint": "fcd7f313f90e7c5610a8d26727fb15b4efb375007675480493809573249acb0d",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -629,8 +629,8 @@
     {
       "path": "deploy/hostinger-web/disconnection-proxy.js",
       "category": "tooling-deploy",
-      "bytes": 3871,
-      "sha256": "55176c79fb1fc54d49d41b482bff3f14f05270fc6aeee60df349bcc4c25b7aaa",
+      "bytes": 4059,
+      "sha256": "b04789d512fa88cecf94827d9750dda9629e5af5ed83e7881e69b4a378a40166",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2761,12 +2761,13 @@
     {
       "path": "static/disconnection.js",
       "category": "frontend",
-      "bytes": 15370,
-      "sha256": "30aabb915c6adc863b60b153d38d96f80864f29c10a40b213c0dec007edfec08",
+      "bytes": 16442,
+      "sha256": "8449b87f71518feb28f5d3847d6a2b6f44535470a0f58f69470e105a72acee40",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/disconnection/",
+        "/api/disconnection/history?date=",
         "/api/disconnection/photo/",
         "/api/disconnection/report.xlsx?month=",
         "/api/disconnection/state",
@@ -2775,7 +2776,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 13
+      "symbol_count": 14
     },
     {
       "path": "static/impeccable.css",
@@ -2793,8 +2794,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 108680,
-      "sha256": "8c70c15822a5b943ac9046c98686cf4678817e7dc694a0c73b6b06c0dfd5a8ef",
+      "bytes": 109101,
+      "sha256": "621ec2f768fd51540fe5ada975c728a53b8e1ce34d2ec0ea6f55d72b4892d5ae",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3519,12 +3520,17 @@
     {
       "path": "tests/test_disconnection_hostinger.js",
       "category": "tests",
-      "bytes": 3143,
-      "sha256": "c63be0f05e8f87abd951b47e260114cde773d76aa2a298a14a3c59474d32f41d",
+      "bytes": 4319,
+      "sha256": "8dce65f7a87e7c28f8709d77af55500e0100a540eeaa99fbbbd6b552247664c2",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/disconnection/decision",
+        "/api/disconnection/history",
+        "/api/disconnection/history?date=2026-10-09",
+        "/api/disconnection/history?date=2026-10-09&date=2026-10-10",
+        "/api/disconnection/history?date=2026-10-09&token=x",
+        "/api/disconnection/history?date=yesterday",
         "/api/disconnection/photo/../secret",
         "/api/disconnection/report.xlsx?month=2026-99",
         "/api/disconnection/session",

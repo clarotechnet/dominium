@@ -23,3 +23,16 @@ test('DESC rejects unsafe routes, redirects and reports offline explicitly',asyn
  assert.equal(calls,0);const redirect=response();await handler(req(),redirect);assert.equal(redirect.code,503);
  const offline=create({...config,fetchImpl:async()=>{throw new Error('connect failure');}});const r=response();await offline(req(),r);assert.equal(r.code,503);assert.match(r.body.error,/indisponível/);
 });
+
+test('DESC history accepts one ISO date and remains access-controlled',async()=>{
+ const {allowedRoute}=require('../deploy/hostinger-web/disconnection-proxy');
+ assert.equal(allowedRoute('GET','/api/disconnection/history?date=2026-10-09'),'/api/disconnection/history?date=2026-10-09');
+ for(const url of ['/api/disconnection/history','/api/disconnection/history?date=2026-10-09&date=2026-10-10','/api/disconnection/history?date=2026-10-09&token=x','/api/disconnection/history?date=yesterday'])
+  assert.throws(()=>allowedRoute('GET',url));
+ let seen='';
+ const handler=create({connection:()=>({origin:'https://relay.example',token:'a'.repeat(43)}),fetchImpl:async(url)=>{seen=url;return new Response('{"batches":[],"view":"history"}',{headers:{'Content-Type':'application/json'}});}});
+ const ok=response();await handler(req('controller','GET','/api/disconnection/history?date=2026-10-09'),ok);
+ assert.equal(ok.code,200);assert.equal(seen,'https://relay.example/api/disconnection/history?date=2026-10-09');
+ const unauthorized=response();await handler(req('viewer','GET','/api/disconnection/history?date=2026-10-09'),unauthorized);
+ assert.equal(unauthorized.code,403);
+});

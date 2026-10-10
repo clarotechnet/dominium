@@ -109,6 +109,7 @@ endpoint	path
 /api/toa-automation	patch_remote_toa.py
 /api/toa-automation/run	patch_remote_toa.py
 /api/disconnection/	static/disconnection.js
+/api/disconnection/history?date=	static/disconnection.js
 /api/disconnection/photo/	static/disconnection.js
 /api/disconnection/report.xlsx?month=	static/disconnection.js
 /api/disconnection/state	static/disconnection.js
@@ -144,6 +145,11 @@ endpoint	path
 /api/disconnection/state	tests/test_disconnection_access.py
 /api/disconnection/photo/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg	tests/test_disconnection_frontend.js
 /api/disconnection/decision	tests/test_disconnection_hostinger.js
+/api/disconnection/history	tests/test_disconnection_hostinger.js
+/api/disconnection/history?date=2026-10-09	tests/test_disconnection_hostinger.js
+/api/disconnection/history?date=2026-10-09&date=2026-10-10	tests/test_disconnection_hostinger.js
+/api/disconnection/history?date=2026-10-09&token=x	tests/test_disconnection_hostinger.js
+/api/disconnection/history?date=yesterday	tests/test_disconnection_hostinger.js
 /api/disconnection/photo/../secret	tests/test_disconnection_hostinger.js
 /api/disconnection/report.xlsx?month=2026-99	tests/test_disconnection_hostinger.js
 /api/disconnection/session	tests/test_disconnection_hostinger.js

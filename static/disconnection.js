@@ -6,19 +6,20 @@
   const photoUrl = name => /^[a-f0-9-]{36}\.jpg$/.test(String(name || '')) ? '/api/disconnection/photo/' + name : '';
   function visibleBatches(rows, {search = '', state = 'all', group = ''} = {}) {
     const term = norm(search);
-    return (rows || []).filter(batch => (state === 'all' || batch.state === state) && (!group || batch.group === group) && (!term || norm([batch.contract,batch.technician?.name,batch.city,batch.plan?.operations?.map(item=>item.os).join(' ')].join(' ')).includes(term)));
+    return (rows || []).filter(batch => (state === 'all' || batch.state === state) && (!group || batch.group === group) && (!term || norm([batch.contract,batch.technician?.name,batch.city,batch.plan?.operations?.map(item=>item.os).join(' '),(batch.plan?.atlas||batch.atlas||[]).map(item=>(item.serial||item.resultado?.serial_baixavel||'')).join(' '),batch.messages?.map(m=>m.text).join(' ')].join(' ')).includes(term)));
   }
   let controller;
   function mount({request, requestBlob, getUser}) {
     const root = document.getElementById('disconnectionWorkspace');
     if (!root || controller) return controller;
-    let data = null, selected = '', active = false, busy = false, timer = null, error = '', authEpoch = 0, updatedAt = null;
+    let data = null, selected = '', active = false, busy = false, timer = null, error = '', authEpoch = 0, updatedAt = null, historyDate = '';
     const find = id => root.querySelector('#' + id);
     const notes = new Map();
     const filters = () => ({search:find('descSearch').value,state:find('descState').value,group:find('descGroup').value});
     function render() {
       const rows = data?.batches || [];
-      find('descMode').textContent = data?.mode === 'test' ? 'Revisão · baixas em teste' : data?.mode === 'production' ? 'Operação ativa' : 'Conectando ao Bot';
+      find('descMode').textContent = data?.view === 'history' ? 'Histórico · somente leitura' : data?.mode === 'test' ? 'Revisão · baixas em teste' : data?.mode === 'production' ? 'Operação ativa' : 'Conectando ao Bot';
+      find('descHistoryLabel').textContent = historyDate ? 'Fotos de '+historyDate.split('-').reverse().join('/')+' · somente leitura · até 7 dias' : 'Fila atual · fotos preservadas por 7 dias';
       find('descError').textContent = error;
       find('descError').classList.toggle('hidden', !error);
       find('descUpdated').textContent = updatedAt ? 'Atualizado às ' + updatedAt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : 'Aguardando conexão';
@@ -36,7 +37,7 @@
       const batch = rows.find(row=>row.id===selected);
       const detail = find('descDetail');
       if (!batch) { detail.innerHTML = '<div class="desc-empty"><i data-lucide="scan-line"></i><h3>Conferência do contrato</h3><p>Selecione um lote para ver a mensagem, as fotos e o resultado do Atlas.</p></div>'; global.lucide?.createIcons(); return; }
-      const plan = batch.plan, canWrite = ['admin','controller'].includes(getUser()?.role), blockers = plan?.blockers || batch.capture_errors || [];
+      const plan = batch.plan, canWrite = data?.view !== 'history' && ['admin','controller'].includes(getUser()?.role), blockers = plan?.blockers || batch.capture_errors || [];
       const date = new Date(batch.created_at).toLocaleString('pt-BR');
       const evidence = plan?.atlas || [];
       detail.innerHTML = `<header class="desc-detail-heading"><div><p class="section-label">${escape(batch.city || 'DESCONEXÃO')}</p><h3>Contrato ${escape(batch.contract || 'não identificado')}</h3><p>${escape(batch.technician?.name || 'Técnico a vincular')} <span>· ${escape(date)}</span></p></div><span class="desc-state ${escape(batch.state)}">${escape(stateLabel(batch.state))}</span></header>
@@ -61,7 +62,8 @@
       busy = true;
       find('descReload').disabled = true;
       try {
-        const response = await request('/api/disconnection/state', {timeoutMs:25000});
+        const route=historyDate?'/api/disconnection/history?date='+encodeURIComponent(historyDate):'/api/disconnection/state';
+        const response = await request(route, {timeoutMs:25000});
         if(epoch !== authEpoch) return;
         data = response; updatedAt = new Date(); if(!preserveError) error='';
         const select = find('descGroup'), prior = select.value;
@@ -71,7 +73,7 @@
     }
     async function act(action) {
       const batch = data?.batches.find(item=>item.id===selected);
-      if (!batch || busy) return;
+      if (!batch || busy || data?.view === 'history') return;
       busy=true; root.classList.add('desc-busy');
       try {
         await request('/api/disconnection/'+(action==='refresh'?'refresh':'decision'), {method:'POST',body:JSON.stringify({id:batch.id,revision:batch.revision,action,note:notes.get(batch.id)||''}),timeoutMs:120000});error='';
@@ -79,6 +81,9 @@
       finally { busy=false;root.classList.remove('desc-busy');await load({preserveError:!!error}); }
     }
     for (const name of ['descSearch','descState','descGroup']) find(name).addEventListener(name==='descSearch'?'input':'change',render);
+    const dateBox=find('descHistoryDate');const today=()=>new Date(Date.now()-3*3600000).toISOString().slice(0,10);dateBox.max=today();dateBox.min=new Date(Date.now()-7*86400000).toISOString().slice(0,10);dateBox.value=today();
+    find('descHistoryOpen').addEventListener('click',()=>{if(!dateBox.value)return;historyDate=dateBox.value;selected='';void load();});
+    find('descHistoryToday').addEventListener('click',()=>{historyDate='';selected='';void load();});
     find('descReload').addEventListener('click',()=>load());
     find('descList').addEventListener('click',event=>{const button=event.target.closest('[data-batch]');if(button){selected=button.dataset.batch;render();}});
     find('descDetail').addEventListener('click',event=>{
@@ -96,7 +101,7 @@
     const schedule=()=>{clearTimeout(timer);if(active)timer=setTimeout(async()=>{if(!document.hidden)await load();schedule();},15000);};
     controller={activate(){active=true;void load();schedule();},deactivate(){active=false;clearTimeout(timer);}};
     document.addEventListener('dominium:module-change',event=>event.detail.module==='disconnection'?controller.activate():controller.deactivate());
-    document.addEventListener('dominium:auth-cleared',()=>{authEpoch++;controller.deactivate();data=null;selected='';error='';updatedAt=null;notes.clear();find('descPhotoDialog').close();find('descPhotoLarge').removeAttribute('src');find('descTechDialog').close();find('descTechForm').reset();render();});
+    document.addEventListener('dominium:auth-cleared',()=>{authEpoch++;controller.deactivate();data=null;selected='';historyDate='';error='';updatedAt=null;notes.clear();find('descPhotoDialog').close();find('descPhotoLarge').removeAttribute('src');find('descTechDialog').close();find('descTechForm').reset();render();});
     render();return controller;
   }
   const api={mount,visibleBatches,stateLabel,photoUrl,escape};
