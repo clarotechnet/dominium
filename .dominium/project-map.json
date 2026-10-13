@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-10T17:14:40+00:00",
+  "generated_at": "2026-10-13T13:22:53+00:00",
   "schema": 2,
-  "source_fingerprint": "fcd7f313f90e7c5610a8d26727fb15b4efb375007675480493809573249acb0d",
+  "source_fingerprint": "0678a4da75c2796ceb66f3cb8096b8adc48f6382ff9ebb2b55d5d909f13d99ef",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 355630,
-      "sha256": "0cc3b05c9f8d1d4af1cba18d35917d25f0b2cafb7d40696fe92aa081af92d1df",
+      "bytes": 356262,
+      "sha256": "75475f00b9c104bc840aa0cb08e79f78705827cb6dcc9e9d4d9803bee8f19b58",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -173,6 +173,8 @@
         "/api/disconnect-automation",
         "/api/disconnect-automation/",
         "/api/disconnection/",
+        "/api/disconnection/serial-apply",
+        "/api/disconnection/serial-lookup",
         "/api/failures",
         "/api/health-check",
         "/api/imperium-official/",
@@ -629,8 +631,8 @@
     {
       "path": "deploy/hostinger-web/disconnection-proxy.js",
       "category": "tooling-deploy",
-      "bytes": 4059,
-      "sha256": "b04789d512fa88cecf94827d9750dda9629e5af5ed83e7881e69b4a378a40166",
+      "bytes": 4182,
+      "sha256": "75ce3b739756e6277d921b541571c97d8e5f34daa45e4770815e70872f29e41c",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -686,8 +688,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 40833,
-      "sha256": "2fca73583881a369393bdb7b7b5adca448597a021207bb8e28101cb747930ad5",
+      "bytes": 41121,
+      "sha256": "52d4c63a0bd6eb905ec0094a74be2dd0ae688e3205267790db8de2bf5b4c06fb",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -839,8 +841,8 @@
     {
       "path": "desc_review_proxy.py",
       "category": "shared",
-      "bytes": 5981,
-      "sha256": "9c4afb6e6dd2d9c4b27bddf0c97f957664d0a79aad2b803bbe412d536ff57117",
+      "bytes": 6014,
+      "sha256": "bda8c6747f8a346b7e00c82763f3d98c23a7ee92b5b764527a16b029e7ec8f7a",
       "summary": "Authenticated Dominium boundary to the Bot's existing DESC review service.",
       "imports": [
         "__future__",
@@ -1337,10 +1339,32 @@
       "symbol_count": 0
     },
     {
+      "path": "integrations/desc_review_bot/install_manual_serial.py",
+      "category": "shared",
+      "bytes": 6113,
+      "sha256": "5e49ca4405d422f7ad57dd3a20c240559733e21b07d6a8fefff0a424d03a5212",
+      "summary": "Install the manual Atlas helper without replacing the live history implementation.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "datetime",
+        "pathlib",
+        "re",
+        "shutil",
+        "subprocess",
+        "tempfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 4
+    },
+    {
       "path": "integrations/desc_review_bot/README.md",
       "category": "shared",
-      "bytes": 1206,
-      "sha256": "2e37b10767d75f893cccdf1ba2dbf10c94a1c747d81103b01b41b466d293939f",
+      "bytes": 2276,
+      "sha256": "4442e88a9275793de80b362f19cf4cce53636ee00718364827b4c9949a87f927",
       "summary": "DESC — vínculo WhatsApp / Imperium",
       "imports": [],
       "endpoints": [],
@@ -1361,6 +1385,19 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 19
+    },
+    {
+      "path": "integrations/desc_review_bot/src/descReview/manualSerial.js",
+      "category": "shared",
+      "bytes": 5979,
+      "sha256": "8012c46cba4ab7e680a0a810e79c697ba2a57481ff12576f474a95301e99aa09",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 6
     },
     {
       "path": "integrations/desc_review_bot/src/descReview/orderClient.js",
@@ -1391,8 +1428,8 @@
     {
       "path": "integrations/desc_review_bot/src/descReview/server.js",
       "category": "shared",
-      "bytes": 16804,
-      "sha256": "712802d6b3a6ee5bd8b34db47ac5bea432285d6dc8dc23205fd888efcb1946b6",
+      "bytes": 17478,
+      "sha256": "78d4ae62cb0c9be8ed4a3a5b305589ea1409b0dd85879088493dde0a803ec71d",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -1400,6 +1437,32 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 19
+    },
+    {
+      "path": "integrations/desc_review_bot/src/descReview/tests/manual-http.test.js",
+      "category": "shared",
+      "bytes": 2669,
+      "sha256": "d8f787170585b6d1648dae9588a34711865474cb24719ae745228da8d0a50b74",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "integrations/desc_review_bot/src/descReview/tests/manual-serial.test.js",
+      "category": "shared",
+      "bytes": 5975,
+      "sha256": "b9617aac67878d35e5318afb3fd637ef6bdee6b0cc09bacf6c24e29237f07db9",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
     },
     {
       "path": "integrations/desc_review_bot/src/descReview/tests/order-client.test.js",
@@ -2660,8 +2723,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 5505,
-      "sha256": "b6d5bb1c225d1b4b1c16cf0fc12c2568da3b10aaaafa0f5718669f8692df8a0c",
+      "bytes": 5771,
+      "sha256": "745cff3e67236d4f2642662302bf3df850ea6657399adad2efbff79605e8dbf2",
       "summary": "",
       "imports": [
         "__future__",
@@ -2761,8 +2824,8 @@
     {
       "path": "static/disconnection.js",
       "category": "frontend",
-      "bytes": 16442,
-      "sha256": "8449b87f71518feb28f5d3847d6a2b6f44535470a0f58f69470e105a72acee40",
+      "bytes": 28897,
+      "sha256": "b76030f2b5e68f91d1c7fa74d5b81b79ee7191c6a24e9ff2f32200fc9ae24c4a",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2770,13 +2833,15 @@
         "/api/disconnection/history?date=",
         "/api/disconnection/photo/",
         "/api/disconnection/report.xlsx?month=",
+        "/api/disconnection/serial-apply",
+        "/api/disconnection/serial-lookup",
         "/api/disconnection/state",
         "/api/disconnection/technician"
       ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 14
+      "symbol_count": 32
     },
     {
       "path": "static/impeccable.css",
@@ -2794,8 +2859,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 109101,
-      "sha256": "621ec2f768fd51540fe5ada975c728a53b8e1ce34d2ec0ea6f55d72b4892d5ae",
+      "bytes": 111425,
+      "sha256": "89fd85aa94da7938e4e1cd6667db2c911cbc06f9fef10252bb32829de1bf4bd2",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2887,8 +2952,8 @@
     {
       "path": "static/workspace.css",
       "category": "frontend",
-      "bytes": 16148,
-      "sha256": "e6eec4e58e90488e27d99cd2065ea6f22bad5ea5d0f666bd6da23fa2d31aacc7",
+      "bytes": 18521,
+      "sha256": "d93cb7a305db2dd32b1f87db04d2622a9e3057519bd555cb42d7efa9c648fee9",
       "summary": "Shared workspace: the original Technet image, floating glass and Dominium red. */",
       "imports": [],
       "endpoints": [],
@@ -3120,6 +3185,29 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 1
+    },
+    {
+      "path": "tests/qa_photo_assist_browser.js",
+      "category": "tests",
+      "bytes": 15422,
+      "sha256": "462b748e72dda89206ff4de308fc3ee6434c6d6072c3e9b6a432e150d5a21ffd",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/disconnection/history",
+        "/api/disconnection/history?date=",
+        "/api/disconnection/photo/",
+        "/api/disconnection/serial-apply",
+        "/api/disconnection/serial-lookup",
+        "/api/disconnection/state"
+      ],
+      "env_vars": [
+        "PLAYWRIGHT_MODULE",
+        "QA_SCREENSHOT_DIR"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
     },
     {
       "path": "tests/qa_workspace_browser.js",
@@ -3392,8 +3480,8 @@
     {
       "path": "tests/test_desc_review_proxy.py",
       "category": "tests",
-      "bytes": 4991,
-      "sha256": "fbeca0b498b641497760c28e7f3d9abc8ea3158f26b7d2b4c92a9c7d8e4f0eda",
+      "bytes": 5597,
+      "sha256": "2ce6f2b762e688478fc131913f7098b713f58e910af633e7d2ce795400f8400d",
       "summary": "",
       "imports": [
         "desc_review_proxy",
@@ -3405,6 +3493,7 @@
         "unittest"
       ],
       "endpoints": [
+        "/api/disconnection/",
         "/api/disconnection/../session",
         "/api/disconnection/decision",
         "/api/disconnection/photo/",
@@ -3416,7 +3505,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 14
+      "symbol_count": 16
     },
     {
       "path": "tests/test_desc_review_relay.py",
@@ -3480,8 +3569,8 @@
     {
       "path": "tests/test_disconnection_access.py",
       "category": "tests",
-      "bytes": 2122,
-      "sha256": "dad77e116461224d880424657ad1adb70087664c2127b10a0b2a8a93518f9f77",
+      "bytes": 2878,
+      "sha256": "cba855ef00508a978d7e40921f2c936744eed910282fbb39137538716333243d",
       "summary": "",
       "imports": [
         "app",
@@ -3494,19 +3583,20 @@
       "endpoints": [
         "/api/disconnection/decision",
         "/api/disconnection/photo/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg",
+        "/api/disconnection/serial-lookup",
         "/api/disconnection/session",
         "/api/disconnection/state"
       ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 5
+      "symbol_count": 6
     },
     {
       "path": "tests/test_disconnection_frontend.js",
       "category": "tests",
-      "bytes": 1279,
-      "sha256": "ec784610dee725db4bd347fef8616cfe80645e9be5e609e3310e23eb7106f4d2",
+      "bytes": 2074,
+      "sha256": "2a584c593ff0de4b6e371ca8698df29c524d3c66bb4707a996789be2fb0139b5",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3520,11 +3610,12 @@
     {
       "path": "tests/test_disconnection_hostinger.js",
       "category": "tests",
-      "bytes": 4319,
-      "sha256": "8dce65f7a87e7c28f8709d77af55500e0100a540eeaa99fbbbd6b552247664c2",
+      "bytes": 6313,
+      "sha256": "8ba5672a49ada7ac2170d494f70c32cf2de9b97462e1c2e5b3700aa807d164d3",
       "summary": "",
       "imports": [],
       "endpoints": [
+        "/api/disconnection/",
         "/api/disconnection/decision",
         "/api/disconnection/history",
         "/api/disconnection/history?date=2026-10-09",
@@ -3533,6 +3624,7 @@
         "/api/disconnection/history?date=yesterday",
         "/api/disconnection/photo/../secret",
         "/api/disconnection/report.xlsx?month=2026-99",
+        "/api/disconnection/serial-lookup",
         "/api/disconnection/session",
         "/api/disconnection/state",
         "/api/disconnection/state?url=evil"
@@ -3771,6 +3863,23 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 14
+    },
+    {
+      "path": "tests/test_manual_serial_installer.py",
+      "category": "tests",
+      "bytes": 2246,
+      "sha256": "2ffbc70495e2cdcfc0c9859927944d85a908ebc5a06c0f9c93cf386c5dc9d0db",
+      "summary": "",
+      "imports": [
+        "importlib",
+        "pathlib",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
     },
     {
       "path": "tests/test_material_matching.py",
@@ -4164,6 +4273,21 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "tests/test_order_dataset_hostinger.js",
+      "category": "tests",
+      "bytes": 3669,
+      "sha256": "bca127bdd7f87bcffe198aaa5531529f38cddad832c90d387ad95921be127037",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/toa-agenda/import"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
     },
     {
       "path": "tests/test_registration_flow.py",
@@ -5368,6 +5492,7 @@
     "IMPERIUM_DATASNAP_USERNAME",
     "PLAYWRIGHT_MODULE",
     "PORT",
+    "QA_SCREENSHOT_DIR",
     "SUPABASE_ACCESS_TOKEN",
     "SUPABASE_DB_PASSWORD",
     "SUPABASE_PROJECT_REF",

@@ -12,7 +12,7 @@ function allowedRoute(method,raw){
   const url=new URL(raw,'http://dominium.invalid');
   const route=url.pathname.slice('/api/disconnection/'.length);
   if(!url.pathname.startsWith('/api/disconnection/')||url.hash)throw new Error('Rota DESC inválida');
-  const allowed=method==='GET'?['state','history','report.xlsx']:method==='POST'?['decision','refresh','technician','manual']:[];
+  const allowed=method==='GET'?['state','history','report.xlsx']:method==='POST'?['decision','refresh','technician','manual','serial-lookup','serial-apply']:[];
   if(!allowed.includes(route)&&!(method==='GET'&&/^photo\/[a-f0-9-]{36}\.jpg$/.test(route)))throw new Error('Rota DESC não permitida');
   const params=[...url.searchParams];
   if(route==='history'&&!(params.length===1&&params[0][0]==='date'&&/^\d{4}-\d{2}-\d{2}$/.test(params[0][1])))throw new Error('Data de histórico inválida');
@@ -38,7 +38,7 @@ function createDisconnectionMiddleware({connection=readConnection,fetchImpl=fetc
       const options={method:req.method,headers:{Authorization:'Bearer '+token,'X-Dominium-Actor':encodeURIComponent(actor)},redirect:'manual',signal:controller.signal};
       if(req.method==='POST'){
         if(!req.body||typeof req.body!=='object'||Array.isArray(req.body))return res.status(400).json({ok:false,error:'Corpo da revisão inválido'});
-        options.headers['Content-Type']='application/json';options.body=JSON.stringify({...req.body,actor});
+        options.headers['Content-Type']='application/json';options.body=JSON.stringify({...req.body,actor,review_session:sha(String(user.id||user.username||actor)+'|'+req.dominiumSession.csrf_hash)});
       }
       const response=await fetchImpl(url.origin+route,options);
       if(response.status>=300&&response.status<400)throw new Error('review_redirect_blocked');

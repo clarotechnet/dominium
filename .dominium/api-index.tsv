@@ -23,6 +23,8 @@ endpoint	path
 /api/disconnect-automation	app.py
 /api/disconnect-automation/	app.py
 /api/disconnection/	app.py
+/api/disconnection/serial-apply	app.py
+/api/disconnection/serial-lookup	app.py
 /api/failures	app.py
 /api/health-check	app.py
 /api/imperium-official/	app.py
@@ -112,6 +114,8 @@ endpoint	path
 /api/disconnection/history?date=	static/disconnection.js
 /api/disconnection/photo/	static/disconnection.js
 /api/disconnection/report.xlsx?month=	static/disconnection.js
+/api/disconnection/serial-apply	static/disconnection.js
+/api/disconnection/serial-lookup	static/disconnection.js
 /api/disconnection/state	static/disconnection.js
 /api/disconnection/technician	static/disconnection.js
 /api/operational/export.json	static/index.html
@@ -121,6 +125,12 @@ endpoint	path
 /api/disconnection/report.xlsx	tests/qa_disconnection_browser.js
 /api/disconnection/state	tests/qa_disconnection_browser.js
 /api/disconnection/technician	tests/qa_disconnection_browser.js
+/api/disconnection/history	tests/qa_photo_assist_browser.js
+/api/disconnection/history?date=	tests/qa_photo_assist_browser.js
+/api/disconnection/photo/	tests/qa_photo_assist_browser.js
+/api/disconnection/serial-apply	tests/qa_photo_assist_browser.js
+/api/disconnection/serial-lookup	tests/qa_photo_assist_browser.js
+/api/disconnection/state	tests/qa_photo_assist_browser.js
 /api/auth/session	tests/qa_workspace_browser.js
 /api/health-check	tests/qa_workspace_browser.js
 /api/intelligence	tests/qa_workspace_browser.js
@@ -131,6 +141,7 @@ endpoint	path
 /api/imperium-official/stocks?profile=natal	tests/test_app.py
 /api/orders/2207229/material-inventory?profile=natal	tests/test_app.py
 /api/orders/{order.id_os}/close?profile=natal	tests/test_app.py
+/api/disconnection/	tests/test_desc_review_proxy.py
 /api/disconnection/../session	tests/test_desc_review_proxy.py
 /api/disconnection/decision	tests/test_desc_review_proxy.py
 /api/disconnection/photo/	tests/test_desc_review_proxy.py
@@ -141,9 +152,11 @@ endpoint	path
 /api/disconnection/order-check	tests/test_desc_review_relay.py
 /api/disconnection/decision	tests/test_disconnection_access.py
 /api/disconnection/photo/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg	tests/test_disconnection_access.py
+/api/disconnection/serial-lookup	tests/test_disconnection_access.py
 /api/disconnection/session	tests/test_disconnection_access.py
 /api/disconnection/state	tests/test_disconnection_access.py
 /api/disconnection/photo/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg	tests/test_disconnection_frontend.js
+/api/disconnection/	tests/test_disconnection_hostinger.js
 /api/disconnection/decision	tests/test_disconnection_hostinger.js
 /api/disconnection/history	tests/test_disconnection_hostinger.js
 /api/disconnection/history?date=2026-10-09	tests/test_disconnection_hostinger.js
@@ -152,10 +165,12 @@ endpoint	path
 /api/disconnection/history?date=yesterday	tests/test_disconnection_hostinger.js
 /api/disconnection/photo/../secret	tests/test_disconnection_hostinger.js
 /api/disconnection/report.xlsx?month=2026-99	tests/test_disconnection_hostinger.js
+/api/disconnection/serial-lookup	tests/test_disconnection_hostinger.js
 /api/disconnection/session	tests/test_disconnection_hostinger.js
 /api/disconnection/state	tests/test_disconnection_hostinger.js
 /api/disconnection/state?url=evil	tests/test_disconnection_hostinger.js
 /api/orders/1837422/close?profile=natal	tests/test_installer_reassignment.py
+/api/toa-agenda/import	tests/test_order_dataset_hostinger.js
 /api/auth/login	tests/test_ui_runtime_regression.py
 /api/auth/register	tests/test_ui_runtime_regression.py
 /api/auth/bootstrap	tests/test_web_auth_config.py

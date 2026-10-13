@@ -110,3 +110,14 @@ class DescProxyTests(unittest.TestCase):
             with self.assertRaises(ProxyError):
                 DescReviewProxy(origin=self.proxy.origin + suffix)
 
+
+class ManualSerialRouteTests(unittest.TestCase):
+    def test_manual_serial_routes_are_post_only_and_have_no_query_params(self):
+        from desc_review_proxy import DescReviewProxy, ProxyError
+        for route in ('serial-lookup', 'serial-apply'):
+            path = '/api/disconnection/' + route
+            self.assertEqual(DescReviewProxy.route('POST', path), '/desc-review/' + route)
+            with self.assertRaises(ProxyError):
+                DescReviewProxy.route('GET', path)
+            with self.assertRaises(ProxyError):
+                DescReviewProxy.route('POST', path + '?token=bad')

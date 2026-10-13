@@ -3,6 +3,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');
 const {createReviewStore,resolveAtlas,serial,day}=require('./core');
+const {createManualSerialReview}=require('./manualSerial');
 const PREFIX='/desc-review';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function createDescReview({directory,groups,technicians={},toaBridge,toaLookup,verifyImperium,lookupPhoto,lookupSerials,now=Date.now,autoStart=true}) {
@@ -10,6 +11,7 @@ function createDescReview({directory,groups,technicians={},toaBridge,toaLookup,v
   const mappingFile=path.join(directory,'technicians.json');
   if(fs.existsSync(mappingFile))Object.assign(technicians,JSON.parse(fs.readFileSync(mappingFile,'utf8')));
   const store=createReviewStore({directory,groups,technicians,now,requireImperiumVerification:true});
+  const manualSerial=createManualSerialReview({store,lookupSerials,now,scan:()=>scan()});
   const accessFile=path.join(directory,'review-access.txt');
   let pin;
   if(fs.existsSync(accessFile))pin=fs.readFileSync(accessFile,'utf8').trim();
@@ -95,7 +97,9 @@ function createDescReview({directory,groups,technicians={},toaBridge,toaLookup,v
     }
     const session=authenticated(req);if(!session){json(res,401,{error:'Entre com o código de acesso'});return true;}
     if(req.method==='POST'&&req.headers['x-review-csrf']!==session.csrf){json(res,403,{error:'Sessão de revisão inválida'});return true;}
-    if(req.method==='GET'&&url.pathname===PREFIX+'/state'){json(res,200,{...status,csrf:session.csrf,batches:store.list().slice(-300).reverse(),technicians,groups,atlas:toaBridge?.getAtlasStatus(),toa:toaBridge?.getExtensionStatus()});return true;}
+    if(req.method==='GET'&&url.pathname===PREFIX+'/state'){json(res,200,{...status,capabilities:{manual_serial:true},csrf:session.csrf,batches:store.list().slice(-300).reverse(),technicians,groups,atlas:toaBridge?.getAtlasStatus(),toa:toaBridge?.getExtensionStatus()});return true;}
+    if(req.method==='POST'&&url.pathname===PREFIX+'/serial-lookup'){const d=await body(req);json(res,200,await manualSerial.lookup(d,{actor:d.actor||session.actor,csrf:session.csrf,operator_session:d.review_session||session.csrf}));return true;}
+    if(req.method==='POST'&&url.pathname===PREFIX+'/serial-apply'){const d=await body(req);json(res,200,await manualSerial.apply(d,{actor:d.actor||session.actor,csrf:session.csrf,operator_session:d.review_session||session.csrf}));return true;}
     if(req.method==='POST'&&url.pathname===PREFIX+'/decision'){const d=await body(req);json(res,200,{ok:true,batch:store.decide(d.id,d.action,d.revision,d.actor||session.actor,d.note)});return true;}
     if(req.method==='POST'&&url.pathname===PREFIX+'/technician'){const d=await body(req);store.updateTechnician(d.sender,d);const temp=mappingFile+'.tmp';fs.writeFileSync(temp,JSON.stringify(technicians,null,2),{mode:0o600});fs.renameSync(temp,mappingFile);json(res,200,{ok:true});return true;}
     if(req.method==='POST'&&url.pathname===PREFIX+'/demo'){const d=await body(req);if(!['430','400','409','512','706','blocked'].includes(d.kind))throw new Error('Amostra inválida');json(res,200,{ok:true,batch:createDemo(d.kind)});return true;}

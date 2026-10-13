@@ -8,7 +8,7 @@
   <script src="/theme-init.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/impeccable.css">
-  <link rel="stylesheet" href="/workspace.css?v=20261010-desc3">
+  <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -201,7 +201,23 @@
         </aside>
         <section class="desc-detail" id="descDetail" aria-label="Fotos e conferência do contrato"></section>
       </div>
-      <dialog class="desc-photo-dialog" id="descPhotoDialog" aria-label="Foto enviada pelo técnico"><button class="button secondary" id="descPhotoClose" type="button" aria-label="Fechar foto"><i data-lucide="x" aria-hidden="true"></i>Fechar</button><img id="descPhotoLarge" alt="Foto do equipamento enviada pelo técnico"></dialog>
+      <dialog class="desc-photo-dialog" id="descPhotoDialog" aria-labelledby="descPhotoTitle">
+        <header class="desc-photo-heading"><div><h3 id="descPhotoTitle">Conferir foto e serial</h3><p id="descPhotoContext" class="desc-muted"></p></div><button class="button secondary" id="descPhotoClose" type="button" aria-label="Fechar foto"><i data-lucide="x" aria-hidden="true"></i>Fechar</button></header>
+        <div class="desc-photo-layout">
+          <section class="desc-photo-viewer" aria-label="Ampliação da foto">
+            <div class="desc-photo-toolbar"><button class="button secondary" id="descPhotoZoomOut" type="button" aria-label="Diminuir foto">−</button><output id="descPhotoZoomLevel" aria-live="polite">100%</output><button class="button secondary" id="descPhotoZoomIn" type="button" aria-label="Ampliar foto">+</button><button class="button secondary" id="descPhotoReset" type="button">Ajustar foto</button></div>
+            <div id="descPhotoViewport" class="desc-photo-viewport" tabindex="0" role="region" aria-label="Foto ampliável" aria-describedby="descPhotoHelp"><img id="descPhotoLarge" alt="Foto do equipamento enviada pelo técnico" draggable="false"></div>
+            <p id="descPhotoHelp" class="desc-muted">Role para ampliar, clique na etiqueta ou use + e −. Arraste para mover; 0 ajusta a foto.</p>
+          </section>
+          <aside class="desc-photo-assist" aria-label="Consulta manual no Atlas">
+            <h4>Consultar serial no Atlas</h4><p class="desc-muted">Leia a etiqueta na foto e digite o serial. A consulta exibe o equipamento antes de confirmar sua aplicação ao lote.</p>
+            <form id="descSerialForm"><label for="descSerialInput">Serial da etiqueta</label><input id="descSerialInput" name="serial" type="text" required maxlength="80" autocomplete="off" spellcheck="false" placeholder="Digite o serial da foto"><button class="button primary" id="descSerialLookup" type="submit">Consultar Atlas</button></form>
+            <p class="desc-muted" id="descSerialReadOnly"></p><p class="desc-alert hidden" id="descSerialStatus" role="status" aria-live="polite"></p>
+            <div id="descSerialResult"></div>
+            <div id="descSerialApplyArea" class="hidden"><label class="desc-checkbox"><input type="checkbox" id="descSerialConfirm">Conferi a etiqueta e confirmo este equipamento no lote.</label><button class="button primary" id="descSerialApply" type="button" disabled>Aplicar serial ao lote</button><p class="desc-muted">Aplicar atualiza a evidência deste lote. A baixa continua sujeita à revisão.</p></div>
+          </aside>
+        </div>
+      </dialog>
       <dialog class="desc-tech-dialog" id="descTechDialog" aria-labelledby="descTechTitle"><h3 id="descTechTitle">Vincular técnico</h3><p class="desc-muted">Vincule este ID do WhatsApp ao recurso do técnico no Imperium. A OS aberta será conferida com esse recurso.</p><form id="descTechForm"><label>Remetente WhatsApp<input name="sender" readonly required></label><label>Nome do técnico<input name="name" required maxlength="100"></label><label>Recurso Imperium<input name="imperium_id" required inputmode="numeric" pattern="[0-9]+"></label><label>Login TOA (opcional)<input name="toa_login" maxlength="80"></label><label class="desc-checkbox"><input type="checkbox" name="freelancer">Freelancer de entrega de chip</label><p class="desc-alert hidden" id="descTechError" role="alert"></p><div class="desc-detail-actions"><button class="button secondary" type="button" id="descTechCancel">Cancelar</button><button class="button primary" type="submit">Salvar vínculo</button></div></form></dialog>
     </section>
     <section class="dashboard-workspace" id="dashboardWorkspace" aria-label="Visao geral">
@@ -2025,7 +2041,7 @@
 
   <script src="/lucide.min.js"></script>
   <script src="/operations-monitor.js"></script>
-  <script src="/disconnection.js?v=20261010-desc3"></script>
+  <script src="/disconnection.js?v=20261013-photo-assist"></script>
   <script src="/app.js?v=20261010-desc3"></script>
   <script type="module" src="/motion-ui.js"></script>
 </body>

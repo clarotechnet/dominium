@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	151	77	44	DOMINIUM | MAPA DE RESPONSABILIDADE	0cc3b05c9f8d1d4a
+orchestration	app.py	151	79	44	DOMINIUM | MAPA DE RESPONSABILIDADE	75475f00b9c104bc
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -23,11 +23,11 @@ toa	configure_toa_cloud_bridge.py	1			Grava a credencial primaria da ponte com p
 shared	consolidate_dominium.ps1			4	DOMINIUM | MAPA DE RESPONSABILIDADE	c82b6b36d57d2f66
 shared	datasnap_client.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	18769b58c990389a
 tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para migracao futura	bbfe97a6ef6f2341
-tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4	1			b04789d512fa88ce
+tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4	1			75ce3b739756e627
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	19	1		2fca73583881a369
+tooling-deploy	deploy/hostinger-web/server.js	41	19	1		52d4c63a0bd6eb90
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -36,7 +36,7 @@ tooling-deploy	deploy/windows-server/caddy-snippet.txt				Adicionar ao docker/Ca
 tooling-deploy	deploy/windows-server/README.md				DOMINIUM no servidor Windows	bdb24de6348883c3
 tooling-deploy	deploy/windows-server/start-dominium.ps1					07dbc429acea36ce
 shared	desc_order_verifier.py	7			Fail-closed, read-only Imperium order/installer checks for the DESC relay.	17c0924ca8229612
-shared	desc_review_proxy.py	10	1		Authenticated Dominium boundary to the Bot's existing DESC review service.	9c4afb6e6dd2d9c4
+shared	desc_review_proxy.py	10	1		Authenticated Dominium boundary to the Bot's existing DESC review service.	bda8c6747f8a346b
 shared	desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	79346c1e1b556a5d
 orchestration	disconnect_automation.py	26			DOMINIUM | MAPA DE RESPONSABILIDADE	b4aaf01ad3a34fad
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
@@ -62,11 +62,15 @@ shared	import_protocol_templates.json			1		9a6465634e73b3ec
 shared	import_technicians_xlsx.py	4		1	DOMINIUM | MAPA DE RESPONSABILIDADE	341a4f747dde9502
 imperium	installer_change.py	5			DOMINIUM | MAPA DE RESPONSABILIDADE	18de9230c2938c1e
 shared	installer_change_protocol_templates.json			1		f69d1e6915145bd3
-shared	integrations/desc_review_bot/README.md				DESC — vínculo WhatsApp / Imperium	2e37b10767d75f89
+shared	integrations/desc_review_bot/install_manual_serial.py	4			Install the manual Atlas helper without replacing the live history implementation.	5e49ca4405d422f7
+shared	integrations/desc_review_bot/README.md				DESC — vínculo WhatsApp / Imperium	4442e88a9275793d
 shared	integrations/desc_review_bot/src/descReview/core.js	19				8bac5edd1b8475a9
+shared	integrations/desc_review_bot/src/descReview/manualSerial.js	6				8012c46cba4ab7e6
 shared	integrations/desc_review_bot/src/descReview/orderClient.js	1				c058133fa2d5f124
 shared	integrations/desc_review_bot/src/descReview/orderEvidence.js	1				c2cde9ca6e3e700d
-shared	integrations/desc_review_bot/src/descReview/server.js	19				712802d6b3a6ee5b
+shared	integrations/desc_review_bot/src/descReview/server.js	19				78d4ae62cb0c9be8
+shared	integrations/desc_review_bot/src/descReview/tests/manual-http.test.js	1				d8f787170585b6d1
+shared	integrations/desc_review_bot/src/descReview/tests/manual-serial.test.js	3				b9617aac67878d35
 shared	integrations/desc_review_bot/src/descReview/tests/order-client.test.js					e594aea531054fb6
 shared	integrations/desc_review_bot/src/descReview/tests/order-evidence.test.js	3				9959f6643b705f28
 shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
@@ -139,21 +143,21 @@ tooling-deploy	scripts/configure_supabase_hosted.py	1				f4637b027d3a1889
 tooling-deploy	scripts/deploy_supabase.ps1					ae66340ccd4c0380
 tooling-deploy	scripts/generate_agent_context.py	20		1		99f386dde01ec92f
 tooling-deploy	scripts/install_agent_context_hooks.py	2				3f284e6102d8feeb
-tooling-deploy	scripts/quality_gate.py	5				b6d5bb1c225d1b4b
+tooling-deploy	scripts/quality_gate.py	5				745cff3e67236d4f
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
-frontend	static/disconnection.js	14	6			8449b87f71518feb
+frontend	static/disconnection.js	32	8			b76030f2b5e68f91
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			621ec2f768fd5154
+frontend	static/index.html		1			89fd85aa94da7938
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
 frontend	static/styles.css					fdf43ee7205da97b
 frontend	static/theme-init.js					97eb92ef899f8dcf
-frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	e6eec4e58e90488e
+frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
 shared	stock_protocol_templates.json			2		d4310f519e27cc25
@@ -167,6 +171,7 @@ shared	supabase_schema.sql					f4c24a6069098221
 shared	technician_directory.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	c428cc21c4d30f17
 tests	tests/__init__.py					01ba4719c80b6fe9
 tests	tests/qa_disconnection_browser.js	1	6			513566fce070a1c2
+tests	tests/qa_photo_assist_browser.js	4	6			462b748e72dda892
 tests	tests/qa_workspace_browser.js	1	3			9e5faa386308b743
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
 tests	tests/test_app.py	37	5	2		dec92061f9dc6147
@@ -180,13 +185,13 @@ tests	tests/test_close_report.py	15				125242a6d2cff245
 tests	tests/test_close_report_excel.py	5				36de3899cae4ba75
 tests	tests/test_configure_imperium_credentials.py	4				931f61ff4157fbfa
 tests	tests/test_desc_order_verifier.py	24				1a425dadf4202442
-tests	tests/test_desc_review_proxy.py	14	7			fbeca0b498b64149
+tests	tests/test_desc_review_proxy.py	16	8			2ce6f2b762e68847
 tests	tests/test_desc_review_relay.py	14	1			6beb0bd0caf2ad7e
 tests	tests/test_disconnect_automation.py	22				243f0edcb0dcc000
 tests	tests/test_disconnect_frontend.js	4				f5e517e7af4cede6
-tests	tests/test_disconnection_access.py	5	4			dad77e116461224d
-tests	tests/test_disconnection_frontend.js		1			ec784610dee725db
-tests	tests/test_disconnection_hostinger.js	2	11			8dce65f7a87e7c28
+tests	tests/test_disconnection_access.py	6	5			cba855ef00508a97
+tests	tests/test_disconnection_frontend.js		1			2a584c593ff0de4b
+tests	tests/test_disconnection_hostinger.js	2	13			8ba5672a49ada7ac
 tests	tests/test_edge_voice.py	4				4e8791562f884964
 tests	tests/test_equipment_group_matching.py	24				46876ea91612d830
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38
@@ -199,6 +204,7 @@ tests	tests/test_installer_change.py	11				c0e798b009cdfd15
 tests	tests/test_installer_reassignment.py	20	1			0822801264d59415
 tests	tests/test_intelligence_frontend.js	6				ccd4a4f46b3303ac
 tests	tests/test_manual_materials.py	14				13ebf22bf45dd258
+tests	tests/test_manual_serial_installer.py	4				2ffbc70495e2cdcf
 tests	tests/test_material_matching.py	33				f7a01b4226d11747
 tests	tests/test_material_writeoff.py	16				4d6bdafc337eb87a
 tests	tests/test_native_orders.py	19		2		5c6e534e26a7d8de
@@ -218,6 +224,7 @@ tests	tests/test_operation_scope.py	42				f804afda128c9e71
 tests	tests/test_operational_store.py	5				1245242d685ecf66
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
+tests	tests/test_order_dataset_hostinger.js	4	1			bca127bdd7f87bcf
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
 tests	tests/test_semiauto_frontend.js	19				44a6652d8752bfc1
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a

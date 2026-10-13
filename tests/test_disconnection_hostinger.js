@@ -36,3 +36,21 @@ test('DESC history accepts one ISO date and remains access-controlled',async()=>
  const unauthorized=response();await handler(req('viewer','GET','/api/disconnection/history?date=2026-10-09'),unauthorized);
  assert.equal(unauthorized.code,403);
 });
+
+test('manual serial endpoints require authenticated controller, CSRF and the safe allowlist',async()=>{
+ const {allowedRoute}=require('../deploy/hostinger-web/disconnection-proxy');
+ for(const route of ['serial-lookup','serial-apply']){
+  assert.equal(allowedRoute('POST','/api/disconnection/'+route),'/api/disconnection/'+route);
+  assert.throws(()=>allowedRoute('GET','/api/disconnection/'+route));
+  assert.throws(()=>allowedRoute('POST','/api/disconnection/'+route+'?token=bad'));
+  let calls=0;const handler=create({connection:()=>({origin:'https://relay.example',token:'a'.repeat(43)}),fetchImpl:async()=>{calls++;return new Response('{"ok":true}',{headers:{'Content-Type':'application/json'}});}});
+  const denied=response();await handler(req('viewer','POST','/api/disconnection/'+route),denied);assert.equal(denied.code,403);
+  const stale=req('controller','POST','/api/disconnection/'+route);stale.headers={};const staleResponse=response();await handler(stale,staleResponse);assert.equal(staleResponse.code,403);assert.equal(calls,0);
+  const ok=response();await handler(req('controller','POST','/api/disconnection/'+route),ok);assert.equal(ok.code,200);assert.equal(calls,1);
+ }
+});
+test('manual tokens receive an opaque trusted binding that changes on a new DOMINIUM session',async()=>{
+ const bodies=[];const handler=create({connection:()=>({origin:'https://relay.example',token:'a'.repeat(43)}),fetchImpl:async(_u,o)=>{bodies.push(JSON.parse(o.body));return new Response('{}');}});
+ for(const session of ['first','new']){const request=req('controller','POST','/api/disconnection/serial-lookup');request.dominiumSession.csrf_hash=crypto.createHash('sha256').update(session).digest('hex');request.headers['x-csrf-token']=session;request.body.review_session='forged';await handler(request,response());}
+ assert.match(bodies[0].review_session,/^[a-f0-9]{64}$/);assert.notEqual(bodies[0].review_session,bodies[1].review_session);assert.notEqual(bodies[0].review_session,'forged');
+});

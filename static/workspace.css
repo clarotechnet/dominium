@@ -124,10 +124,31 @@ tbody tr { background-color: rgba(17,17,22,.76); }
 .desc-empty svg { width: 32px; height: 32px; color: #ff7d90; }
 .desc-empty h3 { margin: 0; font-size: .9rem; color: #dfdfea; }
 .desc-empty p { margin: 0; font-size: .73rem; line-height: 1.7; max-width: 320px; }
-.desc-photo-dialog { max-width: min(1000px,94vw); max-height: 94dvh; border: 1px solid var(--workspace-line); border-radius: 18px; padding: 16px; background: #15151c; color: #fff; }
+.desc-photo-dialog { width: min(1200px,94vw); max-width: 94vw; max-height: 94dvh; box-sizing: border-box; overflow: auto; border: 1px solid var(--workspace-line); border-radius: 18px; padding: 20px; background: #15151c; color: #fff; }
 .desc-photo-dialog::backdrop { background: rgba(0,0,0,.85); }
-.desc-photo-dialog > button { display: flex; margin: 0 0 12px auto; }
-.desc-photo-dialog > img { max-width: 100%; max-height: 78dvh; object-fit: contain; display: block; margin: auto; }
+.desc-photo-heading { position: sticky; top: 0; z-index: 1; background: #15151c; display: flex; justify-content: space-between; gap: 16px; align-items: start; margin-bottom: 14px; padding-bottom: 10px; }
+.desc-photo-heading h3 { margin: 0; font-size: 1.05rem; }
+.desc-photo-heading p { margin: 7px 0 0; }
+.desc-photo-layout { display: grid; grid-template-columns: minmax(0,1fr) 310px; gap: 20px; align-items: start; }
+.desc-photo-viewer,.desc-photo-assist { min-width: 0; }
+.desc-photo-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.desc-photo-toolbar output { min-width: 48px; text-align: center; font-size: .8rem; }
+.desc-photo-viewport { height: min(61dvh,640px); position: relative; overflow: hidden; background: #09090c; border: 1px solid var(--workspace-line); border-radius: 12px; cursor: zoom-in; touch-action: none; }
+.desc-photo-viewport:focus-visible { outline: 2px solid #ff8295; outline-offset: 3px; }
+.desc-photo-viewport.zoomed { cursor: grab; }
+.desc-photo-viewport.zoomed:active { cursor: grabbing; }
+.desc-photo-viewport img { position: absolute; top: 0; left: 0; max-width: none; max-height: none; transform-origin: 0 0; user-select: none; pointer-events: none; }
+.desc-photo-assist { border-left: 1px solid var(--workspace-line); padding-left: 20px; }
+.desc-photo-assist h4 { margin: 0; font-size: .95rem; }
+#descSerialForm { display: flex; flex-direction: column; gap: 10px; }
+#descSerialForm label { color: #dedee8; font-size: .75rem; }
+#descSerialInput { width: 100%; min-width: 0; box-sizing: border-box; padding: 12px; border: 1px solid var(--workspace-line); background: #25252e; color: #fff; font-size: .88rem; }
+#descSerialInput:focus-visible { outline: 2px solid #ff8295; outline-offset: 2px; }
+#descSerialApplyArea { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+#descSerialApplyArea.hidden { display: none; }
+#descSerialApplyArea .desc-checkbox { display: flex; align-items: start; gap: 9px; font-size: .75rem; line-height: 1.6; }
+#descSerialApplyArea input { flex-shrink: 0; margin-top: 4px; }
+@media(max-width:760px) { .desc-photo-dialog { padding: 14px; width: 96vw; max-width: 96vw; max-height: 96dvh; } .desc-photo-layout { grid-template-columns: minmax(0,1fr); gap: 16px; } .desc-photo-viewport { height: 38dvh; min-height: 220px; } .desc-photo-assist { border-left: none; border-top: 1px solid var(--workspace-line); padding: 16px 0 0; } .desc-photo-heading .button { padding-inline: 10px; } }
 .desc-tech-dialog { width: min(460px,92vw); max-height: 90dvh; overflow: auto; background: #181820; color: var(--ink); border: 1px solid var(--workspace-line); padding: 22px; border-radius: 18px; }
 .desc-tech-dialog::backdrop { background: rgba(0,0,0,.8); }
 .desc-tech-dialog form { display: grid; gap: 12px; }

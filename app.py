@@ -5100,6 +5100,14 @@ class PanelHandler(BaseHTTPRequestHandler):
                 proxy = DescReviewProxy()
                 self.server.desc_review_proxy = proxy
             body = self._body() if method == 'POST' else None
+            if method == 'POST' and path in {'/api/disconnection/serial-lookup', '/api/disconnection/serial-apply'}:
+                session = self._auth_session() or {}
+                fingerprint = str(session.get('token_hash') or session.get('csrf_hash') or '')
+                if not fingerprint:
+                    raise ProxyError('Sessão operacional não confirmada para a consulta manual')
+                identity = str(user.get('id') or user.get('username') or '')
+                body = {**(body or {}), 'review_session': hashlib.sha256(
+                    (identity + '|' + fingerprint).encode('utf-8')).hexdigest()}
             actor = str(user.get('display_name') or user.get('username') or user.get('id') or '')
             response = proxy.forward(method, path, body, actor=actor)
             if method == 'POST':

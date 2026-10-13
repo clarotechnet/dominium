@@ -270,6 +270,14 @@ json	installer_change.py
 pathlib	installer_change.py
 struct	installer_change.py
 typing	installer_change.py
+__future__	integrations/desc_review_bot/install_manual_serial.py
+argparse	integrations/desc_review_bot/install_manual_serial.py
+datetime	integrations/desc_review_bot/install_manual_serial.py
+pathlib	integrations/desc_review_bot/install_manual_serial.py
+re	integrations/desc_review_bot/install_manual_serial.py
+shutil	integrations/desc_review_bot/install_manual_serial.py
+subprocess	integrations/desc_review_bot/install_manual_serial.py
+tempfile	integrations/desc_review_bot/install_manual_serial.py
 dataclasses	manual_materials.py
 datasnap_client	manual_materials.py
 decimal	manual_materials.py
@@ -708,6 +716,9 @@ imperium_api	tests/test_manual_materials.py
 manual_materials	tests/test_manual_materials.py
 struct	tests/test_manual_materials.py
 unittest	tests/test_manual_materials.py
+importlib	tests/test_manual_serial_installer.py
+pathlib	tests/test_manual_serial_installer.py
+unittest	tests/test_manual_serial_installer.py
 decimal	tests/test_material_matching.py
 imperium_api	tests/test_material_matching.py
 material_matching	tests/test_material_matching.py

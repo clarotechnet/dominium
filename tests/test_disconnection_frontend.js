@@ -20,3 +20,15 @@ test('photo URLs and displayed data cannot inject paths or HTML', () => {
   assert.equal(ui.photoUrl('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg'), '/api/disconnection/photo/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg');
   assert.equal(ui.escape('<script>'), '&lt;script&gt;');
 });
+test('photo zoom preserves the pointed label and stays within 100–400%', () => {
+  const bounds = {width:600,height:400,imageWidth:600,imageHeight:400};
+  const zoomed = ui.photoTransform({scale:1,x:0,y:0},2,{x:180,y:120},bounds);
+  assert.deepEqual(zoomed,{scale:2,x:-180,y:-120});
+  assert.equal((180-zoomed.x)/zoomed.scale,180);
+  assert.equal((120-zoomed.y)/zoomed.scale,120);
+  assert.equal(ui.photoTransform(zoomed,20,{x:300,y:200},bounds).scale,4);
+  assert.deepEqual(ui.photoTransform(zoomed,0,{x:300,y:200},bounds),{scale:1,x:0,y:0});
+});
+test('small photos remain centered until zoom makes them exceed the viewport', () => {
+  assert.deepEqual(ui.photoTransform({scale:1,x:200,y:150},2,{x:300,y:200},{width:600,height:400,imageWidth:200,imageHeight:100}),{scale:2,x:100,y:100});
+});

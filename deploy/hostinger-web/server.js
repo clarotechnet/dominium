@@ -411,10 +411,11 @@ class DataSnapClient {
 
 function parseOrders(payload) {
   if (payload.length < 3) throw new Error("invalid_order_dataset");
-  if (payload.length >= 3 && payload[0] === 0xc0 && payload[1] === 0xc0 && payload[2] === 0x60) {
+  if (payload.length < 46) throw new Error("invalid_order_dataset_header");
+  if (payload[0] === 0xc0 && payload[1] === 0xc0 && payload[2] === 0x60) {
+    if (payload.readUInt32LE(20) !== 0) throw new Error("incomplete_order_dataset");
     return [];
   }
-  if (payload.length < 46) throw new Error("invalid_order_dataset_header");
 
   const orders = [];
   const seen = new Set();
@@ -489,6 +490,10 @@ async function listOrders(profileKey, isoDate, status = "field", serviceType = "
     const initial = response?.result?.[1]?.data?.[1];
     if (!Buffer.isBuffer(initial)) throw new Error("missing_order_dataset");
     let payload = Buffer.from(initial);
+    // Empty MIDAS packets contain the field schema, although row data size is zero.
+    if (payload.length >= 3 && payload[0] === 0xc0 && payload[1] === 0xc0 && payload[2] === 0x60) {
+      return parseOrders(payload);
+    }
     if (payload.length < 24) throw new Error("incomplete_order_dataset");
     const expectedLength = payload.readUInt32LE(20) + 28;
 
