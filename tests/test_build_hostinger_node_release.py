@@ -15,6 +15,8 @@ class HostingerNodeReleaseTests(unittest.TestCase):
                 names = set(bundle.namelist())
 
         for required in (
+            "import-policy.js",
+            "import-proxy.js",
             "server.js",
             "package.json",
             "package-lock.json",

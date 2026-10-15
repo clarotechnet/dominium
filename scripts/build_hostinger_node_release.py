@@ -15,6 +15,8 @@ STATIC = ROOT / "static"
 DEFAULT_OUTPUT = ROOT / "output" / "hostinger-node-release"
 
 RUNTIME_FILES = (
+    "import-policy.js",
+    "import-proxy.js",
     "disconnection-proxy.js",
     "server.js",
     "package.json",

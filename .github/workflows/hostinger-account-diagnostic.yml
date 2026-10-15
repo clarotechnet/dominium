@@ -50,11 +50,41 @@ jobs:
           set -euo pipefail
           node --check deploy/hostinger-web/server.js
           node --test tests/test_order_dataset_hostinger.js tests/test_disconnection_hostinger.js
+          node --test tests/test_import_hostinger.js integrations/import_bridge/worker.test.mjs
           npm ci --prefix deploy/hostinger-web --ignore-scripts --no-audit --no-fund
           npm run build --prefix deploy/hostinger-web
           python -m unittest tests.test_build_hostinger_node_release -v
           python scripts/build_hostinger_node_release.py
           test -s output/hostinger-node-release.zip
+
+      - name: Verificar ponte privada de importacao sem importar dados
+        env:
+          DOMINIUM_DESC_REVIEW_CONNECTION: ${{ secrets.DOMINIUM_DESC_REVIEW_CONNECTION }}
+        shell: bash
+        run: |
+          node <<'NODE'
+          const crypto = require('node:crypto');
+          const { createImportMiddleware } = require('./deploy/hostinger-web/import-proxy');
+          const token = JSON.parse(process.env.DOMINIUM_DESC_REVIEW_CONNECTION).token;
+          const handler = createImportMiddleware({ connection: () => ({token}) });
+          (async () => {
+            for (const [method, originalUrl, expected] of [
+              ['GET', '/api/import-targets', 200],
+              ['POST', '/api/imports/preview', 400],
+            ]) {
+              const req = {method, originalUrl, headers: {'x-csrf-token':'verification'}, body: {},
+                dominiumUser:{role:'controller',display_name:'Verificacao tecnica'},
+                dominiumSession:{csrf_hash:crypto.createHash('sha256').update('verification').digest('hex')}};
+              const res = {code:0, set(){return this;}, status(n){this.code=n;return this;},
+                json(body){this.body=body;return this;}, send(body){this.body=JSON.parse(body);return this;}};
+              await handler(req,res);
+              if (res.code !== expected || (method === 'GET' && !res.body.ok)) {
+                throw new Error('Ponte privada falhou: '+method+' '+originalUrl+' HTTP '+res.code);
+              }
+              console.log('Ponte privada: '+method+' '+originalUrl+' HTTP '+res.code);
+            }
+          })().catch(error=>{console.error(error.message);process.exitCode=1;});
+          NODE
 
       - name: Instalar Hostinger CLI oficial
         shell: bash

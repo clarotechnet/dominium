@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-13T13:22:53+00:00",
+  "generated_at": "2026-10-15T17:41:00+00:00",
   "schema": 2,
-  "source_fingerprint": "0678a4da75c2796ceb66f3cb8096b8adc48f6382ff9ebb2b55d5d909f13d99ef",
+  "source_fingerprint": "24f24e0ac30a52fa2222af11d492fce51b1aee98e01b6f4da0195b7ad39f24f9",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -647,6 +647,41 @@
       "symbol_count": 4
     },
     {
+      "path": "deploy/hostinger-web/import-policy.js",
+      "category": "tooling-deploy",
+      "bytes": 1208,
+      "sha256": "aee7b48926d7c1a72ae91bcdb5b01275732645a91f86ee4babf0a80fb5ea2f46",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/import-history",
+        "/api/import-targets",
+        "/api/imports/commit",
+        "/api/imports/preview"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "deploy/hostinger-web/import-proxy.js",
+      "category": "tooling-deploy",
+      "bytes": 3658,
+      "sha256": "dce1b677951e99de6211e6e15cf685c75e09037b7567d33947d1d1f923afc5fe",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/imports/commit"
+      ],
+      "env_vars": [
+        "DOMINIUM_DESC_REVIEW_TOKEN"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
       "path": "deploy/hostinger-web/package-lock.json",
       "category": "tooling-deploy",
       "bytes": 31045,
@@ -688,8 +723,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 41121,
-      "sha256": "52d4c63a0bd6eb905ec0094a74be2dd0ae688e3205267790db8de2bf5b4c06fb",
+      "bytes": 41373,
+      "sha256": "edd05137741153d722b549268bf86fb31ebea398625cc2b3c66ed1830daaa128",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -704,7 +739,11 @@
         "/api/diagnostics",
         "/api/disconnection",
         "/api/health-check",
+        "/api/import-history",
         "/api/import-targets",
+        "/api/imports",
+        "/api/imports/commit",
+        "/api/imports/preview",
         "/api/orders",
         "/api/profiles",
         "/api/status",
@@ -1000,6 +1039,19 @@
       "bytes": 2009,
       "sha256": "5d89722ce6d500035a17175b009eadd67ddc27c65ea5375df3d4071c6e841ad1",
       "summary": "Dominium e DESCONEXÃO Implementation Plan",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-15-site-import-bridge.md",
+      "category": "docs",
+      "bytes": 1667,
+      "sha256": "2b3bedbb63595ebd3a96c8b0d50c189234fd3950e0ac9bef246ca8445458272e",
+      "summary": "Site import bridge implementation plan",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1524,6 +1576,48 @@
       "summary": "",
       "imports": [],
       "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/import_bridge/README.md",
+      "category": "shared",
+      "bytes": 1713,
+      "sha256": "6a07ff7b6d7b09a9500da699f98c4743c7ed975f4817f10b218e48efd2811471",
+      "summary": "DOMINIUM site import bridge",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/import_bridge/worker.mjs",
+      "category": "shared",
+      "bytes": 2483,
+      "sha256": "e4311000395117c691c6c29e105e26e952fc90777b95a9abe888f5e0af301319",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
+      "path": "integrations/import_bridge/worker.test.mjs",
+      "category": "shared",
+      "bytes": 2473,
+      "sha256": "c2ed49b960577182285be152c2b317ae0105a8c5588c02312ebb6f6e42f15396",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/close",
+        "/api/imports/preview?url=evil"
+      ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
@@ -2549,8 +2643,8 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 4463,
-      "sha256": "6ae17b448815882363ba780ddf4524079657eb8ff66c06f19ccfbb18beeae707",
+      "bytes": 4510,
+      "sha256": "53953c61b9dc0e2373317326200d07f3fa075c7d3f9e2b13351d72048da885f1",
       "summary": "",
       "imports": [
         "__future__",
@@ -2723,8 +2817,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 5771,
-      "sha256": "745cff3e67236d4f2642662302bf3df850ea6657399adad2efbff79605e8dbf2",
+      "bytes": 5885,
+      "sha256": "eefb3eb701f5a79b5c51552b6b90ae8a1b2ae223e2bb69f2a46bc7815de44611",
       "summary": "",
       "imports": [
         "__future__",
@@ -3328,8 +3422,8 @@
     {
       "path": "tests/test_build_hostinger_node_release.py",
       "category": "tests",
-      "bytes": 1452,
-      "sha256": "121b52809dba91afa68f997327211686a1c928263d18fce634558c26c10785bb",
+      "bytes": 1515,
+      "sha256": "b0a07f5e5848055fd0b062cf3128d0153df7316425085f2834c963dd9071c5d9",
       "summary": "",
       "imports": [
         "pathlib",
@@ -3769,6 +3863,27 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
+      "symbol_count": 3
+    },
+    {
+      "path": "tests/test_import_hostinger.js",
+      "category": "tests",
+      "bytes": 4615,
+      "sha256": "798f5671d881d6639aa6f43690b4917380998c0024b9dc2c8a8b630644f9d53a",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/close",
+        "/api/import-history?profile=fortaleza&date=2026-10-15&limit=120",
+        "/api/import-history?profile=natal&url=evil",
+        "/api/import-targets",
+        "/api/imports/commit",
+        "/api/imports/preview",
+        "/api/imports/preview?url=evil"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
       "symbol_count": 3
     },
     {

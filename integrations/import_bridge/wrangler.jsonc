@@ -1,0 +1,9 @@
+{
+  "name": "dominium-import-bridge",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-15",
+  "workers_dev": true,
+  "vpc_services": [
+    {"binding": "IMPORT_SERVICE", "service_id": "01a140a1-c3a3-72c1-937d-e35488ed8cdd"}
+  ]
+}

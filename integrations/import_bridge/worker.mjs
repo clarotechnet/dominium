@@ -1,0 +1,39 @@
+import policy from '../../deploy/hostinger-web/import-policy.js';
+const {allowedImportRoute, MAX_IMPORT_BYTES} = policy;
+function json(status, error) {
+  return Response.json({ok:false,error},{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
+}
+async function authorized(request, token) {
+  if (!/^[A-Za-z0-9_-]{43,128}$/.test(String(token||''))) return false;
+  const hash=async value=>new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)));
+  const [a,b]=await Promise.all([hash(request.headers.get('authorization')||''),hash('Bearer '+token)]);
+  let diff=0;for(let i=0;i<a.length;i++)diff|=a[i]^b[i];return diff===0;
+}
+export default {
+  async fetch(request,env) {
+    if (!await authorized(request,env.IMPORT_TOKEN)) return json(401,'Conexão interna não autorizada');
+    if (!['admin','controller'].includes(request.headers.get('x-dominium-role')) || !request.headers.get('x-dominium-actor'))
+      return json(403,'Operador não identificado');
+    const url=new URL(request.url);
+    let route;
+    try {route=allowedImportRoute(request.method,url.pathname+url.search);}
+    catch {return json(404,'Rota não permitida');}
+    const headers=new Headers({Accept:'application/json','X-Dominium-Actor':request.headers.get('x-dominium-actor')});
+    let body;
+    if (request.method==='POST') {
+      if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return json(415,'Envie JSON');
+      if (Number(request.headers.get('content-length')||0)>MAX_IMPORT_BYTES) return json(413,'Arquivo acima do limite');
+      body=await request.arrayBuffer();
+      if(body.byteLength>MAX_IMPORT_BYTES)return json(413,'Arquivo acima do limite');
+      headers.set('Content-Type','application/json');
+    }
+    try {
+      const upstream=await env.IMPORT_SERVICE.fetch(new Request('http://127.0.0.1:8765'+route,
+        {method:request.method,headers,body,redirect:'manual'}));
+      if (upstream.status>=300 && upstream.status<400) return json(502,'Redirecionamento interno bloqueado');
+      return new Response(upstream.body,{status:upstream.status,headers:{
+        'Content-Type':upstream.headers.get('content-type')||'application/json',
+        'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Dominium-Backend':'private-import-bridge'}});
+    } catch {return json(502,'Servidor operacional indisponível; não repita uma importação sem conferir o histórico');}
+  }
+};

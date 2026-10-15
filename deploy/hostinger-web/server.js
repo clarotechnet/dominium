@@ -517,6 +517,7 @@ async function listOrders(profileKey, isoDate, status = "field", serviceType = "
 }
 
 app.use("/api/toa-agenda/import", express.json({ limit: "24mb" }));
+app.use(["/api/imports/preview", "/api/imports/commit"], express.json({ limit: "12mb" }));
 app.use(express.json({ limit: "256kb" }));
 app.use((error, req, res, next) => {
   if (error?.type === "entity.too.large") {
@@ -962,6 +963,8 @@ const OPERATIONAL_PROXY_HEADER_ALLOWLIST = [
 
 const { createDisconnectionMiddleware } = require('./disconnection-proxy');
 app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }));
+const { createImportMiddleware } = require('./import-proxy');
+app.use(['/api/import-targets', '/api/import-history', '/api/imports'], createImportMiddleware());
 
 async function proxyOperationalRequest(req, res, next) {
   const controller = new AbortController();

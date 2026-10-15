@@ -85,6 +85,11 @@ endpoint	path
 /api/voice/status	app.py
 /api/voice/synthesize	app.py
 /api/disconnection/	deploy/hostinger-web/disconnection-proxy.js
+/api/import-history	deploy/hostinger-web/import-policy.js
+/api/import-targets	deploy/hostinger-web/import-policy.js
+/api/imports/commit	deploy/hostinger-web/import-policy.js
+/api/imports/preview	deploy/hostinger-web/import-policy.js
+/api/imports/commit	deploy/hostinger-web/import-proxy.js
 /api/auth/	deploy/hostinger-web/server.js
 /api/auth/bootstrap	deploy/hostinger-web/server.js
 /api/auth/login	deploy/hostinger-web/server.js
@@ -96,7 +101,11 @@ endpoint	path
 /api/diagnostics	deploy/hostinger-web/server.js
 /api/disconnection	deploy/hostinger-web/server.js
 /api/health-check	deploy/hostinger-web/server.js
+/api/import-history	deploy/hostinger-web/server.js
 /api/import-targets	deploy/hostinger-web/server.js
+/api/imports	deploy/hostinger-web/server.js
+/api/imports/commit	deploy/hostinger-web/server.js
+/api/imports/preview	deploy/hostinger-web/server.js
 /api/orders	deploy/hostinger-web/server.js
 /api/profiles	deploy/hostinger-web/server.js
 /api/status	deploy/hostinger-web/server.js
@@ -108,6 +117,8 @@ endpoint	path
 /api/analyze	flow_reader/server.py
 /api/health	flow_reader/server.py
 /api/analyze	flow_reader/static/app.js
+/api/close	integrations/import_bridge/worker.test.mjs
+/api/imports/preview?url=evil	integrations/import_bridge/worker.test.mjs
 /api/toa-automation	patch_remote_toa.py
 /api/toa-automation/run	patch_remote_toa.py
 /api/disconnection/	static/disconnection.js
@@ -169,6 +180,13 @@ endpoint	path
 /api/disconnection/session	tests/test_disconnection_hostinger.js
 /api/disconnection/state	tests/test_disconnection_hostinger.js
 /api/disconnection/state?url=evil	tests/test_disconnection_hostinger.js
+/api/close	tests/test_import_hostinger.js
+/api/import-history?profile=fortaleza&date=2026-10-15&limit=120	tests/test_import_hostinger.js
+/api/import-history?profile=natal&url=evil	tests/test_import_hostinger.js
+/api/import-targets	tests/test_import_hostinger.js
+/api/imports/commit	tests/test_import_hostinger.js
+/api/imports/preview	tests/test_import_hostinger.js
+/api/imports/preview?url=evil	tests/test_import_hostinger.js
 /api/orders/1837422/close?profile=natal	tests/test_installer_reassignment.py
 /api/toa-agenda/import	tests/test_order_dataset_hostinger.js
 /api/auth/login	tests/test_ui_runtime_regression.py
