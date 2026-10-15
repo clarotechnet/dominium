@@ -83,6 +83,16 @@ jobs:
               }
               console.log('Ponte privada: '+method+' '+originalUrl+' HTTP '+res.code);
             }
+            const { createDisconnectionMiddleware, resolveReviewOrigin } = require('./deploy/hostinger-web/disconnection-proxy');
+            const stored = JSON.parse(process.env.DOMINIUM_DESC_REVIEW_CONNECTION);
+            const desc = createDisconnectionMiddleware({connection:()=>({origin:resolveReviewOrigin(stored.origin),token:stored.token})});
+            const req = {method:'GET',originalUrl:'/api/disconnection/state',headers:{},
+              dominiumUser:{id:1,role:'controller',display_name:'Verificacao tecnica'},dominiumSession:{csrf_hash:'verification'}};
+            const res = {code:0,set(){return this;},status(n){this.code=n;return this;},
+              json(body){this.body=body;return this;},send(body){this.body=JSON.parse(body);return this;}};
+            await desc(req,res);
+            if(res.code!==200 || !Array.isArray(res.body.batches)) throw new Error('Painel DESC privado indisponivel: HTTP '+res.code);
+            console.log('Painel DESC: HTTP 200, estrutura de lotes confirmada');
           })().catch(error=>{console.error(error.message);process.exitCode=1;});
           NODE
 

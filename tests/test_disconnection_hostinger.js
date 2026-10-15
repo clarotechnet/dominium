@@ -54,3 +54,12 @@ test('manual tokens receive an opaque trusted binding that changes on a new DOMI
  for(const session of ['first','new']){const request=req('controller','POST','/api/disconnection/serial-lookup');request.dominiumSession.csrf_hash=crypto.createHash('sha256').update(session).digest('hex');request.headers['x-csrf-token']=session;request.body.review_session='forged';await handler(request,response());}
  assert.match(bodies[0].review_session,/^[a-f0-9]{64}$/);assert.notEqual(bodies[0].review_session,bodies[1].review_session);assert.notEqual(bodies[0].review_session,'forged');
 });
+
+test('obsolete quick-tunnel review origins migrate to the permanent bridge without overriding explicit stable origins',()=>{
+ const {resolveReviewOrigin}=require('../deploy/hostinger-web/disconnection-proxy');
+ assert.equal(typeof resolveReviewOrigin,'function');
+ assert.equal(resolveReviewOrigin('https://old.trycloudflare.com'),'https://dominium-import-bridge.jogador743.workers.dev');
+ assert.equal(resolveReviewOrigin('https://private.example'),'https://private.example');
+ assert.equal(resolveReviewOrigin('https://old.trycloudflare.com','https://explicit.example'),'https://explicit.example');
+ assert.equal(resolveReviewOrigin('https://old.trycloudflare.com','https://another.trycloudflare.com'),'https://dominium-import-bridge.jogador743.workers.dev');
+});

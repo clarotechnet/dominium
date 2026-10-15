@@ -2,6 +2,8 @@
 
 Hostinger authenticates the operator and validates role and CSRF before the import middleware uses its server-only relay token. The Worker checks that token and forwards only four import routes to a fixed Workers VPC service on `127.0.0.1:8765`.
 
+The same named connector also reaches the existing authenticated DESC review relay on `127.0.0.1:8793` through a separate VPC Service. Its established route allowlist is shared by Hostinger and the Worker. Obsolete quick-tunnel DESC origins migrate to the permanent endpoint; explicitly configured stable origins are preserved. No Bot evidence or queue state is changed by this migration.
+
 The named tunnel is `dominium-import-server` (`cb6a307b-66f4-4f64-be2a-c0dcbb61db1a`). It uses the existing Cloudflare account; no zone, DNS or TOA authentication changes are needed. The endpoint is `https://dominium-import-bridge.jogador743.workers.dev`. Workers VPC is currently an open beta; check its availability/pricing before changing the account plan.
 
 The Worker `IMPORT_TOKEN` secret must match the existing `DOMINIUM_DESC_REVIEW_CONNECTION.token` deployment secret. Hostinger reads that token from the private release configuration, never a browser asset. No credentials belong in this directory.

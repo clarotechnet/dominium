@@ -84,7 +84,7 @@ endpoint	path
 /api/toa/v1/status	app.py
 /api/voice/status	app.py
 /api/voice/synthesize	app.py
-/api/disconnection/	deploy/hostinger-web/disconnection-proxy.js
+/api/disconnection/	deploy/hostinger-web/disconnection-policy.js
 /api/import-history	deploy/hostinger-web/import-policy.js
 /api/import-targets	deploy/hostinger-web/import-policy.js
 /api/imports/commit	deploy/hostinger-web/import-policy.js
@@ -117,6 +117,7 @@ endpoint	path
 /api/analyze	flow_reader/server.py
 /api/health	flow_reader/server.py
 /api/analyze	flow_reader/static/app.js
+/api/disconnection/	integrations/import_bridge/worker.mjs
 /api/close	integrations/import_bridge/worker.test.mjs
 /api/imports/preview?url=evil	integrations/import_bridge/worker.test.mjs
 /api/toa-automation	patch_remote_toa.py

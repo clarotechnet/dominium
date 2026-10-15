@@ -18,6 +18,7 @@ RUNTIME_FILES = (
     "import-policy.js",
     "import-proxy.js",
     "disconnection-proxy.js",
+    "disconnection-policy.js",
     "server.js",
     "package.json",
     "package-lock.json",

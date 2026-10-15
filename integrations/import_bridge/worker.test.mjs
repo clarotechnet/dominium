@@ -25,3 +25,13 @@ test('bridge rejects oversized requests before forwarding and never follows an u
  assert.equal(huge.status,413);assert.equal(calls,0);
  const r=await worker.fetch(new Request('https://bridge.test/api/imports/commit',{method:'POST',headers,body:'{}'}),env);assert.equal(r.status,502);assert.equal(calls,1);
 });
+
+test('the DESC panel uses only its dedicated private service and preserves internal authentication',async()=>{
+ assert.ok(worker);let seen;let imports=0;
+ const env={IMPORT_TOKEN:secret,IMPORT_SERVICE:{fetch:async()=>{imports++;}},DESC_SERVICE:{fetch:async(req)=>{seen=req;return new Response('{"batches":[]}');}}};
+ const r=await worker.fetch(new Request('https://bridge.test/api/disconnection/state',{headers}),env);
+ assert.equal(r.status,200);assert.equal(imports,0);assert.equal(seen.url,'http://127.0.0.1:8793/api/disconnection/state');
+ assert.equal(seen.headers.get('authorization'),'Bearer '+secret);
+ assert.equal(seen.headers.get('x-dominium-actor'),'Operador');
+ const bad=await worker.fetch(new Request('https://bridge.test/api/disconnection/session',{method:'POST',headers,body:'{}'}),env);assert.equal(bad.status,404);
+});

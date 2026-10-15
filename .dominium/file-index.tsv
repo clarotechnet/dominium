@@ -23,7 +23,8 @@ toa	configure_toa_cloud_bridge.py	1			Grava a credencial primaria da ponte com p
 shared	consolidate_dominium.ps1			4	DOMINIUM | MAPA DE RESPONSABILIDADE	c82b6b36d57d2f66
 shared	datasnap_client.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	18769b58c990389a
 tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para migracao futura	bbfe97a6ef6f2341
-tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4	1			75ce3b739756e627
+tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			707e6e28c66fef18
+tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
@@ -79,9 +80,9 @@ shared	integrations/desc_review_bot/src/descReview/tests/order-evidence.test.js	
 shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
 shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
-shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	6a07ff7b6d7b09a9
-shared	integrations/import_bridge/worker.mjs	3				e4311000395117c6
-shared	integrations/import_bridge/worker.test.mjs		2			c2ed49b960577182
+shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
+shared	integrations/import_bridge/worker.mjs	3	1			173afbba31a7d046
+shared	integrations/import_bridge/worker.test.mjs		2			2ab37e369ab7b4c0
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
 shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
@@ -141,7 +142,7 @@ shared	requirements-voice.txt				Voz neural gratuita dos alertas TEC1. A voz loc
 shared	requirements-web.txt				Runtime do DOMINIUM web em producao	a9f5230558034692
 tooling-deploy	scripts/bootstrap_admin.py	2				578b01fcd9f2bce3
 tooling-deploy	scripts/build_hostinger_frontend.py	3				376de6598486d1b3
-tooling-deploy	scripts/build_hostinger_node_release.py	4				53953c61b9dc0e23
+tooling-deploy	scripts/build_hostinger_node_release.py	4				b57bedbb7318cd04
 tooling-deploy	scripts/build_web_release.py	8		1		12c3694527509ac1
 tooling-deploy	scripts/check_supabase_ready.py	1				ef416758e6102aca
 tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
@@ -197,7 +198,7 @@ tests	tests/test_disconnect_automation.py	22				243f0edcb0dcc000
 tests	tests/test_disconnect_frontend.js	4				f5e517e7af4cede6
 tests	tests/test_disconnection_access.py	6	5			cba855ef00508a97
 tests	tests/test_disconnection_frontend.js		1			2a584c593ff0de4b
-tests	tests/test_disconnection_hostinger.js	2	13			8ba5672a49ada7ac
+tests	tests/test_disconnection_hostinger.js	2	13			73827cfd80596bf7
 tests	tests/test_edge_voice.py	4				4e8791562f884964
 tests	tests/test_equipment_group_matching.py	24				46876ea91612d830
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38

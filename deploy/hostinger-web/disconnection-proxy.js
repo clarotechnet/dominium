@@ -2,22 +2,17 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');
+const {allowedRoute}=require('./disconnection-policy');
+function resolveReviewOrigin(stored, explicit=''){
+  const candidate=explicit||stored;
+  try{const url=new URL(candidate);if(!url.hostname.endsWith('.trycloudflare.com'))return candidate;}catch{}
+  return 'https://dominium-import-bridge.jogador743.workers.dev';
+}
 const sha=value=>crypto.createHash('sha256').update(String(value||'')).digest('hex');
 function readConnection(){
   const privateFile=path.join(__dirname,'.desc-review-connection.json');
   const stored=fs.existsSync(privateFile)?JSON.parse(fs.readFileSync(privateFile,'utf8')):{};
-  return {origin:process.env.DOMINIUM_DESC_REVIEW_ORIGIN||stored.origin,token:process.env.DOMINIUM_DESC_REVIEW_TOKEN||stored.token};
-}
-function allowedRoute(method,raw){
-  const url=new URL(raw,'http://dominium.invalid');
-  const route=url.pathname.slice('/api/disconnection/'.length);
-  if(!url.pathname.startsWith('/api/disconnection/')||url.hash)throw new Error('Rota DESC inválida');
-  const allowed=method==='GET'?['state','history','report.xlsx']:method==='POST'?['decision','refresh','technician','manual','serial-lookup','serial-apply']:[];
-  if(!allowed.includes(route)&&!(method==='GET'&&/^photo\/[a-f0-9-]{36}\.jpg$/.test(route)))throw new Error('Rota DESC não permitida');
-  const params=[...url.searchParams];
-  if(route==='history'&&!(params.length===1&&params[0][0]==='date'&&/^\d{4}-\d{2}-\d{2}$/.test(params[0][1])))throw new Error('Data de histórico inválida');
-  if(route!=='history'&&params.length&&(route!=='report.xlsx'||params.length!==1||params[0][0]!=='month'||!/^\d{4}-(0[1-9]|1[0-2])$/.test(params[0][1])))throw new Error('Parâmetros DESC inválidos');
-  return url.pathname+url.search;
+  return {origin:resolveReviewOrigin(stored.origin,process.env.DOMINIUM_DESC_REVIEW_ORIGIN),token:process.env.DOMINIUM_DESC_REVIEW_TOKEN||stored.token};
 }
 function createDisconnectionMiddleware({connection=readConnection,fetchImpl=fetch,audit=async()=>{}}={}){
   return async(req,res)=>{
@@ -35,7 +30,7 @@ function createDisconnectionMiddleware({connection=readConnection,fetchImpl=fetc
       if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||url.pathname!=='/'||!/^[A-Za-z0-9_-]{43,128}$/.test(String(token||'')))throw new Error('review_connection_missing');
       const actor=String(user.display_name||user.username||user.id||'').slice(0,100);
       if(!actor)throw new Error('review_actor_missing');
-      const options={method:req.method,headers:{Authorization:'Bearer '+token,'X-Dominium-Actor':encodeURIComponent(actor)},redirect:'manual',signal:controller.signal};
+      const options={method:req.method,headers:{Authorization:'Bearer '+token,'X-Dominium-Actor':encodeURIComponent(actor),'X-Dominium-Role':user.role,'User-Agent':'DOMINIUM-Hostinger-Import/1.0'},redirect:'manual',signal:controller.signal};
       if(req.method==='POST'){
         if(!req.body||typeof req.body!=='object'||Array.isArray(req.body))return res.status(400).json({ok:false,error:'Corpo da revisão inválido'});
         options.headers['Content-Type']='application/json';options.body=JSON.stringify({...req.body,actor,review_session:sha(String(user.id||user.username||actor)+'|'+req.dominiumSession.csrf_hash)});
@@ -52,4 +47,4 @@ function createDisconnectionMiddleware({connection=readConnection,fetchImpl=fetc
     }finally{clearTimeout(timer);}
   };
 }
-module.exports={createDisconnectionMiddleware,allowedRoute};
+module.exports={createDisconnectionMiddleware,allowedRoute,resolveReviewOrigin};

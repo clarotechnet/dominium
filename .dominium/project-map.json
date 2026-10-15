@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-15T17:41:00+00:00",
+  "generated_at": "2026-10-15T18:01:24+00:00",
   "schema": 2,
-  "source_fingerprint": "24f24e0ac30a52fa2222af11d492fce51b1aee98e01b6f4da0195b7ad39f24f9",
+  "source_fingerprint": "1e92b310334fc7bda681a70dd7bf98cb83d69edef50448f58e38554f9e03bb3f",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -629,15 +629,28 @@
       "symbol_count": 0
     },
     {
-      "path": "deploy/hostinger-web/disconnection-proxy.js",
+      "path": "deploy/hostinger-web/disconnection-policy.js",
       "category": "tooling-deploy",
-      "bytes": 4182,
-      "sha256": "75ce3b739756e6277d921b541571c97d8e5f34daa45e4770815e70872f29e41c",
+      "bytes": 1031,
+      "sha256": "707e6e28c66fef182d304ba1fa09e7947370d0b6ba680c9aef6065ba9ab07dc4",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/disconnection/"
       ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "deploy/hostinger-web/disconnection-proxy.js",
+      "category": "tooling-deploy",
+      "bytes": 3629,
+      "sha256": "95e9d600d86bae3d64254d62201042b3f500bdd66e7a2bf75e283edbb3e6c48f",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
       "env_vars": [
         "DOMINIUM_DESC_REVIEW_ORIGIN",
         "DOMINIUM_DESC_REVIEW_TOKEN"
@@ -1584,8 +1597,8 @@
     {
       "path": "integrations/import_bridge/README.md",
       "category": "shared",
-      "bytes": 1713,
-      "sha256": "6a07ff7b6d7b09a9500da699f98c4743c7ed975f4817f10b218e48efd2811471",
+      "bytes": 2103,
+      "sha256": "008be34f694365523c37c0875ac33f2d950e1c0823c109eb0927b58c348baee1",
       "summary": "DOMINIUM site import bridge",
       "imports": [],
       "endpoints": [],
@@ -1597,11 +1610,13 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 2483,
-      "sha256": "e4311000395117c691c6c29e105e26e952fc90777b95a9abe888f5e0af301319",
+      "bytes": 2892,
+      "sha256": "173afbba31a7d046163381b4462210f389f467522a7b27e346f16c831103c8e0",
       "summary": "",
       "imports": [],
-      "endpoints": [],
+      "endpoints": [
+        "/api/disconnection/"
+      ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
@@ -1610,8 +1625,8 @@
     {
       "path": "integrations/import_bridge/worker.test.mjs",
       "category": "shared",
-      "bytes": 2473,
-      "sha256": "c2ed49b960577182285be152c2b317ae0105a8c5588c02312ebb6f6e42f15396",
+      "bytes": 3312,
+      "sha256": "2ab37e369ab7b4c0308402d671765a505d45cb3405cd192a138e2042217f2a33",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2643,8 +2658,8 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 4510,
-      "sha256": "53953c61b9dc0e2373317326200d07f3fa075c7d3f9e2b13351d72048da885f1",
+      "bytes": 4541,
+      "sha256": "b57bedbb7318cd0431753f5613bdf1fb9a860e365c7027d09e41bbda7474a121",
       "summary": "",
       "imports": [
         "__future__",
@@ -3704,8 +3719,8 @@
     {
       "path": "tests/test_disconnection_hostinger.js",
       "category": "tests",
-      "bytes": 6313,
-      "sha256": "8ba5672a49ada7ac2170d494f70c32cf2de9b97462e1c2e5b3700aa807d164d3",
+      "bytes": 7080,
+      "sha256": "73827cfd80596bf7899f04c41041672558e7f7b45b2eb64557f48a8654f49faa",
       "summary": "",
       "imports": [],
       "endpoints": [
