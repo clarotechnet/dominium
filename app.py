@@ -6030,6 +6030,57 @@ class PanelHandler(BaseHTTPRequestHandler):
                 finally:
                     OPERATION_GATE.release()
                 return
+            if parsed.path == "/api/serials/consult":
+                query = parse_qs(parsed.query)
+                raw_serials = str(query.get("serials", [""])[0])
+                serials = list(dict.fromkeys(
+                    part.upper() for part in re.split(r"[,;\\s]+", raw_serials.strip())
+                    if part.strip()
+                ))
+                if not serials or len(serials) > 20:
+                    raise ValueError("Informe de 1 a 20 seriais por consulta")
+                if any(not re.fullmatch(r"[A-Z0-9._/\\-]{4,50}", value)
+                       for value in serials):
+                    raise ValueError("Ha seriais invalidos na lista")
+                references = {
+                    serial: OPERATIONAL_STORE.serial_references(
+                        serial, profile=profile.key
+                    )
+                    for serial in serials
+                }
+                if not OPERATION_GATE.acquire(blocking=False):
+                    self._json(HTTPStatus.CONFLICT, {
+                        "ok": False,
+                        "error": "Outra operacao Imperium esta em andamento. Tente novamente.",
+                    })
+                    return
+                live_error = ""
+                try:
+                    try:
+                        live = profile.api.find_serial_owners(serials)
+                    except Exception:
+                        LOGGER.exception("Falha na consulta de seriais em lote")
+                        live = [{"serial": serial, "found": False} for serial in serials]
+                        live_error = "Consulta atual do Imperium indisponivel; veja apenas o historico."
+                finally:
+                    OPERATION_GATE.release()
+                by_serial = {record["serial"]: record for record in live}
+                self._json(HTTPStatus.OK, {
+                    "ok": True,
+                    "profile": profile.key,
+                    "source": "imperium_datasnap",
+                    "historical_source": "dominium_operational_store",
+                    "live_error": live_error,
+                    "results": [
+                        {
+                            "serial": serial,
+                            "live": by_serial.get(serial),
+                            "history": references[serial],
+                        }
+                        for serial in serials
+                    ],
+                })
+                return
             if parsed.path == "/api/stock/serial-owner":
                 query = parse_qs(parsed.query)
                 serial = query.get("serial", [""])[0].strip()

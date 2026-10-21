@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	151	79	44	DOMINIUM | MAPA DE RESPONSABILIDADE	75475f00b9c104bc
+orchestration	app.py	151	80	44	DOMINIUM | MAPA DE RESPONSABILIDADE	5adce45b98dcb743
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -27,7 +27,7 @@ tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			707e6e28c66fef
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
-tooling-deploy	deploy/hostinger-web/operational-policy.js	1	21			5a6323210266f76d
+tooling-deploy	deploy/hostinger-web/operational-policy.js	1	22			bbf57769219b3266
 tooling-deploy	deploy/hostinger-web/operational-relay.js	2				de4a6910d2bd4ba5
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
@@ -61,7 +61,7 @@ shared	flow_reader/server.py	11	2		DOMINIUM | MAPA DE RESPONSABILIDADE	00c885db8
 shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f388b7677c04f
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
-imperium	imperium_api.py	141		3	DOMINIUM | MAPA DE RESPONSABILIDADE	3ec10d22a1c5d733
+imperium	imperium_api.py	142		3	DOMINIUM | MAPA DE RESPONSABILIDADE	99ee2654bdee991d
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 shared	import_protocol_templates.json			1		9a6465634e73b3ec
@@ -83,14 +83,19 @@ shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
 shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
-shared	integrations/import_bridge/worker.mjs	3	1			a268059951009c8b
-shared	integrations/import_bridge/worker.test.mjs		4			a268af0e076d35c7
+shared	integrations/import_bridge/worker.mjs	3	2			64d226f91b19754d
+shared	integrations/import_bridge/worker.test.mjs		4			054d15f7d9142eec
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
 shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
 shared	integrations/official_stock_relay/desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	8918fc9f4d54f30b
 shared	integrations/official_stock_relay/official_stock_bridge.py	5	1		Read-only official Imperium inventory for the authenticated private DESC relay.	3074b95c68197e4c
 shared	integrations/official_stock_relay/README.md				API Oficial — Estoque (somente leitura)	dfc23a1d9e9b911e
+shared	integrations/serial_consult/desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	f5c848b102a80386
+shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	6f5b01f448826d25
+shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	88f30de5052538e7
+shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	35f4d70fd1d2e364
+shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only serial consultation: real DataSnap history + local evidence.	740b795fd3b85861
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76				b8274ffc7dfb2fbb
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-isolated.js	1			content-isolated.js - Roda no world: ISOLATED	3aa2ece3a08e2b62
@@ -136,7 +141,7 @@ shared	official_stock_audit.py	14		2	DOMINIUM | MAPA DE RESPONSABILIDADE	b8d8aa6
 shared	official_stock_blocker_review.py	15			DOMINIUM | MAPA DE RESPONSABILIDADE	9a394acc9ed1e5e8
 shared	official_stock_remediation_plan.py	25		1	DOMINIUM | MAPA DE RESPONSABILIDADE	dc0a0db6611a94a4
 orchestration	operation_scope.py	55			DOMINIUM | MAPA DE RESPONSABILIDADE	3f9d748a18c158b6
-orchestration	operational_store.py	24			DOMINIUM | MAPA DE RESPONSABILIDADE	68ffea0441c2cb65
+orchestration	operational_store.py	25			DOMINIUM | MAPA DE RESPONSABILIDADE	5676e4f9f3fdab38
 orchestration	operations_intelligence.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	96115509d8e34c26
 toa	patch_remote_toa.py		2	5		cb6eb87e50eeb356
 shared	productive_protocol_templates.json			3		c04b19e6f576ff97
@@ -162,12 +167,12 @@ shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/disconnection.js	32	8			b76030f2b5e68f91
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			89fd85aa94da7938
+frontend	static/index.html		1			395d95245ee92895
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/styles.css					fdf43ee7205da97b
+frontend	static/styles.css					cffb34d9d343ff6d
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
@@ -236,13 +241,15 @@ tests	tests/test_official_stock_relay.py	6	11		Read-only official inventory brid
 tests	tests/test_official_stock_remediation_plan.py	22		1		a64ed28f5256d2d9
 tests	tests/test_offline_candidate_and_resolver.py	12			Comprehensive test suite for frontend block, candidate locator, and material resolver.	2c65244509db2c6a
 tests	tests/test_operation_scope.py	42				f804afda128c9e71
-tests	tests/test_operational_relay.js	2	18			ac0ee35d873ac68a
-tests	tests/test_operational_store.py	5				1245242d685ecf66
+tests	tests/test_operational_relay.js	2	20			52c976c9065b7339
+tests	tests/test_operational_store.py	5				ec3aeac75e1dfebb
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_order_dataset_hostinger.js	4	1			bca127bdd7f87bcf
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
 tests	tests/test_semiauto_frontend.js	19				44a6652d8752bfc1
+tests	tests/test_serial_consult.py	3				3bb13e50693f977d
+tests	tests/test_serial_datasnap_history.py	7	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	66a742747882c753
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35

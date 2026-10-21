@@ -17,6 +17,7 @@ test('only explicit, safe GET routes may access the internal Windows API', () =>
     '/api/toa-automation',
     '/api/auto-improductive-close',
     '/api/monitor/snapshot',
+    '/api/serials/consult?serials=SERIAL000000&mode=analitico',
     '/api/imperium-official/stocks?profile=natal',
     '/api/imperium-official/stocks/123/items?profile=fortaleza',
   ]) assert.equal(allowedOperationalRead('GET',route),true,route);
@@ -29,6 +30,7 @@ test('only explicit, safe GET routes may access the internal Windows API', () =>
     '/api/imperium-official/stocks/123/commit',
   ]) assert.equal(allowedOperationalRead('GET',route),false,route);
   assert.equal(allowedOperationalRead('POST','/api/orders'),false);
+  assert.equal(allowedOperationalRead('POST','/api/serials/consult'),false);
   assert.equal(allowedOperationalRead('DELETE','/api/toa-contracts'),false);
 });
 
