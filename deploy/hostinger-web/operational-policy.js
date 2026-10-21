@@ -25,6 +25,7 @@ const ROUTES = new Set([
   '/api/close-report',
   '/api/stock',
   '/api/stock/serial-owner',
+  '/api/serials/consult',
 ]);
 
 const DETAIL_ROUTE = /^\/api\/(?:orders\/\d+\/(?:material-inventory|installer-change-preview|serialized-transfer-preview)|operational\/contracts\/[0-9]+|imperium-official\/stocks(?:\/[1-9][0-9]{0,9}\/items)?)$/;

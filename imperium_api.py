@@ -1513,6 +1513,115 @@ class ImperiumAPI:
             )
         return result
 
+    def find_serial_owners(self, serials: list[str]) -> list[dict]:
+        """Locate many serials with a single pass over technician stocks."""
+        wanted = list(dict.fromkeys(str(value).strip().upper() for value in serials))
+        if not wanted or len(wanted) > 20:
+            raise ValueError("Informe de 1 a 20 seriais")
+        if any(not re.fullmatch(r"[A-Z0-9._/\\-]{4,50}", value) for value in wanted):
+            raise ValueError("Serial invalido")
+
+        now = time.monotonic()
+        responses: dict[str, dict] = {}
+        for serial in wanted:
+            cached = self._serial_owner_cache.get(serial)
+            if cached is not None and now - cached[0] < 300:
+                responses[serial] = {**cached[1], "cached": True}
+        pending = set(wanted) - set(responses)
+        if pending:
+            started = time.monotonic()
+            scanned = failed_stocks = 0
+            total_stocks = 0
+            found: dict[str, dict] = {}
+            with self._operation_lock:
+                with self._client(timeout=30.0) as client:
+                    handle = self._handle(client, self.stock_protocol.technicians_method)
+                    raw = self._dataset_payload(
+                        client, handle, self.stock_protocol.technicians_query,
+                        "estoques dos tecnicos",
+                    )
+                    technicians = parse_technicians(raw)
+                    total_stocks = len(technicians)
+                    serial_handle = self._handle(client, self.stock_protocol.serials_method)
+                    for technician in technicians:
+                        if not pending:
+                            break
+                        scanned += 1
+                        try:
+                            raw_serials = self._dataset_payload(
+                                client, serial_handle,
+                                self.stock_protocol.serials_query(technician.stock_id),
+                                f"seriais de {technician.technician_name}",
+                            )
+                            items = parse_stock_serials(raw_serials)
+                        except (DataSnapError, OSError) as exc:
+                            failed_stocks += 1
+                            LOGGER.warning("DataSnap: estoque %s indisponivel: %s",
+                                           technician.stock_id, exc)
+                            continue
+                        matching = {
+                            serial: item
+                            for item in items
+                            for serial in pending
+                            if serial in (item.serial.upper(), item.smart.upper())
+                        }
+                        if not matching:
+                            continue
+                        equipment_by_id = {}
+                        try:
+                            item_handle = self._handle(
+                                client, self.stock_protocol.items_method
+                            )
+                            item_payload = self._dataset_payload(
+                                client, item_handle,
+                                self.stock_protocol.items_query(technician.stock_id),
+                                f"equipamentos de {technician.technician_name}",
+                            )
+                            for item in parse_stock_items(item_payload):
+                                equipment_by_id[item.equipment_id] = {
+                                    "equipment_id": item.equipment_id,
+                                    "group_id": item.group_id,
+                                    "code": item.code,
+                                    "name": item.equipment,
+                                    "group": item.group,
+                                    "brand_id": item.brand_id,
+                                    "brand": item.brand,
+                                    "unit_id": item.unit_id,
+                                    "unit": item.unit,
+                                    "identified": item.identified,
+                                }
+                        except (DataSnapError, OSError) as exc:
+                            LOGGER.warning("DataSnap: detalhes do estoque %s: %s",
+                                           technician.stock_id, exc)
+                        for serial, item in matching.items():
+                            found[serial] = {
+                                "owner": technician.to_dict(),
+                                "stock_serial": item.to_dict(),
+                                "equipment": equipment_by_id.get(item.equipment_id),
+                            }
+                        pending.difference_update(matching)
+            elapsed = round(time.monotonic() - started, 2)
+            for serial in wanted:
+                if serial in responses:
+                    continue
+                match = found.get(serial)
+                result = {
+                    "ok": True,
+                    "found": bool(match),
+                    "serial": serial,
+                    "owner": match["owner"] if match else None,
+                    "stock_serial": match["stock_serial"] if match else None,
+                    "equipment": match["equipment"] if match else None,
+                    "scanned": scanned,
+                    "total_stocks": total_stocks,
+                    "failed_stocks": failed_stocks,
+                    "elapsed_seconds": elapsed,
+                    "cached": False,
+                }
+                responses[serial] = result
+                self._serial_owner_cache[serial] = (time.monotonic(), result)
+        return [responses[serial] for serial in wanted]
+
     @staticmethod
     def _stock_serial_match(stock: dict, serial: str) -> dict | None:
         requested = str(serial).strip().upper()

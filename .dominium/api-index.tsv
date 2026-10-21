@@ -55,6 +55,7 @@ endpoint	path
 /api/orders/(\d+)/transfer-serial	app.py
 /api/orders/bulk-create	app.py
 /api/profiles	app.py
+/api/serials/consult	app.py
 /api/status	app.py
 /api/stock	app.py
 /api/stock/batch	app.py
@@ -102,6 +103,7 @@ endpoint	path
 /api/operational/contracts	deploy/hostinger-web/operational-policy.js
 /api/orders	deploy/hostinger-web/operational-policy.js
 /api/profiles	deploy/hostinger-web/operational-policy.js
+/api/serials/consult	deploy/hostinger-web/operational-policy.js
 /api/status	deploy/hostinger-web/operational-policy.js
 /api/stock	deploy/hostinger-web/operational-policy.js
 /api/stock/serial-owner	deploy/hostinger-web/operational-policy.js
@@ -139,11 +141,13 @@ endpoint	path
 /api/health	flow_reader/server.py
 /api/analyze	flow_reader/static/app.js
 /api/disconnection/	integrations/import_bridge/worker.mjs
+/api/serials/consult	integrations/import_bridge/worker.mjs
 /api/close	integrations/import_bridge/worker.test.mjs
 /api/imperium-official/stocks/123/items?profile=fortaleza	integrations/import_bridge/worker.test.mjs
 /api/imperium-official/stocks?profile=natal	integrations/import_bridge/worker.test.mjs
 /api/imports/preview?url=evil	integrations/import_bridge/worker.test.mjs
 /api/imperium-official/stocks	integrations/official_stock_relay/official_stock_bridge.py
+/api/serials/consult	integrations/serial_consult/serial_service.py
 /api/toa-automation	patch_remote_toa.py
 /api/toa-automation/run	patch_remote_toa.py
 /api/disconnection/	static/disconnection.js
@@ -237,6 +241,8 @@ endpoint	path
 /api/operational/contracts/evil	tests/test_operational_relay.js
 /api/orders	tests/test_operational_relay.js
 /api/orders?date=2026-10-21&profile=natal	tests/test_operational_relay.js
+/api/serials/consult	tests/test_operational_relay.js
+/api/serials/consult?serials=SERIAL000000&mode=analitico	tests/test_operational_relay.js
 /api/toa-automation	tests/test_operational_relay.js
 /api/toa-automation/run	tests/test_operational_relay.js
 /api/toa-contracts	tests/test_operational_relay.js
@@ -244,6 +250,9 @@ endpoint	path
 /api/toa-contracts?profile=natal&date=2026-10-21	tests/test_operational_relay.js
 /api/toa-live/status	tests/test_operational_relay.js
 /api/toa-agenda/import	tests/test_order_dataset_hostinger.js
+/api/serials/consult?serials=SERIAL000000	tests/test_serial_datasnap_history.py
+/api/serials/consult?serials=SERIAL000000&mode=analitico&profile=natal	tests/test_serial_datasnap_history.py
+/api/serials/consult?serials=SERIAL000000&profile=natal&profile=recife	tests/test_serial_datasnap_history.py
 /api/auth/login	tests/test_ui_runtime_regression.py
 /api/auth/register	tests/test_ui_runtime_regression.py
 /api/auth/bootstrap	tests/test_web_auth_config.py

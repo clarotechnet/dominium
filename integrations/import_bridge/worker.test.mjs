@@ -95,3 +95,29 @@ test('stock official API reads use the DESC private service and enforce admin/co
   assert.equal(mutation.status,404);
   assert.equal(descCalls,2);
 });
+
+test('serial consultation is read-only and limited to operational roles', async()=>{
+  let descCalls=0, importCalls=0, captured;
+  const env={
+    IMPORT_TOKEN:secret,
+    IMPORT_SERVICE:{fetch:async()=>{importCalls++;return Response.json({ok:false})}},
+    DESC_SERVICE:{fetch:async req=>{
+      descCalls++;captured=req;
+      return Response.json({ok:true,results:[{serial:'SERIAL000000',datasnap:{movements:[]}}]});
+    }},
+  };
+  const uri='https://bridge.test/api/serials/consult?serials=SERIAL000000&mode=analitico';
+  const allowed=await worker.fetch(new Request(uri,{headers:{...headers,'X-Dominium-Role':'controller',Cookie:'browser-cookie'}}),env);
+  assert.equal(allowed.status,200);
+  assert.equal(captured.url,'http://127.0.0.1:8793/api/serials/consult?serials=SERIAL000000&mode=analitico');
+  assert.equal(captured.headers.get('cookie'),null);
+  assert.equal(captured.headers.get('authorization'),'Bearer '+secret);
+  assert.equal(captured.headers.get('x-dominium-role'),'controller');
+  assert.equal(descCalls,1);
+  assert.equal(importCalls,0);
+  const viewer=await worker.fetch(new Request(uri,{headers:{...headers,'X-Dominium-Role':'viewer'}}),env);
+  assert.equal(viewer.status,403);
+  const writing=await worker.fetch(new Request(uri,{method:'POST',headers,body:'{}'}),env);
+  assert.equal(writing.status,404);
+  assert.equal(descCalls,1);
+});

@@ -47,9 +47,11 @@ const state = {
     { code: "0", description: "CANCELAMENTO", productive: false },
   ],
   failures: [],
-  activeModule: window.location.hash === "#desconexao"
-    ? "disconnection"
-    : window.location.hash === "#monitor"
+  activeModule: window.location.hash === "#consultar-seriais"
+    ? "serials"
+    : window.location.hash === "#desconexao"
+      ? "disconnection"
+      : window.location.hash === "#monitor"
     ? "close"
     : window.location.hash === "#inteligencia"
       ? "intelligence"
@@ -123,6 +125,9 @@ const state = {
   stockSelectedId: "",
   stockData: null,
   stockLoading: false,
+  serialConsultLoading: false,
+  serialConsultResults: [],
+  serialConsultError: "",
   stockBatchSelected: new Set(),
   stockBatchLoading: false,
   stockWriteoffLoading: false,
@@ -321,6 +326,7 @@ const elements = {
   monitorModule: document.querySelector("#monitorModule"),
   ordersModule: document.querySelector("#ordersModule"),
   stockModule: document.querySelector("#stockModule"),
+  serialsModule: document.querySelector("#serialsModule"),
   techniciansModule: document.querySelector("#techniciansModule"),
   intelligenceModule: document.querySelector("#intelligenceModule"),
   bulkCreateModule: document.querySelector("#bulkCreateModule"),
@@ -334,6 +340,16 @@ const elements = {
   monitorWorkspace: document.querySelector("#monitorWorkspace"),
   ordersWorkspace: document.querySelector("#ordersWorkspace"),
   stockWorkspace: document.querySelector("#stockWorkspace"),
+  serialsWorkspace: document.querySelector("#serialsWorkspace"),
+  serialsInput: document.querySelector("#serialsInput"),
+  serialsMode: document.querySelector("#serialsMode"),
+  serialsRun: document.querySelector("#serialsRun"),
+  serialsClear: document.querySelector("#serialsClear"),
+  serialsExport: document.querySelector("#serialsExport"),
+  serialsStatus: document.querySelector("#serialsStatus"),
+  serialsNotice: document.querySelector("#serialsNotice"),
+  serialsSummary: document.querySelector("#serialsSummary"),
+  serialsResults: document.querySelector("#serialsResults"),
   techniciansWorkspace: document.querySelector("#techniciansWorkspace"),
   intelligenceWorkspace: document.querySelector("#intelligenceWorkspace"),
   bulkCreateWorkspace: document.querySelector("#bulkCreateWorkspace"),
@@ -853,9 +869,11 @@ function apiUrlForProfile(path, profile) {
 function updateAddress() {
   const url = new URL(window.location.href);
   url.searchParams.set("profile", state.profile);
-  url.hash = state.activeModule === "disconnection"
-    ? "desconexao"
-    : state.activeModule === "monitor"
+  url.hash = state.activeModule === "serials"
+    ? "consultar-seriais"
+    : state.activeModule === "disconnection"
+      ? "desconexao"
+      : state.activeModule === "monitor"
     ? "monitor"
     : state.activeModule === "intelligence"
       ? "inteligencia"
@@ -1611,6 +1629,223 @@ function operationalStatusLabel(value) {
 // =============================================================================
 // DOMINIUM COMPARTILHADO | HISTORICO E VISAO OPERACIONAL DO CONTRATO
 // =============================================================================
+// Serial consultation: current Imperium stock and captured operational history.
+function serialConsultValues(value) {
+  return [...new Set(String(value || "").split(/[\s,;]+/)
+    .map((part) => part.trim().toUpperCase()).filter(Boolean))];
+}
+
+function renderSerialConsult() {
+  const rows = state.serialConsultResults || [];
+  const busy = state.serialConsultLoading;
+  const offline = Boolean(state.serialConsultError);
+  elements.serialsRun.disabled = busy || state.profileSwitching;
+  elements.serialsInput.disabled = busy;
+  elements.serialsMode.disabled = busy;
+  elements.serialsClear.disabled = busy;
+  elements.serialsExport.disabled = busy || rows.length === 0;
+  elements.serialsRun.textContent = busy ? "Consultando..." : "Consultar seriais";
+  elements.serialsStatus.textContent = busy
+    ? "Pesquisando os estoques do Imperium..."
+    : rows.length ? rows.length + " serial(is) consultado(s) em " + state.profile.toUpperCase() + "."
+      : "Pronto para consultar.";
+  elements.serialsNotice.classList.toggle("hidden", !offline);
+  elements.serialsNotice.textContent = state.serialConsultError || "";
+  elements.serialsSummary.classList.toggle("hidden", !rows.length);
+  if (!rows.length) {
+    elements.serialsResults.innerHTML = '<div class="serials-empty"><i data-lucide="scan-search"></i><strong>'
+      + (busy ? "Localizando equipamentos..." : "Pesquise seriais para ver a rastreabilidade")
+      + '</strong><span>'
+      + (busy ? "A consulta pode percorrer diversos estoques."
+        : "Proprietario e estoque em tempo de consulta. Contratos e OS conforme historico capturado.")
+      + '</span></div>';
+    window.lucide?.createIcons();
+    return;
+  }
+  const located = rows.filter((r) => r.live?.found).length;
+  const referenced = rows.filter((r) => (r.datasnap?.movements || []).length > 0).length;
+  const uncertain = rows.filter((r) => !r.live?.verified).length;
+  const summaryItem = (label, value) => '<div class="serials-stat"><span>'
+    + escapeHtml(label) + '</span><strong>' + value + '</strong></div>';
+  elements.serialsSummary.innerHTML = summaryItem("Consultados", rows.length)
+    + summaryItem("Localizados em estoque", located)
+    + summaryItem("Com movimentação IMPERIUM", referenced)
+    + summaryItem("Pesquisa inconclusiva", uncertain);
+  const labels = { installed: "Instalado", removed: "Retirado", customer: "Cliente", material: "Material" };
+  const fact = (title, value, sub) => '<div><span>' + escapeHtml(title) + '</span><strong>'
+    + escapeHtml(value || "-") + '</strong><small>' + escapeHtml(sub || "-") + '</small></div>';
+
+  elements.serialsResults.innerHTML = rows.map((row) => {
+    const live = row.live || {};
+    const owner = live.owner || {};
+    const equipment = live.equipment || {};
+    const stock = live.stock_serial || {};
+    const history = row.history || [];
+    const movements = row.datasnap?.movements || [];
+    const boxes = row.datasnap?.boxes || [];
+    const lastDestination = row.last_destination || {};
+    const first = history[0] || {};
+    const partial = Number(live.failed_stocks || 0) > 0;
+    const status = live.verified && live.found ? "Posse confirmada no estoque"
+      : movements.length ? "Histórico consultado — posse não confirmada"
+        : row.history_error ? "Consulta parcial" : "Sem movimentações confirmadas";
+    const tone = live.verified && live.found ? "located" : movements.length || row.history_error ? "uncertain" : "missing";
+    const ownerName = owner.technician_name || owner.stock_name || owner.name || "";
+    const equipmentName = equipment.name || movements[0]?.Equipamento || first.description || "Equipamento nao identificado";
+    const movementHtml = movements.map((item) => {
+      const direction = [item.EstOrigem, item.EstDestino].filter(Boolean).join(" → ");
+      const detail = [item.Contrato && "Contrato " + item.Contrato,
+        item.NumOs && "OS " + item.NumOs, item.Tecnico && "Técnico: " + item.Tecnico,
+        item.Usuario && "Usuário: " + item.Usuario].filter(Boolean).join(" | ");
+      return '<div class="serial-trace-entry"><div class="serial-trace-main">'
+        + '<span class="serial-trace-type">' + escapeHtml(item.Movimento || "Movimentação") + '</span>'
+        + '<strong>' + escapeHtml(direction || "Origem/destino não informados") + '</strong>'
+        + '<span>' + escapeHtml(detail || item.Equipamento || "Sem descrição adicional") + '</span>'
+        + '<small>' + escapeHtml(formatDateTime(item.Data) || item.Data || "-") + '</small>'
+        + (item.Obs ? '<small>Observação: ' + escapeHtml(item.Obs) + '</small>' : "")
+        + '</div></div>';
+    }).join("");
+    const boxHtml = boxes.map((box) => '<div class="serial-result-additional">'
+      + '<span>Caixa: <strong>' + escapeHtml(box.IdCaixa || "-") + '</strong></span>'
+      + '<span>Serial caixa: <strong>' + escapeHtml(box.Serial || "-") + '</strong></span>'
+      + '<span>Entrada: <strong>' + escapeHtml(formatDateTime(box.DataEntrada) || "-") + '</strong></span>'
+      + '</div>').join("");
+    const historyHtml = history.map((item) => {
+      const orders = (item.orders || []).map((o) => "OS " + escapeHtml(o.os_number)
+        + " (" + escapeHtml(o.imperium_status || o.toa_status || "sem status") + ")").join(" | ");
+      return '<div class="serial-trace-entry"><div class="serial-trace-main">'
+        + '<span class="serial-trace-type">' + escapeHtml(labels[item.category] || item.category) + '</span>'
+        + '<strong>Contrato ' + escapeHtml(item.contract) + '</strong>'
+        + '<span>' + escapeHtml(item.customer_name || "Cliente nao informado") + ' | '
+        + escapeHtml(item.description || item.code || "Equipamento") + '</span>'
+        + '<small>Responsavel registrado: ' + escapeHtml(item.technician_name || "-")
+        + ' | ' + escapeHtml(formatDateTime(item.updated_at)) + '</small>'
+        + (orders ? '<small>' + orders + '</small>' : "")
+        + '</div><button type="button" class="button secondary serial-trace-open" data-serial-contract="'
+        + escapeHtml(item.contract) + '">Ver contrato</button></div>';
+    }).join("");
+    return '<article class="serial-result-card">'
+      + '<header class="serial-result-header"><div><span class="serial-result-eyebrow">SERIAL CONSULTADO</span>'
+      + '<h3>' + escapeHtml(row.serial) + '</h3><span class="serial-result-subtitle">'
+      + escapeHtml(equipmentName) + '</span></div><span class="serial-result-badge ' + tone + '">'
+      + escapeHtml(status) + '</span></header>'
+      + '<div class="serial-result-facts">'
+      + fact(live.verified && live.found ? "Com quem está (estoque conferido)" : "Último destino (histórico)",
+        live.verified && live.found ? ownerName : (lastDestination.stock_name || "Não confirmado"),
+        live.verified && live.found ? "Estoque " + (owner.stock_id || "-") : "Movimentação não comprova a posse atual")
+      + fact("Equipamento / codigo", equipment.code || movements[0]?.CodigoEquipamento || first.code,
+        equipment.brand || equipment.group || equipmentName)
+      + fact("Contrato relacionado (historico)", first.contract || "Sem vinculo encontrado",
+        history.length ? history.length + " registro(s) capturado(s)" : "Sem registro na base")
+      + fact("Status do contrato (historico)", first.contract_status || "Nao informado",
+        first.scheduled_date || "-")
+      + '</div>'
+      + (live.found ? '<div class="serial-result-additional">'
+        + '<span>Serial: <strong>' + escapeHtml(stock.serial || row.serial) + '</strong></span>'
+        + '<span>SMART: <strong>' + escapeHtml(stock.smart || "-") + '</strong></span>'
+        + '<span>Grupo: <strong>' + escapeHtml(equipment.group || "-") + '</strong></span>'
+        + '<span>Fonte: <strong>Imperium / DataSnap' + (live.cached ? " (cache)" : "") + '</strong></span></div>' : "")
+      + '<div class="serial-trace"><div class="serial-trace-title"><span><i data-lucide="history"></i>'
+      + ' IMPERIUM · ' + escapeHtml(row.datasnap?.mode === "sintetico" ? "Sintético" : "Analítico")
+      + '</span><small>Fonte: DataSnap · consulta direta, somente leitura</small></div>'
+      + (movementHtml || '<p class="serial-trace-empty">' + escapeHtml(row.history_error || "Nenhuma movimentação localizada pelo DataSnap.") + '</p>')
+      + boxHtml + '</div>'
+      + '<div class="serial-trace"><div class="serial-trace-title"><span><i data-lucide="database"></i>'
+      + ' Contratos e OS na base DOMINIUM</span><small>Histórico capturado, não estado atual</small></div>'
+      + (historyHtml || '<p class="serial-trace-empty">Sem contratos associados a este serial na base operacional.</p>')
+      + '</div><footer class="serial-result-footer">Perfil ' + escapeHtml(state.profile.toUpperCase())
+      + (live.scanned != null ? " | " + Number(live.scanned) + " de " + Number(live.total_stocks)
+        + " estoques verificados" + (live.cached ? " (cache)" : "") : "")
+      + (partial && !live.found ? " | Alguns estoques nao responderam" : "")
+      + '</footer></article>';
+  }).join("");
+  elements.serialsResults.querySelectorAll("[data-serial-contract]").forEach((button) => {
+    button.addEventListener("click", () => {
+      setModule("database");
+      elements.databaseSearch.value = button.dataset.serialContract;
+      loadOperationalDatabase();
+    });
+  });
+  window.lucide?.createIcons();
+}
+
+async function runSerialConsult() {
+  if (state.serialConsultLoading) return;
+  const serials = serialConsultValues(elements.serialsInput.value);
+  if (!serials.length) {
+    showToast("Informe pelo menos um serial.", "warning");
+    elements.serialsInput.focus();
+    return;
+  }
+  if (serials.length > 20 || serials.some((value) => !/^[A-Z0-9._/\-]{4,50}$/.test(value))) {
+    showToast("Use de 1 a 20 seriais validos (4 a 50 caracteres).", "warning");
+    return;
+  }
+  const profile = state.profile;
+  state.serialConsultLoading = true;
+  state.serialConsultError = "";
+  state.serialConsultResults = [];
+  renderSerialConsult();
+  try {
+    const result = await request(apiUrl("/api/serials/consult?serials=" +
+      encodeURIComponent(serials.join(",")) + "&mode=" +
+      encodeURIComponent(elements.serialsMode.value)), { timeoutMs: 180000 });
+    if (profile !== state.profile) return;
+    state.serialConsultResults = result.results || [];
+    state.serialConsultError = result.live_error || "";
+  } catch (error) {
+    if (profile !== state.profile) return;
+    state.serialConsultError = error.message || "Erro na consulta de seriais.";
+    showToast(state.serialConsultError, "error");
+  } finally {
+    state.serialConsultLoading = false;
+    renderSerialConsult();
+  }
+}
+
+function exportSerialConsultCsv() {
+  const results = state.serialConsultResults || [];
+  if (!results.length) return;
+  const cell = (value) => {
+    const string = String(value ?? "");
+    const safe = /^[=+\-@]/.test(string.trimStart()) ? "'" + string : string;
+    return '"' + safe.replaceAll('"', '""') + '"';
+  };
+  const records = [["Serial", "Consulta atual", "Tecnico Imperium", "Estoque", "Equipamento",
+    "Codigo", "Contrato historico", "Cliente", "Status contrato", "Categoria", "OS",
+    "Status OS", "Data registro", "Movimentacao IMPERIUM", "Origem", "Destino", "Usuario", "Data movimentacao"]];
+  results.forEach((row) => {
+    (row.history?.length ? row.history : [null]).forEach((ref) => {
+      const order = ref?.orders?.[0];
+      records.push([
+        row.serial, row.live?.found ? "Em estoque" : state.serialConsultError ? "Indisponivel" : "Nao localizado",
+        row.live?.owner?.technician_name || "", row.live?.owner?.stock_id || "",
+        row.live?.equipment?.name || ref?.description || "", row.live?.equipment?.code || ref?.code || "",
+        ref?.contract || "", ref?.customer_name || "", ref?.contract_status || "",
+        ref?.category || "", (ref?.orders || []).map((o) => o.os_number).join(", "),
+        order?.imperium_status || order?.toa_status || "", ref?.updated_at || "",
+        "", "", "", "", "",
+      ]);
+    });
+    for (const movement of row.datasnap?.movements || []) {
+      records.push([row.serial, row.live?.verified && row.live?.found ? "Posse confirmada" : "Historico apenas",
+        row.live?.owner?.technician_name || "", row.live?.owner?.stock_id || "",
+        movement.Equipamento || "", movement.CodigoEquipamento || "", movement.Contrato || "",
+        "", "", "", movement.NumOs || "", "", "", movement.Movimento || "",
+        movement.EstOrigem || "", movement.EstDestino || "", movement.Usuario || "", movement.Data || ""]);
+    }
+  });
+  const csv = "\uFEFF" + records.map((row) => row.map(cell).join(";")).join("\r\n");
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "dominium-seriais-" + state.profile + "-" + localDate() + ".csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 function renderOperationalContract() {
   const contract = state.operationalContract;
   elements.databaseContractCount.textContent = state.operationalDatabase.total || 0;
@@ -3206,6 +3441,9 @@ async function switchProfile(profileKey) {
   state.operationalDatabase = { contracts: [], total: 0 };
   state.operationalContract = null;
   state.serialAudit = null;
+  state.serialConsultResults = [];
+  state.serialConsultError = "";
+  elements.serialsInput.value = "";
   elements.stockGroupFilter.replaceChildren(new Option("Todos", ""));
   elements.status.value = "field";
   updateServiceOptions();
@@ -3263,6 +3501,8 @@ function resetProfileOperationalState() {
   state.materialError = "";
   state.materialNotice = "";
   state.serialOwnerLookup = null;
+  state.serialConsultResults = [];
+  state.serialConsultError = "";
   state.installerMovePreview = null;
   state.serializedTransferPreview = null;
   [
@@ -3281,7 +3521,7 @@ function setModule(module) {
     state.running || state.bulkCreateLoading || state.stockBatchLoading
     || state.stockWriteoffLoading
     || ![
-      "dashboard", "monitor", "orders", "stock", "technicians", "bulk", "imports",
+      "dashboard", "monitor", "orders", "stock", "serials", "technicians", "bulk", "imports",
       "automation-test", "close", "report", "history", "intelligence", "database", "disconnection",
     ].includes(module)
   ) return;
@@ -6849,6 +7089,7 @@ function render() {
   elements.monitorWorkspace.classList.toggle("hidden", state.activeModule !== "monitor");
   elements.ordersWorkspace.classList.toggle("hidden", state.activeModule !== "orders");
   elements.stockWorkspace.classList.toggle("hidden", state.activeModule !== "stock");
+  elements.serialsWorkspace.classList.toggle("hidden", state.activeModule !== "serials");
   elements.techniciansWorkspace.classList.toggle("hidden", state.activeModule !== "technicians");
   elements.intelligenceWorkspace.classList.toggle("hidden", state.activeModule !== "intelligence");
   elements.bulkCreateWorkspace.classList.toggle("hidden", state.activeModule !== "bulk");
@@ -6865,6 +7106,7 @@ function render() {
   elements.monitorModule?.classList.toggle("active", state.activeModule === "monitor");
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
   elements.stockModule.classList.toggle("active", state.activeModule === "stock");
+  elements.serialsModule.classList.toggle("active", state.activeModule === "serials");
   elements.techniciansModule.classList.toggle("active", state.activeModule === "technicians");
   elements.intelligenceModule.classList.toggle("active", state.activeModule === "intelligence");
   elements.bulkCreateModule.classList.toggle("active", state.activeModule === "bulk");
@@ -6883,6 +7125,7 @@ function render() {
   renderToaAutomation();
   renderAutomationTest();
   renderStock();
+  renderSerialConsult();
   renderTechnicians();
   renderIntelligence();
   renderSerialAudit();
@@ -12115,6 +12358,20 @@ document.getElementById("disconnectionModule").addEventListener("click", () => s
 elements.monitorModule?.addEventListener("click", () => setModule("monitor"));
 elements.ordersModule.addEventListener("click", () => setModule("orders"));
 elements.stockModule.addEventListener("click", () => setModule("stock"));
+elements.serialsModule.addEventListener("click", () => setModule("serials"));
+elements.serialsRun.addEventListener("click", runSerialConsult);
+elements.serialsClear.addEventListener("click", () => {
+  if (state.serialConsultLoading) return;
+  elements.serialsInput.value = "";
+  state.serialConsultResults = [];
+  state.serialConsultError = "";
+  renderSerialConsult();
+  elements.serialsInput.focus();
+});
+elements.serialsExport.addEventListener("click", exportSerialConsultCsv);
+elements.serialsInput.addEventListener("keydown", (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key === "Enter") runSerialConsult();
+});
 elements.techniciansModule.addEventListener("click", () => setModule("technicians"));
 elements.intelligenceModule.addEventListener("click", () => setModule("intelligence"));
 elements.bulkCreateModule.addEventListener("click", () => setModule("bulk"));

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-21T16:47:17+00:00",
+  "generated_at": "2026-10-21T18:14:07+00:00",
   "schema": 2,
-  "source_fingerprint": "30e64792d6d6db75ee5ea7b664b1976b74fbecad48d0dca9355912444e30599c",
+  "source_fingerprint": "ae0d020c9f05ebc5bbdb8a0b2e14960137290a67c9ca137a46b39142722aa73e",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 356262,
-      "sha256": "75475f00b9c104bc840aa0cb08e79f78705827cb6dcc9e9d4d9803bee8f19b58",
+      "bytes": 358722,
+      "sha256": "5adce45b98dcb74308f34ac042f1152d46376f4577b0438afb2094b56f0367fa",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -205,6 +205,7 @@
         "/api/orders/(\\d+)/transfer-serial",
         "/api/orders/bulk-create",
         "/api/profiles",
+        "/api/serials/consult",
         "/api/status",
         "/api/stock",
         "/api/stock/batch",
@@ -697,8 +698,8 @@
     {
       "path": "deploy/hostinger-web/operational-policy.js",
       "category": "tooling-deploy",
-      "bytes": 1607,
-      "sha256": "5a6323210266f76d21a19fadd4a061c82febabfb6441b0a20f72957f10799af5",
+      "bytes": 1633,
+      "sha256": "bbf57769219b32664c2a73cd86f17a2cd89626e3fdb80f4fcfb99e47a115a366",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -714,6 +715,7 @@
         "/api/operational/contracts",
         "/api/orders",
         "/api/profiles",
+        "/api/serials/consult",
         "/api/status",
         "/api/stock",
         "/api/stock/serial-owner",
@@ -1287,8 +1289,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 258741,
-      "sha256": "3ec10d22a1c5d7330750a47426e664c9386e0701fb09be7edfa9a538f47ca336",
+      "bytes": 264476,
+      "sha256": "99ee2654bdee991d5232c93aa865dcd7bcc1c58eb8c5a419ca1a45b463019d86",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -1326,7 +1328,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": false,
-      "symbol_count": 141
+      "symbol_count": 142
     },
     {
       "path": "imperium_http_api.py",
@@ -1660,12 +1662,13 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 3468,
-      "sha256": "a268059951009c8bd5486b8837961828999de77966d559b9446fa64f43842a34",
+      "bytes": 3617,
+      "sha256": "64d226f91b19754dd29c5edaa49430dcd2be6dc52fcd411221c02a40b69de2a0",
       "summary": "",
       "imports": [],
       "endpoints": [
-        "/api/disconnection/"
+        "/api/disconnection/",
+        "/api/serials/consult"
       ],
       "env_vars": [],
       "datasnap_methods": [],
@@ -1675,8 +1678,8 @@
     {
       "path": "integrations/import_bridge/worker.test.mjs",
       "category": "shared",
-      "bytes": 6607,
-      "sha256": "a268af0e076d35c7e9435439f6abbda711d12be33c25c58bfc8dc122d2c628cf",
+      "bytes": 7972,
+      "sha256": "054d15f7d9142eecaa02a14dc0ee8da41404140d26fc62aa3c122c21c525f27a",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1795,6 +1798,117 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "integrations/serial_consult/desc_review_relay.py",
+      "category": "shared",
+      "bytes": 6908,
+      "sha256": "f5c848b102a803862b871d32a9b16c860bdd012f065533916d02873b57234876",
+      "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "desc_order_verifier",
+        "desc_review_proxy",
+        "hmac",
+        "http",
+        "json",
+        "logging",
+        "official_stock_bridge",
+        "os",
+        "pathlib",
+        "secrets",
+        "serial_service",
+        "sys",
+        "urllib"
+      ],
+      "endpoints": [],
+      "env_vars": [
+        "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 6
+    },
+    {
+      "path": "integrations/serial_consult/midas_reader.py",
+      "category": "shared",
+      "bytes": 3619,
+      "sha256": "6f5b01f448826d25a9b5b480f821df53447843dc21c0634b9732a44b0617e305",
+      "summary": "Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.",
+      "imports": [
+        "__future__",
+        "datetime",
+        "io",
+        "struct"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
+      "path": "integrations/serial_consult/README.md",
+      "category": "shared",
+      "bytes": 2313,
+      "sha256": "88f30de5052538e74d3339472daf38572f395c036c11be2646c785f27fd33b1c",
+      "summary": "Recursos / Consultar Seriais — historico DataSnap",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmMovEstoque.AS_GetRecords"
+      ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/serial_consult/serial_datasnap.py",
+      "category": "shared",
+      "bytes": 4622,
+      "sha256": "35f4d70fd1d2e364198b4bfb3abcb16c931ea600c7c30cbcda01c1bc583b7565",
+      "summary": "Private read-only DataSnap query for IMPERIUM serial movement history.",
+      "imports": [
+        "__future__",
+        "base64",
+        "datasnap_client",
+        "imperium_api",
+        "midas_reader",
+        "pathlib",
+        "re",
+        "sys"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmMovEstoque.AS_GetRecords"
+      ],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
+      "path": "integrations/serial_consult/serial_service.py",
+      "category": "shared",
+      "bytes": 7169,
+      "sha256": "740b795fd3b85861517103adc3405f1860aa750a0ef906d2e5556a209c3ef57b",
+      "summary": "Private, read-only serial consultation: real DataSnap history + local evidence.",
+      "imports": [
+        "__future__",
+        "imperium_api",
+        "pathlib",
+        "re",
+        "serial_datasnap",
+        "sqlite3",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/serials/consult"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
     },
     {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/background.js",
@@ -2571,8 +2685,8 @@
     {
       "path": "operational_store.py",
       "category": "orchestration",
-      "bytes": 33358,
-      "sha256": "68ffea0441c2cb65827deeab97359179e05c00a59efb0b4f428608a54c4a3c09",
+      "bytes": 35467,
+      "sha256": "5676e4f9f3fdab389b076b7068f67f25a943c999790f1a139971b38d9583fba7",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "__future__",
@@ -2590,7 +2704,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 24
+      "symbol_count": 25
     },
     {
       "path": "operations_intelligence.py",
@@ -3087,8 +3201,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 111425,
-      "sha256": "89fd85aa94da7938e4e1cd6667db2c911cbc06f9fef10252bb32829de1bf4bd2",
+      "bytes": 114235,
+      "sha256": "395d95245ee92895627e543a6ee3da48e37c10e9810d18a6f6e9623ee26663a2",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3154,8 +3268,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 196608,
-      "sha256": "fdf43ee7205da97b77ac45a491b3112b90ce40d705b75f735500bfe7f6f624b7",
+      "bytes": 204215,
+      "sha256": "cffb34d9d343ff6d02bcb3caa3cb87676e2e59a64e4b023e9cd4f1f932a76cb6",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -4516,8 +4630,8 @@
     {
       "path": "tests/test_operational_relay.js",
       "category": "tests",
-      "bytes": 2588,
-      "sha256": "ac0ee35d873ac68a6056484e058f2c592d9cd18dc7198ab60ce7d70ee68e06d0",
+      "bytes": 2729,
+      "sha256": "52c976c9065b7339ffbdf0ec834e215c3d225babbb3bb8b743aa7f901c3ac95a",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4533,6 +4647,8 @@
         "/api/operational/contracts/evil",
         "/api/orders",
         "/api/orders?date=2026-10-21&profile=natal",
+        "/api/serials/consult",
+        "/api/serials/consult?serials=SERIAL000000&mode=analitico",
         "/api/toa-automation",
         "/api/toa-automation/run",
         "/api/toa-contracts",
@@ -4548,8 +4664,8 @@
     {
       "path": "tests/test_operational_store.py",
       "category": "tests",
-      "bytes": 3564,
-      "sha256": "1245242d685ecf6635295bd5e29f81ad87a549b90b2c1ebc218fa3139cf09b60",
+      "bytes": 4083,
+      "sha256": "ec3aeac75e1dfebb506465b18008ef5017f68f939aca9129808aaf7b239a3601",
       "summary": "",
       "imports": [
         "json",
@@ -4645,6 +4761,51 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 19
+    },
+    {
+      "path": "tests/test_serial_consult.py",
+      "category": "tests",
+      "bytes": 3018,
+      "sha256": "3bb13e50693f977df597f33013a6f21c1fdf8dae64fa2636947f2c3d8c32ef9d",
+      "summary": "",
+      "imports": [
+        "contextlib",
+        "imperium_api",
+        "threading",
+        "types",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 3
+    },
+    {
+      "path": "tests/test_serial_datasnap_history.py",
+      "category": "tests",
+      "bytes": 3541,
+      "sha256": "66a742747882c7533fcfc75ba416b1cb3248edd8f62259e9fc0709ad3d1659f3",
+      "summary": "Safe synthetic tests: no actual serials, credentials or captured client rows.",
+      "imports": [
+        "midas_reader",
+        "os",
+        "pathlib",
+        "serial_datasnap",
+        "serial_service",
+        "struct",
+        "sys",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/serials/consult?serials=SERIAL000000",
+        "/api/serials/consult?serials=SERIAL000000&mode=analitico&profile=natal",
+        "/api/serials/consult?serials=SERIAL000000&profile=natal&profile=recife"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 7
     },
     {
       "path": "tests/test_serialized_transfer.py",

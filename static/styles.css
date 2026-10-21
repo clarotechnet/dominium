@@ -7249,3 +7249,82 @@ dialog {
   .operation-orb-hud[data-phase="success"] .orb-core,
   .operation-orb-hud[data-phase="error"] .orb-core { transform: scale(1.08); }
 }
+
+
+/* Serial consultation workspace */
+.serials-workspace { min-width: 0; padding: 0 0 28px; display: grid; gap: 15px; }
+.serials-heading { align-items: center; margin-bottom: 0; gap: 14px; }
+.serials-heading h2 { font-size: 1.4rem; margin: 4px 0 5px; letter-spacing: -.02em; }
+.serials-heading .workspace-description { max-width: 700px; line-height: 1.55; }
+.serials-live-pill { margin-left: auto; display: inline-flex; gap: 7px; align-items: center; white-space: nowrap; border: 1px solid var(--line); padding: 8px 11px; border-radius: 30px; font-weight: 750; color: var(--blue); background: var(--surface); font-size: .69rem; }
+.serials-live-pill svg { height: 14px; width: 14px; }
+.serials-query-card { background: var(--surface); border: 1px solid var(--line); border-radius: 13px; padding: 19px; box-shadow: 0 7px 25px rgba(0,20,50,.035); display: grid; gap: 13px; }
+.serials-query-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.serials-query-top > div { display: grid; gap: 4px; }
+.serials-query-top strong { color: var(--ink); font-size: .95rem; }
+.serials-query-top small, .serials-input-hint { color: var(--muted); font-size: .73rem; }
+.serials-input-hint { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.serials-input-hint svg { height: 15px; width: 15px; }
+.serials-input { display: block; width: 100%; box-sizing: border-box; resize: vertical; min-height: 118px; padding: 13px 15px; font: 650 .91rem/1.7 Consolas, "Courier New", monospace; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 8px; outline: none; letter-spacing: .035em; }
+.serials-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23,105,170,.12); }
+.serials-input::placeholder { opacity: .55; font-weight: 450; letter-spacing: 0; }
+.serials-actions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.serials-actions > span { font-size: .72rem; color: var(--muted); }
+.serials-actions > div { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.serials-actions .button svg { width: 15px; height: 15px; }
+.serials-notice { border: 1px solid #dfb06b; background: var(--amber-soft); color: #81521c; padding: 11px 13px; border-radius: 9px; font-size: .79rem; }
+.serials-summary { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+.serials-stat { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 14px 16px; display: grid; gap: 7px; }
+.serials-stat > span { font-size: .71rem; color: var(--muted); }
+.serials-stat > strong { font-size: 1.65rem; font-variant-numeric: tabular-nums; line-height: 1; color: var(--ink); }
+.serials-results { display: grid; gap: 14px; min-width: 0; }
+.serials-empty { min-height: 215px; border-radius: 13px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; padding: 25px; color: var(--muted); text-align: center; background: var(--surface); }
+.serials-empty svg { width: 30px; height: 30px; color: var(--blue); }
+.serials-empty strong { color: var(--ink); font-size: .96rem; }
+.serials-empty span { max-width: 490px; line-height: 1.6; font-size: .77rem; }
+.serial-result-card { overflow: hidden; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 13px; box-shadow: 0 6px 22px rgba(0,20,45,.035); }
+.serial-result-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 19px; border-bottom: 1px solid var(--line); }
+.serial-result-header > div { min-width: 0; }
+.serial-result-eyebrow { display: block; font-size: .6rem; letter-spacing: .10em; font-weight: 800; color: var(--muted); margin-bottom: 6px; }
+.serial-result-header h3 { margin: 0 0 5px; font-size: 1.25rem; line-height: 1.25; letter-spacing: .01em; overflow-wrap: anywhere; color: var(--ink); font-family: Consolas, monospace; }
+.serial-result-subtitle { color: var(--muted); font-size: .73rem; }
+.serial-result-badge { font-size: .68rem; line-height: 1.4; text-align: center; font-weight: 800; border: 1px solid var(--line); border-radius: 30px; padding: 7px 11px; white-space: normal; }
+.serial-result-badge.located { color: #1f7845; border-color: #b7e0c8; background: #edf9f1; }
+.serial-result-badge.uncertain { color: #955f18; border-color: #edd4ab; background: #fff8e9; }
+.serial-result-badge.missing { color: var(--muted); background: var(--soft); }
+.serial-result-facts { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+.serial-result-facts > div { display: grid; gap: 6px; padding: 17px 15px; min-width: 0; background: var(--surface); align-content: start; }
+.serial-result-facts span { color: var(--muted); font-size: .65rem; }
+.serial-result-facts strong { color: var(--ink); font-size: .84rem; overflow-wrap: anywhere; }
+.serial-result-facts small { color: var(--muted); font-size: .66rem; line-height: 1.4; overflow-wrap: anywhere; }
+.serial-result-additional { display: flex; flex-wrap: wrap; gap: 10px 22px; padding: 13px 19px; background: var(--soft); border-bottom: 1px solid var(--line); font-size: .72rem; color: var(--muted); }
+.serial-result-additional strong { color: var(--ink); overflow-wrap: anywhere; }
+.serial-trace { padding: 16px 19px; }
+.serial-trace-title { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+.serial-trace-title > span { display: inline-flex; gap: 7px; align-items: center; color: var(--ink); font-size: .79rem; font-weight: 800; }
+.serial-trace-title svg { width: 15px; height: 15px; color: var(--blue); }
+.serial-trace-title small { color: var(--muted); font-size: .64rem; text-align: right; }
+.serial-trace-entry { display: flex; gap: 14px; justify-content: space-between; align-items: center; border: 1px solid var(--line); border-radius: 8px; padding: 13px 14px; margin-top: 8px; }
+.serial-trace-main { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.serial-trace-main > strong { color: var(--ink); font-size: .86rem; }
+.serial-trace-main > span:not(.serial-trace-type) { color: var(--ink); font-size: .73rem; }
+.serial-trace-main small, .serial-trace-empty { color: var(--muted); font-size: .7rem; line-height: 1.5; }
+.serial-trace-type { width: fit-content; padding: 2px 7px; background: var(--soft); border-radius: 4px; font-size: .6rem; color: var(--blue); font-weight: 850; text-transform: uppercase; }
+.serial-trace-open { flex: 0 0 auto; }
+.serial-trace-empty { padding: 13px 0; }
+.serial-result-footer { padding: 10px 19px; border-top: 1px solid var(--line); color: var(--muted); font-size: .66rem; }
+@media (max-width: 1050px) { .serial-result-facts { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 750px) {
+  .serials-heading, .serials-query-top { align-items: flex-start; flex-direction: column; }
+  .serials-live-pill { margin-left: 0; }
+  .serials-summary { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .serials-query-card { padding: 14px; }
+  .serials-actions > div { justify-content: stretch; width: 100%; }
+  .serials-actions .button { flex: 1 1 auto; }
+  .serial-trace-title { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 450px) {
+  .serial-result-facts { grid-template-columns: 1fr; }
+  .serial-result-header, .serial-trace-entry { align-items: flex-start; flex-direction: column; }
+  .serial-trace-entry .button { width: 100%; }
+}

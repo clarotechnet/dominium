@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-21T16:47:17+00:00
-- Source fingerprint: `30e64792d6d6db75`
-- Indexed files: 302
-- Indexed symbols: 3079
-- API path references: 250
+- Generated: 2026-10-21T18:14:07+00:00
+- Source fingerprint: `ae0d020c9f05ebc5`
+- Indexed files: 309
+- Indexed symbols: 3105
+- API path references: 259
 
 ## Navigation rule
 
@@ -16,10 +16,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (151 symbols, 79 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (151 symbols, 80 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
-- `operational_store.py` (24 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `operational_store.py` (25 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operations_intelligence.py` (13 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 
 ## toa
@@ -74,7 +74,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## imperium
 
 - `.imperium-project.json`
-- `imperium_api.py` (141 symbols, 3 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `imperium_api.py` (142 symbols, 3 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `imperium_http_api.py` (37 symbols, 2 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `imperium_http_plan.py` (9 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `installer_change.py` (5 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -157,10 +157,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 106 files
+- shared: 111 files
 - tooling-deploy: 30 files
 - docs: 9 files
-- tests: 87 files
+- tests: 89 files
 
 ## Search indexes
 

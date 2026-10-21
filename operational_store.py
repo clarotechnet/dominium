@@ -548,6 +548,46 @@ class OperationalStore:
             ).fetchone()
             return dict(row) if row is not None else None
 
+    def serial_references(
+        self, serial: str, *, profile: str = "", limit: int = 25
+    ) -> list[dict[str, Any]]:
+        """Read-only, exact serial matches in the locally captured operational history.
+
+        This is historical evidence, not a live Imperium stock/contract lookup.
+        """
+        requested = _text(serial, 50).strip().upper()
+        if not requested:
+            return []
+        filters = " AND i.profile=?" if profile else ""
+        parameters: tuple[Any, ...] = (requested, profile) if profile else (requested,)
+        with self.lock, closing(self._connect()) as connection:
+            rows = self._rows(connection, f"""
+                SELECT i.profile, i.contract, i.activity_id, i.category,
+                       i.code, i.description, i.serial, i.quantity, i.unit,
+                       i.pool, i.updated_at,
+                       COALESCE(c.customer_name, '') AS customer_name,
+                       COALESCE(c.technician_name, '') AS technician_name,
+                       COALESCE(c.status, '') AS contract_status,
+                       COALESCE(c.city, '') AS city,
+                       COALESCE(c.scheduled_date, '') AS scheduled_date
+                FROM inventory i
+                LEFT JOIN contracts c ON c.profile=i.profile AND c.contract=i.contract
+                WHERE UPPER(TRIM(i.serial))=?{filters}
+                ORDER BY i.updated_at DESC LIMIT ?
+            """, (*parameters, max(1, min(int(limit), 50))))
+            order_cache: dict[tuple[str, str], list[dict[str, Any]]] = {}
+            for row in rows:
+                key = (row["profile"], row["contract"])
+                if key not in order_cache:
+                    order_cache[key] = self._rows(connection, """
+                        SELECT os_number, service, imperium_status, toa_status,
+                               close_code, updated_at
+                        FROM orders WHERE profile=? AND contract=?
+                        ORDER BY updated_at DESC LIMIT 8
+                    """, key)
+                row["orders"] = order_cache[key]
+            return rows
+
     def contract(self, contract: str, *, profile: str = "") -> dict[str, Any] | None:
         wanted = _digits(contract)
         if not wanted:
