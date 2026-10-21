@@ -48,7 +48,7 @@ class DescReviewProxy:
             raise ProxyError('Rota DESC inválida')
         route = parsed.path[len(prefix):]
         query = parse_qs(parsed.query, keep_blank_values=True)
-        allowed = {'GET': {'state', 'report.xlsx'}, 'POST': {'decision', 'refresh', 'technician', 'manual', 'serial-lookup', 'serial-apply'}}
+        allowed = {'GET': {'state', 'report.xlsx', 'reports'}, 'POST': {'decision', 'refresh', 'technician', 'manual', 'serial-lookup', 'serial-apply', 'reports'}}
         photo = bool(re.fullmatch(r'photo/[a-f0-9-]{36}\.jpg', route))
         if route not in allowed.get(method, set()) and not (method == 'GET' and photo):
             raise ProxyError('Rota DESC não permitida')

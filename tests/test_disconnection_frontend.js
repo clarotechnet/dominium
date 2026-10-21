@@ -32,3 +32,22 @@ test('photo zoom preserves the pointed label and stays within 100–400%', () =>
 test('small photos remain centered until zoom makes them exceed the viewport', () => {
   assert.deepEqual(ui.photoTransform({scale:1,x:200,y:150},2,{x:300,y:200},{width:600,height:400,imageWidth:200,imageHeight:100}),{scale:2,x:100,y:100});
 });
+
+test('same contract and resource groups all photos without mixing other technicians', () => {
+  const msg=(id,photo)=>({id,photo});
+  const common={profile:'natal',group:'grupo1',sender:'tecnico1',contract:'1234567',state:'review'};
+  const rows=[
+    {...common,id:'a',messages:[msg('1','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.jpg')]},
+    {...common,id:'b',messages:[msg('2','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb.jpg'),msg('3','cccccccc-cccc-cccc-cccc-cccccccccccc.jpg')]},
+    {...common,id:'c',sender:'outro-tecnico',messages:[msg('4','dddddddd-dddd-dddd-dddd-dddddddddddd.jpg')]},
+    {...common,id:'d',contract:'7654321',messages:[]},
+    {...common,id:'e',profile:'recife',messages:[]},
+  ];
+  const groups=ui.contractGroups(rows);
+  assert.equal(groups.length,4);
+  const grouped=groups.find(x=>x.contract==='1234567'&&x.batches.length===2);
+  assert.ok(grouped);
+  assert.equal(grouped.photoCount,3);
+  assert.deepEqual(grouped.batches.map(x=>x.id),['a','b']);
+  assert.equal(grouped.messages[1].batch_id,'b');
+});

@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-21T18:14:07+00:00
-- Source fingerprint: `ae0d020c9f05ebc5`
-- Indexed files: 309
-- Indexed symbols: 3105
-- API path references: 259
+- Generated: 2026-10-21T19:19:20+00:00
+- Source fingerprint: `1ab307b8144a39ec`
+- Indexed files: 313
+- Indexed symbols: 3127
+- API path references: 262
 
 ## Navigation rule
 
@@ -85,7 +85,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## frontend
 
-- `static/disconnection.js` (32 symbols, 8 API paths)
+- `static/disconnection.js` (37 symbols, 10 API paths)
 - `static/impeccable.css`
 - `static/index.html` (1 API paths)
 - `static/LUCIDE-LICENSE.txt` - ISC License
@@ -157,10 +157,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 111 files
+- shared: 114 files
 - tooling-deploy: 30 files
 - docs: 9 files
-- tests: 89 files
+- tests: 90 files
 
 ## Search indexes
 

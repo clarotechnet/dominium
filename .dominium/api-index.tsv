@@ -140,6 +140,7 @@ endpoint	path
 /api/analyze	flow_reader/server.py
 /api/health	flow_reader/server.py
 /api/analyze	flow_reader/static/app.js
+/api/disconnection/reports	integrations/desc_reports/desc_review_relay.py
 /api/disconnection/	integrations/import_bridge/worker.mjs
 /api/serials/consult	integrations/import_bridge/worker.mjs
 /api/close	integrations/import_bridge/worker.test.mjs
@@ -152,8 +153,10 @@ endpoint	path
 /api/toa-automation/run	patch_remote_toa.py
 /api/disconnection/	static/disconnection.js
 /api/disconnection/history?date=	static/disconnection.js
+/api/disconnection/manual	static/disconnection.js
 /api/disconnection/photo/	static/disconnection.js
 /api/disconnection/report.xlsx?month=	static/disconnection.js
+/api/disconnection/reports	static/disconnection.js
 /api/disconnection/serial-apply	static/disconnection.js
 /api/disconnection/serial-lookup	static/disconnection.js
 /api/disconnection/state	static/disconnection.js

@@ -121,3 +121,28 @@ test('serial consultation is read-only and limited to operational roles', async(
   assert.equal(writing.status,404);
   assert.equal(descCalls,1);
 });
+
+test('operator REPORTs pass only authenticated read/write paths to DESC and never send cookies',async()=>{
+  let descCalls=0,importCalls=0,seen;
+  const env={IMPORT_TOKEN:secret,
+    IMPORT_SERVICE:{fetch:async()=>{importCalls++;return Response.json({ok:false});}},
+    DESC_SERVICE:{fetch:async(req)=>{descCalls++;seen=req;return Response.json({ok:true,reports:[]});}}};
+  for(const method of ['GET','POST']){
+    const options={method,headers:{...headers,Cookie:'private-browser-session','X-CSRF-Token':'secret'}};
+    if(method==='POST')options.body=JSON.stringify({kind:'erro',title:'Teste de operação',detail:'Falha de teste do sistema operacional'});
+    const result=await worker.fetch(new Request('https://bridge.test/api/disconnection/reports',options),env);
+    assert.equal(result.status,200);
+    assert.equal(seen.url,'http://127.0.0.1:8793/api/disconnection/reports');
+    assert.equal(seen.headers.get('x-dominium-role'),'controller');
+    assert.equal(seen.headers.get('authorization'),'Bearer '+secret);
+    assert.equal(seen.headers.get('cookie'),null);
+    assert.equal(seen.headers.get('x-csrf-token'),null);
+  }
+  assert.equal(descCalls,2);
+  assert.equal(importCalls,0);
+  const viewer=await worker.fetch(new Request('https://bridge.test/api/disconnection/reports',{headers:{...headers,'X-Dominium-Role':'viewer'}}),env);
+  assert.equal(viewer.status,403);
+  const deleting=await worker.fetch(new Request('https://bridge.test/api/disconnection/reports',{method:'DELETE',headers}),env);
+  assert.equal(deleting.status,404);
+  assert.equal(descCalls,2);
+});

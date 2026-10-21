@@ -7328,3 +7328,41 @@ dialog {
   .serial-result-header, .serial-trace-entry { align-items: flex-start; flex-direction: column; }
   .serial-trace-entry .button { width: 100%; }
 }
+
+/* DESC — contrato unificado, revisão manual e central de REPORTs */
+.desc-batch small { line-height: 1.35; }
+.desc-group-lots { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+.desc-group-lots .button { font-size: 0.75rem; padding: 8px 12px; }
+.desc-group-lots [aria-pressed="true"] { border-color: var(--accent, #ff1738); color: #fff; }
+.desc-feedback-dialog {
+  border: 1px solid rgba(255,255,255,.17);
+  border-radius: 18px;
+  background: #17171b;
+  color: #f4f4f5;
+  width: min(620px, calc(100vw - 28px));
+  max-height: calc(100dvh - 36px);
+  padding: 24px;
+  overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0,0,0,.58);
+}
+.desc-feedback-dialog::backdrop { background: rgba(0,0,0,.73); backdrop-filter: blur(3px); }
+.desc-feedback-dialog h3 { font-size: 1.2rem; margin: 0 0 8px; }
+.desc-feedback-dialog .desc-report-fields { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:12px; margin:16px 0; }
+.desc-feedback-dialog .desc-report-fields label { display:flex; flex-direction:column; gap:6px; font-size:.85rem; color:#b5b5c0; }
+.desc-feedback-dialog .desc-report-fields label:has(textarea),
+.desc-feedback-dialog .desc-report-fields label:has(input[name="title"]),
+.desc-feedback-dialog .desc-report-fields label:has(input[name="contract"]) { grid-column:1 / -1; }
+.desc-feedback-dialog input, .desc-feedback-dialog select, .desc-feedback-dialog textarea {
+  background:#101014; color:#f8f8fb; border:1px solid #44434d;
+  border-radius:8px; padding:10px; font:inherit; min-width:0; width:100%;
+}
+.desc-feedback-dialog textarea { resize:vertical; }
+.desc-feedback-dialog input:focus-visible, .desc-feedback-dialog select:focus-visible,
+.desc-feedback-dialog textarea:focus-visible { outline:2px solid #ff4562; outline-offset:2px; }
+.desc-reports-history { border-top:1px solid rgba(255,255,255,.12); margin-top:18px; padding-top:12px; }
+.desc-reports-history summary { cursor:pointer; }
+.desc-report-entry { border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:12px; margin:8px 0; overflow-wrap:anywhere; }
+.desc-report-entry strong, .desc-report-entry small { display:block; }
+.desc-report-entry small { color:#a7a7b0; margin:5px 0; }
+.desc-heading-actions { flex-wrap:wrap; }
+@media (max-width:640px) { .desc-feedback-dialog { padding:16px; }.desc-feedback-dialog .desc-report-fields { grid-template-columns:1fr; } }

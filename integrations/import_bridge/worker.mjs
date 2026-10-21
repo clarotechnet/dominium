@@ -28,7 +28,7 @@ export default {
     catch {return json(404,'Rota não permitida');}
     const headers=new Headers({Accept:'application/json','X-Dominium-Actor':request.headers.get('x-dominium-actor')});
     if(desc || officialStock || serialConsult)headers.set('Authorization',request.headers.get('authorization'));
-    if(officialStock || serialConsult)headers.set('X-Dominium-Role',role);
+    if(desc || officialStock || serialConsult)headers.set('X-Dominium-Role',role);
     let body;
     if (request.method==='POST') {
       if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return json(415,'Envie JSON');

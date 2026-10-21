@@ -15,13 +15,38 @@
     const term = norm(search);
     return (rows || []).filter(batch => (state === 'all' || batch.state === state) && (!group || batch.group === group) && (!term || norm([batch.contract,batch.technician?.name,batch.city,batch.plan?.operations?.map(item=>item.os).join(' '),(batch.plan?.atlas||batch.atlas||[]).map(item=>(item.serial||item.resultado?.serial_baixavel||'')).join(' '),batch.messages?.map(m=>m.text).join(' ')].join(' ')).includes(term)));
   }
+  function contractGroups(rows) {
+    const groups = new Map();
+    for (const batch of rows || []) {
+      const isContract = /^\d{7}$/.test(String(batch.contract || ''));
+      // Keep different resources and WhatsApp groups separate even if contract matches.
+      const key = isContract ? [batch.profile, batch.group, batch.sender, batch.contract].join('|') : 'batch:' + batch.id;
+      if (!groups.has(key)) groups.set(key, {key, contract:batch.contract, batches:[], messages:[], photoCount:0});
+      const group = groups.get(key);
+      group.batches.push(batch);
+      for (const message of batch.messages || []) {
+        group.messages.push({...message, batch_id:batch.id});
+        if (photoUrl(message.photo)) group.photoCount++;
+      }
+    }
+    return [...groups.values()];
+  }
   let controller;
   function mount({request, requestBlob, getUser}) {
     const root = document.getElementById('disconnectionWorkspace');
     if (!root || controller) return controller;
     let data = null, selected = '', active = false, busy = false, pendingLoad = false, timer = null, error = '', authEpoch = 0, dataEpoch = 0, updatedAt = null, historyDate = '';
     const find = id => root.querySelector('#' + id);
-    const notes = new Map();
+    const notes = new Map(), recentIssues = [];
+    function recordIssue(area, failure) {
+      const message = String(failure?.message || 'Falha não identificada')
+        .replace(/(?:Bearer\s+|token|senha|password|authorization)[^\s,;]*/gi, '[dado protegido]')
+        .slice(0, 130);
+      const diagnostic = (new Date()).toISOString() + ' | ' + area + ' | ' + message;
+      if (recentIssues.at(-1)?.split(' | ').slice(1).join(' | ') !== diagnostic.split(' | ').slice(1).join(' | '))
+        recentIssues.push(diagnostic);
+      if (recentIssues.length > 10) recentIssues.shift();
+    }
     let photoContext=null, photoEpoch=0, serialResult=null, serialBusy='', expiryTimer=null;
     let photoView={scale:1,x:0,y:0}, photoBounds={width:0,height:0,imageWidth:0,imageHeight:0}, drag=null, dragged=false;
     const photoDialog=find('descPhotoDialog'), viewport=find('descPhotoViewport'), photoImage=find('descPhotoLarge');
@@ -63,8 +88,15 @@
       photoView=photoTransform(photoView,scale,point,photoBounds);drawPhoto();
     }
     function openPhoto(name) {
-      const batch=data?.batches?.find(item=>item.id===selected);
-      if(!batch||!batch.messages?.some(message=>message.photo===name)||!photoUrl(name))return;
+      let batch=data?.batches?.find(item=>item.id===selected);
+      if (!photoUrl(name) || !batch) return;
+      if (!batch.messages?.some(message=>message.photo===name)) {
+        const group=contractGroups(data?.batches || []).find(item=>item.batches.some(part=>part.id===selected));
+        const source=group?.batches.find(part=>part.messages?.some(message=>message.photo===name));
+        if(!source)return;
+        selected=source.id;batch=source;render();
+      }
+      if(!batch.messages?.some(message=>message.photo===name))return;
       closePhoto();photoContext={id:batch.id,photo:name,revision:batch.revision,contract:batch.contract,authEpoch,historyDate,view:data?.view};
       find('descPhotoContext').textContent=batch.contract?'Contrato '+batch.contract:'Contrato a identificar';
       photoView={scale:1,x:0,y:0};drawPhoto();photoImage.src=photoUrl(name);photoDialog.showModal();updateSerialControls();fitPhoto();find('descSerialInput').focus();
@@ -86,7 +118,7 @@
       try {
         const result=await request('/api/disconnection/serial-lookup',{method:'POST',body:JSON.stringify({id:context.id,photo:context.photo,serial,revision:context.revision}),timeoutMs:45000});
         if(!photoCurrent(context,epoch))return;showSerialResult(result,context);
-      } catch(failure) {if(photoCurrent(context,epoch))serialStatus(failure.message||'Não foi possível consultar o Atlas.');}
+      } catch(failure) {recordIssue('Consultar serial Atlas',failure);if(photoCurrent(context,epoch))serialStatus(failure.message||'Não foi possível consultar o Atlas.');}
       finally {if(photoContext===context&&photoEpoch===epoch){serialBusy='';updateSerialControls();}}
     }
     async function applySerial() {
@@ -99,7 +131,7 @@
         if(!photoCurrent(context,epoch))return;
         if(response.batch){dataEpoch++;data.batches=data.batches.map(batch=>batch.id===context.id?response.batch:batch);context.revision=response.batch.revision;context.contract=response.batch.contract;find('descPhotoContext').textContent=context.contract?'Contrato '+context.contract:'Contrato a identificar';render();}
         clearSerialResult();serialStatus('Serial aplicado ao lote. '+(data?.mode==='test'?'A baixa permanece em modo de teste.':'Revise as evidências antes de aprovar a baixa.'));
-      } catch(failure) {if(photoCurrent(context,epoch)){clearSerialResult();serialStatus(failure.message||'Não foi possível aplicar o serial. Consulte novamente.');}}
+      } catch(failure) {recordIssue('Aplicar serial ao lote',failure);if(photoCurrent(context,epoch)){clearSerialResult();serialStatus(failure.message||'Não foi possível aplicar o serial. Consulte novamente.');}}
       finally {if(photoContext===context&&photoEpoch===epoch){serialBusy='';updateSerialControls();}}
     }
     const filters = () => ({search:find('descSearch').value,state:find('descState').value,group:find('descGroup').value});
@@ -112,13 +144,16 @@
       find('descUpdated').textContent = updatedAt ? 'Atualizado às ' + updatedAt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : 'Aguardando conexão';
       for (const [key, states] of Object.entries({Received:['buffering','processing'],Ready:['review'],Blocked:['blocked'],Done:['simulated','executed']})) find('desc'+key).textContent = data ? rows.filter(row=>states.includes(row.state)).length : '—';
       const filtered = visibleBatches(rows, filters());
+      const grouped = contractGroups(filtered);
       if (!filtered.some(batch=>batch.id===selected)) selected = filtered[0]?.id || '';
-      find('descCount').textContent = filtered.length + ' lotes';
-      find('descList').innerHTML = filtered.length ? filtered.map(batch=>{
-        const photo = batch.messages?.find(message=>photoUrl(message.photo));
-        return `<button type="button" class="desc-batch ${batch.id===selected?'selected':''}" data-batch="${escape(batch.id)}" aria-pressed="${batch.id===selected}">
+      find('descCount').textContent = grouped.length + ' contratos · ' + filtered.length + ' lotes';
+      find('descList').innerHTML = grouped.length ? grouped.map(group=>{
+        const batch = group.batches[0];
+        const photo = group.messages.find(message=>photoUrl(message.photo));
+        const selectedHere = group.batches.some(item=>item.id===selected);
+        return `<button type="button" class="desc-batch ${selectedHere?'selected':''}" data-batch="${escape(batch.id)}" aria-pressed="${selectedHere}">
           ${photo?`<img src="${photoUrl(photo.photo)}" alt="Foto do equipamento" loading="lazy">`:'<span class="desc-contract-icon" aria-hidden="true">#</span>'}
-          <span><strong>${escape(batch.contract || 'Contrato a identificar')}</strong><small>${escape(batch.technician?.name || batch.sender_name || 'Técnico a vincular')}</small><span class="desc-state ${escape(batch.state)}">${escape(stateLabel(batch.state))}</span></span>
+          <span><strong>${escape(batch.contract || 'Contrato a identificar')}</strong><small>${escape(batch.technician?.name || batch.sender_name || 'Técnico a vincular')} · ${group.photoCount} fotos · ${group.batches.length} lote(s)</small><span class="desc-state ${escape(batch.state)}">${escape(stateLabel(batch.state))}</span></span>
           <time>${new Date(batch.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</time></button>`;
       }).join('') : `<div class="desc-empty"><i data-lucide="inbox"></i><h3>${data?'Nenhum lote neste filtro':'Conectando à DESCONEXÃO'}</h3><p>${data?'As mensagens dos técnicos aparecem aqui com suas fotos e evidências.':'Os dados serão exibidos quando o serviço responder.'}</p></div>`;
       const batch = rows.find(row=>row.id===selected);
@@ -127,20 +162,23 @@
       const detail = find('descDetail');
       if (!batch) { detail.innerHTML = '<div class="desc-empty"><i data-lucide="scan-line"></i><h3>Conferência do contrato</h3><p>Selecione um lote para ver a mensagem, as fotos e o resultado do Atlas.</p></div>'; global.lucide?.createIcons(); return; }
       const plan = batch.plan, canWrite = canEditBatch(), blockers = plan?.blockers || batch.capture_errors || [];
+      const group = contractGroups(rows).find(item=>item.batches.some(part=>part.id===batch.id));
+      const allMessages = group?.messages || batch.messages || [];
       const date = new Date(batch.created_at).toLocaleString('pt-BR');
-      const evidence = plan?.atlas || [];
+      const evidence = (group?.batches || [batch]).flatMap(part=>part.plan?.atlas || part.atlas || []);
       detail.innerHTML = `<header class="desc-detail-heading"><div><p class="section-label">${escape(batch.city || 'DESCONEXÃO')}</p><h3>Contrato ${escape(batch.contract || 'não identificado')}</h3><p>${escape(batch.technician?.name || 'Técnico a vincular')} <span>· ${escape(date)}</span></p></div><span class="desc-state ${escape(batch.state)}">${escape(stateLabel(batch.state))}</span></header>
         ${batch.demo?'<p class="desc-alert">Demonstração: este lote não corresponde a uma OS real.</p>':''}
         ${batch.state==='buffering'?`<p class="desc-alert soft">Recebendo evidências deste técnico e contrato até ${new Date(batch.deadline).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.</p>`:''}
         <section class="desc-section"><h4>Vínculo do técnico e OS</h4><p class="desc-muted">WhatsApp: ${escape(batch.sender || 'Não informado')}<br>Recurso Imperium: ${escape(batch.technician?.imperium_id || 'A vincular')}</p>${batch.imperium?.confirmed===true?`<p class="desc-muted">Consultado em ${escape(new Date(batch.imperium.checked_at).toLocaleString('pt-BR'))}</p>${batch.imperium.orders?.length?batch.imperium.orders.map(order=>`<p>OS ${escape(order.num_os)} · ${escape(order.installer_name || 'Técnico')} · recurso ${escape(order.installer_id)} ${String(order.installer_id)===String(batch.technician?.imperium_id)?'· coincide com o remetente':'· diverge do remetente'}</p>`).join(''):'<p class="desc-muted">Nenhuma OS aberta encontrada no contrato nesta consulta.</p>'}`:'<p class="desc-muted">Reconsulte as evidências para conferir a OS aberta no Imperium.</p>'}</section>
-        <section class="desc-section"><h4>Mensagem e fotos</h4><div class="desc-messages">${(batch.messages||[]).map(message=>`<article class="desc-message">${message.text?`<p>${escape(message.text)}</p>`:''}${photoUrl(message.photo)?`<button class="desc-photo-button" type="button" data-photo="${escape(message.photo)}"><img src="${photoUrl(message.photo)}" alt="Foto enviada pelo técnico — ampliar" loading="lazy"></button><small>${escape(message.reading?.message || 'Foto preservada para conferência')}</small>`:''}</article>`).join('')}</div></section>
+        ${group?.batches.length>1?`<section class="desc-section"><h4>${group.batches.length} lotes deste contrato · ${group.photoCount} fotos</h4><p class="desc-muted">Fotos reunidas visualmente. Aprovação e conferência continuam individuais por lote.</p><div class="desc-group-lots">${group.batches.map((part,i)=>`<button class="button secondary" type="button" data-select-batch="${escape(part.id)}" aria-pressed="${part.id===selected}">Lote ${i+1} · ${escape(stateLabel(part.state))}</button>`).join('')}</div></section>`:''}
+        <section class="desc-section"><h4>Fotos do contrato <span>${allMessages.filter(m=>photoUrl(m.photo)).length} fotos</span></h4><div class="desc-messages">${allMessages.map(message=>`<article class="desc-message">${message.text?`<p>${escape(message.text)}</p>`:''}${photoUrl(message.photo)?`<button class="desc-photo-button" type="button" data-photo="${escape(message.photo)}"><img src="${photoUrl(message.photo)}" alt="Foto enviada pelo técnico — ampliar" loading="lazy"></button><small>${escape(message.reading?.message || 'Foto preservada para conferência')}</small>`:''}</article>`).join('')}</div></section>
         <section class="desc-section"><h4>Identificação no Atlas <span>${evidence.length} equipamentos</span></h4>${evidence.length?`<div class="desc-equipment-grid">${evidence.map(item=>`<article class="desc-equipment"><span>${escape(item.type)}</span><strong>${escape(item.serial)}</strong><small>Contrato ${escape(item.contract)} · ${escape(item.state || 'Estado não informado')}</small><small>${escape(item.date || '')}</small>${item.embratel?'<span class="desc-state">EMBRATEL · proposta 400</span>':''}${item.history?.length?`<details><summary>Histórico Atlas</summary>${item.history.map(row=>`<p class="desc-muted">${escape(row.data_alteracao)} · ${escape(row.numero_contrato || 'Sem contrato')} · ${escape(row.tipo_localizacao || row.localizacao)} · ${escape(row.estado)}</p>`).join('')}</details>`:''}</article>`).join('')}</div>`:'<p class="desc-muted">A identificação confirmada aparece após a leitura da foto e a consulta no Atlas.</p>'}</section>
         <section class="desc-section"><h4>Movimentação da baixa</h4>${(plan?.operations||[]).map(operation=>`<article class="desc-operation"><header><strong>${escape(operation.code)} · ${escape(operation.service)}</strong><small>${operation.os?'OS '+escape(operation.os):'Proposta de criação de OS'}</small></header><div class="desc-movements"><div><span>SAINDO</span>${equipmentList(operation.outgoing)}</div><div><span>ENTRANDO</span>${equipmentList(operation.incoming)}</div></div>${operation.materials?.length?`<p>Materiais: ${operation.materials.map(item=>escape(item.description)+' × '+escape(item.quantity)).join(', ')}</p>`:''}<small>${escape(operation.reason)}</small></article>`).join('') || '<p class="desc-muted">Aguardando evidências e consulta TOA dos controladores.</p>'}</section>
         ${blockers.length?`<section class="desc-alert"><h4>Precisa de conferência</h4><ul>${blockers.map(item=>`<li>${escape(item)}</li>`).join('')}</ul></section>`:''}
         ${plan?.warnings?.length?`<p class="desc-muted">${plan.warnings.map(escape).join(' · ')}</p>`:''}
         ${batch.decision?`<p class="desc-muted">${escape(stateLabel(batch.state))} por ${escape(batch.decision.actor)} · ${escape(new Date(batch.decision.at).toLocaleString('pt-BR'))}${batch.decision.note?' · '+escape(batch.decision.note):''}</p>`:''}
         <label class="desc-note">Observação da revisão<textarea data-review-note rows="2" maxlength="1000" placeholder="Opcional" ${!canWrite?'disabled':''}>${escape(notes.get(batch.id)||'')}</textarea></label>
-        <footer class="desc-detail-actions"><div><button type="button" class="button secondary" data-action="refresh" ${!canWrite || ['buffering','processing','simulated','executed','rejected'].includes(batch.state)?'disabled':''}><i data-lucide="refresh-cw"></i>Reconsultar evidências</button><button type="button" class="button secondary" data-link-tech ${!canWrite?'disabled':''}>Vincular técnico</button></div><div><button type="button" class="button secondary" data-action="reject" ${!canWrite || !['review','blocked'].includes(batch.state)?'disabled':''}>Recusar</button><button type="button" class="button primary" data-action="approve" ${!canWrite || batch.state!=='review' || blockers.length?'disabled':''}>${data?.mode==='test'?'Aprovar simulação':'Aprovar baixa'}</button></div></footer>
+        <footer class="desc-detail-actions"><div><button type="button" class="button secondary" data-action="refresh" ${!canWrite || ['buffering','processing','simulated','executed','rejected'].includes(batch.state)?'disabled':''}><i data-lucide="refresh-cw"></i>Reconsultar evidências</button><button type="button" class="button secondary" data-link-tech ${!canWrite?'disabled':''}>Vincular técnico</button><button type="button" class="button secondary" data-open-close title="Abrir a baixa existente do DOMINIUM; confirme contrato e OS antes de executar">Abrir Baixar OS</button></div><div><button type="button" class="button secondary" data-action="reject" ${!canWrite || !['review','blocked'].includes(batch.state)?'disabled':''}>Recusar</button><button type="button" class="button primary" data-action="approve" ${!canWrite || batch.state!=='review' || blockers.length?'disabled':''}>${data?.mode==='test'?'Aprovar simulação':'Aprovar baixa'}</button></div></footer>
         ${data?.mode==='test'?'<p class="desc-muted">Neste modo, aprovar registra a simulação. Nenhuma baixa é enviada ao Imperium.</p>':''}`;
       global.lucide?.createIcons();
     }
@@ -159,7 +197,7 @@
         data = response; updatedAt = new Date(); if(!preserveError) error='';
         const select = find('descGroup'), prior = select.value;
         select.innerHTML = '<option value="">Todos os grupos</option>'+Object.entries(data.groups||{}).map(([id,group])=>`<option value="${escape(id)}">${escape(group.label || group.name || group.city || id)}</option>`).join(''); select.value=prior;
-      } catch (failure) { if(epoch === authEpoch && snapshotEpoch === dataEpoch && requestedDate === historyDate) error=failure.message; }
+      } catch (failure) { recordIssue('Carregar fila DESC',failure); if(epoch === authEpoch && snapshotEpoch === dataEpoch && requestedDate === historyDate) error=failure.message; }
       finally { busy=false;find('descReload').disabled=false;render();if(pendingLoad){pendingLoad=false;void load();} }
     }
     async function act(action) {
@@ -168,7 +206,7 @@
       busy=true; root.classList.add('desc-busy');
       try {
         await request('/api/disconnection/'+(action==='refresh'?'refresh':'decision'), {method:'POST',body:JSON.stringify({id:batch.id,revision:batch.revision,action,note:notes.get(batch.id)||''}),timeoutMs:120000});error='';
-      } catch (failure) { error=failure.message; }
+      } catch (failure) { recordIssue('Revisar lote DESC',failure); error=failure.message; }
       finally { busy=false;root.classList.remove('desc-busy');await load({preserveError:!!error}); }
     }
     for (const name of ['descSearch','descState','descGroup']) find(name).addEventListener(name==='descSearch'?'input':'change',render);
@@ -179,13 +217,17 @@
     find('descReload').addEventListener('click',()=>load());
     find('descList').addEventListener('click',event=>{const button=event.target.closest('[data-batch]');if(button){selected=button.dataset.batch;render();}});
     find('descDetail').addEventListener('click',event=>{
+      const closeLink=event.target.closest('[data-open-close]');
+      if(closeLink){document.getElementById('closeModule')?.click();return;}
+      const pick=event.target.closest('[data-select-batch]');
+      if(pick){selected=pick.dataset.selectBatch;render();return;}
       const link=event.target.closest('[data-link-tech]');if(link&&!link.disabled&&canEditBatch()){const batch=data?.batches.find(item=>item.id===selected),form=find('descTechForm');if(!batch)return;for(const name of ['sender','name','imperium_id','toa_login'])form.elements[name].value=name==='sender'?batch.sender||'':batch.technician?.[name]||'';form.elements.freelancer.checked=batch.technician?.freelancer===true;find('descTechError').classList.add('hidden');find('descTechDialog').showModal();return;}
       const action=event.target.closest('[data-action]');if(action&&!action.disabled){void act(action.dataset.action);return;}
       const photo=event.target.closest('[data-photo]');if(photo)openPhoto(photo.dataset.photo);
     });
     find('descDetail').addEventListener('input',event=>{if(event.target.matches('[data-review-note]'))notes.set(selected,event.target.value);});
     find('descTechCancel').addEventListener('click',()=>find('descTechDialog').close());
-    find('descTechForm').addEventListener('submit',async event=>{event.preventDefault();if(!canEditBatch())return;const form=event.target,button=form.querySelector('[type="submit"]');button.disabled=true;try{const payload=Object.fromEntries(new FormData(form));payload.freelancer=form.elements.freelancer.checked;await request('/api/disconnection/technician',{method:'POST',body:JSON.stringify(payload)});find('descTechDialog').close();await load();}catch(failure){find('descTechError').textContent=failure.message;find('descTechError').classList.remove('hidden');}finally{button.disabled=false;}});
+    find('descTechForm').addEventListener('submit',async event=>{event.preventDefault();if(!canEditBatch())return;const form=event.target,button=form.querySelector('[type="submit"]');button.disabled=true;try{const payload=Object.fromEntries(new FormData(form));payload.freelancer=form.elements.freelancer.checked;await request('/api/disconnection/technician',{method:'POST',body:JSON.stringify(payload)});find('descTechDialog').close();await load();}catch(failure){recordIssue('Vincular técnico',failure);find('descTechError').textContent=failure.message;find('descTechError').classList.remove('hidden');}finally{button.disabled=false;}});
     find('descPhotoClose').addEventListener('click',closePhoto);
     photoDialog.addEventListener('close',()=>{if(!photoDialog.open)clearPhoto();});
     photoDialog.addEventListener('cancel',()=>{closePhoto();});
@@ -206,7 +248,84 @@
     find('descSerialConfirm').addEventListener('change',updateSerialControls);
     find('descSerialApply').addEventListener('click',()=>void applySerial());
     find('descExport').addEventListener('click',async()=>{
-      try {const parts=new Intl.DateTimeFormat('en',{year:'numeric',month:'2-digit',timeZone:'America/Sao_Paulo'}).formatToParts(new Date());const month=parts.find(p=>p.type==='year').value+'-'+parts.find(p=>p.type==='month').value;const blob=await requestBlob('/api/disconnection/report.xlsx?month='+month);const href=URL.createObjectURL(blob);const link=document.createElement('a');link.href=href;link.download='DESCONEXAO_'+month+'.xlsx';link.click();setTimeout(()=>URL.revokeObjectURL(href),1000);}catch(failure){error=failure.message;render();}
+      try {const parts=new Intl.DateTimeFormat('en',{year:'numeric',month:'2-digit',timeZone:'America/Sao_Paulo'}).formatToParts(new Date());const month=parts.find(p=>p.type==='year').value+'-'+parts.find(p=>p.type==='month').value;const blob=await requestBlob('/api/disconnection/report.xlsx?month='+month);const href=URL.createObjectURL(blob);const link=document.createElement('a');link.href=href;link.download='DESCONEXAO_'+month+'.xlsx';link.click();setTimeout(()=>URL.revokeObjectURL(href),1000);}catch(failure){recordIssue('Exportar relatório DESC',failure);error=failure.message;render();}
+    });
+    const reportDialog=find('descReportDialog'), reportForm=find('descReportForm');
+    const manualDialog=find('descManualDialog'), manualForm=find('descManualForm');
+    const canReport=()=>['admin','controller'].includes(getUser()?.role);
+    const reportStatus=message=>{find('descReportStatus').textContent=message;};
+    async function refreshReports() {
+      const container=find('descReportHistory');
+      container.textContent='Carregando relatórios…';
+      try {
+        const data=await request('/api/disconnection/reports',{timeoutMs:20000});
+        container.innerHTML=(data.reports||[]).length ? data.reports.map(item=>
+          '<article class="desc-report-entry"><strong>['+escape(item.kind.toUpperCase())+'] '+escape(item.title)+'</strong>'
+          +'<small>'+escape(new Date(item.created_at).toLocaleString('pt-BR'))+' · '+escape(item.actor)+' · '+escape(item.severity)+'</small>'
+          +'<p>'+escape(item.detail)+'</p></article>').join('')
+          : '<p class="desc-muted">Nenhum REPORT registrado.</p>';
+      } catch(failure) {
+        container.textContent='Não foi possível carregar o histórico.';
+        recordIssue('GET /reports',failure);
+      }
+    }
+    find('descReportOpen').addEventListener('click',()=>{
+      if(!canReport())return;
+      reportForm.reset();
+      const chosen=data?.batches?.find(item=>item.id===selected);
+      reportForm.elements.title.value=error?'Falha na Desconexão':'';
+      reportForm.elements.detail.value=error?('Erro exibido na tela: '+error).slice(0,3000):'';
+      reportStatus('');
+      reportDialog.showModal();
+      void refreshReports();
+    });
+    find('descReportCancel').addEventListener('click',()=>reportDialog.close());
+    reportForm.addEventListener('submit',async event=>{
+      event.preventDefault();
+      if(!canReport())return;
+      const submit=reportForm.querySelector('[type="submit"]');submit.disabled=true;
+      const batch=data?.batches?.find(item=>item.id===selected);
+      const payload={kind:reportForm.elements.kind.value,severity:reportForm.elements.severity.value,
+        title:reportForm.elements.title.value,detail:reportForm.elements.detail.value,
+        area:'desconexao',contract:batch?.contract||'',
+        diagnostics:recentIssues.slice(-3).join(' | ').slice(0,500)};
+      reportStatus('Registrando no servidor…');
+      try{
+        const result=await request('/api/disconnection/reports',{method:'POST',body:JSON.stringify(payload),timeoutMs:25000});
+        reportStatus('REPORT registrado. Protocolo: '+result.report.id);
+        reportForm.reset();await refreshReports();
+      }catch(failure){reportStatus('Não foi salvo: '+(failure.message||'verifique a conexão'));recordIssue('POST /reports',failure);}
+      finally{submit.disabled=false;}
+    });
+    find('descManualOpen').addEventListener('click',()=>{
+      if(!canEditBatch()||!data||data.mode!=='test'){error='Criação manual disponível apenas na revisão de teste, para administradores/controladores.';render();return;}
+      manualForm.reset();find('descManualStatus').textContent='';
+      const groups=Object.entries(data.groups||{});
+      manualForm.elements.group.innerHTML=groups.map(([key,value])=>'<option value="'+escape(key)+'">'+escape(value.label||value.name||value.city||key)+'</option>').join('');
+      const tech=Object.entries(data.technicians||{});
+      manualForm.elements.sender.innerHTML=tech.map(([key,value])=>'<option value="'+escape(key)+'">'+escape(value.name||key)+'</option>').join('');
+      const batch=data?.batches?.find(item=>item.id===selected);
+      if(batch?.contract)manualForm.elements.contract.value=batch.contract;
+      if(batch?.group&&groups.some(([key])=>key===batch.group))manualForm.elements.group.value=batch.group;
+      if(batch?.sender&&tech.some(([key])=>key===batch.sender))manualForm.elements.sender.value=batch.sender;
+      manualDialog.showModal();
+    });
+    find('descManualCancel').addEventListener('click',()=>manualDialog.close());
+    manualForm.addEventListener('submit',async event=>{
+      event.preventDefault();
+      if(!canEditBatch()||data?.mode!=='test')return;
+      const payload=Object.fromEntries(new FormData(manualForm));
+      const seriais=String(payload.serials||'').split(/[\s,;]+/).filter(Boolean);
+      if(seriais.length>12){find('descManualStatus').textContent='Limite de 12 seriais.';return;}
+      const submit=manualForm.querySelector('[type="submit"]');submit.disabled=true;
+      find('descManualStatus').textContent='Preparando lote para revisão…';
+      try{
+        const outcome=await request('/api/disconnection/manual',{method:'POST',body:JSON.stringify(payload),timeoutMs:120000});
+        manualDialog.close();error='Lote manual preparado em modo de teste. Nenhuma OS foi baixada.';
+        await load();
+        if(outcome.batch?.id){selected=outcome.batch.id;render();}
+      }catch(failure){find('descManualStatus').textContent='Não foi criado: '+(failure.message||'erro de consulta');recordIssue('POST /manual',failure);}
+      finally{submit.disabled=false;}
     });
     const schedule=()=>{clearTimeout(timer);if(active)timer=setTimeout(async()=>{if(!document.hidden)await load();schedule();},15000);};
     controller={activate(){active=true;void load();schedule();},deactivate(){active=false;pendingLoad=false;clearTimeout(timer);closePhoto();}};
@@ -214,7 +333,7 @@
     document.addEventListener('dominium:auth-cleared',()=>{authEpoch++;controller.deactivate();data=null;selected='';historyDate='';error='';updatedAt=null;notes.clear();find('descPhotoDialog').close();find('descPhotoLarge').removeAttribute('src');find('descTechDialog').close();find('descTechForm').reset();render();});
     render();return controller;
   }
-  const api={mount,visibleBatches,stateLabel,photoUrl,escape,photoTransform};
+  const api={mount,visibleBatches,contractGroups,stateLabel,photoUrl,escape,photoTransform};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   else global.DominiumDisconnection=api;
 })(globalThis);
