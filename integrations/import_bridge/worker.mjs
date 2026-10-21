@@ -1,6 +1,8 @@
 import policy from '../../deploy/hostinger-web/import-policy.js';
 import descPolicy from '../../deploy/hostinger-web/disconnection-policy.js';
+import operationalPolicy from '../../deploy/hostinger-web/operational-policy.js';
 const {allowedImportRoute, MAX_IMPORT_BYTES} = policy;
+const {allowedOperationalRead} = operationalPolicy;
 function json(status, error) {
   return Response.json({ok:false,error},{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 }
@@ -13,12 +15,14 @@ async function authorized(request, token) {
 export default {
   async fetch(request,env) {
     if (!await authorized(request,env.IMPORT_TOKEN)) return json(401,'Conexão interna não autorizada');
-    if (!['admin','controller'].includes(request.headers.get('x-dominium-role')) || !request.headers.get('x-dominium-actor'))
-      return json(403,'Operador não identificado');
     const url=new URL(request.url);
     const desc=url.pathname.startsWith('/api/disconnection/');
+    const operational=allowedOperationalRead(request.method,url.pathname+url.search);
+    const role=request.headers.get('x-dominium-role');
+    if (!(operational ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
+        !request.headers.get('x-dominium-actor')) return json(403,'Operador não identificado');
     let route;
-    try {route=(desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
+    try {route=operational ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
     catch {return json(404,'Rota não permitida');}
     const headers=new Headers({Accept:'application/json','X-Dominium-Actor':request.headers.get('x-dominium-actor')});
     if(desc)headers.set('Authorization',request.headers.get('authorization'));

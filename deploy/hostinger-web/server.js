@@ -964,6 +964,8 @@ const OPERATIONAL_PROXY_HEADER_ALLOWLIST = [
 const { createDisconnectionMiddleware } = require('./disconnection-proxy');
 app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }));
 const { createImportMiddleware } = require('./import-proxy');
+const { resolveOperationalRead } = require('./operational-relay');
+const { allowedOperationalRead } = require('./operational-policy');
 app.use(['/api/import-targets', '/api/import-history', '/api/imports'], createImportMiddleware());
 
 async function proxyOperationalRequest(req, res, next) {
@@ -991,13 +993,26 @@ async function proxyOperationalRequest(req, res, next) {
       }
     }
 
-    const upstream = await fetch(DOMINIUM_OPERATION_ORIGIN + req.originalUrl, {
+    // Prefer the existing authenticated Workers VPC connector for approved reads.
+    // Never forward browser session cookies or CSRF tokens to this private relay.
+    const relay = resolveOperationalRead(req);
+    if (relay) {
+      delete headers.cookie;
+      delete headers['x-csrf-token'];
+      delete headers['content-type'];
+      Object.assign(headers, relay.headers);
+    }
+    const upstream = await fetch(relay ? relay.url : DOMINIUM_OPERATION_ORIGIN + req.originalUrl, {
       method: req.method,
       headers,
       body,
       redirect: "manual",
       signal: controller.signal,
     });
+    if (relay && upstream.status >= 500) {
+      // Do not turn a backend outage into an apparently empty agenda or order list.
+      return res.status(502).json({ ok: false, error: 'Servidor operacional temporariamente indisponivel' });
+    }
 
     res.status(upstream.status);
     for (const name of ["content-type", "content-disposition", "cache-control", "etag", "last-modified"]) {
@@ -1016,6 +1031,9 @@ async function proxyOperationalRequest(req, res, next) {
       method: req.method,
       error: error instanceof Error ? error.message : "bridge_error",
     });
+    if (allowedOperationalRead(req.method, req.originalUrl)) {
+      return res.status(502).json({ ok: false, error: 'Consulta operacional indisponivel; dados nao confirmados' });
+    }
     if (safeGetFallback) return next();
     return res.status(502).json({
       ok: false,
