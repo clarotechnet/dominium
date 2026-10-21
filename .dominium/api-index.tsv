@@ -52,6 +52,7 @@ endpoint	path
 /api/orders/(\d+)/transfer-serial	app.py
 /api/orders/bulk-create	app.py
 /api/profiles	app.py
+/api/serials/consult	app.py
 /api/status	app.py
 /api/stock	app.py
 /api/stock/batch	app.py

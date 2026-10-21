@@ -4,7 +4,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	8534f1137a77fb3c
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	150	76	44	DOMINIUM | MAPA DE RESPONSABILIDADE	68f6c0e6488676bb
+orchestration	app.py	150	77	44	DOMINIUM | MAPA DE RESPONSABILIDADE	186665c72cac0802
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -48,7 +48,7 @@ shared	flow_reader/server.py	11	2		DOMINIUM | MAPA DE RESPONSABILIDADE	00c885db8
 shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f388b7677c04f
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
-imperium	imperium_api.py	141		3	DOMINIUM | MAPA DE RESPONSABILIDADE	3ec10d22a1c5d733
+imperium	imperium_api.py	142		3	DOMINIUM | MAPA DE RESPONSABILIDADE	99ee2654bdee991d
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 shared	import_protocol_templates.json			1		9a6465634e73b3ec
@@ -103,7 +103,7 @@ shared	official_stock_audit.py	14		2	DOMINIUM | MAPA DE RESPONSABILIDADE	b8d8aa6
 shared	official_stock_blocker_review.py	15			DOMINIUM | MAPA DE RESPONSABILIDADE	9a394acc9ed1e5e8
 shared	official_stock_remediation_plan.py	25		1	DOMINIUM | MAPA DE RESPONSABILIDADE	dc0a0db6611a94a4
 orchestration	operation_scope.py	55			DOMINIUM | MAPA DE RESPONSABILIDADE	3f9d748a18c158b6
-orchestration	operational_store.py	24			DOMINIUM | MAPA DE RESPONSABILIDADE	68ffea0441c2cb65
+orchestration	operational_store.py	25			DOMINIUM | MAPA DE RESPONSABILIDADE	5676e4f9f3fdab38
 orchestration	operations_intelligence.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	96115509d8e34c26
 toa	patch_remote_toa.py		2	5		cb6eb87e50eeb356
 shared	productive_protocol_templates.json			3		c04b19e6f576ff97
@@ -128,12 +128,12 @@ imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			16ebf853992c30ef
+frontend	static/index.html		1			33f51fd23c91e2ad
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/styles.css					fdf43ee7205da97b
+frontend	static/styles.css					cffb34d9d343ff6d
 frontend	static/theme-init.js					97eb92ef899f8dcf
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
@@ -187,11 +187,12 @@ tests	tests/test_official_stock_blocker_review.py	21				2bb6e8566ad6e1e5
 tests	tests/test_official_stock_remediation_plan.py	22		1		a64ed28f5256d2d9
 tests	tests/test_offline_candidate_and_resolver.py	12			Comprehensive test suite for frontend block, candidate locator, and material resolver.	2c65244509db2c6a
 tests	tests/test_operation_scope.py	42				f804afda128c9e71
-tests	tests/test_operational_store.py	5				1245242d685ecf66
+tests	tests/test_operational_store.py	5				ec3aeac75e1dfebb
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
 tests	tests/test_semiauto_frontend.js	19				44a6652d8752bfc1
+tests	tests/test_serial_consult.py	3				3bb13e50693f977d
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35

@@ -62,6 +62,16 @@ class OperationalStoreTests(unittest.TestCase):
         self.assertEqual(record["summary"]["material_count"], 1)
         self.assertEqual(record["close_attempts"][0]["state"], "uncertain")
         self.assertEqual(self.store.list_contracts(query="C412EC7926E2")["count"], 1)
+        references = self.store.serial_references("c412ec7926e2", profile="natal")
+        self.assertEqual(len(references), 1)
+        self.assertEqual(references[0]["contract"], "4253923")
+        self.assertEqual(references[0]["category"], "installed")
+        self.assertEqual(len(references[0]["orders"]), 2)
+        self.assertEqual(
+            self.store.serial_references("C412EC7926E2", profile="recife"), []
+        )
+        self.assertEqual(self.store.serial_references("UNMATCHED", profile="natal"), [])
+
 
         exported = json.loads(self.store.export_json().read_text(encoding="utf-8"))
         self.assertEqual(exported["contract_count"], 1)

@@ -776,6 +776,11 @@ os	tests/test_registration_flow.py
 re	tests/test_registration_flow.py
 tempfile	tests/test_registration_flow.py
 unittest	tests/test_registration_flow.py
+contextlib	tests/test_serial_consult.py
+imperium_api	tests/test_serial_consult.py
+threading	tests/test_serial_consult.py
+types	tests/test_serial_consult.py
+unittest	tests/test_serial_consult.py
 hashlib	tests/test_serialized_transfer.py
 imperium_api	tests/test_serialized_transfer.py
 pathlib	tests/test_serialized_transfer.py

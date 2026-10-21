@@ -133,6 +133,10 @@
         <i data-lucide="boxes" aria-hidden="true"></i>
         <span><strong>Estoque</strong><small>Por tecnico</small></span>
       </button>
+      <button class="side-nav-item" id="serialsModule" type="button">
+        <i data-lucide="scan-barcode" aria-hidden="true"></i>
+        <span><strong>Consultar Seriais</strong><small>Busca em lote</small></span>
+      </button>
       <button class="side-nav-item" id="techniciansModule" type="button">
         <i data-lucide="users-round" aria-hidden="true"></i>
         <span><strong>Tecnicos</strong><small>Equipe DMV</small></span>
@@ -503,6 +507,38 @@
       <div class="empty-state" id="failuresEmpty">Nenhuma falha pendente.</div>
     </section>
     </div>
+
+    <section class="serials-workspace hidden" id="serialsWorkspace" aria-label="Consultar seriais">
+      <header class="workspace-heading serials-heading">
+        <div>
+          <p class="section-label">RECURSOS / RASTREABILIDADE</p>
+          <h2>Consultar Seriais</h2>
+          <p class="workspace-description">Identifique quem esta com cada equipamento, a descricao, os contratos e as OS vinculadas ao historico registrado.</p>
+        </div>
+        <span class="serials-live-pill"><i data-lucide="database-zap"></i> IMPERIUM + DOMINIUM</span>
+      </header>
+      <div class="serials-query-card">
+        <div class="serials-query-top">
+          <div><strong>Seriais para consulta</strong><small>Informe ate 20 seriais por vez, separados por linha, virgula ou espaco.</small></div>
+          <span class="serials-input-hint"><i data-lucide="scan-line"></i> Leitura somente consulta</span>
+        </div>
+        <label for="serialsInput" class="sr-only">Seriais para consulta</label>
+        <textarea id="serialsInput" class="serials-input" rows="4" maxlength="1500" spellcheck="false" placeholder="Cole os seriais aqui, um por linha&#10;Ex.: C412EC7926E2"></textarea>
+        <div class="serials-actions">
+          <span id="serialsStatus" role="status" aria-live="polite">Pronto para consultar.</span>
+          <div>
+            <button class="button secondary" id="serialsClear" type="button">Limpar</button>
+            <button class="button secondary" id="serialsExport" type="button" disabled><i data-lucide="download"></i> Exportar CSV</button>
+            <button class="button primary" id="serialsRun" type="button"><i data-lucide="search"></i> Consultar seriais</button>
+          </div>
+        </div>
+      </div>
+      <div id="serialsNotice" class="serials-notice hidden" role="status"></div>
+      <div id="serialsSummary" class="serials-summary hidden" aria-label="Resumo da consulta"></div>
+      <div id="serialsResults" class="serials-results" aria-live="polite">
+        <div class="serials-empty"><i data-lucide="scan-search"></i><strong>Pesquise seriais para ver a rastreabilidade</strong><span>O responsavel e o estoque sao consultados no Imperium. Contratos e OS aparecem quando presentes na base operacional.</span></div>
+      </div>
+    </section>
 
     <section class="stock-workspace hidden" id="stockWorkspace" aria-label="Estoque do tecnico">
       <header class="workspace-heading">

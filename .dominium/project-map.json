@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-07T19:35:39+00:00",
+  "generated_at": "2026-10-21T16:54:53+00:00",
   "schema": 2,
-  "source_fingerprint": "29bd7b0c206160cba7f20e22015b641ebe80cd612d88de62adaf0a27ba3119a4",
+  "source_fingerprint": "4ef6082dfabb9556f726596c4439317d7d696409be1ebf57da1688388f77ec63",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -92,8 +92,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 353693,
-      "sha256": "68f6c0e6488676bb07a17d2630f19420f793bcaf6c828a4978aa8da152d424ac",
+      "bytes": 356153,
+      "sha256": "186665c72cac08026f9ad7d8cbcfe1f8c62ea877801b0f2b242e7ab3cfecf63a",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -201,6 +201,7 @@
         "/api/orders/(\\d+)/transfer-serial",
         "/api/orders/bulk-create",
         "/api/profiles",
+        "/api/serials/consult",
         "/api/status",
         "/api/stock",
         "/api/stock/batch",
@@ -1033,8 +1034,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 258741,
-      "sha256": "3ec10d22a1c5d7330750a47426e664c9386e0701fb09be7edfa9a538f47ca336",
+      "bytes": 264476,
+      "sha256": "99ee2654bdee991d5232c93aa865dcd7bcc1c58eb8c5a419ca1a45b463019d86",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -1072,7 +1073,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": false,
-      "symbol_count": 141
+      "symbol_count": 142
     },
     {
       "path": "imperium_http_api.py",
@@ -2013,8 +2014,8 @@
     {
       "path": "operational_store.py",
       "category": "orchestration",
-      "bytes": 33358,
-      "sha256": "68ffea0441c2cb65827deeab97359179e05c00a59efb0b4f428608a54c4a3c09",
+      "bytes": 35467,
+      "sha256": "5676e4f9f3fdab389b076b7068f67f25a943c999790f1a139971b38d9583fba7",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "__future__",
@@ -2032,7 +2033,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 24
+      "symbol_count": 25
     },
     {
       "path": "operations_intelligence.py",
@@ -2504,8 +2505,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 104107,
-      "sha256": "16ebf853992c30ef7f49cb24124524757c016c942b30103d469fa41c6faabb4b",
+      "bytes": 106629,
+      "sha256": "33f51fd23c91e2adecec6670d2ffd37a2fa68f77aafc45ce74fe265bd9595595",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2571,8 +2572,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 196608,
-      "sha256": "fdf43ee7205da97b77ac45a491b3112b90ce40d705b75f735500bfe7f6f624b7",
+      "bytes": 204215,
+      "sha256": "cffb34d9d343ff6d02bcb3caa3cb87676e2e59a64e4b023e9cd4f1f932a76cb6",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -3616,8 +3617,8 @@
     {
       "path": "tests/test_operational_store.py",
       "category": "tests",
-      "bytes": 3564,
-      "sha256": "1245242d685ecf6635295bd5e29f81ad87a549b90b2c1ebc218fa3139cf09b60",
+      "bytes": 4083,
+      "sha256": "ec3aeac75e1dfebb506465b18008ef5017f68f939aca9129808aaf7b239a3601",
       "summary": "",
       "imports": [
         "json",
@@ -3698,6 +3699,25 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 19
+    },
+    {
+      "path": "tests/test_serial_consult.py",
+      "category": "tests",
+      "bytes": 3018,
+      "sha256": "3bb13e50693f977df597f33013a6f21c1fdf8dae64fa2636947f2c3d8c32ef9d",
+      "summary": "",
+      "imports": [
+        "contextlib",
+        "imperium_api",
+        "threading",
+        "types",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 3
     },
     {
       "path": "tests/test_serialized_transfer.py",
