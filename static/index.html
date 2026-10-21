@@ -186,7 +186,7 @@
     <section class="disconnection-workspace hidden" id="disconnectionWorkspace" aria-label="Desconexão pelo WhatsApp">
       <header class="workspace-heading desc-heading">
         <div><p class="section-label">WHATSAPP · TOA · ATLAS</p><h2>Desconexão</h2><p class="workspace-description">Da mensagem do técnico à conferência da baixa.</p></div>
-        <div class="desc-heading-actions"><span class="desc-mode" id="descMode">Conectando ao Bot</span><button class="button secondary" id="descReload" type="button"><i data-lucide="refresh-cw" aria-hidden="true"></i>Atualizar</button><button class="button secondary" id="descExport" type="button"><i data-lucide="download" aria-hidden="true"></i>Relatório</button></div>
+        <div class="desc-heading-actions"><span class="desc-mode" id="descMode">Conectando ao Bot</span><button class="button secondary" id="descManualOpen" type="button"><i data-lucide="clipboard-plus" aria-hidden="true"></i>Revisão manual</button><button class="button secondary" id="descReportOpen" type="button"><i data-lucide="flag" aria-hidden="true"></i>REPORT</button><button class="button secondary" id="descReload" type="button"><i data-lucide="refresh-cw" aria-hidden="true"></i>Atualizar</button><button class="button secondary" id="descExport" type="button"><i data-lucide="download" aria-hidden="true"></i>Relatório</button></div>
       </header>
       <p class="desc-alert hidden" id="descError" role="alert"></p>
       <section class="desc-metrics" aria-label="Resumo da desconexão">
@@ -205,6 +205,36 @@
         </aside>
         <section class="desc-detail" id="descDetail" aria-label="Fotos e conferência do contrato"></section>
       </div>
+      <dialog class="desc-feedback-dialog" id="descReportDialog" aria-labelledby="descReportTitle">
+        <form id="descReportForm">
+          <h3 id="descReportTitle">REPORT · Registrar erro ou melhoria</h3>
+          <p class="desc-muted">Seu registro ficará salvo no servidor TECHNET, com data e operador. Não informe senhas ou tokens.</p>
+          <div class="desc-report-fields">
+            <label>Categoria<select name="kind"><option value="erro">Erro</option><option value="melhoria">Melhoria</option><option value="sugestao">Sugestão</option></select></label>
+            <label>Prioridade<select name="severity"><option value="media">Normal</option><option value="alta">Alta</option><option value="baixa">Baixa</option></select></label>
+            <label>Título<input name="title" required minlength="5" maxlength="120" placeholder="Ex.: Foto não carregou"></label>
+            <label>Detalhes<textarea name="detail" required minlength="10" maxlength="3000" rows="4" placeholder="O que aconteceu e o que deveria acontecer?"></textarea></label>
+          </div>
+          <p id="descReportStatus" role="status" class="desc-muted"></p>
+          <footer class="desc-detail-actions"><button type="button" class="button secondary" id="descReportCancel">Fechar</button><button type="submit" class="button primary">Registrar e enviar</button></footer>
+        </form>
+        <details class="desc-reports-history"><summary>Histórico de REPORTs recebidos</summary><div id="descReportHistory">Abra para carregar.</div></details>
+      </dialog>
+      <dialog class="desc-feedback-dialog" id="descManualDialog" aria-labelledby="descManualTitle">
+        <form id="descManualForm">
+          <h3 id="descManualTitle">Preparar revisão manual</h3>
+          <p class="desc-alert soft">O serviço DESC continua em modo de teste. Criar o lote NÃO baixa a O.S. no IMPERIUM.</p>
+          <div class="desc-report-fields">
+            <label>Grupo<select name="group" required></select></label>
+            <label>Técnico<select name="sender" required></select></label>
+            <label>Contrato (7 dígitos)<input name="contract" required inputmode="numeric" pattern="[0-9]{7}" maxlength="7"></label>
+            <label>Serviço<select name="code"><option value="">Analisar evidências</option><option value="430">430 · Desconexão</option><option value="409">409 · Retirada</option><option value="400">400 · Transferência</option><option value="512">512</option><option value="706">706</option></select></label>
+            <label>Seriais (opcional, até 12)<textarea name="serials" rows="3" placeholder="Um serial por linha"></textarea></label>
+          </div>
+          <p id="descManualStatus" role="status" class="desc-muted"></p>
+          <footer class="desc-detail-actions"><button type="button" class="button secondary" id="descManualCancel">Cancelar</button><button type="submit" class="button primary">Criar lote para conferência</button></footer>
+        </form>
+      </dialog>
       <dialog class="desc-photo-dialog" id="descPhotoDialog" aria-labelledby="descPhotoTitle">
         <header class="desc-photo-heading"><div><h3 id="descPhotoTitle">Conferir foto e serial</h3><p id="descPhotoContext" class="desc-muted"></p></div><button class="button secondary" id="descPhotoClose" type="button" aria-label="Fechar foto"><i data-lucide="x" aria-hidden="true"></i>Fechar</button></header>
         <div class="desc-photo-layout">

@@ -23,7 +23,7 @@ toa	configure_toa_cloud_bridge.py	1			Grava a credencial primaria da ponte com p
 shared	consolidate_dominium.ps1			4	DOMINIUM | MAPA DE RESPONSABILIDADE	c82b6b36d57d2f66
 shared	datasnap_client.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	18769b58c990389a
 tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para migracao futura	bbfe97a6ef6f2341
-tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			707e6e28c66fef18
+tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			b000d7e6a37d1516
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
@@ -41,7 +41,7 @@ tooling-deploy	deploy/windows-server/caddy-snippet.txt				Adicionar ao docker/Ca
 tooling-deploy	deploy/windows-server/README.md				DOMINIUM no servidor Windows	bdb24de6348883c3
 tooling-deploy	deploy/windows-server/start-dominium.ps1					07dbc429acea36ce
 shared	desc_order_verifier.py	7			Fail-closed, read-only Imperium order/installer checks for the DESC relay.	17c0924ca8229612
-shared	desc_review_proxy.py	10	1		Authenticated Dominium boundary to the Bot's existing DESC review service.	bda8c6747f8a346b
+shared	desc_review_proxy.py	10	1		Authenticated Dominium boundary to the Bot's existing DESC review service.	af5c440b35d2eb65
 shared	desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	79346c1e1b556a5d
 orchestration	disconnect_automation.py	26			DOMINIUM | MAPA DE RESPONSABILIDADE	b4aaf01ad3a34fad
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
@@ -68,6 +68,9 @@ shared	import_protocol_templates.json			1		9a6465634e73b3ec
 shared	import_technicians_xlsx.py	4		1	DOMINIUM | MAPA DE RESPONSABILIDADE	341a4f747dde9502
 imperium	installer_change.py	5			DOMINIUM | MAPA DE RESPONSABILIDADE	18de9230c2938c1e
 shared	installer_change_protocol_templates.json			1		f69d1e6915145bd3
+shared	integrations/desc_reports/desc_review_relay.py	6	1		Authenticated relay for DESC review and private read-only Imperium checks.	db2faeb1c34ebf97
+shared	integrations/desc_reports/operator_reports.py	7			Persistent operator feedback, scoped to the private authenticated DESC relay.	43caa7925ed75b0b
+shared	integrations/desc_reports/README.md				DESC — contratos, revisão manual e REPORT	7b2f2308f26140fa
 shared	integrations/desc_review_bot/install_manual_serial.py	4			Install the manual Atlas helper without replacing the live history implementation.	5e49ca4405d422f7
 shared	integrations/desc_review_bot/README.md				DESC — vínculo WhatsApp / Imperium	4442e88a9275793d
 shared	integrations/desc_review_bot/src/descReview/core.js	19				8bac5edd1b8475a9
@@ -83,8 +86,8 @@ shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
 shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
-shared	integrations/import_bridge/worker.mjs	3	2			64d226f91b19754d
-shared	integrations/import_bridge/worker.test.mjs		4			054d15f7d9142eec
+shared	integrations/import_bridge/worker.mjs	3	2			c718e2e93915c7b2
+shared	integrations/import_bridge/worker.test.mjs		4			7d5c69c88ed4761e
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
 shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
@@ -165,14 +168,14 @@ tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
-frontend	static/disconnection.js	32	8			b76030f2b5e68f91
+frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			395d95245ee92895
+frontend	static/index.html		1			a51045eb6c680653
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/styles.css					cffb34d9d343ff6d
+frontend	static/styles.css					85b28edadae92fb5
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
@@ -201,13 +204,14 @@ tests	tests/test_city_scope_integration.py	18				02411a9b3190bb77
 tests	tests/test_close_report.py	15				125242a6d2cff245
 tests	tests/test_close_report_excel.py	5				36de3899cae4ba75
 tests	tests/test_configure_imperium_credentials.py	4				931f61ff4157fbfa
+tests	tests/test_desc_operator_reports.py	3			Private report store regression: never involve live log or production actions.	c6da3055162c4d3b
 tests	tests/test_desc_order_verifier.py	24				1a425dadf4202442
 tests	tests/test_desc_review_proxy.py	16	8			2ce6f2b762e68847
 tests	tests/test_desc_review_relay.py	14	1			6beb0bd0caf2ad7e
 tests	tests/test_disconnect_automation.py	22				243f0edcb0dcc000
 tests	tests/test_disconnect_frontend.js	4				f5e517e7af4cede6
 tests	tests/test_disconnection_access.py	6	5			cba855ef00508a97
-tests	tests/test_disconnection_frontend.js		1			2a584c593ff0de4b
+tests	tests/test_disconnection_frontend.js	1	1			65b81e61b3966421
 tests	tests/test_disconnection_hostinger.js	2	13			73827cfd80596bf7
 tests	tests/test_edge_voice.py	4				4e8791562f884964
 tests	tests/test_equipment_group_matching.py	24				46876ea91612d830

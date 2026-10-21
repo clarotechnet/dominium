@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-21T18:14:07+00:00",
+  "generated_at": "2026-10-21T19:19:20+00:00",
   "schema": 2,
-  "source_fingerprint": "ae0d020c9f05ebc5bbdb8a0b2e14960137290a67c9ca137a46b39142722aa73e",
+  "source_fingerprint": "1ab307b8144a39ec9e51d82becb0ebd56bcfdd8f8055fa69bd137f74eaa8639a",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -632,8 +632,8 @@
     {
       "path": "deploy/hostinger-web/disconnection-policy.js",
       "category": "tooling-deploy",
-      "bytes": 1031,
-      "sha256": "707e6e28c66fef182d304ba1fa09e7947370d0b6ba680c9aef6065ba9ab07dc4",
+      "bytes": 1051,
+      "sha256": "b000d7e6a37d151645ac6fe5db7e3f0be557b7e7cc2c366b2338fef0bef3ef04",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -945,8 +945,8 @@
     {
       "path": "desc_review_proxy.py",
       "category": "shared",
-      "bytes": 6014,
-      "sha256": "bda8c6747f8a346b7e00c82763f3d98c23a7ee92b5b764527a16b029e7ec8f7a",
+      "bytes": 6036,
+      "sha256": "af5c440b35d2eb65bf0063c154a00d4849fe6bb165582cf68fdec81fe96be6fb",
       "summary": "Authenticated Dominium boundary to the Bot's existing DESC review service.",
       "imports": [
         "__future__",
@@ -1456,6 +1456,75 @@
       "symbol_count": 0
     },
     {
+      "path": "integrations/desc_reports/desc_review_relay.py",
+      "category": "shared",
+      "bytes": 7821,
+      "sha256": "db2faeb1c34ebf9751f8ad4cc1b4d83e6b95a4fb156c8e84eb7cc1c967804414",
+      "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "desc_order_verifier",
+        "desc_review_proxy",
+        "hmac",
+        "http",
+        "json",
+        "logging",
+        "official_stock_bridge",
+        "operator_reports",
+        "os",
+        "pathlib",
+        "secrets",
+        "serial_service",
+        "sys",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/disconnection/reports"
+      ],
+      "env_vars": [
+        "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 6
+    },
+    {
+      "path": "integrations/desc_reports/operator_reports.py",
+      "category": "shared",
+      "bytes": 4120,
+      "sha256": "43caa7925ed75b0bbe7b3e8c67dd65747632132b03d66263443df0a661f5bd76",
+      "summary": "Persistent operator feedback, scoped to the private authenticated DESC relay.",
+      "imports": [
+        "__future__",
+        "datetime",
+        "json",
+        "os",
+        "pathlib",
+        "re",
+        "threading",
+        "uuid"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
+    },
+    {
+      "path": "integrations/desc_reports/README.md",
+      "category": "shared",
+      "bytes": 2812,
+      "sha256": "7b2f2308f26140fa4fdc2e3bb1a8983d7c57294b8b1bcfd35386ea28ad4e8b6a",
+      "summary": "DESC — contratos, revisão manual e REPORT",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "integrations/desc_review_bot/install_manual_serial.py",
       "category": "shared",
       "bytes": 6113,
@@ -1662,8 +1731,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 3617,
-      "sha256": "64d226f91b19754dd29c5edaa49430dcd2be6dc52fcd411221c02a40b69de2a0",
+      "bytes": 3625,
+      "sha256": "c718e2e93915c7b25f691680a03b53d3875f394e03a7359184e70a7905f5c1bd",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1678,8 +1747,8 @@
     {
       "path": "integrations/import_bridge/worker.test.mjs",
       "category": "shared",
-      "bytes": 7972,
-      "sha256": "054d15f7d9142eecaa02a14dc0ee8da41404140d26fc62aa3c122c21c525f27a",
+      "bytes": 9553,
+      "sha256": "7d5c69c88ed4761effcaa9c829659504d1f3c82d9e154b100beae8cca98392ef",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3166,15 +3235,17 @@
     {
       "path": "static/disconnection.js",
       "category": "frontend",
-      "bytes": 28897,
-      "sha256": "b76030f2b5e68f91d1c7fa74d5b81b79ee7191c6a24e9ff2f32200fc9ae24c4a",
+      "bytes": 37515,
+      "sha256": "0bd6d973955a71c6616a6120e862065abcb264b4b760c29f8c9604a74b3c8802",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/disconnection/",
         "/api/disconnection/history?date=",
+        "/api/disconnection/manual",
         "/api/disconnection/photo/",
         "/api/disconnection/report.xlsx?month=",
+        "/api/disconnection/reports",
         "/api/disconnection/serial-apply",
         "/api/disconnection/serial-lookup",
         "/api/disconnection/state",
@@ -3183,7 +3254,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 32
+      "symbol_count": 37
     },
     {
       "path": "static/impeccable.css",
@@ -3201,8 +3272,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 114235,
-      "sha256": "395d95245ee92895627e543a6ee3da48e37c10e9810d18a6f6e9623ee26663a2",
+      "bytes": 117515,
+      "sha256": "a51045eb6c680653e79878a0b9a4716969975fd71c2cacefdd740bafa1954092",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3268,8 +3339,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 204215,
-      "sha256": "cffb34d9d343ff6d02bcb3caa3cb87676e2e59a64e4b023e9cd4f1f932a76cb6",
+      "bytes": 206581,
+      "sha256": "85b28edadae92fb519cc8b04cc028f585d04e1c5860fbfb7bef79e47ec036453",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -3800,6 +3871,25 @@
       "symbol_count": 4
     },
     {
+      "path": "tests/test_desc_operator_reports.py",
+      "category": "tests",
+      "bytes": 2117,
+      "sha256": "c6da3055162c4d3baae5c9d89f3ffb86ae2ddef66eb60faac3e1fd98674fbc9a",
+      "summary": "Private report store regression: never involve live log or production actions.",
+      "imports": [
+        "__future__",
+        "integrations",
+        "pathlib",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 3
+    },
+    {
       "path": "tests/test_desc_order_verifier.py",
       "category": "tests",
       "bytes": 8953,
@@ -3937,8 +4027,8 @@
     {
       "path": "tests/test_disconnection_frontend.js",
       "category": "tests",
-      "bytes": 2074,
-      "sha256": "2a584c593ff0de4b6e371ca8698df29c524d3c66bb4707a996789be2fb0139b5",
+      "bytes": 3097,
+      "sha256": "65b81e61b3966421837580eba040072e70e84feecad3a51efa41b1c60348702a",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3947,7 +4037,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 0
+      "symbol_count": 1
     },
     {
       "path": "tests/test_disconnection_hostinger.js",

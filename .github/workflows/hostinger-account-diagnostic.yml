@@ -178,6 +178,29 @@ jobs:
           })().catch(error=>{console.error(error.message); process.exitCode=1});
           NODE
 
+      - name: Verificar coletor privado de REPORTs antes do deploy
+        shell: bash
+        env:
+          DOMINIUM_DESC_REVIEW_CONNECTION: ${{ secrets.DOMINIUM_DESC_REVIEW_CONNECTION }}
+        run: |
+          node <<'NODE'
+          (async () => {
+            const {token} = JSON.parse(process.env.DOMINIUM_DESC_REVIEW_CONNECTION || '{}');
+            if (!/^[A-Za-z0-9_-]{43,128}$/.test(String(token || ''))) throw Error('Credencial privada ausente');
+            const response = await fetch(
+              'https://dominium-import-bridge.jogador743.workers.dev/api/disconnection/reports',
+              {method:'GET',signal:AbortSignal.timeout(30000),headers:{
+                Authorization:'Bearer '+token, 'X-Dominium-Role':'controller',
+                'X-Dominium-Actor':'github-report-readonly-test',
+              }}
+            );
+            if (response.status !== 200) throw Error('Coletor REPORT indisponivel: HTTP '+response.status);
+            const data = await response.json();
+            if (!data.ok || !Array.isArray(data.reports)) throw Error('Formato do coletor REPORT invalido');
+            console.log('REPORT privado validado: GET autenticado, sem criar registros');
+          })().catch(error=>{console.error(error.message);process.exitCode=1;});
+          NODE
+
       - name: Instalar Hostinger CLI oficial
         shell: bash
         run: |
