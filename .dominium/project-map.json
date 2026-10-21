@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-21T14:13:33+00:00",
+  "generated_at": "2026-10-21T16:47:17+00:00",
   "schema": 2,
-  "source_fingerprint": "281d86f40b56bf52f3d5720073353885f7333384c0c7979d4aa94c6276c249d2",
+  "source_fingerprint": "30e64792d6d6db75ee5ea7b664b1976b74fbecad48d0dca9355912444e30599c",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -697,8 +697,8 @@
     {
       "path": "deploy/hostinger-web/operational-policy.js",
       "category": "tooling-deploy",
-      "bytes": 1591,
-      "sha256": "59ab89e05141dcd3fd04503fa1e76ba4cf7d311b16b9e637353799000a31b963",
+      "bytes": 1607,
+      "sha256": "5a6323210266f76d21a19fadd4a061c82febabfb6441b0a20f72957f10799af5",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1660,8 +1660,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 3225,
-      "sha256": "dc48d6f0ce67b60cf1ed0322ae9f55dbd2ae578b6618101a32eed2bd7c3c7d16",
+      "bytes": 3468,
+      "sha256": "a268059951009c8bd5486b8837961828999de77966d559b9446fa64f43842a34",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1675,12 +1675,14 @@
     {
       "path": "integrations/import_bridge/worker.test.mjs",
       "category": "shared",
-      "bytes": 5204,
-      "sha256": "e345b002bb3ecec84dab25ec251950a669fcf003634bca6d8ccfb9851b91a8ed",
+      "bytes": 6607,
+      "sha256": "a268af0e076d35c7e9435439f6abbda711d12be33c25c58bfc8dc122d2c628cf",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/close",
+        "/api/imperium-official/stocks/123/items?profile=fortaleza",
+        "/api/imperium-official/stocks?profile=natal",
         "/api/imports/preview?url=evil"
       ],
       "env_vars": [],
@@ -1720,6 +1722,73 @@
       "bytes": 1261,
       "sha256": "6f3edf663dec3c6be97e507bf7b42cf9d75c455359fc05b19c34f25ec681e752",
       "summary": "Ponte n8n → DOMINIUM",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/official_stock_relay/desc_review_relay.py",
+      "category": "shared",
+      "bytes": 6037,
+      "sha256": "8918fc9f4d54f30b3ae86a74fb58fcb3f51fc4a09db95e1659ad59aa31db419f",
+      "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "desc_order_verifier",
+        "desc_review_proxy",
+        "hmac",
+        "http",
+        "json",
+        "logging",
+        "official_stock_bridge",
+        "os",
+        "pathlib",
+        "secrets",
+        "sys",
+        "urllib"
+      ],
+      "endpoints": [],
+      "env_vars": [
+        "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 6
+    },
+    {
+      "path": "integrations/official_stock_relay/official_stock_bridge.py",
+      "category": "shared",
+      "bytes": 3545,
+      "sha256": "3074b95c68197e4c4702c64ec623e6e0165ee747e9eac3c639e8c3e42e406260",
+      "summary": "Read-only official Imperium inventory for the authenticated private DESC relay.",
+      "imports": [
+        "__future__",
+        "datasnap_client",
+        "imperium_http_api",
+        "pathlib",
+        "re",
+        "sys",
+        "threading",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/imperium-official/stocks"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
+      "path": "integrations/official_stock_relay/README.md",
+      "category": "shared",
+      "bytes": 2108,
+      "sha256": "dfc23a1d9e9b911ed83325df134c316605a2de843ccfed81d6122c54e16f17f8",
+      "summary": "API Oficial — Estoque (somente leitura)",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -4354,6 +4423,34 @@
       "symbol_count": 21
     },
     {
+      "path": "tests/test_official_stock_relay.py",
+      "category": "tests",
+      "bytes": 2201,
+      "sha256": "12032c8dea0f41e47c8bb35dbb1b817138f1391e0429d4085240abc730d33158",
+      "summary": "Read-only official inventory bridge policy and response contracts.",
+      "imports": [
+        "integrations",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/imperium-official/stocks",
+        "/api/imperium-official/stocks/0/items",
+        "/api/imperium-official/stocks/123/commit",
+        "/api/imperium-official/stocks/123/items?profile=fortaleza",
+        "/api/imperium-official/stocks/2147483648/items",
+        "/api/imperium-official/stocks?profile=natal",
+        "/api/imperium-official/stocks?profile=natal&origin=evil",
+        "/api/imperium-official/stocks?profile=natal&profile=fortaleza",
+        "/api/imperium-official/stocks?profile=recife",
+        "/api/orders",
+        "/api/stock/writeoff"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 6
+    },
+    {
       "path": "tests/test_official_stock_remediation_plan.py",
       "category": "tests",
       "bytes": 17275,
@@ -4419,14 +4516,18 @@
     {
       "path": "tests/test_operational_relay.js",
       "category": "tests",
-      "bytes": 2383,
-      "sha256": "10b3c56e3d285f5d33f5bf055f91427d286752b356742094cb4b55e918dfb618",
+      "bytes": 2588,
+      "sha256": "ac0ee35d873ac68a6056484e058f2c592d9cd18dc7198ab60ce7d70ee68e06d0",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/auth/session",
         "/api/auth/users",
         "/api/auto-improductive-close",
+        "/api/imperium-official/stocks/123",
+        "/api/imperium-official/stocks/123/commit",
+        "/api/imperium-official/stocks/123/items?profile=fortaleza",
+        "/api/imperium-official/stocks?profile=natal",
         "/api/imports/commit",
         "/api/monitor/snapshot",
         "/api/operational/contracts/evil",

@@ -70,3 +70,28 @@ test('private bridge blocks write, unauthorized and unrelated operational reques
   }
   assert.equal(calls,0);
 });
+
+test('stock official API reads use the DESC private service and enforce admin/controller',async()=>{
+  let descCalls=0,importCalls=0,seen;
+  const env={
+    IMPORT_TOKEN:secret,
+    IMPORT_SERVICE:{fetch:async()=>{importCalls++;return new Response('{}')}},
+    DESC_SERVICE:{fetch:async(req)=>{descCalls++;seen=req;return Response.json({ok:true,count:2,stocks:[]});}},
+  };
+  for(const route of ['/api/imperium-official/stocks?profile=natal','/api/imperium-official/stocks/123/items?profile=fortaleza']){
+    const request=new Request('https://bridge.test'+route,{headers:{...headers,Cookie:'private'}});
+    const result=await worker.fetch(request,env);
+    assert.equal(result.status,200);
+    assert.equal(seen.url,'http://127.0.0.1:8793'+route);
+    assert.equal(seen.headers.get('Authorization'),'Bearer '+secret);
+    assert.equal(seen.headers.get('x-dominium-role'),'controller');
+    assert.equal(seen.headers.get('Cookie'),null);
+  }
+  assert.equal(descCalls,2);
+  assert.equal(importCalls,0);
+  const viewer=await worker.fetch(new Request('https://bridge.test/api/imperium-official/stocks',{headers:{...headers,'X-Dominium-Role':'viewer'}}),env);
+  assert.equal(viewer.status,403);
+  const mutation=await worker.fetch(new Request('https://bridge.test/api/imperium-official/stocks',{method:'POST',headers,body:'{}'}),env);
+  assert.equal(mutation.status,404);
+  assert.equal(descCalls,2);
+});

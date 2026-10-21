@@ -17,12 +17,16 @@ test('only explicit, safe GET routes may access the internal Windows API', () =>
     '/api/toa-automation',
     '/api/auto-improductive-close',
     '/api/monitor/snapshot',
+    '/api/imperium-official/stocks?profile=natal',
+    '/api/imperium-official/stocks/123/items?profile=fortaleza',
   ]) assert.equal(allowedOperationalRead('GET',route),true,route);
   for(const route of [
     '/api/auth/session', '/api/auth/users', '/.env', '/api/imports/commit',
     '/api/operational/contracts/evil', '/api/toa-automation/run',
     'https://example.org/api/orders', '//evil/api/orders',
     '/api/%6f%72%64%65%72%73',
+    '/api/imperium-official/stocks/123',
+    '/api/imperium-official/stocks/123/commit',
   ]) assert.equal(allowedOperationalRead('GET',route),false,route);
   assert.equal(allowedOperationalRead('POST','/api/orders'),false);
   assert.equal(allowedOperationalRead('DELETE','/api/toa-contracts'),false);

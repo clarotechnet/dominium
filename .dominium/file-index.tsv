@@ -27,7 +27,7 @@ tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			707e6e28c66fef
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
-tooling-deploy	deploy/hostinger-web/operational-policy.js	1	21			59ab89e05141dcd3
+tooling-deploy	deploy/hostinger-web/operational-policy.js	1	21			5a6323210266f76d
 tooling-deploy	deploy/hostinger-web/operational-relay.js	2				de4a6910d2bd4ba5
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
@@ -83,11 +83,14 @@ shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
 shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
-shared	integrations/import_bridge/worker.mjs	3	1			dc48d6f0ce67b60c
-shared	integrations/import_bridge/worker.test.mjs		2			e345b002bb3ecec8
+shared	integrations/import_bridge/worker.mjs	3	1			a268059951009c8b
+shared	integrations/import_bridge/worker.test.mjs		4			a268af0e076d35c7
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
 shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
+shared	integrations/official_stock_relay/desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	8918fc9f4d54f30b
+shared	integrations/official_stock_relay/official_stock_bridge.py	5	1		Read-only official Imperium inventory for the authenticated private DESC relay.	3074b95c68197e4c
+shared	integrations/official_stock_relay/README.md				API Oficial — Estoque (somente leitura)	dfc23a1d9e9b911e
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76				b8274ffc7dfb2fbb
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-isolated.js	1			content-isolated.js - Roda no world: ISOLATED	3aa2ece3a08e2b62
@@ -229,10 +232,11 @@ tests	tests/test_official_close_toa_dry_run.py	34				f3a1ea940debcd05
 tests	tests/test_official_material_catalog.py	24				08cd1715009af381
 tests	tests/test_official_stock_audit.py	19				5c870201eb1f0e37
 tests	tests/test_official_stock_blocker_review.py	21				2bb6e8566ad6e1e5
+tests	tests/test_official_stock_relay.py	6	11		Read-only official inventory bridge policy and response contracts.	12032c8dea0f41e4
 tests	tests/test_official_stock_remediation_plan.py	22		1		a64ed28f5256d2d9
 tests	tests/test_offline_candidate_and_resolver.py	12			Comprehensive test suite for frontend block, candidate locator, and material resolver.	2c65244509db2c6a
 tests	tests/test_operation_scope.py	42				f804afda128c9e71
-tests	tests/test_operational_relay.js	2	14			10b3c56e3d285f5d
+tests	tests/test_operational_relay.js	2	18			ac0ee35d873ac68a
 tests	tests/test_operational_store.py	5				1245242d685ecf66
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
