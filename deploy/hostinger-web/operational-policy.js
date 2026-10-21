@@ -27,7 +27,7 @@ const ROUTES = new Set([
   '/api/stock/serial-owner',
 ]);
 
-const DETAIL_ROUTE = /^\/api\/(?:orders\/\d+\/(?:material-inventory|installer-change-preview|serialized-transfer-preview)|operational\/contracts\/[0-9]+|imperium-official\/stocks(?:\/[0-9]+)?)$/;
+const DETAIL_ROUTE = /^\/api\/(?:orders\/\d+\/(?:material-inventory|installer-change-preview|serialized-transfer-preview)|operational\/contracts\/[0-9]+|imperium-official\/stocks(?:\/[1-9][0-9]{0,9}\/items)?)$/;
 
 function allowedOperationalRead(method, requestTarget) {
   if (method !== 'GET' || typeof requestTarget !== 'string' ||
