@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-15T18:01:24+00:00",
+  "generated_at": "2026-10-21T14:13:33+00:00",
   "schema": 2,
-  "source_fingerprint": "1e92b310334fc7bda681a70dd7bf98cb83d69edef50448f58e38554f9e03bb3f",
+  "source_fingerprint": "281d86f40b56bf52f3d5720073353885f7333384c0c7979d4aa94c6276c249d2",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -695,6 +695,56 @@
       "symbol_count": 2
     },
     {
+      "path": "deploy/hostinger-web/operational-policy.js",
+      "category": "tooling-deploy",
+      "bytes": 1591,
+      "sha256": "59ab89e05141dcd3fd04503fa1e76ba4cf7d311b16b9e637353799000a31b963",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/auto-improductive-close",
+        "/api/close-report",
+        "/api/failures",
+        "/api/health-check",
+        "/api/intelligence",
+        "/api/intelligence/report",
+        "/api/intelligence/serial-audit",
+        "/api/logs",
+        "/api/monitor/snapshot",
+        "/api/operational/contracts",
+        "/api/orders",
+        "/api/profiles",
+        "/api/status",
+        "/api/stock",
+        "/api/stock/serial-owner",
+        "/api/stock/technicians",
+        "/api/technicians",
+        "/api/toa-automation",
+        "/api/toa-capture/lots",
+        "/api/toa-contracts",
+        "/api/toa-live/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "deploy/hostinger-web/operational-relay.js",
+      "category": "tooling-deploy",
+      "bytes": 1383,
+      "sha256": "de4a6910d2bd4ba596120a2c7b588ab02c110946024e7f2d697528e69d8f8a36",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [
+        "DOMINIUM_DESC_REVIEW_TOKEN"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
       "path": "deploy/hostinger-web/package-lock.json",
       "category": "tooling-deploy",
       "bytes": 31045,
@@ -736,8 +786,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 41373,
-      "sha256": "edd05137741153d722b549268bf86fb31ebea398625cc2b3c66ed1830daaa128",
+      "bytes": 42344,
+      "sha256": "4a9846e5f540b35ef1bc13a5b9b7d9999deaaacb1b4c9a7c08d14bce85197f6d",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1610,8 +1660,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 2892,
-      "sha256": "173afbba31a7d046163381b4462210f389f467522a7b27e346f16c831103c8e0",
+      "bytes": 3225,
+      "sha256": "dc48d6f0ce67b60cf1ed0322ae9f55dbd2ae578b6618101a32eed2bd7c3c7d16",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1625,8 +1675,8 @@
     {
       "path": "integrations/import_bridge/worker.test.mjs",
       "category": "shared",
-      "bytes": 3312,
-      "sha256": "2ab37e369ab7b4c0308402d671765a505d45cb3405cd192a138e2042217f2a33",
+      "bytes": 5204,
+      "sha256": "e345b002bb3ecec84dab25ec251950a669fcf003634bca6d8ccfb9851b91a8ed",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2658,8 +2708,8 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 4541,
-      "sha256": "b57bedbb7318cd0431753f5613bdf1fb9a860e365c7027d09e41bbda7474a121",
+      "bytes": 4598,
+      "sha256": "241c9b27c70ce385d4e958253f7c03f8e4ff3719d850eb9d1e36c63c48a45abf",
       "summary": "",
       "imports": [
         "__future__",
@@ -3800,6 +3850,21 @@
       "symbol_count": 8
     },
     {
+      "path": "tests/test_hostinger_dataset_regression.cjs",
+      "category": "tests",
+      "bytes": 2495,
+      "sha256": "ec6b2b088eea6eb2a5e2619742c8af86151669e69d2cf402f0a5d3a0141788c0",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/toa-agenda/import"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
       "path": "tests/test_imperium_api.py",
       "category": "tests",
       "bytes": 77285,
@@ -4350,6 +4415,34 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 42
+    },
+    {
+      "path": "tests/test_operational_relay.js",
+      "category": "tests",
+      "bytes": 2383,
+      "sha256": "10b3c56e3d285f5d33f5bf055f91427d286752b356742094cb4b55e918dfb618",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/auth/session",
+        "/api/auth/users",
+        "/api/auto-improductive-close",
+        "/api/imports/commit",
+        "/api/monitor/snapshot",
+        "/api/operational/contracts/evil",
+        "/api/orders",
+        "/api/orders?date=2026-10-21&profile=natal",
+        "/api/toa-automation",
+        "/api/toa-automation/run",
+        "/api/toa-contracts",
+        "/api/toa-contracts?profile=natal",
+        "/api/toa-contracts?profile=natal&date=2026-10-21",
+        "/api/toa-live/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_operational_store.py",

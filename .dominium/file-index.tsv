@@ -27,10 +27,12 @@ tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			707e6e28c66fef
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
+tooling-deploy	deploy/hostinger-web/operational-policy.js	1	21			59ab89e05141dcd3
+tooling-deploy	deploy/hostinger-web/operational-relay.js	2				de4a6910d2bd4ba5
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	23	1		edd05137741153d7
+tooling-deploy	deploy/hostinger-web/server.js	41	23	1		4a9846e5f540b35e
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -81,8 +83,8 @@ shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
 shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
-shared	integrations/import_bridge/worker.mjs	3	1			173afbba31a7d046
-shared	integrations/import_bridge/worker.test.mjs		2			2ab37e369ab7b4c0
+shared	integrations/import_bridge/worker.mjs	3	1			dc48d6f0ce67b60c
+shared	integrations/import_bridge/worker.test.mjs		2			e345b002bb3ecec8
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
 shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
@@ -142,7 +144,7 @@ shared	requirements-voice.txt				Voz neural gratuita dos alertas TEC1. A voz loc
 shared	requirements-web.txt				Runtime do DOMINIUM web em producao	a9f5230558034692
 tooling-deploy	scripts/bootstrap_admin.py	2				578b01fcd9f2bce3
 tooling-deploy	scripts/build_hostinger_frontend.py	3				376de6598486d1b3
-tooling-deploy	scripts/build_hostinger_node_release.py	4				b57bedbb7318cd04
+tooling-deploy	scripts/build_hostinger_node_release.py	4				241c9b27c70ce385
 tooling-deploy	scripts/build_web_release.py	8		1		12c3694527509ac1
 tooling-deploy	scripts/check_supabase_ready.py	1				ef416758e6102aca
 tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
@@ -202,6 +204,7 @@ tests	tests/test_disconnection_hostinger.js	2	13			73827cfd80596bf7
 tests	tests/test_edge_voice.py	4				4e8791562f884964
 tests	tests/test_equipment_group_matching.py	24				46876ea91612d830
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38
+tests	tests/test_hostinger_dataset_regression.cjs	4	1			ec6b2b088eea6eb2
 tests	tests/test_imperium_api.py	86		1		06cc74dc3a92ff00
 tests	tests/test_imperium_http_api.py	25				25ab6758e210eefb
 tests	tests/test_imperium_http_plan.py	8				056547e8c6b8d815
@@ -229,6 +232,7 @@ tests	tests/test_official_stock_blocker_review.py	21				2bb6e8566ad6e1e5
 tests	tests/test_official_stock_remediation_plan.py	22		1		a64ed28f5256d2d9
 tests	tests/test_offline_candidate_and_resolver.py	12			Comprehensive test suite for frontend block, candidate locator, and material resolver.	2c65244509db2c6a
 tests	tests/test_operation_scope.py	42				f804afda128c9e71
+tests	tests/test_operational_relay.js	2	14			10b3c56e3d285f5d
 tests	tests/test_operational_store.py	5				1245242d685ecf66
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296

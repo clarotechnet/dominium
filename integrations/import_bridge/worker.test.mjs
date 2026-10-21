@@ -35,3 +35,38 @@ test('the DESC panel uses only its dedicated private service and preserves inter
  assert.equal(seen.headers.get('x-dominium-actor'),'Operador');
  const bad=await worker.fetch(new Request('https://bridge.test/api/disconnection/session',{method:'POST',headers,body:'{}'}),env);assert.equal(bad.status,404);
 });
+
+test('approved operational GETs pass through the existing VPC service without cookies or CSRF',async()=>{
+  assert.ok(worker);let seen;let descCalls=0;
+  const env={IMPORT_TOKEN:secret,IMPORT_SERVICE:{fetch:async(req)=>{
+    seen=req;return new Response('{"ok":true,"contracts":[]}',{status:200,headers:{'content-type':'application/json'}});
+  }},DESC_SERVICE:{fetch:async()=>{descCalls++;throw Error('Unexpected DESC call');}}};
+  const request=new Request('https://bridge.test/api/toa-contracts?profile=natal&date=2026-10-21',{
+    headers:{...headers,'X-Dominium-Role':'viewer',Cookie:'browser-session', 'X-CSRF-Token':'private'}
+  });
+  const result=await worker.fetch(request,env);
+  assert.equal(result.status,200);
+  assert.equal(seen.url,'http://127.0.0.1:8765/api/toa-contracts?profile=natal&date=2026-10-21');
+  assert.equal(seen.headers.get('cookie'),null);
+  assert.equal(seen.headers.get('x-csrf-token'),null);
+  assert.equal(seen.headers.get('authorization'),null);
+  assert.equal(descCalls,0);
+  assert.equal(result.headers.get('x-dominium-backend'),'private-import-bridge');
+});
+
+test('private bridge blocks write, unauthorized and unrelated operational requests',async()=>{
+  let calls=0;
+  const env={IMPORT_TOKEN:secret,IMPORT_SERVICE:{fetch:async()=>{
+    calls++;return new Response('{}',{status:200});
+  }}};
+  for(const request of [
+    new Request('https://bridge.test/api/orders',{method:'POST',headers,body:'{}'}),
+    new Request('https://bridge.test/api/auto-improductive-close/toggle',{method:'POST',headers,body:'{}'}),
+    new Request('https://bridge.test/api/auth/users',{headers}),
+    new Request('https://bridge.test/api/orders',{headers:{...headers,Authorization:'Bearer invalid'}}),
+  ]){
+    const result=await worker.fetch(request,env);
+    assert.ok(result.status===401 || result.status===404, String(result.status));
+  }
+  assert.equal(calls,0);
+});
