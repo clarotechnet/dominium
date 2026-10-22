@@ -23,16 +23,17 @@ toa	configure_toa_cloud_bridge.py	1			Grava a credencial primaria da ponte com p
 shared	consolidate_dominium.ps1			4	DOMINIUM | MAPA DE RESPONSABILIDADE	c82b6b36d57d2f66
 shared	datasnap_client.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	18769b58c990389a
 tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para migracao futura	bbfe97a6ef6f2341
+tooling-deploy	deploy/hostinger-web/confront-policy.js	1	3			9834dd541ca9ff51
 tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			b000d7e6a37d1516
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
 tooling-deploy	deploy/hostinger-web/operational-policy.js	1	22			bbf57769219b3266
-tooling-deploy	deploy/hostinger-web/operational-relay.js	2				de4a6910d2bd4ba5
+tooling-deploy	deploy/hostinger-web/operational-relay.js	2				7b2210ccae0558ba
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	23	1		4a9846e5f540b35e
+tooling-deploy	deploy/hostinger-web/server.js	41	24	1		d7e4fdc4980e03df
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -86,15 +87,21 @@ shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
 shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
-shared	integrations/import_bridge/worker.mjs	3	2			c718e2e93915c7b2
-shared	integrations/import_bridge/worker.test.mjs		4			7d5c69c88ed4761e
+shared	integrations/import_bridge/worker.mjs	3	2			d996b706ccfc1fa5
+shared	integrations/import_bridge/worker.test.mjs		4			261fdec6b802631c
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
 shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
 shared	integrations/official_stock_relay/desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	8918fc9f4d54f30b
 shared	integrations/official_stock_relay/official_stock_bridge.py	5	1		Read-only official Imperium inventory for the authenticated private DESC relay.	3074b95c68197e4c
 shared	integrations/official_stock_relay/README.md				API Oficial — Estoque (somente leitura)	dfc23a1d9e9b911e
-shared	integrations/serial_consult/desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	f5c848b102a80386
+shared	integrations/serial_consult/atlas_bridge_client.py	10			Read-only Atlas serial lookups via the existing localhost BotDMV queue.	55e9381c023c155d
+shared	integrations/serial_consult/confront_engine.py	7			Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.	2342b9bf5dc94f45
+shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-only Atlas x Imperium confrontation results.	742dd6866c287401
+shared	integrations/serial_consult/confront_http.py	7	3		Private HTTP interface and supervised background job scheduler.	43260bdf0030a9f3
+shared	integrations/serial_consult/confront_job_runner.py	12			Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).	67b9fd6d39df0fda
+imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	02ebb07a504772c6
+shared	integrations/serial_consult/desc_review_relay.py	7			Authenticated relay for DESC review and private read-only Imperium checks.	c8f963bf2a6b8b97
 shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	6f5b01f448826d25
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
 shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
@@ -155,22 +162,34 @@ shared	requirements-voice.txt				Voz neural gratuita dos alertas TEC1. A voz loc
 shared	requirements-web.txt				Runtime do DOMINIUM web em producao	a9f5230558034692
 tooling-deploy	scripts/bootstrap_admin.py	2				578b01fcd9f2bce3
 tooling-deploy	scripts/build_hostinger_frontend.py	3				376de6598486d1b3
-tooling-deploy	scripts/build_hostinger_node_release.py	4				241c9b27c70ce385
+tooling-deploy	scripts/build_hostinger_node_release.py	4				589960bcf8c1f8e6
 tooling-deploy	scripts/build_web_release.py	8		1		12c3694527509ac1
 tooling-deploy	scripts/check_supabase_ready.py	1				ef416758e6102aca
 tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
 tooling-deploy	scripts/configure_supabase_hosted.py	1				f4637b027d3a1889
+tooling-deploy	scripts/confront_local_cli.py	1			Operator-only LOCAL CLI for staging the Atlas x Imperium confrontation.	08f63e21a0801564
 tooling-deploy	scripts/deploy_supabase.ps1					ae66340ccd4c0380
 tooling-deploy	scripts/generate_agent_context.py	20		1		99f386dde01ec92f
+tooling-deploy	scripts/inspect_atlas_bridge_readonly.py	1			Inspect only Atlas local bridge health and safely redacted metadata.	5729f817efeba45c
+tooling-deploy	scripts/inspect_confront_wiring.py		1			764a258b7207afec
+tooling-deploy	scripts/inspect_managed_atlas_readonly.py	1			Safe Chrome-for-Testing Atlas inspection: metadata only, no navigation or secrets.	96798fc457de177b
 tooling-deploy	scripts/install_agent_context_hooks.py	2				3f284e6102d8feeb
+tooling-deploy	scripts/install_confront_relay.py	3	1		Minimal, backup-first insertion of the confront read-only API into live DESC relay.	4ae20a35e3eeb9d3
+tooling-deploy	scripts/probe_atlas_synthetic.py				Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.	865b81e754d5a762
 tooling-deploy	scripts/quality_gate.py	5				eefb3eb701f5a79b
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
+tooling-deploy	scripts/restart_confront_relay.ps1					de8c58415028c25c
+tooling-deploy	scripts/smoke_confront_cloudflare.mjs		3		Verify private Worker route with the same Node fetch transport used by Hostinger. */	5d9320441c44eea2
+tooling-deploy	scripts/smoke_confront_cloudflare.py	1	3		Smoke Cloudflare -> DESC private service; never prints keys or customer records.	a2d14b133b75f42d
+tooling-deploy	scripts/smoke_confront_private_relay.py	1	4		Smoke isolated pre-production local DESC relay, no serials or customer records read.	5ed8fc53345d22f5
+tooling-deploy	scripts/verify_confront_runtime.py				Import live DESC relay and verify Atlas module availability without changing services.	4d0fd85a2d7b2661
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
+frontend	static/confront.js	7	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	6142e3c228a00b91
 frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			a51045eb6c680653
+frontend	static/index.html		1			e7a5965e0462ca2e
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
@@ -195,15 +214,18 @@ tests	tests/qa_photo_assist_browser.js	4	6			462b748e72dda892
 tests	tests/qa_workspace_browser.js	1	3			9e5faa386308b743
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
 tests	tests/test_app.py	37	5	2		dec92061f9dc6147
+tests	tests/test_atlas_bridge_client.py	14			Tests for the real BotDMV Atlas HTTP queue contract (synthetic only).	97a6ec2888879cf6
 tests	tests/test_auth_store.py	7				2131129f824fbae2
 tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
-tests	tests/test_build_hostinger_node_release.py	3				b0a07f5e5848055f
+tests	tests/test_build_hostinger_node_release.py	3				7635e29bb2cd037b
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87
 tests	tests/test_city_scope_integration.py	18				02411a9b3190bb77
 tests	tests/test_close_report.py	15				125242a6d2cff245
 tests	tests/test_close_report_excel.py	5				36de3899cae4ba75
 tests	tests/test_configure_imperium_credentials.py	4				931f61ff4157fbfa
+tests	tests/test_confront_http.py	13	8		Authorization, actor isolation and passive confrontation API regression tests.	772813c111bd9f98
+tests	tests/test_confront_job_runner.py	17			Durability, idempotency and recovery tests; synthetic providers only.	a1782eb0ad20887f
 tests	tests/test_desc_operator_reports.py	3			Private report store regression: never involve live log or production actions.	c6da3055162c4d3b
 tests	tests/test_desc_order_verifier.py	24				1a425dadf4202442
 tests	tests/test_desc_review_proxy.py	16	8			2ce6f2b762e68847
@@ -245,13 +267,14 @@ tests	tests/test_official_stock_relay.py	6	11		Read-only official inventory brid
 tests	tests/test_official_stock_remediation_plan.py	22		1		a64ed28f5256d2d9
 tests	tests/test_offline_candidate_and_resolver.py	12			Comprehensive test suite for frontend block, candidate locator, and material resolver.	2c65244509db2c6a
 tests	tests/test_operation_scope.py	42				f804afda128c9e71
-tests	tests/test_operational_relay.js	2	20			52c976c9065b7339
+tests	tests/test_operational_relay.js	2	27			08e51c80d4702000
 tests	tests/test_operational_store.py	5				ec3aeac75e1dfebb
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_order_dataset_hostinger.js	4	1			bca127bdd7f87bcf
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
 tests	tests/test_semiauto_frontend.js	19				44a6652d8752bfc1
+tests	tests/test_serial_confront_engine.py	18			Synthetic contract tests for the read-only reconciliation engine.	b510f937d5104079
 tests	tests/test_serial_consult.py	3				3bb13e50693f977d
 tests	tests/test_serial_datasnap_history.py	9	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	36414aaf670dbe68
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a

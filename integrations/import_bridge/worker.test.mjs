@@ -146,3 +146,49 @@ test('operator REPORTs pass only authenticated read/write paths to DESC and neve
   assert.equal(deleting.status,404);
   assert.equal(descCalls,2);
 });
+
+test('confront report routes use DESC service, authenticated role and never forward browser cookies', async()=>{
+  let descCalls=0,importCalls=0,captured;
+  const env={IMPORT_TOKEN:secret,
+    IMPORT_SERVICE:{fetch:async()=>{importCalls++;return Response.json({ok:true});}},
+    DESC_SERVICE:{fetch:async req=>{
+      descCalls++;captured=req;
+      return Response.json({ok:true,job:{job_id:'a'.repeat(32),total:1,done:0}});
+    }}};
+  const create=await worker.fetch(new Request('https://bridge.test/api/confront/jobs',
+    {method:'POST',headers:{...headers,Cookie:'browser-private','X-CSRF-Token':'secret'},
+     body:JSON.stringify({serials:['ABCDEF123456'],profile:'natal',mode:'analitico'})}),env);
+  assert.equal(create.status,200);
+  assert.equal(descCalls,1);
+  assert.equal(importCalls,0);
+  assert.equal(captured.url,'http://127.0.0.1:8793/api/confront/jobs');
+  assert.equal(captured.headers.get('authorization'),'Bearer '+secret);
+  assert.equal(captured.headers.get('cookie'),null);
+  assert.equal(captured.headers.get('x-csrf-token'),null);
+  assert.equal(captured.headers.get('x-dominium-role'),'controller');
+  for(const method of ['GET']) {
+    const res=await worker.fetch(new Request('https://bridge.test/api/confront/jobs/'+'a'.repeat(32),
+     {method,headers}),env);
+    assert.equal(res.status,200);
+  }
+  assert.equal(descCalls,2);
+});
+
+test('viewer and unapproved confront paths cannot consume private services', async()=>{
+  let calls=0;
+  const env={IMPORT_TOKEN:secret,
+    IMPORT_SERVICE:{fetch:async()=>{calls++;return Response.json({ok:true});}},
+    DESC_SERVICE:{fetch:async()=>{calls++;return Response.json({ok:true});}}};
+  for(const request of [
+    new Request('https://bridge.test/api/confront/jobs',{method:'POST',
+      headers:{...headers,'X-Dominium-Role':'viewer'},body:'{}'}),
+    new Request('https://bridge.test/api/confront/status',{headers:{...headers,'X-Dominium-Role':'viewer'}}),
+    new Request('https://bridge.test/api/confront/jobs/invalid',{headers}),
+    new Request('https://bridge.test/api/confront/status',{method:'POST',headers,body:'{}'}),
+    new Request('https://bridge.test/api/confront/jobs?ignored=yes',{headers}),
+  ]) {
+    const res=await worker.fetch(request,env);
+    assert.ok([403,404].includes(res.status), String(res.status));
+  }
+  assert.equal(calls,0);
+});

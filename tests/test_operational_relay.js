@@ -46,3 +46,35 @@ test('private relay is available only to authenticated users with a valid server
   assert.throws(()=>resolveOperationalRead(req('GET','/api/orders','unknown'),privateConnection),/operational_session_required/);
   assert.throws(()=>resolveOperationalRead(req('GET','/api/orders'),()=>({token:''})),/operational_private_relay_not_configured/);
 });
+
+const { allowedConfrontRoute } = require('../deploy/hostinger-web/confront-policy');
+
+test('confront transport only allows explicit report jobs and no inventory writes', () => {
+  for(const route of ['/api/confront/status','/api/confront/jobs',
+    '/api/confront/jobs/'+'a'.repeat(32),
+    '/api/confront/jobs/'+'a'.repeat(32)+'/export']) {
+    assert.equal(allowedConfrontRoute('GET',route),true,route);
+  }
+  assert.equal(allowedConfrontRoute('POST','/api/confront/jobs'),true);
+  for(const target of ['/api/stock/serial-owner','/api/confront/jobs/../../.env',
+    '/api/confront/jobs/'+'z'.repeat(32),
+    '/api/confront/jobs?url=evil',
+    '//evil/api/confront/jobs',
+    '/api/confront/%6aobs']) {
+    assert.equal(allowedConfrontRoute('GET',target),false,target);
+  }
+  assert.equal(allowedConfrontRoute('POST','/api/confront/status'),false);
+  assert.equal(allowedConfrontRoute('POST','/api/confront/jobs/'+'a'.repeat(32)),false);
+});
+
+test('authenticated admin and controller may create; viewers may not inspect confront data', () => {
+  for(const role of ['admin','controller']) {
+    const out=resolveOperationalRead(req('POST','/api/confront/jobs',role),privateConnection);
+    assert.equal(out.headers['x-dominium-role'],role);
+    assert.equal(out.headers['x-dominium-actor'],'user-5');
+    assert.match(out.url,/\/api\/confront\/jobs$/);
+  }
+  assert.throws(()=>resolveOperationalRead(req('GET','/api/confront/jobs','viewer'),privateConnection),
+    /operational_session_required/);
+  assert.equal(resolveOperationalRead(req('POST','/api/orders','controller'),privateConnection),null);
+});

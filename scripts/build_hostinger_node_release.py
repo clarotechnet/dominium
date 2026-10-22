@@ -19,6 +19,7 @@ RUNTIME_FILES = (
     "import-proxy.js",
     "operational-policy.js",
     "operational-relay.js",
+    "confront-policy.js",
     "disconnection-proxy.js",
     "disconnection-policy.js",
     "server.js",
@@ -108,7 +109,9 @@ def build(output: Path = DEFAULT_OUTPUT) -> tuple[Path, Path]:
         "protocol_templates.json",
         "static/index.html",
         "static/app.js",
+        "static/confront.js",
         "static/styles.css",
+        "confront-policy.js",
     }
     packaged = {str(item["path"]) for item in entries}
     missing = sorted(required - packaged)

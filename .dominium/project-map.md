@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-22T12:01:44+00:00
-- Source fingerprint: `6286336ad2074885`
-- Indexed files: 313
-- Indexed symbols: 3129
-- API path references: 262
+- Generated: 2026-10-22T22:34:04+00:00
+- Source fingerprint: `2b789f9948ac12cd`
+- Indexed files: 336
+- Indexed symbols: 3246
+- API path references: 299
 
 ## Navigation rule
 
@@ -78,6 +78,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `imperium_http_api.py` (37 symbols, 2 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `imperium_http_plan.py` (9 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `installer_change.py` (5 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md` - DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente
 - `manual_orders.py` (7 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `native_orders.py` (16 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `serialized_transfer.py` (7 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -85,6 +86,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## frontend
 
+- `static/confront.js` (7 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
 - `static/disconnection.js` (37 symbols, 10 API paths)
 - `static/impeccable.css`
 - `static/index.html` (1 API paths)
@@ -157,10 +159,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 114 files
-- tooling-deploy: 30 files
+- shared: 119 files
+- tooling-deploy: 42 files
 - docs: 9 files
-- tests: 90 files
+- tests: 94 files
 
 ## Search indexes
 

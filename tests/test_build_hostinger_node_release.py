@@ -23,6 +23,8 @@ class HostingerNodeReleaseTests(unittest.TestCase):
             "protocol_templates.json",
             "static/index.html",
             "static/app.js",
+            "static/confront.js",
+            "confront-policy.js",
             "static/styles.css",
             "RELEASE_MANIFEST.json",
         ):

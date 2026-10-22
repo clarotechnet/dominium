@@ -20,11 +20,16 @@ from urllib.parse import unquote
 _runtime_root = Path(os.environ.get('DOMINIUM_IMPERIUM_RUNTIME_ROOT', r'C:\DominiumRuntime\Imperium\FerramentaImperiumDireto-OLLAMA'))
 if _runtime_root.is_dir():
     sys.path.append(str(_runtime_root))
+# The official stock bridge is a sibling integration in the source checkout.
+_official_root = Path(__file__).resolve().parents[1] / 'official_stock_relay'
+if _official_root.is_dir():
+    sys.path.append(str(_official_root))
 
 from desc_order_verifier import DEFAULT_RUNTIME_ROOT, DescOrderVerifier, OrderCheckError
 from desc_review_proxy import DescReviewProxy, ProxyError
 from official_stock_bridge import OfficialStockBridge, parse_route
 from serial_service import parse_route as parse_serial_route, consult_serials
+from confront_http import ConfrontService, parse_confront_route
 
 
 class DescRelayHandler(BaseHTTPRequestHandler):
@@ -42,6 +47,17 @@ class DescRelayHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def _csv(self, content):
+        data = content.encode('utf-8')
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/csv; charset=utf-8')
+        self.send_header('Content-Disposition', 'attachment; filename="dominium-confronto.csv"')
+        self.send_header('Content-Length', str(len(data)))
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+        self.end_headers()
+        self.wfile.write(data)
+
     def _dispatch(self):
         supplied = str(self.headers.get('Authorization', ''))
         if not hmac.compare_digest(supplied.encode('utf-8'), ('Bearer ' + self.server.relay_token).encode('utf-8')):
@@ -50,6 +66,25 @@ class DescRelayHandler(BaseHTTPRequestHandler):
         actor = unquote(self.headers.get('X-Dominium-Actor', ''))[:100]
         if not actor:
             self._json(400, {'ok': False, 'error': 'Operador não identificado'})
+            return
+        confrontation = parse_confront_route(self.command, self.path)
+        if confrontation is not None:
+            if self.headers.get('X-Dominium-Role') not in {'admin', 'controller'}:
+                self._json(403, {'ok': False, 'error': 'Perfil operacional necessario'})
+                return
+            if not getattr(self.server, 'confront_service', None):
+                self._json(503, {'ok': False, 'error': 'Confronto indisponivel'})
+                return
+            try:
+                body = self._read_json() if self.command == 'POST' else None
+                status, result, content_type = self.server.confront_service.handle(
+                    self.command, self.path, actor, body)
+                if content_type == 'text/csv; charset=utf-8' and status == 200:
+                    self._csv(result)
+                else:
+                    self._json(status, result)
+            except ValueError:
+                self._json(400, {'ok': False, 'error': 'Solicitacao invalida'})
             return
         try:
             serial_request = parse_serial_route(self.command, self.path)
@@ -146,7 +181,11 @@ def main():
     server.review_proxy = DescReviewProxy()
     server.stock_bridge = OfficialStockBridge()
     server.order_verifier = DescOrderVerifier(Path(os.environ.get('DOMINIUM_IMPERIUM_RUNTIME_ROOT', str(DEFAULT_RUNTIME_ROOT))))
-    server.serve_forever()
+    server.confront_service = ConfrontService()
+    try:
+        server.serve_forever()
+    finally:
+        server.confront_service.close()
 
 
 if __name__ == '__main__':

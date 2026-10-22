@@ -47,7 +47,9 @@ const state = {
     { code: "0", description: "CANCELAMENTO", productive: false },
   ],
   failures: [],
-  activeModule: window.location.hash === "#consultar-seriais"
+  activeModule: window.location.hash === "#pendente"
+    ? "confront"
+    : window.location.hash === "#consultar-seriais"
     ? "serials"
     : window.location.hash === "#desconexao"
       ? "disconnection"
@@ -869,7 +871,9 @@ function apiUrlForProfile(path, profile) {
 function updateAddress() {
   const url = new URL(window.location.href);
   url.searchParams.set("profile", state.profile);
-  url.hash = state.activeModule === "serials"
+  url.hash = state.activeModule === "confront"
+    ? "pendente"
+    : state.activeModule === "serials"
     ? "consultar-seriais"
     : state.activeModule === "disconnection"
       ? "desconexao"
@@ -3521,7 +3525,7 @@ function setModule(module) {
     state.running || state.bulkCreateLoading || state.stockBatchLoading
     || state.stockWriteoffLoading
     || ![
-      "dashboard", "monitor", "orders", "stock", "serials", "technicians", "bulk", "imports",
+      "dashboard", "monitor", "orders", "stock", "serials", "confront", "technicians", "bulk", "imports",
       "automation-test", "close", "report", "history", "intelligence", "database", "disconnection",
     ].includes(module)
   ) return;
@@ -7090,6 +7094,7 @@ function render() {
   elements.ordersWorkspace.classList.toggle("hidden", state.activeModule !== "orders");
   elements.stockWorkspace.classList.toggle("hidden", state.activeModule !== "stock");
   elements.serialsWorkspace.classList.toggle("hidden", state.activeModule !== "serials");
+  document.getElementById("confrontWorkspace").classList.toggle("hidden", state.activeModule !== "confront");
   elements.techniciansWorkspace.classList.toggle("hidden", state.activeModule !== "technicians");
   elements.intelligenceWorkspace.classList.toggle("hidden", state.activeModule !== "intelligence");
   elements.bulkCreateWorkspace.classList.toggle("hidden", state.activeModule !== "bulk");
@@ -7107,6 +7112,7 @@ function render() {
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
   elements.stockModule.classList.toggle("active", state.activeModule === "stock");
   elements.serialsModule.classList.toggle("active", state.activeModule === "serials");
+  document.getElementById("confrontModule").classList.toggle("active", state.activeModule === "confront");
   elements.techniciansModule.classList.toggle("active", state.activeModule === "technicians");
   elements.intelligenceModule.classList.toggle("active", state.activeModule === "intelligence");
   elements.bulkCreateModule.classList.toggle("active", state.activeModule === "bulk");

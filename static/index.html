@@ -142,6 +142,10 @@
         <i data-lucide="scan-barcode" aria-hidden="true"></i>
         <span><strong>Consultar Seriais</strong><small>Busca em lote</small></span>
       </button>
+      <button class="side-nav-item" id="confrontModule" type="button">
+        <i data-lucide="git-compare-arrows" aria-hidden="true"></i>
+        <span><strong>Pendente</strong><small>Atlas × IMPERIUM</small></span>
+      </button>
       <button class="side-nav-item" id="techniciansModule" type="button">
         <i data-lucide="users-round" aria-hidden="true"></i>
         <span><strong>Tecnicos</strong><small>Equipe DMV</small></span>
@@ -615,6 +619,40 @@
       <div id="serialsSummary" class="serials-summary hidden" aria-label="Resumo da consulta"></div>
       <div id="serialsResults" class="serials-results" aria-live="polite">
         <div class="serials-empty"><i data-lucide="scan-search"></i><strong>Pesquise seriais para ver a rastreabilidade</strong><span>O responsavel e o estoque sao consultados no Imperium. Contratos e OS aparecem quando presentes na base operacional.</span></div>
+      </div>
+    </section>
+
+    <section class="serials-workspace hidden" id="confrontWorkspace" aria-label="Pendente - confronto Atlas e Imperium">
+      <header class="workspace-heading serials-heading">
+        <div>
+          <p class="section-label">RECURSOS / AUDITORIA DE EQUIPAMENTOS</p>
+          <h2>Pendente</h2>
+          <p class="workspace-description">Confronte em lote o histórico e a localização dos seriais no Atlas e IMPERIUM. Nenhuma baixa ou transferência é executada.</p>
+        </div>
+        <span class="serials-live-pill"><i data-lucide="shield-check"></i> LEITURA SOMENTE</span>
+      </header>
+      <div class="serials-query-card">
+        <div class="serials-query-top">
+          <div><strong>Novo confronto</strong><small>Até 500 seriais por trabalho, separados por espaço, vírgula ou linha. A praça acompanha a seleção do DOMINIUM.</small></div>
+          <span id="confrontAtlasStatus" class="serials-input-hint">Verificando Atlas...</span>
+        </div>
+        <label for="confrontMode">Histórico IMPERIUM</label>
+        <select id="confrontMode"><option value="analitico">Analítico — todas as movimentações</option><option value="sintetico">Sintético — última movimentação</option></select>
+        <label class="sr-only" for="confrontInput">Seriais</label>
+        <textarea id="confrontInput" class="serials-input" rows="6" maxlength="26000" spellcheck="false" placeholder="Um serial por linha"></textarea>
+        <div class="serials-actions">
+          <span id="confrontStatus" role="status" aria-live="polite">Selecione a praça e informe os seriais.</span>
+          <div>
+            <button class="button secondary" id="confrontRefresh" type="button">Atualizar</button>
+            <button class="button secondary" id="confrontExport" type="button" disabled>Exportar CSV</button>
+            <button class="button primary" id="confrontRun" type="button">Iniciar confronto</button>
+          </div>
+        </div>
+      </div>
+      <div id="confrontNotice" class="serials-notice hidden" role="status"></div>
+      <div class="serials-summary" id="confrontSummary" aria-label="Progresso do confronto"></div>
+      <div class="serials-results" id="confrontResults" aria-live="polite">
+        <div class="serials-empty"><i data-lucide="git-compare-arrows"></i><strong>Nenhum confronto selecionado</strong><span>Envie uma lista de seriais para consultar as duas fontes de maneira controlada.</span></div>
       </div>
     </section>
 
@@ -2110,7 +2148,8 @@
   <script src="/lucide.min.js"></script>
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
-  <script src="/app.js?v=20261010-desc3"></script>
+  <script src="/app.js?v=20261022-confront"></script>
+  <script src="/confront.js?v=20261022-1"></script>
   <script type="module" src="/motion-ui.js"></script>
 </body>
 </html>

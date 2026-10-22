@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-22T12:01:44+00:00",
+  "generated_at": "2026-10-22T22:34:04+00:00",
   "schema": 2,
-  "source_fingerprint": "6286336ad2074885307048925c095f09c1d43e5d860c053e545f7ea1aacce4b3",
+  "source_fingerprint": "2b789f9948ac12cd2ddc66d72dde3ca7f66ec393b50c8a07ce8e989a9c00a2ad",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -630,6 +630,23 @@
       "symbol_count": 0
     },
     {
+      "path": "deploy/hostinger-web/confront-policy.js",
+      "category": "tooling-deploy",
+      "bytes": 952,
+      "sha256": "9834dd541ca9ff51b352575f38cf197f03546527f98731d53cff10d65daeacba",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/confront/",
+        "/api/confront/jobs",
+        "/api/confront/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "deploy/hostinger-web/disconnection-policy.js",
       "category": "tooling-deploy",
       "bytes": 1051,
@@ -734,8 +751,8 @@
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 1383,
-      "sha256": "de4a6910d2bd4ba596120a2c7b588ab02c110946024e7f2d697528e69d8f8a36",
+      "bytes": 1696,
+      "sha256": "7b2210ccae0558ba1539ff91ad36848933f6197710249070f728b285936919c0",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -788,8 +805,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 42344,
-      "sha256": "4a9846e5f540b35ef1bc13a5b9b7d9999deaaacb1b4c9a7c08d14bce85197f6d",
+      "bytes": 42781,
+      "sha256": "d7e4fdc4980e03dfd12ca96e2ec50f0131f6919da1ccf23854b45ca0356e3d2d",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -801,6 +818,7 @@
         "/api/auth/register",
         "/api/auth/session",
         "/api/auth/users",
+        "/api/confront/",
         "/api/diagnostics",
         "/api/disconnection",
         "/api/health-check",
@@ -1731,8 +1749,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 3625,
-      "sha256": "c718e2e93915c7b25f691680a03b53d3875f394e03a7359184e70a7905f5c1bd",
+      "bytes": 3958,
+      "sha256": "d996b706ccfc1fa58374c4ce8b54f34c297179aaf265a0e031b256b1c748883b",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1747,8 +1765,8 @@
     {
       "path": "integrations/import_bridge/worker.test.mjs",
       "category": "shared",
-      "bytes": 9553,
-      "sha256": "7d5c69c88ed4761effcaa9c829659504d1f3c82d9e154b100beae8cca98392ef",
+      "bytes": 11891,
+      "sha256": "261fdec6b802631c797a10fe29b9e91bbe41f23c2a98e832a9dbaa503506154b",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1869,14 +1887,139 @@
       "symbol_count": 0
     },
     {
+      "path": "integrations/serial_consult/atlas_bridge_client.py",
+      "category": "shared",
+      "bytes": 7364,
+      "sha256": "55e9381c023c155d35be03d6b3f7b1963a5e4627597d51cbf5afc3a7dab568e7",
+      "summary": "Read-only Atlas serial lookups via the existing localhost BotDMV queue.",
+      "imports": [
+        "__future__",
+        "json",
+        "re",
+        "time",
+        "typing",
+        "urllib"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 10
+    },
+    {
+      "path": "integrations/serial_consult/confront_engine.py",
+      "category": "shared",
+      "bytes": 8287,
+      "sha256": "2342b9bf5dc94f45d173c71193f6ced71ae3f53263c1dd46499d525b88c3acf3",
+      "summary": "Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.",
+      "imports": [
+        "__future__",
+        "collections",
+        "re",
+        "typing"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
+    },
+    {
+      "path": "integrations/serial_consult/confront_export.py",
+      "category": "shared",
+      "bytes": 2127,
+      "sha256": "742dd6866c28740183a7d7d596546558753c2bfa4c2c63655dfda992b94043d4",
+      "summary": "CSV exporter for read-only Atlas x Imperium confrontation results.",
+      "imports": [
+        "__future__",
+        "collections",
+        "csv",
+        "io"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
+      "path": "integrations/serial_consult/confront_http.py",
+      "category": "shared",
+      "bytes": 6792,
+      "sha256": "43260bdf0030a9f347e467a280fd8d6e3f6ddfc42246c41dfd73078e4d23e867",
+      "summary": "Private HTTP interface and supervised background job scheduler.",
+      "imports": [
+        "__future__",
+        "atlas_bridge_client",
+        "confront_export",
+        "confront_job_runner",
+        "io",
+        "json",
+        "logging",
+        "pathlib",
+        "re",
+        "serial_service",
+        "threading",
+        "time",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/confront/jobs",
+        "/api/confront/jobs/(",
+        "/api/confront/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
+    },
+    {
+      "path": "integrations/serial_consult/confront_job_runner.py",
+      "category": "shared",
+      "bytes": 11901,
+      "sha256": "67b9fd6d39df0fda973ea60a5f0f4541330bab35e926f68ed1515900ad209cd1",
+      "summary": "Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).",
+      "imports": [
+        "__future__",
+        "atlas_bridge_client",
+        "confront_engine",
+        "contextlib",
+        "json",
+        "pathlib",
+        "sqlite3",
+        "time",
+        "typing",
+        "uuid"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 12
+    },
+    {
+      "path": "integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md",
+      "category": "imperium",
+      "bytes": 3774,
+      "sha256": "02ebb07a504772c6f659a136b41a76f88c7f0a87f73b787ad6e086c95c4106dd",
+      "summary": "DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "integrations/serial_consult/desc_review_relay.py",
       "category": "shared",
-      "bytes": 6908,
-      "sha256": "f5c848b102a803862b871d32a9b16c860bdd012f065533916d02873b57234876",
+      "bytes": 8837,
+      "sha256": "c8f963bf2a6b8b97f0cceef5874511256ab8e447c5847d5217ba72d07bd6ee9b",
       "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
       "imports": [
         "__future__",
         "argparse",
+        "confront_http",
         "desc_order_verifier",
         "desc_review_proxy",
         "hmac",
@@ -1897,7 +2040,7 @@
       ],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 6
+      "symbol_count": 7
     },
     {
       "path": "integrations/serial_consult/midas_reader.py",
@@ -2960,8 +3103,8 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 4598,
-      "sha256": "241c9b27c70ce385d4e958253f7c03f8e4ff3719d850eb9d1e36c63c48a45abf",
+      "bytes": 4684,
+      "sha256": "589960bcf8c1f8e67260168178f8788660a1d8de49a35645262d6503155e9842",
       "summary": "",
       "imports": [
         "__future__",
@@ -3073,6 +3216,29 @@
       "symbol_count": 1
     },
     {
+      "path": "scripts/confront_local_cli.py",
+      "category": "tooling-deploy",
+      "bytes": 4174,
+      "sha256": "08f63e21a08015640076d7af1079012f60068c8ad711e5854db2a34a05c105ba",
+      "summary": "Operator-only LOCAL CLI for staging the Atlas x Imperium confrontation.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "atlas_bridge_client",
+        "confront_export",
+        "confront_job_runner",
+        "json",
+        "pathlib",
+        "serial_service",
+        "sys"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 1
+    },
+    {
       "path": "scripts/deploy_supabase.ps1",
       "category": "tooling-deploy",
       "bytes": 1659,
@@ -3114,6 +3280,57 @@
       "symbol_count": 20
     },
     {
+      "path": "scripts/inspect_atlas_bridge_readonly.py",
+      "category": "tooling-deploy",
+      "bytes": 1217,
+      "sha256": "5729f817efeba45cb3ce9c2eab9a05f315c92df111e74a8a0fa4c53743153df8",
+      "summary": "Inspect only Atlas local bridge health and safely redacted metadata.",
+      "imports": [
+        "json",
+        "urllib"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "scripts/inspect_confront_wiring.py",
+      "category": "tooling-deploy",
+      "bytes": 1026,
+      "sha256": "764a258b7207afec43208632609a576b6bcf7b8aab983bb4888c334eba33db82",
+      "summary": "",
+      "imports": [
+        "pathlib"
+      ],
+      "endpoints": [
+        "/api/serials/consult"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "scripts/inspect_managed_atlas_readonly.py",
+      "category": "tooling-deploy",
+      "bytes": 2442,
+      "sha256": "96798fc457de177b3117c2c415b6d1eafc1d547107f2aa51435115a3cb7ac1b1",
+      "summary": "Safe Chrome-for-Testing Atlas inspection: metadata only, no navigation or secrets.",
+      "imports": [
+        "json",
+        "pathlib",
+        "urllib",
+        "websocket"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "scripts/install_agent_context_hooks.py",
       "category": "tooling-deploy",
       "bytes": 1882,
@@ -3130,6 +3347,46 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 2
+    },
+    {
+      "path": "scripts/install_confront_relay.py",
+      "category": "tooling-deploy",
+      "bytes": 5241,
+      "sha256": "4ae20a35e3eeb9d35d5021e830140b51698786ee69dff58fcdda3b6ca81b364a",
+      "summary": "Minimal, backup-first insertion of the confront read-only API into live DESC relay.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "ast",
+        "datetime",
+        "hashlib",
+        "pathlib",
+        "shutil"
+      ],
+      "endpoints": [
+        "/api/disconnection/reports"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 3
+    },
+    {
+      "path": "scripts/probe_atlas_synthetic.py",
+      "category": "tooling-deploy",
+      "bytes": 1282,
+      "sha256": "865b81e754d5a762e7562cb6f680e15a45e6755b33b8e3738c128fcba8097893",
+      "summary": "Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.",
+      "imports": [
+        "atlas_bridge_client",
+        "pathlib",
+        "sys"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "scripts/quality_gate.py",
@@ -3176,6 +3433,97 @@
       ],
       "entrypoint": true,
       "symbol_count": 12
+    },
+    {
+      "path": "scripts/restart_confront_relay.ps1",
+      "category": "tooling-deploy",
+      "bytes": 1478,
+      "sha256": "de8c58415028c25c7c6416104f77f0c2b5b623a949a563705005fefabc2fb692",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "scripts/smoke_confront_cloudflare.mjs",
+      "category": "tooling-deploy",
+      "bytes": 1107,
+      "sha256": "5d9320441c44eea2f9de5b6bea4820d8d2656721678022101d33d5a2b63d85e3",
+      "summary": "Verify private Worker route with the same Node fetch transport used by Hostinger. */",
+      "imports": [],
+      "endpoints": [
+        "/api/confront/jobs",
+        "/api/confront/jobs/",
+        "/api/confront/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "scripts/smoke_confront_cloudflare.py",
+      "category": "tooling-deploy",
+      "bytes": 1719,
+      "sha256": "a2d14b133b75f42d110aa94482032cb74d70b75d6d8660d002f1439e0a448824",
+      "summary": "Smoke Cloudflare -> DESC private service; never prints keys or customer records.",
+      "imports": [
+        "json",
+        "pathlib",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/confront/jobs",
+        "/api/confront/jobs/",
+        "/api/confront/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "scripts/smoke_confront_private_relay.py",
+      "category": "tooling-deploy",
+      "bytes": 1318,
+      "sha256": "5ed8fc53345d22f52ee20d3999b66135c399e70e604e477786fb54e1fac2c54f",
+      "summary": "Smoke isolated pre-production local DESC relay, no serials or customer records read.",
+      "imports": [
+        "json",
+        "pathlib",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/confront/jobs",
+        "/api/confront/jobs/",
+        "/api/confront/status",
+        "/api/disconnection/reports"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "scripts/verify_confront_runtime.py",
+      "category": "tooling-deploy",
+      "bytes": 659,
+      "sha256": "4d0fd85a2d7b266155ef4bbebc9bccb4c874eaa67db2cff1918a189f47f8893f",
+      "summary": "Import live DESC relay and verify Atlas module availability without changing services.",
+      "imports": [
+        "ast",
+        "desc_review_relay",
+        "pathlib",
+        "sys"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "serialized_transfer.py",
@@ -3233,6 +3581,23 @@
       "symbol_count": 1
     },
     {
+      "path": "static/confront.js",
+      "category": "frontend",
+      "bytes": 9015,
+      "sha256": "6142e3c228a00b91f11646ff1358404d3e2dc4a5f37ca9c4336e67f04b6172fd",
+      "summary": "DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */",
+      "imports": [],
+      "endpoints": [
+        "/api/confront/jobs",
+        "/api/confront/jobs/",
+        "/api/confront/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
+    },
+    {
       "path": "static/disconnection.js",
       "category": "frontend",
       "bytes": 37515,
@@ -3272,8 +3637,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 117515,
-      "sha256": "a51045eb6c680653e79878a0b9a4716969975fd71c2cacefdd740bafa1954092",
+      "bytes": 120279,
+      "sha256": "e7a5965e0462ca2ead7fadbc0cd3bbc77a6c5585589721d55bdd110b4b638bc0",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3701,6 +4066,24 @@
       "symbol_count": 37
     },
     {
+      "path": "tests/test_atlas_bridge_client.py",
+      "category": "tests",
+      "bytes": 5036,
+      "sha256": "97a6ec2888879cf658111e3a0ae76a96e8c51c97665a463c3267819da251846e",
+      "summary": "Tests for the real BotDMV Atlas HTTP queue contract (synthetic only).",
+      "imports": [
+        "atlas_bridge_client",
+        "pathlib",
+        "sys",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 14
+    },
+    {
       "path": "tests/test_auth_store.py",
       "category": "tests",
       "bytes": 3731,
@@ -3741,8 +4124,8 @@
     {
       "path": "tests/test_build_hostinger_node_release.py",
       "category": "tests",
-      "bytes": 1515,
-      "sha256": "b0a07f5e5848055fd0b062cf3128d0153df7316425085f2834c963dd9071c5d9",
+      "bytes": 1583,
+      "sha256": "7635e29bb2cd037b10647387eabc5dd1d3f5cdb557ba9ad0448ef2142f3f820d",
       "summary": "",
       "imports": [
         "pathlib",
@@ -3869,6 +4252,56 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 4
+    },
+    {
+      "path": "tests/test_confront_http.py",
+      "category": "tests",
+      "bytes": 5202,
+      "sha256": "772813c111bd9f983b7daa56aa723dc823dfaae69fa884fcbe27b61f1386d7f7",
+      "summary": "Authorization, actor isolation and passive confrontation API regression tests.",
+      "imports": [
+        "confront_http",
+        "confront_job_runner",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/confront/jobs",
+        "/api/confront/jobs/../../env",
+        "/api/confront/jobs/foo/export",
+        "/api/confront/jobs/{job_id}",
+        "/api/confront/jobs/{job_id}/export",
+        "/api/confront/jobs?id=1",
+        "/api/confront/status",
+        "/api/orders"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 13
+    },
+    {
+      "path": "tests/test_confront_job_runner.py",
+      "category": "tests",
+      "bytes": 7280,
+      "sha256": "a1782eb0ad20887fedad8291d1b5efdf4012fffbe5613aef0982cd6f988cdb07",
+      "summary": "Durability, idempotency and recovery tests; synthetic providers only.",
+      "imports": [
+        "confront_job_runner",
+        "contextlib",
+        "pathlib",
+        "sqlite3",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 17
     },
     {
       "path": "tests/test_desc_operator_reports.py",
@@ -4720,14 +5153,20 @@
     {
       "path": "tests/test_operational_relay.js",
       "category": "tests",
-      "bytes": 2729,
-      "sha256": "52c976c9065b7339ffbdf0ec834e215c3d225babbb3bb8b743aa7f901c3ac95a",
+      "bytes": 4335,
+      "sha256": "08e51c80d47020001655d7519d08117c6395fe734c5700d00f5507764a4b67c3",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/auth/session",
         "/api/auth/users",
         "/api/auto-improductive-close",
+        "/api/confront/",
+        "/api/confront/jobs",
+        "/api/confront/jobs/",
+        "/api/confront/jobs/../../.env",
+        "/api/confront/jobs?url=evil",
+        "/api/confront/status",
         "/api/imperium-official/stocks/123",
         "/api/imperium-official/stocks/123/commit",
         "/api/imperium-official/stocks/123/items?profile=fortaleza",
@@ -4739,6 +5178,7 @@
         "/api/orders?date=2026-10-21&profile=natal",
         "/api/serials/consult",
         "/api/serials/consult?serials=SERIAL000000&mode=analitico",
+        "/api/stock/serial-owner",
         "/api/toa-automation",
         "/api/toa-automation/run",
         "/api/toa-contracts",
@@ -4851,6 +5291,25 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 19
+    },
+    {
+      "path": "tests/test_serial_confront_engine.py",
+      "category": "tests",
+      "bytes": 7526,
+      "sha256": "b510f937d51040794abbe0ca8684cb9a4d1823d86574940350435260fb769d57",
+      "summary": "Synthetic contract tests for the read-only reconciliation engine.",
+      "imports": [
+        "confront_engine",
+        "confront_export",
+        "pathlib",
+        "sys",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 18
     },
     {
       "path": "tests/test_serial_consult.py",
