@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-22T12:06:54+00:00",
+  "generated_at": "2026-10-22T13:26:06+00:00",
   "schema": 2,
-  "source_fingerprint": "6286336ad2074885307048925c095f09c1d43e5d860c053e545f7ea1aacce4b3",
+  "source_fingerprint": "71128c087f9155921e870eed55731e6ba7b6fcdcbea0e34d390a366c1881798f",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -4238,6 +4238,19 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 3
+    },
+    {
+      "path": "tests/test_import_status_summary.js",
+      "category": "tests",
+      "bytes": 1641,
+      "sha256": "7e916d3488b05304e0c9be2ed1f05c5bedc34e36c843d45efff20c7846fff547",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "tests/test_improductive_catalog_close.py",

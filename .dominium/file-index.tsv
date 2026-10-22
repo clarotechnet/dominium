@@ -222,6 +222,7 @@ tests	tests/test_imperium_http_api.py	25				25ab6758e210eefb
 tests	tests/test_imperium_http_plan.py	8				056547e8c6b8d815
 tests	tests/test_import_audit_history.py	3				6df23f085d3bdbda
 tests	tests/test_import_hostinger.js	3	7			798f5671d881d663
+tests	tests/test_import_status_summary.js					7e916d3488b05304
 tests	tests/test_improductive_catalog_close.py	4				34a290574b15bc9a
 tests	tests/test_installer_change.py	11				c0e798b009cdfd15
 tests	tests/test_installer_reassignment.py	20	1			0822801264d59415
