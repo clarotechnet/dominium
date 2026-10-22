@@ -28,6 +28,9 @@ BOX_TEMPLATE = base64.b64decode(
 PLACEHOLDER = "SERIAL000000".encode("utf-16-le")
 SERIAL_SLOT = 419
 METHOD = "TDtmMovEstoque.AS_GetRecords"
+# Connection ports confirmed with live, read-only queries on 2026-10-22.
+# Parnamirim shares the Natal operational profile.
+PROFILE_PORTS = {"natal": 212, "fortaleza": 596, "mossoro": 579, "recife": 599}
 
 
 def prepare_queries(serial: str, mode: str) -> tuple[bytes, bytes]:
@@ -49,11 +52,12 @@ def prepare_queries(serial: str, mode: str) -> tuple[bytes, bytes]:
 
 
 def fetch_serial_history(serial: str, *, mode: str = "analitico", profile: str = "natal"):
-    if profile != "natal":
-        raise ValueError("Historico DataSnap capturado e validado somente para Natal/P​​arnamirim")
+    if profile not in PROFILE_PORTS:
+        raise ValueError("Praca DataSnap nao suportada")
+    port = PROFILE_PORTS[profile]
     move_query, box_query = prepare_queries(serial, mode)
     credentials = load_credentials(RUNTIME_ROOT / "config" / "credentials.dat")
-    with DataSnapClient(HOST, 212, credentials["username"], credentials["password"], timeout=30.0) as client:
+    with DataSnapClient(HOST, port, credentials["username"], credentials["password"], timeout=30.0) as client:
         handle = ImperiumAPI._handle(client, METHOD)
         movement_packet = ImperiumAPI._dataset_payload(client, handle, move_query, "movimentacoes do serial")
         moves = decode_dataset(movement_packet)

@@ -96,9 +96,9 @@ shared	integrations/official_stock_relay/official_stock_bridge.py	5	1		Read-only
 shared	integrations/official_stock_relay/README.md				API Oficial — Estoque (somente leitura)	dfc23a1d9e9b911e
 shared	integrations/serial_consult/desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	f5c848b102a80386
 shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	6f5b01f448826d25
-shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	88f30de5052538e7
-shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	35f4d70fd1d2e364
-shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only serial consultation: real DataSnap history + local evidence.	740b795fd3b85861
+shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
+shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
+shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only serial consultation: real DataSnap history + local evidence.	d9f51c614747ed37
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76				b8274ffc7dfb2fbb
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-isolated.js	1			content-isolated.js - Roda no world: ISOLATED	3aa2ece3a08e2b62
@@ -253,7 +253,7 @@ tests	tests/test_order_dataset_hostinger.js	4	1			bca127bdd7f87bcf
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
 tests	tests/test_semiauto_frontend.js	19				44a6652d8752bfc1
 tests	tests/test_serial_consult.py	3				3bb13e50693f977d
-tests	tests/test_serial_datasnap_history.py	7	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	66a742747882c753
+tests	tests/test_serial_datasnap_history.py	9	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	36414aaf670dbe68
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35

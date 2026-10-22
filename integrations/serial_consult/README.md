@@ -4,7 +4,7 @@
 
 Implementado a partir de captura do IMPERIUM Natal (porta DataSnap 212), sem armazenar a captura nem seriais reais no Git. A sessao privada inicia com prepare("TDtmMovEstoque.AS_GetRecords") e usa o novo handle na requisicao execute. As duas consultas MIDAS sao DspConSerial (movimentos) e DspConCaixaSerial (caixa), com Tipo A (Analitico) e Tipo S (Sintetico).
 
-O codigo contem templates sanitizados sem o serial capturado. As consultas so sao aceitas para seriais de 12 caracteres alfanumericos, que foi o comprimento real validado nesta primeira versao. Outras pracas/formats mostram historico local quando disponivel, mas a consulta DataSnap direta fica explicitamente sem confirmacao.
+O codigo contem templates sanitizados sem o serial capturado. As consultas diretas sao aceitas para seriais de 12 caracteres alfanumericos. Em 22/10/2026, confirmamos as respostas MIDAS nos modos Analitico e Sintetico usando serial ficticio nas portas DataSnap de Natal/Parnamirim (212), Fortaleza (596), Mossoro (579) e Recife (599). Isso verifica a compatibilidade do protocolo, mas nao substitui a validacao posterior de historico com seriais reais em cada cidade. A consulta nao deve afirmar ausencia de equipamentos quando nao encontra movimentacoes.
 
 ## Componentes
 
@@ -18,6 +18,6 @@ O codigo contem templates sanitizados sem o serial capturado. As consultas so sa
 ## Publicacao e seguranca
 
 Backups do relay na pasta C:\DominiumRuntime\DescRelay-20261010.
-Publicar primeiro o relay local, depois o Worker do Cloudflare, e por ultimo GitHub Actions → Hostinger. Workflow valida consulta synthetic ZZZZZZZZZZZZ nos dois modos antes do upload.
+Publicar primeiro o relay local, depois o Worker do Cloudflare, e por ultimo GitHub Actions → Hostinger. Workflow valida consulta sintetica ZZZZZZZZZZZZ em todas as quatro conexoes operacionais e nos dois modos antes do upload. Parnamirim usa a conexao Natal.
 Nao publicar PCAP, serial real, credenciais, token, ou dumps de dados de clientes. Nenhuma baixa/transferencia executada.
 Rollback: restaurar relay anterior, depois versao anterior do Worker e commit anterior Hostinger, se necessario.

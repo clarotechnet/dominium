@@ -9,7 +9,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1] / "integrations" / "serial_consult"
 sys.path.insert(0, str(ROOT))
 from midas_reader import decode_dataset, PacketError
-from serial_datasnap import prepare_queries
+from serial_datasnap import prepare_queries, fetch_serial_history, PROFILE_PORTS
 from serial_service import parse_route, consult_serials
 
 
@@ -57,6 +57,41 @@ class SerialHistoryTests(unittest.TestCase):
         self.assertIsNone(parse_route("POST", "/api/serials/consult?serials=SERIAL000000"))
         with self.assertRaises(ValueError):
             parse_route("GET", "/api/serials/consult?serials=SERIAL000000&profile=natal&profile=recife")
+
+    def test_city_routes_use_correct_datasnap_port_without_writes(self):
+        self.assertEqual(PROFILE_PORTS, {"natal": 212, "fortaleza": 596, "mossoro": 579, "recife": 599})
+        for profile, port in PROFILE_PORTS.items():
+            for mode in ("analitico", "sintetico"):
+                with self.subTest(profile=profile, mode=mode), patch(
+                    "serial_datasnap.load_credentials", return_value={"username": "test", "password": "test"}
+                ), patch("serial_datasnap.DataSnapClient") as connector, patch(
+                    "serial_datasnap.ImperiumAPI._handle", return_value=7
+                ), patch(
+                    "serial_datasnap.ImperiumAPI._dataset_payload", return_value=b"mock"
+                ) as dataset, patch(
+                    "serial_datasnap.decode_dataset", return_value=[]
+                ):
+                    result = fetch_serial_history("ZZZZZZZZZZZZ", profile=profile, mode=mode)
+                    self.assertEqual(connector.call_args.args[1], port)
+                    self.assertEqual(dataset.call_count, 2)
+                    self.assertEqual(result["movements"], [])
+                    self.assertEqual(result["boxes"], [])
+                    self.assertEqual(result["mode"], mode)
+        with self.assertRaises(ValueError):
+            fetch_serial_history("ZZZZZZZZZZZZ", profile="invalid")
+
+    def test_relay_uses_selected_city_for_datasnap_and_does_not_assume_possession(self):
+        mock_hist = {"count": 0, "movements": [], "boxes": [], "mode": "sintetico"}
+        for profile in ("natal", "fortaleza", "mossoro", "recife"):
+            with self.subTest(profile=profile), patch(
+                "serial_service.fetch_serial_history", return_value=mock_hist
+            ) as lookup, patch("serial_service.local_references", return_value=[]):
+                response = consult_serials((["ZZZZZZZZZZZZ"], "sintetico", profile))
+                lookup.assert_called_once_with("ZZZZZZZZZZZZ", mode="sintetico", profile=profile)
+                self.assertEqual(response["failed_queries"], 0)
+                self.assertEqual(response["profile"], profile)
+                self.assertIsNotNone(response["results"][0]["datasnap"])
+                self.assertFalse(response["results"][0]["live"]["verified"])
 
     def test_no_false_current_possession_or_fake_movements(self):
         mock_hist = {"count": 1, "movements": [{

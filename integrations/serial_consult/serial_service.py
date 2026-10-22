@@ -5,10 +5,11 @@ import sqlite3
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
-from serial_datasnap import fetch_serial_history, RUNTIME_ROOT
+from serial_datasnap import fetch_serial_history, RUNTIME_ROOT, PROFILE_PORTS
 from imperium_api import ImperiumAPI
 
 DB_PATH = Path(r"C:\DominiumMain\data\dominium_operacional.sqlite3")
+PROFILE_COMPANIES = {"natal": "NATAL", "fortaleza": "FORTALEZA", "mossoro": "MOSSORO", "recife": "RECIFE"}
 ROUTE = "/api/serials/consult"
 
 
@@ -100,9 +101,7 @@ def consult_serials(parsed) -> dict:
             "last_destination": None,
             "history_error": "",
         }
-        if profile != "natal":
-            entry["history_error"] = "Historico DataSnap validado para Natal; outras pracas ainda nao verificadas."
-        elif not re.fullmatch(r"[A-Z0-9]{12}", serial):
+        if not re.fullmatch(r"[A-Z0-9]{12}", serial):
             entry["history_error"] = "Consulta direta validada para seriais alfanumericos de 12 caracteres."
         else:
             try:
@@ -117,8 +116,8 @@ def consult_serials(parsed) -> dict:
                     try:
                         if stock_id not in stock_cache:
                             if stock_api is None:
-                                stock_api = ImperiumAPI(RUNTIME_ROOT, port=212,
-                                                       company="NATAL", profile_key="natal",
+                                stock_api = ImperiumAPI(RUNTIME_ROOT, port=PROFILE_PORTS[profile],
+                                                       company=PROFILE_COMPANIES[profile], profile_key=profile,
                                                        expected_username="DOMINIUM")
                             stock_cache[stock_id] = stock_api.technician_stock(stock_id)
                         stock = stock_cache[stock_id]
