@@ -7,6 +7,7 @@ after uncertainty; BotDMV's queue is in-memory and has no idempotency key.
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 from contextlib import contextmanager
 import time
@@ -32,7 +33,8 @@ class ConfrontJobStore:
             con.executescript("""
                 CREATE TABLE IF NOT EXISTS jobs (
                     id TEXT PRIMARY KEY, profile TEXT NOT NULL, mode TEXT NOT NULL,
-                    created_at REAL NOT NULL, created_by TEXT NOT NULL DEFAULT ''
+                    created_at REAL NOT NULL, created_by TEXT NOT NULL DEFAULT '',
+                    request_key TEXT NOT NULL DEFAULT ''
                 );
                 CREATE TABLE IF NOT EXISTS job_items (
                     job_id TEXT NOT NULL, position INTEGER NOT NULL, serial TEXT NOT NULL,
@@ -48,6 +50,12 @@ class ConfrontJobStore:
                 CREATE INDEX IF NOT EXISTS idx_job_items_work ON
                     job_items (job_id, state, retry_after, lease_until, position);
             """)
+            # Existing jobs.sqlite3 installations are upgraded without losing work.
+            columns = {row["name"] for row in con.execute("PRAGMA table_info(jobs)")}
+            if "request_key" not in columns:
+                con.execute("ALTER TABLE jobs ADD COLUMN request_key TEXT NOT NULL DEFAULT ''")
+            con.execute("""CREATE UNIQUE INDEX IF NOT EXISTS idx_jobs_idempotency
+                           ON jobs(created_by, request_key) WHERE request_key != ''""")
 
     @contextmanager
     def _connect(self):
@@ -62,20 +70,54 @@ class ConfrontJobStore:
             con.close()
 
     def create(self, serials: str | list[str], *, profile: str, mode: str,
-               created_by: str = "") -> str:
+               created_by: str = "", request_key: str = "") -> str:
         if profile not in SUPPORTED_PROFILES or mode not in SUPPORTED_MODES:
             raise ValueError("Praca ou modo invalido")
         values = normalize_serials(serials)
+        if request_key and not re.fullmatch(r"[a-f0-9]{32}", request_key):
+            raise ValueError("Chave de requisicao invalida")
         job_id = uuid.uuid4().hex
         now = time.time()
         with self._connect() as con:
-            con.execute("INSERT INTO jobs(id,profile,mode,created_at,created_by) VALUES (?,?,?,?,?)",
-                        (job_id, profile, mode, now, created_by[:100]))
+            # Serialize lookup + insert across threads/processes for an idempotent POST.
+            con.execute("BEGIN IMMEDIATE")
+            if request_key:
+                existing = con.execute(
+                    "SELECT id FROM jobs WHERE created_by=? AND request_key=?",
+                    (created_by[:100], request_key)
+                ).fetchone()
+                if existing:
+                    return existing["id"]
+            con.execute("""INSERT INTO jobs(id,profile,mode,created_at,created_by,request_key)
+                           VALUES (?,?,?,?,?,?)""",
+                        (job_id, profile, mode, now, created_by[:100], request_key))
             con.executemany("""
                 INSERT INTO job_items(job_id, position, serial, state, updated_at)
                 VALUES (?, ?, ?, 'pending_imperium', ?)
             """, [(job_id, i, serial, now) for i, serial in enumerate(values)])
         return job_id
+
+    def find_request(self, actor: str, request_key: str) -> str | None:
+        if not re.fullmatch(r"[a-f0-9]{32}", request_key):
+            return None
+        with self._connect() as con:
+            found = con.execute("SELECT id FROM jobs WHERE created_by=? AND request_key=?",
+                                (actor[:100], request_key)).fetchone()
+            return found["id"] if found else None
+
+    def active_job(self, actor: str) -> dict | None:
+        """Find ALL outstanding work, not merely the newest 20 history entries."""
+        with self._connect() as con:
+            job = con.execute("""
+                SELECT jobs.id, jobs.profile FROM jobs
+                WHERE created_by=? AND EXISTS (
+                    SELECT 1 FROM job_items
+                    WHERE job_items.job_id=jobs.id
+                      AND job_items.state NOT IN ('complete','review_needed')
+                )
+                ORDER BY jobs.created_at ASC LIMIT 1
+            """, (actor[:100],)).fetchone()
+            return dict(job) if job else None
 
     def owned(self, job_id: str, actor: str) -> bool:
         with self._connect() as con:

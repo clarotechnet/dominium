@@ -160,8 +160,6 @@ endpoint	path
 /api/toa-automation/run	patch_remote_toa.py
 /api/serials/consult	scripts/inspect_confront_wiring.py
 /api/disconnection/reports	scripts/install_confront_relay.py
-/api/auth/session	scripts/probe_confront_public.mjs
-/api/confront/status	scripts/probe_confront_public.mjs
 /api/confront/jobs	scripts/smoke_confront_cloudflare.mjs
 /api/confront/jobs/	scripts/smoke_confront_cloudflare.mjs
 /api/confront/status	scripts/smoke_confront_cloudflare.mjs
@@ -208,6 +206,9 @@ endpoint	path
 /api/imperium-official/stocks?profile=natal	tests/test_app.py
 /api/orders/2207229/material-inventory?profile=natal	tests/test_app.py
 /api/orders/{order.id_os}/close?profile=natal	tests/test_app.py
+/api/confront/jobs	tests/test_confront_frontend.js
+/api/confront/jobs/	tests/test_confront_frontend.js
+/api/confront/status	tests/test_confront_frontend.js
 /api/confront/jobs	tests/test_confront_http.py
 /api/confront/jobs/../../env	tests/test_confront_http.py
 /api/confront/jobs/foo/export	tests/test_confront_http.py

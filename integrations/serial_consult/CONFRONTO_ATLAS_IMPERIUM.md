@@ -66,3 +66,39 @@ A funcionalidade foi desenvolvida no checkout isolado:
   numa etapa posterior sem quebrar acesso do Chrome/WhatsApp existente.
 - Nenhuma operação de baixa, movimentação ou alteração de cadastro é
   oferecida pelo módulo.
+
+
+## Endurecimento e melhorias de 22/10/2026
+
+- Chave de idempotência `request_key` (UUID hexadecimal gerado no navegador)
+  persistida em índice único parcial SQLite por usuário. Uma repetição de POST
+  com a mesma chave reutiliza o trabalho mesmo se ele já estiver concluído.
+- `BEGIN IMMEDIATE` protege a criação de trabalhos contra POSTs concorrentes.
+  A migração adiciona `request_key` automaticamente sem descartar registros existentes.
+- O bloqueio de um segundo trabalho verifica **todos** os trabalhos em andamento
+  do mesmo operador, não só os 20 últimos. O erro informa a praça do trabalho ativo.
+- Histórico seletivo por praça na interface, permitindo reabrir relatórios do
+  mesmo usuário. Nenhum relatório de outro usuário é exibido.
+- O Atlas offline não oculta trabalhos históricos.
+- Novos testes de regressão da interface JS cobrem histórico, retry com chave
+  persistente na mesma tentativa, autenticação e presença da navegação.
+- A bateria geral `scripts/quality_gate.py` inclui esses testes.
+
+### Descoberta de rede: requer privilégio administrativo para conclusão
+
+O Windows também tinha um portproxy **0.0.0.0:8787** aberto para WSL,
+além de `127.0.0.1:8787`. Identificamos a tarefa agendada
+`BOT DMV - WSL Bridge 8787`, que usa o script
+`C:\BOT_OFICIAL_DMV\REPARAR_WSL_8787_RUNTIME.ps1` e recriava a
+entrada pública após uma recuperação.
+
+O script foi ajustado no próprio servidor: reparações futuras passam a
+criar somente a entrada `127.0.0.1`. A tentativa de remover a entrada
+pública **já ativa** não foi aplicada, pois o Windows exige elevação de
+administrador (`netsh: A operação solicitada exige elevação`).
+Não marcar o risco como resolvido até que a regra ativa seja removida
+com privilégios apropriados e validada com o Atlas funcionando.
+Snapshot de rede antes da mudança em
+`output/atlas-network-before-20261022.txt` (diagnóstico local, não Git).
+O firewall Windows foi observado desativado nos três perfis; não o ligamos
+às cegas, para evitar interrupção dos serviços da base.

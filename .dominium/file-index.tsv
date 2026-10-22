@@ -98,9 +98,9 @@ shared	integrations/official_stock_relay/README.md				API Oficial — Estoque (s
 shared	integrations/serial_consult/atlas_bridge_client.py	10			Read-only Atlas serial lookups via the existing localhost BotDMV queue.	55e9381c023c155d
 shared	integrations/serial_consult/confront_engine.py	7			Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.	2342b9bf5dc94f45
 shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-only Atlas x Imperium confrontation results.	742dd6866c287401
-shared	integrations/serial_consult/confront_http.py	7	3		Private HTTP interface and supervised background job scheduler.	43260bdf0030a9f3
-shared	integrations/serial_consult/confront_job_runner.py	12			Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).	67b9fd6d39df0fda
-imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	02ebb07a504772c6
+shared	integrations/serial_consult/confront_http.py	7	3		Private HTTP interface and supervised background job scheduler.	86da7071f7da0062
+shared	integrations/serial_consult/confront_job_runner.py	14			Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).	46db8339b45b1bf4
+imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	4b1c213d4689de21
 shared	integrations/serial_consult/desc_review_relay.py	7			Authenticated relay for DESC review and private read-only Imperium checks.	c8f963bf2a6b8b97
 shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	6f5b01f448826d25
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
@@ -169,7 +169,6 @@ tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
 tooling-deploy	scripts/configure_supabase_hosted.py	1				f4637b027d3a1889
 tooling-deploy	scripts/confront_local_cli.py	1			Operator-only LOCAL CLI for staging the Atlas x Imperium confrontation.	08f63e21a0801564
 tooling-deploy	scripts/deploy_supabase.ps1					ae66340ccd4c0380
-tooling-deploy	scripts/diagnose_action_failure.mjs					65b7d712828ebbdb
 tooling-deploy	scripts/generate_agent_context.py	20		1		99f386dde01ec92f
 tooling-deploy	scripts/inspect_atlas_bridge_readonly.py	1			Inspect only Atlas local bridge health and safely redacted metadata.	5729f817efeba45c
 tooling-deploy	scripts/inspect_confront_wiring.py		1			764a258b7207afec
@@ -177,9 +176,7 @@ tooling-deploy	scripts/inspect_managed_atlas_readonly.py	1			Safe Chrome-for-Tes
 tooling-deploy	scripts/install_agent_context_hooks.py	2				3f284e6102d8feeb
 tooling-deploy	scripts/install_confront_relay.py	3	1		Minimal, backup-first insertion of the confront read-only API into live DESC relay.	4ae20a35e3eeb9d3
 tooling-deploy	scripts/probe_atlas_synthetic.py				Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.	865b81e754d5a762
-tooling-deploy	scripts/probe_confront_actions.mjs					aac65277dada0ec9
-tooling-deploy	scripts/probe_confront_public.mjs		2		Public smoke. No credentials or customer data. */	08b45534095955b8
-tooling-deploy	scripts/quality_gate.py	5				eefb3eb701f5a79b
+tooling-deploy	scripts/quality_gate.py	5				16a9ff80d9b0e4c7
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 tooling-deploy	scripts/restart_confront_relay.ps1					de8c58415028c25c
 tooling-deploy	scripts/smoke_confront_cloudflare.mjs		3		Verify private Worker route with the same Node fetch transport used by Hostinger. */	5d9320441c44eea2
@@ -189,10 +186,10 @@ tooling-deploy	scripts/verify_confront_runtime.py				Import live DESC relay and 
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
-frontend	static/confront.js	7	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	6142e3c228a00b91
+frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	e1173adf03c6edde
 frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			e7a5965e0462ca2e
+frontend	static/index.html		1			9181f3e195a80395
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
@@ -227,8 +224,9 @@ tests	tests/test_city_scope_integration.py	18				02411a9b3190bb77
 tests	tests/test_close_report.py	15				125242a6d2cff245
 tests	tests/test_close_report_excel.py	5				36de3899cae4ba75
 tests	tests/test_configure_imperium_credentials.py	4				931f61ff4157fbfa
-tests	tests/test_confront_http.py	13	8		Authorization, actor isolation and passive confrontation API regression tests.	772813c111bd9f98
-tests	tests/test_confront_job_runner.py	17			Durability, idempotency and recovery tests; synthetic providers only.	a1782eb0ad20887f
+tests	tests/test_confront_frontend.js	4	3			7d19b6c801d8072b
+tests	tests/test_confront_http.py	15	8		Authorization, actor isolation and passive confrontation API regression tests.	2e7e3e3b64652874
+tests	tests/test_confront_job_runner.py	19			Durability, idempotency and recovery tests; synthetic providers only.	324d0850c76d1131
 tests	tests/test_desc_operator_reports.py	3			Private report store regression: never involve live log or production actions.	c6da3055162c4d3b
 tests	tests/test_desc_order_verifier.py	24				1a425dadf4202442
 tests	tests/test_desc_review_proxy.py	16	8			2ce6f2b762e68847

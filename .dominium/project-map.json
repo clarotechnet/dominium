@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-22T22:38:00+00:00",
+  "generated_at": "2026-10-22T23:22:07+00:00",
   "schema": 2,
-  "source_fingerprint": "caa0f01ff2dd611ee70f7495cdcfb155c10f0d8468aaba6e3f4303ed53624d8d",
+  "source_fingerprint": "de42673f35db114a4a819391fc3c8b67cd025f52e4b671c6d8a58770fc6e79a8",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -1945,8 +1945,8 @@
     {
       "path": "integrations/serial_consult/confront_http.py",
       "category": "shared",
-      "bytes": 6792,
-      "sha256": "43260bdf0030a9f347e467a280fd8d6e3f6ddfc42246c41dfd73078e4d23e867",
+      "bytes": 7391,
+      "sha256": "86da7071f7da0062bb7748e24ed4dbb72f42e5828001565e6106c6a83728f18b",
       "summary": "Private HTTP interface and supervised background job scheduler.",
       "imports": [
         "__future__",
@@ -1976,8 +1976,8 @@
     {
       "path": "integrations/serial_consult/confront_job_runner.py",
       "category": "shared",
-      "bytes": 11901,
-      "sha256": "67b9fd6d39df0fda973ea60a5f0f4541330bab35e926f68ed1515900ad209cd1",
+      "bytes": 14150,
+      "sha256": "46db8339b45b1bf40ffd4e84d4575874f42dde18ba5f16af0b1f4d5a950bd7a0",
       "summary": "Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).",
       "imports": [
         "__future__",
@@ -1986,6 +1986,7 @@
         "contextlib",
         "json",
         "pathlib",
+        "re",
         "sqlite3",
         "time",
         "typing",
@@ -1995,13 +1996,13 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 12
+      "symbol_count": 14
     },
     {
       "path": "integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md",
       "category": "imperium",
-      "bytes": 3774,
-      "sha256": "02ebb07a504772c6f659a136b41a76f88c7f0a87f73b787ad6e086c95c4106dd",
+      "bytes": 5855,
+      "sha256": "4b1c213d4689de21f94cba59f3e2fbd037dcdf214e6d5d438c4c86b615a6298b",
       "summary": "DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente",
       "imports": [],
       "endpoints": [],
@@ -3255,19 +3256,6 @@
       "symbol_count": 0
     },
     {
-      "path": "scripts/diagnose_action_failure.mjs",
-      "category": "tooling-deploy",
-      "bytes": 1500,
-      "sha256": "65b7d712828ebbdb7008623b927ea83c02de61f53993eb369ed548253a5810c4",
-      "summary": "",
-      "imports": [],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
       "path": "scripts/generate_agent_context.py",
       "category": "tooling-deploy",
       "bytes": 15803,
@@ -3402,39 +3390,10 @@
       "symbol_count": 0
     },
     {
-      "path": "scripts/probe_confront_actions.mjs",
-      "category": "tooling-deploy",
-      "bytes": 700,
-      "sha256": "aac65277dada0ec9fa2d3977a4c32d8666bde2a8881ca410e47006ea6b66aeac",
-      "summary": "",
-      "imports": [],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
-      "path": "scripts/probe_confront_public.mjs",
-      "category": "tooling-deploy",
-      "bytes": 1433,
-      "sha256": "08b45534095955b89b0e2c7a763d0bdd75e653bbf0f4282a5e3ef9bc112ff1ce",
-      "summary": "Public smoke. No credentials or customer data. */",
-      "imports": [],
-      "endpoints": [
-        "/api/auth/session",
-        "/api/confront/status"
-      ],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 5885,
-      "sha256": "eefb3eb701f5a79b5c51552b6b90ae8a1b2ae223e2bb69f2a46bc7815de44611",
+      "bytes": 5935,
+      "sha256": "16a9ff80d9b0e4c795c277061cc45444173b439725b8e12da1c1564536a38c35",
       "summary": "",
       "imports": [
         "__future__",
@@ -3625,8 +3584,8 @@
     {
       "path": "static/confront.js",
       "category": "frontend",
-      "bytes": 9015,
-      "sha256": "6142e3c228a00b91f11646ff1358404d3e2dc4a5f37ca9c4336e67f04b6172fd",
+      "bytes": 10686,
+      "sha256": "e1173adf03c6edde7ef8b92dd6c3f0cd43621e9d8de9e62d95f08fac0c8e73cc",
       "summary": "DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */",
       "imports": [],
       "endpoints": [
@@ -3637,7 +3596,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 7
+      "symbol_count": 8
     },
     {
       "path": "static/disconnection.js",
@@ -3679,8 +3638,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 120279,
-      "sha256": "e7a5965e0462ca2ead7fadbc0cd3bbc77a6c5585589721d55bdd110b4b638bc0",
+      "bytes": 120678,
+      "sha256": "9181f3e195a80395f2567864a93625681ec8048fd08d58679ab19cd9ec93366f",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4296,10 +4255,27 @@
       "symbol_count": 4
     },
     {
+      "path": "tests/test_confront_frontend.js",
+      "category": "tests",
+      "bytes": 5171,
+      "sha256": "7d19b6c801d8072b1e7e639b07244dc16af44e5ecfb6dd55a31e645758b71561",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/confront/jobs",
+        "/api/confront/jobs/",
+        "/api/confront/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
       "path": "tests/test_confront_http.py",
       "category": "tests",
-      "bytes": 5202,
-      "sha256": "772813c111bd9f983b7daa56aa723dc823dfaae69fa884fcbe27b61f1386d7f7",
+      "bytes": 7038,
+      "sha256": "2e7e3e3b64652874fba26e4ec566c5b6cb5814e3c3ace010e6e076a4b350bef1",
       "summary": "Authorization, actor isolation and passive confrontation API regression tests.",
       "imports": [
         "confront_http",
@@ -4322,15 +4298,16 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 13
+      "symbol_count": 15
     },
     {
       "path": "tests/test_confront_job_runner.py",
       "category": "tests",
-      "bytes": 7280,
-      "sha256": "a1782eb0ad20887fedad8291d1b5efdf4012fffbe5613aef0982cd6f988cdb07",
+      "bytes": 8642,
+      "sha256": "324d0850c76d113115958d666b06341ae01ef156acaa4510d97b1c8bdeaf14f8",
       "summary": "Durability, idempotency and recovery tests; synthetic providers only.",
       "imports": [
+        "concurrent",
         "confront_job_runner",
         "contextlib",
         "pathlib",
@@ -4343,7 +4320,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 17
+      "symbol_count": 19
     },
     {
       "path": "tests/test_desc_operator_reports.py",

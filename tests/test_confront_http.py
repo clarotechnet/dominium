@@ -84,6 +84,36 @@ class ConfrontHttpTests(unittest.TestCase):
         self.assertIn("ABCDEF123456", data)
         self.assertIn("manual_review", data)
 
+    def test_same_request_key_is_idempotent_even_after_completion(self):
+        params = {"serials": ["TEST00000001"], "profile": "natal",
+                  "mode": "sintetico", "request_key": "a" * 32}
+        first, payload, _ = self.service.handle("POST", "/api/confront/jobs", "user-11", params)
+        self.assertEqual(first, 201)
+        job_id = payload["job"]["job_id"]
+        with self.store._connect() as con:
+            con.execute("UPDATE job_items SET state='complete' WHERE job_id=?", (job_id,))
+        second, again, _ = self.service.handle("POST", "/api/confront/jobs", "user-11", params)
+        self.assertEqual(second, 200)
+        self.assertEqual(again["job"]["job_id"], job_id)
+        self.assertTrue(again["reused"])
+        self.assertEqual(self.store.list_jobs("user-11")[0]["id"], job_id)
+        third, _, _ = self.service.handle("POST", "/api/confront/jobs", "user-12", params)
+        self.assertEqual(third, 201)  # Per-user idempotency.
+
+    def test_old_open_job_outside_recent_history_blocks_duplicate(self):
+        original = self.store.create("TEST00000001", profile="recife", mode="analitico",
+                                     created_by="user-13")
+        for i in range(23):
+            job = self.store.create(f"TEST{i:08d}", profile="natal", mode="analitico",
+                                    created_by="user-13")
+            with self.store._connect() as con:
+                con.execute("UPDATE job_items SET state='review_needed' WHERE job_id=?", (job,))
+        status, reply, _ = self.service.handle("POST", "/api/confront/jobs", "user-13",
+            {"serials": "TEST99999999", "profile": "natal"})
+        self.assertEqual(status, 409)
+        self.assertEqual(reply["active_profile"], "recife")
+        self.assertEqual(self.store.active_job("user-13")["id"], original)
+
     def test_status_contains_no_inventory_data(self):
         code, body, _ = self.service.handle("GET", "/api/confront/status", "user-10")
         self.assertEqual(code, 200)

@@ -357,6 +357,7 @@ confront_engine	integrations/serial_consult/confront_job_runner.py
 contextlib	integrations/serial_consult/confront_job_runner.py
 json	integrations/serial_consult/confront_job_runner.py
 pathlib	integrations/serial_consult/confront_job_runner.py
+re	integrations/serial_consult/confront_job_runner.py
 sqlite3	integrations/serial_consult/confront_job_runner.py
 time	integrations/serial_consult/confront_job_runner.py
 typing	integrations/serial_consult/confront_job_runner.py
@@ -788,6 +789,7 @@ pathlib	tests/test_confront_http.py
 sys	tests/test_confront_http.py
 tempfile	tests/test_confront_http.py
 unittest	tests/test_confront_http.py
+concurrent	tests/test_confront_job_runner.py
 confront_job_runner	tests/test_confront_job_runner.py
 contextlib	tests/test_confront_job_runner.py
 pathlib	tests/test_confront_job_runner.py

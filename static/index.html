@@ -649,6 +649,13 @@
           </div>
         </div>
       </div>
+      <div class="serials-query-card">
+        <label for="confrontHistory">Histórico de confrontos nesta praça</label>
+        <select id="confrontHistory" aria-label="Selecionar trabalho anterior">
+          <option value="">Nenhum trabalho registrado</option>
+        </select>
+        <small>Os relatórios anteriores permanecem disponíveis para o operador que os criou.</small>
+      </div>
       <div id="confrontNotice" class="serials-notice hidden" role="status"></div>
       <div class="serials-summary" id="confrontSummary" aria-label="Progresso do confronto"></div>
       <div class="serials-results" id="confrontResults" aria-live="polite">
@@ -2149,7 +2156,7 @@
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
   <script src="/app.js?v=20261022-confront"></script>
-  <script src="/confront.js?v=20261022-1"></script>
+  <script src="/confront.js?v=20261022-2"></script>
   <script type="module" src="/motion-ui.js"></script>
 </body>
 </html>

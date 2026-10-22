@@ -108,17 +108,26 @@ class ConfrontService:
                 return 200, {"ok": True, "jobs": self.store.list_jobs(actor)}, None
             if action == "create":
                 body = body if isinstance(body, dict) else {}
-                if set(body) - {"serials", "profile", "mode"}:
+                if set(body) - {"serials", "profile", "mode", "request_key"}:
                     raise ValueError("Campos desconhecidos")
+                request_key = body.get("request_key") or ""
+                if not isinstance(request_key, str) or (request_key and not JOB_ID.fullmatch(request_key)):
+                    raise ValueError("Chave de requisicao invalida")
                 with self._lock:
-                    open_jobs = [entry["id"] for entry in self.store.list_jobs(actor)
-                                 if self.store.progress(entry["id"])["done"]
-                                 < self.store.progress(entry["id"])["total"]]
-                    if open_jobs:
-                        return 409, {"ok": False, "error": "Conclua o trabalho atual antes de iniciar outro"}, None
+                    existing = self.store.find_request(actor, request_key) if request_key else None
+                    if existing:
+                        return 200, {"ok": True, "job": self.store.progress(existing),
+                                     "reused": True}, None
+                    active = self.store.active_job(actor)
+                    if active:
+                        return 409, {"ok": False,
+                                     "error": "Existe confronto em andamento em " +
+                                              active["profile"].upper() + ". Conclua-o antes do proximo.",
+                                     "active_profile": active["profile"]}, None
                     job_id = self.store.create(body.get("serials", ""),
                         profile=body.get("profile", ""),
-                        mode=body.get("mode", "analitico"), created_by=actor)
+                        mode=body.get("mode", "analitico"), created_by=actor,
+                        request_key=request_key)
                 self._wake.set()
                 return 201, {"ok": True, "job": self.store.progress(job_id)}, None
             if not JOB_ID.fullmatch(job_id or "") or not self.store.owned(job_id, actor):

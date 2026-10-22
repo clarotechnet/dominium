@@ -1,6 +1,7 @@
 """Durability, idempotency and recovery tests; synthetic providers only."""
 import sys
 import sqlite3
+from concurrent.futures import ThreadPoolExecutor
 import tempfile
 import unittest
 from contextlib import closing
@@ -124,6 +125,30 @@ class ConfrontDurableJobTests(unittest.TestCase):
                          "idle")
         self.assertEqual(self.store.progress(job)["states"], {"review_needed": 1})
         self.assertEqual(self.atlas.calls, 0)
+
+    def test_concurrent_retries_create_one_job(self):
+        def create(_):
+            return self.store.create("TEST00000001", profile="natal",
+                                     mode="analitico", created_by="user-17",
+                                     request_key="c" * 32)
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            ids = list(pool.map(create, range(3)))
+        self.assertEqual(len(set(ids)), 1)
+        self.assertEqual(len(self.store.list_jobs("user-17")), 1)
+
+    def test_legacy_job_database_is_migrated_without_losing_jobs(self):
+        legacy = Path(self.tmp.name) / "legacy.sqlite3"
+        with closing(sqlite3.connect(legacy)) as con:
+            with con:
+                con.execute("""CREATE TABLE jobs (id TEXT PRIMARY KEY, profile TEXT NOT NULL,
+                            mode TEXT NOT NULL, created_at REAL NOT NULL,
+                            created_by TEXT NOT NULL DEFAULT '')""")
+                con.execute("INSERT INTO jobs VALUES ('old','natal','analitico',1,'user-19')")
+        migrated = ConfrontJobStore(legacy)
+        self.assertTrue(migrated.owned("old", "user-19"))
+        with migrated._connect() as con:
+            columns = {row["name"] for row in con.execute("PRAGMA table_info(jobs)")}
+        self.assertIn("request_key", columns)
 
     def test_invalid_job_parameters(self):
         with self.assertRaises(ValueError):

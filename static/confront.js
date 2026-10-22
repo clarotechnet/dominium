@@ -7,7 +7,7 @@
     start: $("confrontRun"), refresh: $("confrontRefresh"), export: $("confrontExport"),
     status: $("confrontStatus"), notice: $("confrontNotice"),
     atlas: $("confrontAtlasStatus"), summary: $("confrontSummary"),
-    results: $("confrontResults")
+    results: $("confrontResults"), history: $("confrontHistory")
   };
   if (Object.values(ui).some((value) => !value)) return;
   let busy = false;
@@ -16,6 +16,9 @@
   let lastProfile = "";
   let fetching = false;
   let initialized = false;
+  let pendingAttempt = null;
+  let jobHistory = [];
+  let historyDirty = true;
   const statuses = {
     pending_imperium: "Consultando IMPERIUM",
     pending_atlas: "Aguardando consulta Atlas",
@@ -44,6 +47,7 @@
     const operator = ["admin", "controller"].includes(String(state.authUser?.role || ""));
     ui.start.disabled = busy || !operator || Boolean(currentJob && currentJob.done < currentJob.total);
     ui.refresh.disabled = busy;
+    ui.history.disabled = busy || !operator || !jobHistory.length;
     ui.export.disabled = !currentJob || currentJob.done !== currentJob.total;
     ui.start.textContent = busy ? "Processando..." : "Iniciar confronto";
     if (!operator) {
@@ -128,7 +132,25 @@
     });
     ui.results.replaceChildren(...cards);
   }
-  async function refresh({silent = false} = {}) {
+  function renderHistory() {
+    const available = jobHistory.filter(job => job.profile === state.profile);
+    const options = available.map(job => {
+      const option = document.createElement("option");
+      option.value = job.id;
+      option.textContent = new Date(job.created_at * 1000).toLocaleString("pt-BR") +
+        " · " + job.mode + " · " + job.id.slice(0, 7);
+      return option;
+    });
+    if (!options.length) {
+      const option = new Option("Nenhum trabalho registrado", "");
+      options.push(option);
+    }
+    ui.history.replaceChildren(...options);
+    if (selected && available.some(job => job.id === selected)) ui.history.value = selected;
+    ui.history.disabled = busy || !available.length;
+  }
+
+  async function refresh({silent = false, includeHistory = false} = {}) {
     if (fetching || !["admin","controller"].includes(String(state.authUser?.role || ""))) return;
     fetching = true;
     if (!silent) busy = true;
@@ -136,10 +158,12 @@
     try {
       const status = await request("/api/confront/status", {timeoutMs:16000});
       ui.atlas.textContent = status.atlas_online ? "Atlas conectado" : "Atlas indisponível";
-      if (!selected) {
+      if (historyDirty || !selected || includeHistory) {
         const listed = await request("/api/confront/jobs", {timeoutMs:16000});
-        const mine = (listed.jobs || []).find(job => job.profile === state.profile);
-        selected = mine?.id || null;
+        jobHistory = Array.isArray(listed.jobs) ? listed.jobs : [];
+        if (!selected) selected = jobHistory.find(job => job.profile === state.profile)?.id || null;
+        historyDirty = false;
+        renderHistory();
       }
       if (selected) {
         const response = await request("/api/confront/jobs/" + selected, {timeoutMs:16000});
@@ -167,15 +191,22 @@
     busy = true;
     clearError();
     render();
+    const signature = [state.profile, ui.mode.value, ...serials].join("|");
+    if (!pendingAttempt || pendingAttempt.signature !== signature) {
+      pendingAttempt = {signature, key: crypto.randomUUID().replaceAll("-", "")};
+    }
     try {
       const response = await request("/api/confront/jobs", {
         method: "POST",
         headers: {"content-type": "application/json"},
-        body: JSON.stringify({serials, profile: state.profile, mode: ui.mode.value}),
+        body: JSON.stringify({serials, profile: state.profile,
+          mode: ui.mode.value, request_key: pendingAttempt.key}),
         timeoutMs:20000
       });
       selected = response.job.job_id;
       currentJob = response.job;
+      pendingAttempt = null;
+      historyDirty = true;
       ui.input.value = "";
       await refresh();
     } catch (error) {
@@ -196,7 +227,13 @@
   }
   ui.nav.addEventListener("click", () => setModule("confront"));
   ui.start.addEventListener("click", () => void create());
-  ui.refresh.addEventListener("click", () => void refresh());
+  ui.refresh.addEventListener("click", () => void refresh({includeHistory:true}));
+  ui.history.addEventListener("change", () => {
+    selected = ui.history.value || null;
+    currentJob = null;
+    render();
+    void refresh();
+  });
   ui.export.addEventListener("click", () => void exportCsv());
   document.addEventListener("dominium:module-change", ({detail}) => {
     if (lastProfile !== state.profile) {
@@ -204,6 +241,8 @@
       currentJob = null;
       lastProfile = state.profile;
       initialized = false;
+      historyDirty = true;
+      jobHistory = [];
     }
     if (detail?.module === "confront") void refresh();
   });
@@ -214,6 +253,8 @@
       currentJob = null;
       lastProfile = state.profile;
       initialized = false;
+      historyDirty = true;
+      jobHistory = [];
     }
     if (!initialized || (currentJob && currentJob.done < currentJob.total)) {
       void refresh({silent:true});

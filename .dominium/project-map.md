@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-22T22:38:00+00:00
-- Source fingerprint: `caa0f01ff2dd611e`
-- Indexed files: 339
-- Indexed symbols: 3246
-- API path references: 301
+- Generated: 2026-10-22T23:22:07+00:00
+- Source fingerprint: `de42673f35db114a`
+- Indexed files: 337
+- Indexed symbols: 3257
+- API path references: 302
 
 ## Navigation rule
 
@@ -86,7 +86,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## frontend
 
-- `static/confront.js` (7 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
+- `static/confront.js` (8 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
 - `static/disconnection.js` (37 symbols, 10 API paths)
 - `static/impeccable.css`
 - `static/index.html` (1 API paths)
@@ -160,9 +160,9 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## Indexed areas not expanded here
 
 - shared: 119 files
-- tooling-deploy: 45 files
+- tooling-deploy: 42 files
 - docs: 9 files
-- tests: 94 files
+- tests: 95 files
 
 ## Search indexes
 
