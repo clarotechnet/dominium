@@ -169,6 +169,7 @@ tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
 tooling-deploy	scripts/configure_supabase_hosted.py	1				f4637b027d3a1889
 tooling-deploy	scripts/confront_local_cli.py	1			Operator-only LOCAL CLI for staging the Atlas x Imperium confrontation.	08f63e21a0801564
 tooling-deploy	scripts/deploy_supabase.ps1					ae66340ccd4c0380
+tooling-deploy	scripts/diagnose_action_failure.mjs					65b7d712828ebbdb
 tooling-deploy	scripts/generate_agent_context.py	20		1		99f386dde01ec92f
 tooling-deploy	scripts/inspect_atlas_bridge_readonly.py	1			Inspect only Atlas local bridge health and safely redacted metadata.	5729f817efeba45c
 tooling-deploy	scripts/inspect_confront_wiring.py		1			764a258b7207afec
@@ -176,6 +177,8 @@ tooling-deploy	scripts/inspect_managed_atlas_readonly.py	1			Safe Chrome-for-Tes
 tooling-deploy	scripts/install_agent_context_hooks.py	2				3f284e6102d8feeb
 tooling-deploy	scripts/install_confront_relay.py	3	1		Minimal, backup-first insertion of the confront read-only API into live DESC relay.	4ae20a35e3eeb9d3
 tooling-deploy	scripts/probe_atlas_synthetic.py				Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.	865b81e754d5a762
+tooling-deploy	scripts/probe_confront_actions.mjs					aac65277dada0ec9
+tooling-deploy	scripts/probe_confront_public.mjs		2		Public smoke. No credentials or customer data. */	08b45534095955b8
 tooling-deploy	scripts/quality_gate.py	5				eefb3eb701f5a79b
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 tooling-deploy	scripts/restart_confront_relay.ps1					de8c58415028c25c

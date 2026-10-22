@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-22T22:34:04+00:00",
+  "generated_at": "2026-10-22T22:38:00+00:00",
   "schema": 2,
-  "source_fingerprint": "2b789f9948ac12cd2ddc66d72dde3ca7f66ec393b50c8a07ce8e989a9c00a2ad",
+  "source_fingerprint": "caa0f01ff2dd611ee70f7495cdcfb155c10f0d8468aaba6e3f4303ed53624d8d",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -3255,6 +3255,19 @@
       "symbol_count": 0
     },
     {
+      "path": "scripts/diagnose_action_failure.mjs",
+      "category": "tooling-deploy",
+      "bytes": 1500,
+      "sha256": "65b7d712828ebbdb7008623b927ea83c02de61f53993eb369ed548253a5810c4",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "scripts/generate_agent_context.py",
       "category": "tooling-deploy",
       "bytes": 15803,
@@ -3383,6 +3396,35 @@
         "sys"
       ],
       "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "scripts/probe_confront_actions.mjs",
+      "category": "tooling-deploy",
+      "bytes": 700,
+      "sha256": "aac65277dada0ec9fa2d3977a4c32d8666bde2a8881ca410e47006ea6b66aeac",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "scripts/probe_confront_public.mjs",
+      "category": "tooling-deploy",
+      "bytes": 1433,
+      "sha256": "08b45534095955b89b0e2c7a763d0bdd75e653bbf0f4282a5e3ef9bc112ff1ce",
+      "summary": "Public smoke. No credentials or customer data. */",
+      "imports": [],
+      "endpoints": [
+        "/api/auth/session",
+        "/api/confront/status"
+      ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,

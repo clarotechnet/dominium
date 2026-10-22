@@ -160,6 +160,8 @@ endpoint	path
 /api/toa-automation/run	patch_remote_toa.py
 /api/serials/consult	scripts/inspect_confront_wiring.py
 /api/disconnection/reports	scripts/install_confront_relay.py
+/api/auth/session	scripts/probe_confront_public.mjs
+/api/confront/status	scripts/probe_confront_public.mjs
 /api/confront/jobs	scripts/smoke_confront_cloudflare.mjs
 /api/confront/jobs/	scripts/smoke_confront_cloudflare.mjs
 /api/confront/status	scripts/smoke_confront_cloudflare.mjs
