@@ -3774,6 +3774,35 @@ async function loadTechnicians() {
   }
 }
 
+function importOutcomeCounts(orders) {
+  const counts = { created: 0, updated: 0, existing: 0, unresolved: 0 };
+  for (const row of Array.isArray(orders) ? orders : []) {
+    const status = String(row?.import_status || "")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+    if (row?.imported || status.includes("IMPORTADA COM SUCESSO")) {
+      counts.created += 1;
+    } else if (status.includes("DATA/INSTALADOR ATUALIZADO")) {
+      counts.updated += 1;
+    } else if (status.includes("OS JA CADASTRADA")) {
+      counts.existing += 1;
+    } else {
+      counts.unresolved += 1;
+    }
+  }
+  return counts;
+}
+
+function importOutcomeSummary(orders) {
+  const result = importOutcomeCounts(orders);
+  const parts = [
+    result.created + " importadas como novas",
+    result.updated + " atualizadas",
+    result.existing + " ja cadastradas",
+  ];
+  if (result.unresolved) parts.push(result.unresolved + " sem resultado confirmado");
+  return parts.join("; ");
+}
+
 function renderImportPreview() {
   const preview = state.importPreview;
   const target = state.importTargets.find((item) => item.key === state.importTarget);
@@ -3815,7 +3844,7 @@ function renderImportPreview() {
       : "Resultado confirmado pelo Imperium";
     elements.importResultDetail.textContent = state.importResult.partial
       ? `${state.importResult.imported} presentes no Imperium; ${retryCount} aguardando reprocessamento seletivo`
-      : `${state.importResult.imported} importadas; ${state.importResult.not_imported} nao importadas`;
+      : importOutcomeSummary(state.importResult.orders);
   }
   renderImportTargets();
 }
