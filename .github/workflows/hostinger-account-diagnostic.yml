@@ -159,9 +159,10 @@ jobs:
           (async () => {
             const {token} = JSON.parse(process.env.DOMINIUM_DESC_REVIEW_CONNECTION || '{}');
             if (!/^[A-Za-z0-9_-]{43,128}$/.test(String(token || ''))) throw Error('Credencial privada ausente');
-            for (const mode of ['analitico', 'sintetico']) {
+            for (const profile of ['natal', 'fortaleza', 'mossoro', 'recife']) {
+             for (const mode of ['analitico', 'sintetico']) {
               const endpoint = 'https://dominium-import-bridge.jogador743.workers.dev/api/serials/consult'
-                + '?serials=ZZZZZZZZZZZZ&profile=natal&mode=' + mode;
+                + '?serials=ZZZZZZZZZZZZ&profile=' + profile + '&mode=' + mode;
               const response = await fetch(endpoint, {
                 method:'GET', signal:AbortSignal.timeout(60000),
                 headers:{ Authorization:'Bearer '+token,
@@ -170,11 +171,13 @@ jobs:
               });
               if (response.status!==200) throw Error('Consulta serial '+mode+' HTTP '+response.status);
               const data=await response.json();
-              if (!data.ok || data.mode!==mode || !Array.isArray(data.results) ||
-                  data.results.length!==1 || !Array.isArray(data.results[0].datasnap?.movements))
-                throw Error('Resposta de seriais inesperada no modo '+mode);
+              if (!data.ok || data.mode!==mode || data.profile!==profile ||
+                  !Array.isArray(data.results) || data.results.length!==1 ||
+                  !Array.isArray(data.results[0].datasnap?.movements))
+                throw Error('Resposta de seriais inesperada: '+profile+' '+mode);
+             }
             }
-            console.log('Consulta serial validada: Analitico + Sintetico');
+            console.log('Consulta serial validada: 4 pracas x Analitico/Sintetico');
           })().catch(error=>{console.error(error.message); process.exitCode=1});
           NODE
 

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-21T19:19:20+00:00",
+  "generated_at": "2026-10-22T12:01:44+00:00",
   "schema": 2,
-  "source_fingerprint": "1ab307b8144a39ec9e51d82becb0ebd56bcfdd8f8055fa69bd137f74eaa8639a",
+  "source_fingerprint": "6286336ad2074885307048925c095f09c1d43e5d860c053e545f7ea1aacce4b3",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -1920,8 +1920,8 @@
     {
       "path": "integrations/serial_consult/README.md",
       "category": "shared",
-      "bytes": 2313,
-      "sha256": "88f30de5052538e74d3339472daf38572f395c036c11be2646c785f27fd33b1c",
+      "bytes": 2617,
+      "sha256": "6ee2b0d6a6b5681308eb955d7414f165a2a5ce20b5d80a754cfc4c48761f0489",
       "summary": "Recursos / Consultar Seriais — historico DataSnap",
       "imports": [],
       "endpoints": [],
@@ -1935,8 +1935,8 @@
     {
       "path": "integrations/serial_consult/serial_datasnap.py",
       "category": "shared",
-      "bytes": 4622,
-      "sha256": "35f4d70fd1d2e364198b4bfb3abcb16c931ea600c7c30cbcda01c1bc583b7565",
+      "bytes": 4824,
+      "sha256": "eb22b860ece7fb44d4082d5eec7af7280ad35127a599f8e2c99e37e94f3e6918",
       "summary": "Private read-only DataSnap query for IMPERIUM serial movement history.",
       "imports": [
         "__future__",
@@ -1959,8 +1959,8 @@
     {
       "path": "integrations/serial_consult/serial_service.py",
       "category": "shared",
-      "bytes": 7169,
-      "sha256": "740b795fd3b85861517103adc3405f1860aa750a0ef906d2e5556a209c3ef57b",
+      "bytes": 7180,
+      "sha256": "d9f51c614747ed37c55c9473e3874da76b8ec1be7112ab8679a537ffef953fc5",
       "summary": "Private, read-only serial consultation: real DataSnap history + local evidence.",
       "imports": [
         "__future__",
@@ -4874,8 +4874,8 @@
     {
       "path": "tests/test_serial_datasnap_history.py",
       "category": "tests",
-      "bytes": 3541,
-      "sha256": "66a742747882c7533fcfc75ba416b1cb3248edd8f62259e9fc0709ad3d1659f3",
+      "bytes": 5872,
+      "sha256": "36414aaf670dbe68bfe95d657e835386e649dc6e8c78512d8d352f1874e97103",
       "summary": "Safe synthetic tests: no actual serials, credentials or captured client rows.",
       "imports": [
         "midas_reader",
@@ -4895,7 +4895,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 7
+      "symbol_count": 9
     },
     {
       "path": "tests/test_serialized_transfer.py",
