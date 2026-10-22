@@ -311,7 +311,7 @@ jobs:
             exit 1
           }
 
-          hostinger hosting nodejs restart-application             "$HOSTINGER_USERNAME" "$HOSTINGER_DOMAIN"             --format json >/dev/null
+          hostinger hosting nodejs restart-application             "$HOSTINGER_USERNAME" "$HOSTINGER_DOMAIN"             --yes --format json >/dev/null
 
       - name: Smoke tests de producao
         shell: bash
