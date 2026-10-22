@@ -56,6 +56,24 @@ class ConfrontEngineTests(unittest.TestCase):
         self.assertEqual(pair["situacao"], "inconclusivo")
         self.assertIn("sem_campos_atuais_equivalentes_confirmados", pair["motivos"])
 
+    def test_realistic_history_and_atlas_labels_do_not_invent_current_owner(self):
+        source = imperium("AABBCCDDEEFF")
+        source["live"] = {"verified": False, "found": False}
+        source["last_destination"] = {
+            "stock_name": None, "movement": "SAÍDA", "date": "2026-10-22",
+            "source": "last_imperium_movement_unverified"}
+        asset = atlas("AABBCCDDEEFF")
+        asset.update({"tipo_localizacao": "ASSINANTE", "operacao": "NATAL"})
+        pair = classify_pair("AABBCCDDEEFF", source, asset)
+        self.assertEqual(pair["situacao"], "inconclusivo")
+        self.assertEqual(pair["imperium"]["ultima_movimentacao_historica"], "SAÍDA")
+        self.assertEqual(pair["atlas"]["tipo_localizacao"], "ASSINANTE")
+        self.assertFalse(pair["imperium"]["posse_atual_confirmada"])
+        csv_text = confront_csv({"resultados": [pair]})
+        self.assertIn("Ultima movimentacao Imperium", csv_text)
+        self.assertIn("SAÍDA", csv_text)
+        self.assertIn("ASSINANTE", csv_text)
+
     def test_verified_current_contract_difference_is_divergence(self):
         pair = classify_pair("AABBCCDDEEFF", imperium("AABBCCDDEEFF", contract="123456"),
                              atlas("AABBCCDDEEFF", contract="654321"))

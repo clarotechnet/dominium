@@ -11,6 +11,8 @@ FIELDS = (
     "Contrato Atlas (historico)", "Data Atlas", "Movimentacoes Imperium",
     "Ultimo destino (nao confirmado)", "Posse atual confirmada",
     "Tecnico (posse confirmada)", "Campos confirmados em confronto",
+    "Tipo de localizacao Atlas", "Operacao Atlas",
+    "Ultima movimentacao Imperium (historica)", "Data da ultima movimentacao",
 )
 
 
@@ -45,5 +47,8 @@ def confront_csv(report: Mapping) -> str:
             "Sim" if imperium.get("posse_atual_confirmada") is True else "Nao",
             imperium.get("tecnico") if imperium.get("posse_atual_confirmada") is True else "",
             ", ".join(ev.get("campo", "") for ev in row.get("evidencias", []) if isinstance(ev, dict)),
+            atlas.get("tipo_localizacao"), atlas.get("operacao"),
+            imperium.get("ultima_movimentacao_historica"),
+            imperium.get("data_ultima_movimentacao"),
         )])
     return "\ufeff" + out.getvalue()

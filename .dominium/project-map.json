@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-22T23:22:07+00:00",
+  "generated_at": "2026-10-22T23:30:48+00:00",
   "schema": 2,
-  "source_fingerprint": "de42673f35db114a4a819391fc3c8b67cd025f52e4b671c6d8a58770fc6e79a8",
+  "source_fingerprint": "9a957f448861c1d7f98a60cbd197be7541b222afd0d417696efca9fd98e3bba7",
   "files": [
     {
       "path": ".imperium-project.json",
@@ -1909,8 +1909,8 @@
     {
       "path": "integrations/serial_consult/confront_engine.py",
       "category": "shared",
-      "bytes": 8287,
-      "sha256": "2342b9bf5dc94f45d173c71193f6ced71ae3f53263c1dd46499d525b88c3acf3",
+      "bytes": 8580,
+      "sha256": "c8a5eece9b26cd06166d7c366d7bae90e31769381b2ce1f0bef60117a2f6a617",
       "summary": "Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.",
       "imports": [
         "__future__",
@@ -1927,8 +1927,8 @@
     {
       "path": "integrations/serial_consult/confront_export.py",
       "category": "shared",
-      "bytes": 2127,
-      "sha256": "742dd6866c28740183a7d7d596546558753c2bfa4c2c63655dfda992b94043d4",
+      "bytes": 2436,
+      "sha256": "70854357c13c117e71f335f6af220fb012d61eadc67c1f193bc802946bdb9f8e",
       "summary": "CSV exporter for read-only Atlas x Imperium confrontation results.",
       "imports": [
         "__future__",
@@ -2001,8 +2001,8 @@
     {
       "path": "integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md",
       "category": "imperium",
-      "bytes": 5855,
-      "sha256": "4b1c213d4689de21f94cba59f3e2fbd037dcdf214e6d5d438c4c86b615a6298b",
+      "bytes": 6808,
+      "sha256": "20edd687eabc8fdb623b416f38c1389d5daa75c85995025aaa8f8bc49ba9eb27",
       "summary": "DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente",
       "imports": [],
       "endpoints": [],
@@ -3584,8 +3584,8 @@
     {
       "path": "static/confront.js",
       "category": "frontend",
-      "bytes": 10686,
-      "sha256": "e1173adf03c6edde7ef8b92dd6c3f0cd43621e9d8de9e62d95f08fac0c8e73cc",
+      "bytes": 11151,
+      "sha256": "0b07900bcc977ee865804d167a92880eda33b1113dd39961e1d5f309ca23ee3f",
       "summary": "DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */",
       "imports": [],
       "endpoints": [
@@ -3639,7 +3639,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 120678,
-      "sha256": "9181f3e195a80395f2567864a93625681ec8048fd08d58679ab19cd9ec93366f",
+      "sha256": "e4ad6198c02581c49d1821eb3ab1ba78b8352e5d76c63c21d3ea9baea8956791",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5314,8 +5314,8 @@
     {
       "path": "tests/test_serial_confront_engine.py",
       "category": "tests",
-      "bytes": 7526,
-      "sha256": "b510f937d51040794abbe0ca8684cb9a4d1823d86574940350435260fb769d57",
+      "bytes": 8556,
+      "sha256": "096373a4120948c4cca4b45e2f2c0a52aeb90274ac97a15ee0b87b3b6f39e18f",
       "summary": "Synthetic contract tests for the read-only reconciliation engine.",
       "imports": [
         "confront_engine",
@@ -5328,7 +5328,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 18
+      "symbol_count": 19
     },
     {
       "path": "tests/test_serial_consult.py",

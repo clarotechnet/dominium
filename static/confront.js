@@ -106,9 +106,16 @@
       facts.className = "serial-result-facts";
       const details = [
         ["Estado Atlas", row.resultado?.atlas?.estado || "Não confirmado"],
+        ["Tipo localização Atlas", row.resultado?.atlas?.tipo_localizacao || "Não informado"],
+        ["Operação Atlas", row.resultado?.atlas?.operacao || "Não informada"],
         ["Localização Atlas", row.resultado?.atlas?.localizacao || "Não confirmada"],
-        ["Técnico IMPERIUM", row.resultado?.imperium?.tecnico || "Não confirmado"],
-        ["Destino histórico", row.resultado?.imperium?.ultima_localizacao_nao_confirmada || "Sem registro"]
+        ["Última movimentação IMPERIUM (histórico)",
+          row.resultado?.imperium?.ultima_movimentacao_historica || "Sem registro"],
+        ["Técnico IMPERIUM (posse confirmada)",
+          row.resultado?.imperium?.posse_atual_confirmada
+            ? row.resultado.imperium.tecnico || "Não identificado" : "Não confirmado"],
+        ["Destino histórico (não confirma posse)",
+          row.resultado?.imperium?.ultima_localizacao_nao_confirmada || "Sem registro"]
       ];
       details.forEach(([k,v]) => {
         const box = document.createElement("div");

@@ -96,11 +96,11 @@ shared	integrations/official_stock_relay/desc_review_relay.py	6			Authenticated 
 shared	integrations/official_stock_relay/official_stock_bridge.py	5	1		Read-only official Imperium inventory for the authenticated private DESC relay.	3074b95c68197e4c
 shared	integrations/official_stock_relay/README.md				API Oficial — Estoque (somente leitura)	dfc23a1d9e9b911e
 shared	integrations/serial_consult/atlas_bridge_client.py	10			Read-only Atlas serial lookups via the existing localhost BotDMV queue.	55e9381c023c155d
-shared	integrations/serial_consult/confront_engine.py	7			Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.	2342b9bf5dc94f45
-shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-only Atlas x Imperium confrontation results.	742dd6866c287401
+shared	integrations/serial_consult/confront_engine.py	7			Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.	c8a5eece9b26cd06
+shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-only Atlas x Imperium confrontation results.	70854357c13c117e
 shared	integrations/serial_consult/confront_http.py	7	3		Private HTTP interface and supervised background job scheduler.	86da7071f7da0062
 shared	integrations/serial_consult/confront_job_runner.py	14			Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).	46db8339b45b1bf4
-imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	4b1c213d4689de21
+imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	20edd687eabc8fdb
 shared	integrations/serial_consult/desc_review_relay.py	7			Authenticated relay for DESC review and private read-only Imperium checks.	c8f963bf2a6b8b97
 shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	6f5b01f448826d25
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
@@ -186,10 +186,10 @@ tooling-deploy	scripts/verify_confront_runtime.py				Import live DESC relay and 
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
-frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	e1173adf03c6edde
+frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	0b07900bcc977ee8
 frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			9181f3e195a80395
+frontend	static/index.html		1			e4ad6198c02581c4
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
@@ -275,7 +275,7 @@ tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_order_dataset_hostinger.js	4	1			bca127bdd7f87bcf
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
 tests	tests/test_semiauto_frontend.js	19				44a6652d8752bfc1
-tests	tests/test_serial_confront_engine.py	18			Synthetic contract tests for the read-only reconciliation engine.	b510f937d5104079
+tests	tests/test_serial_confront_engine.py	19			Synthetic contract tests for the read-only reconciliation engine.	096373a4120948c4
 tests	tests/test_serial_consult.py	3				3bb13e50693f977d
 tests	tests/test_serial_datasnap_history.py	9	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	36414aaf670dbe68
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a

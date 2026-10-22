@@ -102,3 +102,22 @@ Snapshot de rede antes da mudança em
 `output/atlas-network-before-20261022.txt` (diagnóstico local, não Git).
 O firewall Windows foi observado desativado nos três perfis; não o ligamos
 às cegas, para evitar interrupção dos serviços da base.
+
+
+## Validação com um equipamento real (22/10/2026)
+
+Foi realizada uma única consulta somente leitura, com identificador previamente
+fornecido pela operação. As fontes responderam: Atlas com estado identificado
+e DataSnap IMPERIUM com **8 movimentações confirmadas**. A posse atual
+**não** pôde ser confirmada e a classificação correta foi `inconclusivo`.
+
+Os provedores reais expuseram:
+- Atlas: `estado`, `tipo_localizacao`, `operacao`, `localizacao`;
+- IMPERIUM: `Movimento`, `Data`, `EstDestino`, além de número da O.S.,
+  contrato e demais detalhes do histórico.
+
+Por isso o relatório agora exibe explicitamente a **última movimentação
+histórica IMPERIUM** e os campos de situação/localização do Atlas,
+sem apresentar a movimentação como posse comprovada. O CSV recebeu
+essas colunas extras no final para não alterar as 13 colunas existentes.
+Não foram realizados baixas, transferências ou alterações de equipamentos.

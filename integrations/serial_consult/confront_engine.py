@@ -83,6 +83,8 @@ def classify_pair(serial: str, imperium: dict | None, atlas: dict | None) -> dic
     result["imperium"] = {
         "movimentacoes": (ds or {}).get("count") if isinstance(ds, dict) else None,
         "ultima_localizacao_nao_confirmada": (imperium.get("last_destination") or {}).get("stock_name"),
+        "ultima_movimentacao_historica": (imperium.get("last_destination") or {}).get("movement"),
+        "data_ultima_movimentacao": (imperium.get("last_destination") or {}).get("date"),
         "posse_atual_confirmada": live.get("verified") is True and live.get("found") is True,
         "tecnico": (live.get("owner") or {}).get("technician_name") if isinstance(live.get("owner"), dict) else None,
     }
@@ -94,6 +96,8 @@ def classify_pair(serial: str, imperium: dict | None, atlas: dict | None) -> dic
     ok = record.get("ok", atlas.get("ok"))
     result["atlas"] = {
         "estado": record.get("estado"),
+        "tipo_localizacao": record.get("tipo_localizacao"),
+        "operacao": record.get("operacao"),
         "localizacao": record.get("localizacao"),
         "contrato_historico": record.get("numero_contrato"),
         "ultima_alteracao": record.get("data_alteracao"),
