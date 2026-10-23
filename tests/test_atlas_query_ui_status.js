@@ -171,7 +171,7 @@ test('queue lookup displays full date and time and follows a confirmed reserve',
   await new Promise(resolve=>setImmediate(resolve));
   assert.match(element('atlasQueryId').textContent,/Principal: 276850938.*Reserva: 276855582/);
   assert.match(element('atlasQueryTimestamps').textContent,/Principal solicitada: \d{2}\/\d{2}\/\d{4}/);
-  assert.match(element('atlasQueryTimestamps').textContent,/Reserva solicitada: \\d{2}\\/\\d{2}\\/\\d{4}/);
+  assert.match(element('atlasQueryTimestamps').textContent,/Reserva solicitada: \d{2}\/\d{2}\/\d{4}/);
   assert.match(element('atlasQueryTimestamps').textContent,/Consultada: \d{2}\/\d{2}\/\d{4}/);
   assert.match(element('atlasQueryTimestamps').textContent,/\d{2}:\d{2}:\d{2}/);
   assert.match(element('atlasQueryProgress').textContent,/ID recebido/);
