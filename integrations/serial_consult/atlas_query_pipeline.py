@@ -187,16 +187,28 @@ def fetch_file(job_id,db_path=DB,chrome_factory=ChromeAtlas,clock=time.time):
         return {"state":"retry_scheduled","retry_after":int(job["next_attachment_check"]-when)}
     chrome=chrome_factory()
     try:
-        chrome.open(QUEUE_URL,form_id="FilasForm",require_generator=False)
+        attachment_url=job["attachment_url"]
+        failures=job.get("attachment_failures",0)
+        if failures>=3 and failures%3==0:
+            # Recheck only the same confirmed queue: the link may change later.
+            refreshed=evaluate_query(chrome,job["remote_queue_id"])
+            candidate=(refreshed.get("attachment_url") or "") if refreshed.get("state")=="complete" else ""
+            if valid_report_url(candidate) and candidate!=attachment_url:
+                update_job(job_id,db_path,attachment_url=candidate,
+                           attachment_failures=0,next_attachment_check=0,error_code="")
+                attachment_url=candidate
+                failures=0
+        else:
+            chrome.open(QUEUE_URL,form_id="FilasForm",require_generator=False)
         frame=chrome.call(chrome.tab,"Page.getFrameTree",{})
         fid=frame.get("frameTree",{}).get("frame",{}).get("id")
         res=chrome.call(chrome.tab,"Network.loadNetworkResource",{
-            "frameId":fid,"url":job["attachment_url"],
+            "frameId":fid,"url":attachment_url,
             "options":{"disableCache":True,"includeCredentials":True}},timeout=35)
         resource=res.get("resource") or {}
         status=resource.get("httpStatusCode")
         if status==404:
-            failures=job.get("attachment_failures",0)+1
+            failures+=1
             # Retry THIS SAME FILE, never generate a new Atlas report automatically.
             delay=min(900,30*(2**min(5,failures-1)))
             update_job(job_id,db_path,state="attachment_wait",
