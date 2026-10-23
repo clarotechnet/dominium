@@ -79,3 +79,25 @@ This file documents the failure so future agents should **never** equate
 a successful Hostinger build with a successful Node runtime startup.
 Always test the *packaged* runtime and verify authenticated deployment
 smokes. Avoid touching managed Atlas/WhatsApp production tabs.
+
+
+## Release verificado em produção (2026-10-23)
+
+- Publicação corrigida `0a8d121` em `main`.
+- GitHub Actions run `39971103661`: **success**, incluindo a
+  validação read-only da rota privada da QUERY, build Hostinger,
+  startup do pacote Node e smoke tests do site.
+- `https://dominium.clarotechnet.com.br/`: HTTP 200 e controles
+  `atlasQueryStart` presentes no HTML publicado.
+- `/atlas-query-ui.js`: HTTP 200, arquivo novo disponível.
+- `/api/atlas-query/jobs` sem login: HTTP 401 esperado.
+- O arquivo real gerado anteriormente permaneceu em estado
+  `attachment_wait`/`retry_scheduled`; **não há ainda confirmação
+  de download nem de planilha real pronta**. Não confundir relatório
+  `COMPLETO` com anexo disponível.
+- Relay DESC antigo preservado: GET `/api/confront/status` e
+  GET `/api/disconnection/reports` retornaram HTTP 200 após
+  restart seguro. O bot Atlas foi preservado.
+- Checkouts no servidor: staging
+  `C:\DominiumRuntime\SerialMultiCityPatch-20261022`, checkout
+  separado de publicação `C:\DominiumRuntime\AtlasQueryShip-20261023`.
