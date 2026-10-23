@@ -58,7 +58,12 @@ class Tests(unittest.TestCase):
     def test_restrict_report_download_urls(self):
         good="https://batatlas.netservicos.com.br/app-1//RELATORIOS/261023/Relatorio_Equipamentos_Analitico_2345.xls"
         self.assertTrue(pipeline.valid_report_url(good))
+        app2=good.replace('/app-1//','/app-2//')
+        self.assertTrue(pipeline.valid_report_url(app2))
         for malicious in (
+            good.replace('/app-1//','/app-3//'),
+            good.replace('/app-1//','/app-20//'),
+            good.replace('/app-1//','/app-2/'),
             "https://evil.example/app-1//RELATORIOS/261023/file.xls",
             "http://batatlas.netservicos.com.br/app-1//RELATORIOS/261023/file.xls",
             "https://batatlas.netservicos.com.br.evil.example/app-1//RELATORIOS/261023/file.xls",
