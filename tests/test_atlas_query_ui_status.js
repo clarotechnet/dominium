@@ -107,3 +107,26 @@ test('complete QUERY animates green success only after ready state',async()=>{
   await new Promise(resolve=>setImmediate(resolve));
   assert.ok(operations.some(x=>x.phase==='success'&&x.label==='QUERY pronta'));
 });
+
+
+test('unconfirmed Atlas submit terminates the animation and automatic polling without retry',async()=>{
+  const id='c'.repeat(32);
+  const job={id,city:'mossoro',location:'empreiteira',state:'submission_uncertain',
+    error_code:'atlas_submit_unconfirmed',remote_queue_id:null};
+  const {element,listeners,state,interval,calls,operations}=setup(async(url,opts)=>{
+    if(opts?.method==='POST')return {job};
+    if(url.includes('/'+id))return {job};
+    return {jobs:[job]};
+  });
+  listeners.get('atlasQueryStart:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.match(element('atlasQueryProgress').textContent,/Confirmação do Atlas não obtida/);
+  assert.equal(element('atlasQueryStart').disabled,true);
+  assert.ok(operations.some(x=>x.phase==='error'&&x.label==='Envio Atlas não confirmado'));
+  const before=calls.length;
+  state.activeModule='confront';
+  interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.length,before,'no continuing background requests');
+  assert.equal(calls.filter(x=>x.method==='POST').length,1,'never re-submit QUERY');
+});

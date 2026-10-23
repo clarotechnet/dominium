@@ -88,6 +88,11 @@
   const allowed=()=>['admin','controller'].includes(String(state.authUser?.role||''));
   const formatCount=n=>Number(n||0).toLocaleString('pt-BR');
   const safeError=(error)=>String(error?.message||'Falha ao acessar a QUERY');
+  // An unconfirmed Atlas submission is not a confirmed failure or a retryable job.
+  // Stop background polling and keep manual reconciliation available.
+  const pollingComplete=job=>Boolean(job && (
+    ['ready','failed','format_review','atlas_auth_required'].includes(job.state)||
+    job.error_code==='atlas_submit_unconfirmed'));
   function renderStatus(){
     ui.city.value=state.profile;
     ui.start.disabled=busy||!allowed()||
@@ -95,7 +100,9 @@
     ui.refresh.disabled=fetching;
     ui.id.textContent=active?.remote_queue_id?'Fila Atlas: '+active.remote_queue_id:
       active?'Solicitação '+active.id.slice(0,8):'Nenhuma fila criada';
-    ui.progress.textContent=active?statusLabels[active.state]||'Estado: '+active.state:
+    ui.progress.textContent=active?.error_code==='atlas_submit_unconfirmed'
+      ? 'Confirmação do Atlas não obtida. Verifique a fila antes de qualquer novo envio.'
+      : active?statusLabels[active.state]||'Estado: '+active.state:
       'Selecione a praça e clique em Gerar QUERY no Atlas.';
     // NEVER clear status/last action during automatic polling.
     const serverError=String(active?.error_code||'');
@@ -236,8 +243,7 @@
   });
   setInterval(()=>{
     if(state.activeModule==='confront'){
-      if(selectedProfile!==state.profile || !active ||
-         !['ready','failed','format_review'].includes(active.state))
+      if(selectedProfile!==state.profile || !active || !pollingComplete(active))
         void refresh({quiet:true});
     }
   },6500);
