@@ -78,6 +78,29 @@ class Tests(unittest.TestCase):
         self.assertEqual(payload['job']['error_code'],'atlas_submit_unconfirmed')
         self.assertEqual(len(svc2._new_jobs),0)
 
+    def test_expired_nettask_session_preserves_remote_id_without_retrying_post(self):
+        import time
+        from unittest.mock import patch
+        from atlas_query_report import AtlasAuthRequired,save_queue,read_job
+        created=self.svc.handle('POST','/api/atlas-query/jobs','user-17',
+            {'city':'mossoro','location':'empreiteira'})
+        job_id=created[1]['job']['id']
+        save_queue(job_id,'276850938',self.svc.db_path)
+        with patch('atlas_query_http.poll_report',side_effect=AtlasAuthRequired('session expired')) as lookup:
+            worker=AtlasQueryService(db_path=self.svc.db_path,start_worker=True)
+            try:
+                deadline=time.monotonic()+3
+                while time.monotonic()<deadline:
+                    if read_job(job_id,self.svc.db_path)['error_code']=='atlas_auth_required':break
+                    time.sleep(.03)
+                saved=read_job(job_id,self.svc.db_path)
+                self.assertEqual(saved['state'],'queued')
+                self.assertEqual(saved['error_code'],'atlas_auth_required')
+                self.assertEqual(saved['remote_queue_id'],'276850938')
+                time.sleep(.15)
+                self.assertEqual(lookup.call_count,1)
+            finally:worker.close()
+
     def test_ready_report_can_page_and_export_only_to_owner(self):
         job=self.svc.handle('POST','/api/atlas-query/jobs','user-1',
                             {'city':'natal','location':'empreiteira'})[1]['job']['id']
