@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-23T16:43:28+00:00",
+  "generated_at": "2026-10-23T17:58:59+00:00",
   "schema": 2,
-  "source_fingerprint": "be73f12af3e071ba1a44e34f6561613e748c884bf171525715a0ac35b905f6de",
+  "source_fingerprint": "14885e5c922a530dadc5005bbff30b1a1405e1c59ea9b17c4e6f4d3b6895eb51",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1110,8 +1110,8 @@
     {
       "path": "docs/agent/ATLAS_QUERY_AUTOMATION.md",
       "category": "docs",
-      "bytes": 7877,
-      "sha256": "8b74ed6d03f5b60a64ec9ba743606c796817e9271b0f644e8a3c87895af3dbc6",
+      "bytes": 10441,
+      "sha256": "06db77df03e00987230a756001db14f48995634625252b584dab0190510f54a7",
       "summary": "QUERY Atlas — relatório analítico por localização",
       "imports": [],
       "endpoints": [],
@@ -1123,8 +1123,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 5159,
-      "sha256": "80e333c063531cd9bed40533fcab706f9eeb19d6715b252448804a635941a2ce",
+      "bytes": 5503,
+      "sha256": "761ede7da8f215ac348c6b8db28787a896bed00bfe390c64d84031821ced7d5b",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1136,8 +1136,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 3948,
-      "sha256": "b58a59595e3ef0ff55138c813043af245d6f16c995e015a82b3637408519a493",
+      "bytes": 4501,
+      "sha256": "e53d5c317590e92f4444f55dc73a650364eaa8febd20dd199e3eb8cac8025ce4",
       "summary": "DOMINIUM — handoff operacional (memória verificada)",
       "imports": [],
       "endpoints": [],
@@ -2099,8 +2099,8 @@
     {
       "path": "integrations/serial_consult/atlas_query_http.py",
       "category": "shared",
-      "bytes": 10332,
-      "sha256": "7a8ab0705c7a8c987c8c69dd72642a16a90feafdb639c1b7d81b3950cd680b79",
+      "bytes": 11018,
+      "sha256": "ebaca834c4511c1cae6e084f54c4bea449171d8a2200d034df1d041bb33f5add",
       "summary": "Authenticated DOMINIUM QUERY Atlas service, isolated by operator.",
       "imports": [
         "__future__",
@@ -2122,7 +2122,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 8
+      "symbol_count": 9
     },
     {
       "path": "integrations/serial_consult/atlas_query_pipeline.py",
@@ -4532,8 +4532,8 @@
     {
       "path": "tests/test_atlas_query_http.py",
       "category": "tests",
-      "bytes": 4118,
-      "sha256": "3ae038a4faf7941298f1461ca1e0491cb439e4471ea40086a43b689fd1d6d908",
+      "bytes": 5146,
+      "sha256": "8959161ea77203d2adbf691f7d4ce61f6ed94b5928aca3b1f9516f2f10e168e3",
       "summary": "QUERY Atlas authenticated API contract without contacting real Atlas.",
       "imports": [
         "atlas_query_data",
@@ -4543,6 +4543,7 @@
         "pathlib",
         "sys",
         "tempfile",
+        "time",
         "unittest"
       ],
       "endpoints": [
@@ -4553,7 +4554,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 6
+      "symbol_count": 7
     },
     {
       "path": "tests/test_atlas_query_pipeline.py",

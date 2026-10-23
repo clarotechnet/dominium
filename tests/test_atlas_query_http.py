@@ -60,6 +60,24 @@ class Tests(unittest.TestCase):
         self.assertIsNone(updated['remote_queue_id'])
         self.assertEqual(LoginRequiredChrome.submissions,0)
 
+    def test_stale_submission_marks_error_without_another_atlas_post(self):
+        import time
+        from atlas_query_report import claim_job,read_job,connect_db
+        job_id,_=claim_job('natal','empreiteira',self.svc.db_path,created_by='user-333')
+        with connect_db(self.svc.db_path) as db:
+            db.execute("UPDATE query_jobs SET created_at=? WHERE id=?",
+                       (time.time()-400,job_id))
+        svc2=AtlasQueryService(db_path=self.svc.db_path,start_worker=False)
+        self.addCleanup(svc2.close)
+        saved=read_job(job_id,self.svc.db_path)
+        self.assertEqual(saved['state'],'submission_uncertain')
+        self.assertEqual(saved['error_code'],'atlas_submit_unconfirmed')
+        self.assertIsNone(saved['remote_queue_id'])
+        status,payload,_=svc2.handle('GET','/api/atlas-query/jobs/'+job_id,'user-333')
+        self.assertEqual(status,200)
+        self.assertEqual(payload['job']['error_code'],'atlas_submit_unconfirmed')
+        self.assertEqual(len(svc2._new_jobs),0)
+
     def test_ready_report_can_page_and_export_only_to_owner(self):
         job=self.svc.handle('POST','/api/atlas-query/jobs','user-1',
                             {'city':'natal','location':'empreiteira'})[1]['job']['id']

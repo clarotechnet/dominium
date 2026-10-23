@@ -831,6 +831,7 @@ atlas_query_report	tests/test_atlas_query_http.py
 pathlib	tests/test_atlas_query_http.py
 sys	tests/test_atlas_query_http.py
 tempfile	tests/test_atlas_query_http.py
+time	tests/test_atlas_query_http.py
 unittest	tests/test_atlas_query_http.py
 atlas_query_pipeline	tests/test_atlas_query_pipeline.py
 atlas_query_report	tests/test_atlas_query_pipeline.py

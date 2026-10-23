@@ -145,3 +145,22 @@ O histórico de mensagens não desaparece na atualização automática.
 Se a resposta do Atlas ficar incerta, o backend persiste
 `error_code=atlas_submit_unconfirmed` sem gerar solicitação duplicada.
 Essa alteração é somente da fila QUERY; nenhuma movimentação de estoque.
+
+## Solicitações sem ID após queda do worker (23/10/2026)
+
+O histórico mostrou QUERY Natal (479289b9) no estado
+`submission_uncertain` por dezenas de minutos, sem `remote_queue_id`.
+A fila em memória do relay não sobrevive a reinícios e **NUNCA deve
+ser reenviada** sem verificar primeiro o Atlas. A reconciliação agora
+marca `atlas_submit_unconfirmed` após 150s, preservando o estado e
+o identificador, para que o DOMINIUM mostre erro sem duplicar envio.
+Não marcar como sucesso/falha definitiva do Atlas por falta de confirmação.
+
+## Investigação de janelas NetScaler e reparo de QUERY travada — 23/10/2026
+
+- O navegador Chrome for Testing gerenciado está ativo, com a extensão e NetHome em uma única guia. Não reiniciar esse perfil sem planejar o impacto no bot.
+- O monitor `C:\DominiumRuntime\BrowserHealth-20261022\browser_watchdog.py` é **passivo**: observa a cada cinco minutos, não cria janelas. Seu log comprovou aumento de janelas NetScaler até oito e redução subsequente até quatro.
+- A origem identificada do Chrome Atlas separado é `/home/technet/BotDMV/src/atlas_rastreio.py`, que usava `--new-window` quando a porta de depuração falhava. Proteção aplicada no WSL, com backup `atlas_rastreio.before-popup-guard-20261023.py`; quando o perfil já está aberto, não criar novo Chrome. Diagnóstico após patch: debugger do Chrome AtlasBot antigo indisponível, perfil já aberto, portanto abertura extra evitada. Código compila em Python.
+- A extensão TOA gerenciada foi **configurada em disco** para keepalive de 80 segundos e serial de teste definido pelo operador. Arquivo original preservado em `content-atlas-main.before-keepalive-80s-20261023.js`. **A configuração ainda não está ativa até recarregar a extensão**. Não recarregar enquanto há uma consulta em andamento, e não garantir que consultar o serial evitará timeout de sessão.
+- A QUERY Natal, identificador interno prefixo `479289b9`, estava `submission_uncertain` sem ID remoto por mais de uma hora. O serviço de QUERY passou a registrar `atlas_submit_unconfirmed` após 150s; o estado continua incerto para impedir envio duplicado. O relay na porta 8793 foi atualizado com backup e reinício protegido; os endpoints `/api/atlas-query/jobs`, `/api/confront/status` e `/api/disconnection/reports` responderam HTTP 200. O erro foi confirmado persistido no banco.
+- Faltam a reconciliação humana pela fila do Atlas, confirmar disponibilização do anexo histórico de Mossoró e uma recarga segura da extensão quando o bot estiver ocioso.

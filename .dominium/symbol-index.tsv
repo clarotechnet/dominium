@@ -773,11 +773,12 @@ export_xlsx	function	integrations/serial_consult/atlas_query_data.py	241	-
 parse_query_route	function	integrations/serial_consult/atlas_query_http.py	24	-
 AtlasQueryService	class	integrations/serial_consult/atlas_query_http.py	40	-
 __init__	method	integrations/serial_consult/atlas_query_http.py	41	AtlasQueryService
-close	method	integrations/serial_consult/atlas_query_http.py	57	AtlasQueryService
-_owned	method	integrations/serial_consult/atlas_query_http.py	61	AtlasQueryService
-_submit_existing	method	integrations/serial_consult/atlas_query_http.py	66	AtlasQueryService
-_run	method	integrations/serial_consult/atlas_query_http.py	83	AtlasQueryService
-handle	method	integrations/serial_consult/atlas_query_http.py	140	AtlasQueryService
+_mark_stale_unconfirmed	method	integrations/serial_consult/atlas_query_http.py	60	AtlasQueryService
+close	method	integrations/serial_consult/atlas_query_http.py	70	AtlasQueryService
+_owned	method	integrations/serial_consult/atlas_query_http.py	74	AtlasQueryService
+_submit_existing	method	integrations/serial_consult/atlas_query_http.py	79	AtlasQueryService
+_run	method	integrations/serial_consult/atlas_query_http.py	96	AtlasQueryService
+handle	method	integrations/serial_consult/atlas_query_http.py	154	AtlasQueryService
 valid_report_url	function	integrations/serial_consult/atlas_query_pipeline.py	26	-
 upgrade_db	function	integrations/serial_consult/atlas_query_pipeline.py	36	-
 update_job	function	integrations/serial_consult/atlas_query_pipeline.py	50	-
@@ -1862,7 +1863,8 @@ setUp	method	tests/test_atlas_query_http.py	14	Tests
 test_route_policy_does_not_allow_query_or_mutations	method	tests/test_atlas_query_http.py	19	Tests
 test_create_is_idempotent_and_actor_isolated	method	tests/test_atlas_query_http.py	33	Tests
 test_auth_required_records_failure_without_submitting_report	method	tests/test_atlas_query_http.py	44	Tests
-test_ready_report_can_page_and_export_only_to_owner	method	tests/test_atlas_query_http.py	63	Tests
+test_stale_submission_marks_error_without_another_atlas_post	method	tests/test_atlas_query_http.py	63	Tests
+test_ready_report_can_page_and_export_only_to_owner	method	tests/test_atlas_query_http.py	81	Tests
 FakeChrome	class	tests/test_atlas_query_pipeline.py	14	-
 __init__	method	tests/test_atlas_query_pipeline.py	17	FakeChrome
 open	method	tests/test_atlas_query_pipeline.py	20	FakeChrome

@@ -48,11 +48,24 @@ class AtlasQueryService:
         self._stop=threading.Event()
         self._new_jobs=[]
         upgrade_db(self.db_path)
+        # A previous process may have died after recording the request but
+        # before confirming the Atlas queue ID. Never reissue that POST.
+        self._mark_stale_unconfirmed()
         self._thread=None
         if start_worker:
             self._thread=threading.Thread(target=self._run,daemon=True,
                                           name="dominium-query-atlas")
             self._thread.start()
+
+    def _mark_stale_unconfirmed(self):
+        cutoff=self.clock()-150
+        with connect_db(self.db_path) as db:
+            db.execute('''UPDATE query_jobs SET error_code='atlas_submit_unconfirmed',
+                updated_at=? WHERE state='submission_uncertain'
+                AND remote_queue_id IS NULL
+                AND error_code='' AND created_at<?
+                AND created_by LIKE 'user-%' ''',
+                (self.clock(),cutoff))
 
     def close(self):
         self._stop.set();self._wake.set()
@@ -98,6 +111,7 @@ class AtlasQueryService:
                         except Exception:
                             logging.exception("Atlas QUERY could not persist submit error")
                     continue
+                self._mark_stale_unconfirmed()
                 with connect_db(self.db_path) as db:
                     rows=db.execute("""SELECT id,state,next_attachment_check FROM query_jobs
                         WHERE created_by LIKE 'user-%' AND state IN

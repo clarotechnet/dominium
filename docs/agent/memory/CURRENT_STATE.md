@@ -56,3 +56,5 @@ valide commit/deploy e deixe pendências explícitas.
   Geração real no novo caminho ainda precisa confirmação operacional.
 
 - Em 2026-10-23, erro de criação QUERY HTTP 415 'Envie JSON' identificado na perda do Content-Type Hostinger -> Cloudflare; corrigido com cabeçalho JSON restrito nas rotas de jobs e teste regressivo. HUD 'DOMINIUM EM AÇÃO' reutilizado pela QUERY, com fases até download e estado de falha visível; veja docs/agent/ATLAS_QUERY_AUTOMATION.md.
+
+- 2026-10-23: reparo de Atlas/QUERY feito no servidor. WSL BotDMV `src/atlas_rastreio.py` recebe proteção contra Chrome AtlasBot duplicado quando porta de debug falha; monitor NetScaler passou por 8 janelas e decaiu a 4. Chrome for Testing gerenciado preservado. Relay da QUERY agora sinaliza `atlas_submit_unconfirmed` após 150s sem ID remoto, sem reenviar a solicitação. Extensão gerenciada alterada em disco para keepalive 80s e serial de teste escolhido, aguardando reload seguro para valer; consultar `docs/agent/ATLAS_QUERY_AUTOMATION.md`.
