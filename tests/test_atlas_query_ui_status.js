@@ -204,7 +204,8 @@ test('Natal old unconfirmed shows reconciliation without a new Atlas POST',async
     created_at:1792760000,updated_at:1792760400,remote_queue_id:null};
   const closed={...stale,state:'failed',error_code:'manually_closed_unconfirmed'};
   const {state,element,listeners,interval,calls}=setup(async(url,opts)=>{
-    if(url.includes('/reconcile')&&opts?.method==='POST')return {job:closed};
+    if(url==='/api/atlas-query/jobs'&&opts?.method==='POST'&&
+       JSON.parse(opts.body||'{}').reconcile_job_id===id)return {job:closed};
     if(url.includes('/'+id))return {job:stale};
     return {jobs:[stale]};
   });
@@ -216,7 +217,7 @@ test('Natal old unconfirmed shows reconciliation without a new Atlas POST',async
   listeners.get('atlasQueryReconcile:click')();
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(calls.filter(c=>c.method==='POST').length,1);
-  assert.ok(calls.some(c=>c.method==='POST'&&c.url.includes('/reconcile')));
+  assert.ok(calls.some(c=>c.method==='POST'&&c.url==='/api/atlas-query/jobs'));
   assert.equal(element('atlasQueryStart').disabled,false);
   assert.equal(element('atlasQueryReconcile').hidden,true);
   assert.match(element('atlasQueryProgress').textContent,/Tentativa antiga encerrada/);
