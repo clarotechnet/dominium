@@ -220,6 +220,9 @@ endpoint	path
 /api/atlas-query/jobs	tests/test_atlas_query_policy.js
 /api/atlas-query/jobs/	tests/test_atlas_query_policy.js
 /api/atlas-query/jobs?actor=5	tests/test_atlas_query_policy.js
+/api/atlas-query/jobs	tests/test_atlas_query_proxy_json.js
+/api/confront/jobs	tests/test_atlas_query_proxy_json.js
+/api/stock/transfer	tests/test_atlas_query_proxy_json.js
 /api/confront/jobs	tests/test_confront_frontend.js
 /api/confront/jobs/	tests/test_confront_frontend.js
 /api/confront/status	tests/test_confront_frontend.js

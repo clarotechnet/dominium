@@ -38,25 +38,26 @@ function setup(response){
   let interval;
   const state={profile:'mossoro',activeModule:'inactive',authUser:{role:'admin'}};
   const calls=[];
-  const ctx={document,state,window:{},setInterval(fn){interval=fn},
+  const operations=[];
+  const ctx={document,state,window:{DOMINIUM_MOTION:{operation(payload){operations.push(payload)}}},setInterval(fn){interval=fn},
     request: async(url,opts)=>{calls.push({url,method:opts?.method||'GET'});return response(url,opts)},
     requestBlob:async()=>({blob:new Blob([])}),
     saveBlob:()=>{},localDate:()=>'',switchProfile:async()=>{}};
   vm.runInNewContext(uiCode,ctx,{filename:'atlas-query-ui.js'});
-  return {elements,element,listeners,calls,state,interval:()=>interval()};
+  return {elements,element,listeners,calls,operations,state,interval:()=>interval()};
 }
 
 test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/id="atlasQueryActivity"/);
   assert.match(html,/Histórico desta sessão/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261023-2/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261023-3/);
 });
 
 test('successful POST leaves durable confirmation after automatic refresh',async()=>{
   const id='a'.repeat(32);
   const job={id,city:'mossoro',location:'empreiteira',
              state:'queued',remote_queue_id:'276841868'};
-  const {element,listeners,state,interval,calls}=setup(async(url,opts)=>{
+  const {element,listeners,state,interval,calls,operations}=setup(async(url,opts)=>{
     if(opts?.method==='POST')return {job};
     if(url.includes('/'+id))return {job};
     return {jobs:[job]};
@@ -72,10 +73,12 @@ test('successful POST leaves durable confirmation after automatic refresh',async
   assert.match(element('atlasQueryStatus').textContent,/O servidor registrou a solicitação/);
   assert.ok(element('atlasQueryActivity').children.length>=1);
   assert.equal(calls.filter(x=>x.method==='POST').length,1);
+  assert.ok(operations.some(x=>x.phase==='searching'&&x.label==='Gerando QUERY no Atlas'));
+  assert.ok(operations.some(x=>x.phase==='working'&&x.label==='Consultando fila da QUERY'));
 });
 
 test('HTTP rejection remains visible instead of vanishing after polling',async()=>{
-  const {element,listeners,state,interval}=setup(async(url,opts)=>{
+  const {element,listeners,state,interval,operations}=setup(async(url,opts)=>{
     if(opts?.method==='POST'){
       const e=new Error('Perfil operacional necessário');e.status=403;throw e;
     }
@@ -88,4 +91,19 @@ test('HTTP rejection remains visible instead of vanishing after polling',async()
   interval();
   await new Promise(resolve=>setImmediate(resolve));
   assert.match(element('atlasQueryActivity').children[0].textContent,/Falha ao solicitar QUERY/);
+  assert.ok(operations.some(x=>x.phase==='error'&&x.label==='Falha ao gerar QUERY'));
+});
+
+
+test('complete QUERY animates green success only after ready state',async()=>{
+  const id='b'.repeat(32);
+  const job={id,city:'mossoro',location:'empreiteira',
+             state:'ready',remote_queue_id:'276841868'};
+  const {operations,listeners}=setup(async(url,options)=>{
+    if(options?.method==='POST')return {job};
+    return {jobs:[job]};
+  });
+  listeners.get('atlasQueryStart:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.ok(operations.some(x=>x.phase==='success'&&x.label==='QUERY pronta'));
 });

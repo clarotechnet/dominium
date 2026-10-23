@@ -13,6 +13,51 @@
   let active=null;let fetching=false;let busy=false;let offset=0;let total=0;
   let selectedProfile='';
   let lastBackendError='';
+  // Reuse DOMINIUM's existing animated orb HUD during the entire QUERY job.
+  // A registered HTTP 202 only means queued, not that the Excel is ready.
+  let hudToken='';
+  let hudMarker='';
+  let hudCounter=0;
+  function queryHud(phase,label,detail='',marker=''){
+    const key=String(marker||'')+'|'+phase+'|'+label+'|'+detail;
+    if(key===hudMarker)return;
+    hudMarker=key;
+    const motion=window.DOMINIUM_MOTION;
+    if(!motion||typeof motion.operation!=='function')return;
+    if(!hudToken)hudToken='atlas-query-'+Date.now()+'-'+(++hudCounter);
+    motion.operation({token:hudToken,phase,label,detail});
+    if(phase==='error'||phase==='success')hudToken='';
+  }
+  function updateQueryHud(){
+    if(!active)return;
+    const id=active.id||'unknown';
+    if(active.error_code==='atlas_submit_unconfirmed'){
+      queryHud('error','Envio Atlas não confirmado',
+        'Não tente novamente sem verificar a fila existente.',id+'|uncertain-error');
+    } else if(active.state==='atlas_auth_required'){
+      queryHud('error','Atlas precisa de login',
+        'Faça login na sessão do watchdog; nenhuma fila foi confirmada.',id+'|auth');
+    } else if(['failed','format_review'].includes(active.state)){
+      queryHud('error','QUERY precisa de atenção',
+        statusLabels[active.state]||'Consulte o histórico para detalhes.',id+'|'+active.state);
+    } else if(active.state==='ready'){
+      queryHud('success','QUERY pronta',
+        'Tabela e exportações CSV/XLSX estão disponíveis.',id+'|ready');
+    } else if(['attachment_wait','attachment_missing'].includes(active.state)){
+      queryHud('solving','Aguardando arquivo do Atlas',
+        'Fila concluída: verificando anexo e possíveis atrasos de publicação.',id+'|'+active.state);
+    } else if(active.state==='download_ready'){
+      queryHud('solving','Preparando planilha',
+        'Arquivo recebido: validando e organizando as colunas.',id+'|download');
+    } else if(active.state==='queued'||active.state==='processing'){
+      queryHud('working','Consultando fila da QUERY',
+        active.remote_queue_id?'Fila Atlas '+active.remote_queue_id+' — '+statusLabels[active.state]:
+          'Aguardando ID e processamento da fila.',id+'|'+active.state);
+    } else if(active.state==='submission_uncertain'){
+      queryHud('searching','Aguardando resposta do Atlas',
+        'Pedido registrado. O sistema não enviará uma segunda solicitação.',id+'|uncertain');
+    }
+  }
   const activity=document.getElementById('atlasQueryActivity');
   function writeNotice(message,kind='info'){
     const stamp=new Date().toLocaleTimeString('pt-BR');
@@ -59,6 +104,8 @@
         ? 'O anexo respondeu 404. Vamos consultar o MESMO ID; nenhuma fila nova foi criada.'
         : serverError==='atlas_auth_required'
         ? 'A sessão Atlas requer autenticação. Nenhuma geração de relatório foi confirmada.'
+        : serverError==='atlas_submit_unconfirmed'
+        ? 'O Atlas não confirmou a geração. Não repita o clique sem verificar a fila.'
         : serverError==='report_parse_not_confirmed'
         ? 'Arquivo obtido, mas o formato precisa de revisão. Nenhuma linha foi descartada.'
         : 'O serviço registrou uma pendência ('+serverError+').';
@@ -105,7 +152,11 @@
   async function refresh({quiet=false}={}){
     if(fetching||!allowed()||state.activeModule!=='confront')return;
     fetching=true;
-    if(!quiet)writeNotice('Consultando andamento da QUERY...');
+    if(!quiet){
+      writeNotice('Consultando andamento da QUERY...');
+      queryHud('searching','Consultando fila Atlas',
+        'Verificando o ID e a situação do processamento.','refresh-'+Date.now());
+    }
     try{
       if(!active||selectedProfile!==state.profile){
         selectedProfile=state.profile;active=null;offset=0;total=0;
@@ -117,19 +168,27 @@
       if(active){
         const item=await request('/api/atlas-query/jobs/'+active.id,{timeoutMs:18000});
         const previous=active.state;active=item.job||active;
+        updateQueryHud();
         if(active.state==='ready'&&(previous!=='ready'||!ui.table.firstChild)){
           offset=0;await loadPage();
         }
       }
       if(!quiet)writeNotice(active ? ('Consulta atualizada: '+(statusLabels[active.state]||active.state)+'.') : 'Nenhuma QUERY registrada nesta praça.');
+      if(!active&&!quiet)queryHud('success','Consulta finalizada',
+        'Não existe QUERY registrada nesta praça.','no-jobs-'+Date.now());
     }catch(error){
-      if(!quiet)writeNotice('Não foi possível consultar a fila: '+safeError(error),'error');
+      if(!quiet){
+        writeNotice('Não foi possível consultar a fila: '+safeError(error),'error');
+        queryHud('error','Consulta da fila falhou',safeError(error),'refresh-error-'+Date.now());
+      }
     }finally{fetching=false;renderStatus()}
   }
   async function create(){
     if(busy||fetching||!allowed())return;
     busy=true;renderStatus();
     writeNotice('Pedido recebido no navegador. Enviando ao servidor...');
+    queryHud('searching','Gerando QUERY no Atlas',
+      'Enviando a praça e a localização ao servidor.','post-'+Date.now());
     try{
       const data=await request('/api/atlas-query/jobs',{
         method:'POST',
@@ -144,7 +203,11 @@
         ? 'Reutilizando a solicitação '+active.id.slice(0,8)+'. Nenhuma fila nova foi enviada.'
         : 'O servidor registrou a solicitação '+active.id.slice(0,8)+'. Aguardando confirmação do ID Atlas.',
         data.reused?'warning':'success');
-    }catch(error){writeNotice('Falha ao solicitar QUERY: '+safeError(error),'error')}
+      updateQueryHud();
+    }catch(error){
+      writeNotice('Falha ao solicitar QUERY: '+safeError(error),'error');
+      queryHud('error','Falha ao gerar QUERY',safeError(error),'post-error-'+Date.now());
+    }
     finally{busy=false;renderStatus()}
   }
   async function exportAs(ext){
@@ -153,7 +216,10 @@
       const result=await requestBlob('/api/atlas-query/jobs/'+active.id+'/export.'+ext,
           {timeoutMs:120000});
       saveBlob(result.blob,'dominium-query-'+active.city+'-'+localDate()+'.'+ext);
-    }catch(error){writeNotice('Falha ao exportar planilha: '+safeError(error),'error')}
+    }catch(error){
+      writeNotice('Falha ao exportar planilha: '+safeError(error),'error');
+      queryHud('error','Falha ao exportar planilha',safeError(error),'export-error-'+Date.now());
+    }
   }
   ui.start.addEventListener('click',()=>void create());
   ui.refresh.addEventListener('click',()=>void refresh());

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-23T16:19:58+00:00",
+  "generated_at": "2026-10-23T16:43:28+00:00",
   "schema": 2,
-  "source_fingerprint": "9230113ffadb93a280a75437a0910f6baa84055c66b91f77951971ae2d46b2be",
+  "source_fingerprint": "be73f12af3e071ba1a44e34f6561613e748c884bf171525715a0ac35b905f6de",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -819,8 +819,8 @@
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 1819,
-      "sha256": "8415bbbd4cf3a05fed7d729b3b1ddc4922a6f328cf5614eaa97763a8f2fb11de",
+      "bytes": 2492,
+      "sha256": "6fefcf87d61be4a5ec11de03aec2c067b178515555b53373fb9bf7153ca88694",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -829,7 +829,7 @@
       ],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 2
+      "symbol_count": 3
     },
     {
       "path": "deploy/hostinger-web/package-lock.json",
@@ -873,8 +873,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 42917,
-      "sha256": "37b2943f83be2b28e705a3f8ce8a6a210f393ef988e91ff5a3e5477d6e953e9f",
+      "bytes": 43005,
+      "sha256": "4a07d91d7556742bbedcf381d4fe11a003b0ffa2b96fd11f65d36dd2ac9a7896",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1110,8 +1110,8 @@
     {
       "path": "docs/agent/ATLAS_QUERY_AUTOMATION.md",
       "category": "docs",
-      "bytes": 6653,
-      "sha256": "fa3974889a274ee7b7652f4aba8b21206bd67b15fa0523e64ad9e5da04774d6b",
+      "bytes": 7877,
+      "sha256": "8b74ed6d03f5b60a64ec9ba743606c796817e9271b0f644e8a3c87895af3dbc6",
       "summary": "QUERY Atlas — relatório analítico por localização",
       "imports": [],
       "endpoints": [],
@@ -1123,8 +1123,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 4553,
-      "sha256": "2904fa5c07dc53a454fa83ffc609aefd8e56ba79cb38d80b5e12123ebc656e50",
+      "bytes": 5159,
+      "sha256": "80e333c063531cd9bed40533fcab706f9eeb19d6715b252448804a635941a2ce",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1136,8 +1136,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 3600,
-      "sha256": "97cac5e5f16d820e03d98e639ac6c87584fb258545942649b862ccf6a7b20aa8",
+      "bytes": 3948,
+      "sha256": "b58a59595e3ef0ff55138c813043af245d6f16c995e015a82b3637408519a493",
       "summary": "DOMINIUM — handoff operacional (memória verificada)",
       "imports": [],
       "endpoints": [],
@@ -2099,8 +2099,8 @@
     {
       "path": "integrations/serial_consult/atlas_query_http.py",
       "category": "shared",
-      "bytes": 9882,
-      "sha256": "c0c33a249eea50a4f14787144fe939a2f7d2dedd1163c938b05d15aeafa051da",
+      "bytes": 10332,
+      "sha256": "7a8ab0705c7a8c987c8c69dd72642a16a90feafdb639c1b7d81b3950cd680b79",
       "summary": "Authenticated DOMINIUM QUERY Atlas service, isolated by operator.",
       "imports": [
         "__future__",
@@ -3721,8 +3721,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 6218,
-      "sha256": "9dc53a7f44769dce9f49c0286b7bd508400021b5e392478bdad06ac01783775d",
+      "bytes": 6273,
+      "sha256": "746a3aff26672e03d9ebee90ad6cf8ebb1fe582352a8c9ee8465acaefa5b2897",
       "summary": "",
       "imports": [
         "__future__",
@@ -3913,8 +3913,8 @@
     {
       "path": "static/atlas-query-ui.js",
       "category": "frontend",
-      "bytes": 8579,
-      "sha256": "c7bc41000e3f141621572bc546341624f1327e1bcc9ab327e4fdf0825398ec86",
+      "bytes": 11983,
+      "sha256": "1481bbf7c0f6206b51b749f73a859289372911d87d53e0ab10a55063142329b2",
       "summary": "DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */",
       "imports": [],
       "endpoints": [
@@ -3924,7 +3924,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 11
+      "symbol_count": 13
     },
     {
       "path": "static/confront.js",
@@ -4010,7 +4010,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 125965,
-      "sha256": "ea80cd56e5527d84b2a4f061ff90abf604fe231030e2387779dcfc1399e6c6af",
+      "sha256": "708ac1a54d4198d73be3b184cf13539aed93ea6342e3cbe42b0f0b65ba78ba5f",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4595,6 +4595,23 @@
       "symbol_count": 2
     },
     {
+      "path": "tests/test_atlas_query_proxy_json.js",
+      "category": "tests",
+      "bytes": 2066,
+      "sha256": "4e8277a7c89ce12ff93c10c9295f8ee3d33b03ebc9dfe016b769d1c6045e971f",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/atlas-query/jobs",
+        "/api/confront/jobs",
+        "/api/stock/transfer"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "tests/test_atlas_query_report.py",
       "category": "tests",
       "bytes": 3299,
@@ -4615,8 +4632,8 @@
     {
       "path": "tests/test_atlas_query_ui_status.js",
       "category": "tests",
-      "bytes": 4067,
-      "sha256": "ac0bb6cb8a4fc7bbaa482106b3f8c808c90a6b60ba77f41e41fe44e051124386",
+      "bytes": 4993,
+      "sha256": "96978a2205ca633e83100a833e4cf176a387440949132510f5f945a9b4c54e6c",
       "summary": "",
       "imports": [],
       "endpoints": [],

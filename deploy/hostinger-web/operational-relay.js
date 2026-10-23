@@ -37,4 +37,15 @@ function resolveOperationalRead(req, connection = readPrivateConnection) {
     },
   };
 }
-module.exports = { resolveOperationalRead };
+// A proxy POST body must retain its media type across Hostinger -> Worker.
+// Do not forward browser CSRF/cookie; preserve only the safe JSON media type
+// for explicit allowlisted jobs routes.
+function restorePrivateJsonContentType(req, headers, body) {
+  if (!headers || !req || req.method !== 'POST' || body === undefined) return;
+  const url=String(req.originalUrl||'');
+  if (!allowedConfrontRoute('POST',url) && !allowedAtlasQueryRoute('POST',url)) return;
+  const original=String(req.headers?.['content-type']||'').toLowerCase();
+  if (!original.startsWith('application/json')) return;
+  headers['content-type']='application/json';
+}
+module.exports = { resolveOperationalRead, restorePrivateJsonContentType };

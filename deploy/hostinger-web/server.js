@@ -969,7 +969,7 @@ const OPERATIONAL_PROXY_HEADER_ALLOWLIST = [
 const { createDisconnectionMiddleware } = require('./disconnection-proxy');
 app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }));
 const { createImportMiddleware } = require('./import-proxy');
-const { resolveOperationalRead } = require('./operational-relay');
+const { resolveOperationalRead, restorePrivateJsonContentType } = require('./operational-relay');
 const { allowedOperationalRead } = require('./operational-policy');
 app.use(['/api/import-targets', '/api/import-history', '/api/imports'], createImportMiddleware());
 
@@ -1009,6 +1009,7 @@ async function proxyOperationalRequest(req, res, next) {
       delete headers['x-csrf-token'];
       delete headers['content-type'];
       Object.assign(headers, relay.headers);
+      restorePrivateJsonContentType(req, headers, body);
     }
     const upstream = await fetch(relay ? relay.url : DOMINIUM_OPERATION_ORIGIN + req.originalUrl, {
       method: req.method,

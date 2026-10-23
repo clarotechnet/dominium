@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-23T16:19:58+00:00
-- Source fingerprint: `9230113ffadb93a2`
-- Indexed files: 370
-- Indexed symbols: 3434
-- API path references: 316
+- Generated: 2026-10-23T16:43:28+00:00
+- Source fingerprint: `be73f12af3e071ba`
+- Indexed files: 371
+- Indexed symbols: 3438
+- API path references: 319
 
 ## Navigation rule
 
@@ -86,7 +86,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## frontend
 
-- `static/atlas-query-ui.js` (11 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
+- `static/atlas-query-ui.js` (13 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
 - `static/confront.js` (8 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
 - `static/disconnection.js` (37 symbols, 10 API paths)
 - `static/fflate.browser.min.js` (22 symbols)
@@ -170,7 +170,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - shared: 129 files
 - tooling-deploy: 45 files
 - docs: 15 files
-- tests: 104 files
+- tests: 105 files
 
 ## Search indexes
 

@@ -54,3 +54,5 @@ valide commit/deploy e deixe pendências explícitas.
   passa a reutilizar a aba NetHome do watchdog por iframe temporário,
   evitando abrir outro Chrome; preflight somente leitura aprovado.
   Geração real no novo caminho ainda precisa confirmação operacional.
+
+- Em 2026-10-23, erro de criação QUERY HTTP 415 'Envie JSON' identificado na perda do Content-Type Hostinger -> Cloudflare; corrigido com cabeçalho JSON restrito nas rotas de jobs e teste regressivo. HUD 'DOMINIUM EM AÇÃO' reutilizado pela QUERY, com fases até download e estado de falha visível; veja docs/agent/ATLAS_QUERY_AUTOMATION.md.

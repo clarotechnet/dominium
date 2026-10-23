@@ -90,7 +90,13 @@ class AtlasQueryService:
                     try:self._submit_existing(new)
                     except Exception as exc:
                         logging.warning("Atlas QUERY submit inconclusive: %s",type(exc).__name__)
-                        # Persisted submission_uncertain is deliberately NOT retried.
+                        # Keep the uncertain state (no retries), but surface a durable
+                        # failure code in the browser instead of spinning forever.
+                        try:
+                            if (read_job(new,self.db_path) or {}).get("state")=="submission_uncertain":
+                                update_job(new,self.db_path,error_code="atlas_submit_unconfirmed")
+                        except Exception:
+                            logging.exception("Atlas QUERY could not persist submit error")
                     continue
                 with connect_db(self.db_path) as db:
                     rows=db.execute("""SELECT id,state,next_attachment_check FROM query_jobs

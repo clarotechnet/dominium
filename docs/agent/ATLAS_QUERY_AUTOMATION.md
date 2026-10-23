@@ -123,3 +123,25 @@ Antes dessa correção, o banco privado de trabalhos tinha somente uma
 QUERY de validação da praça Mossoró (sem operador associado) e nenhuma
 QUERY nova atribuída a operador. Não confundir clique do usuário com
 geração confirmada no Atlas. A observação foi feita sem ler dados de cliente.
+
+## HTTP 415 do botão QUERY e HUD operacional (2026-10-23)
+
+Uma solicitação legítima pela interface de Natal retornou o erro
+`Envie JSON` antes de chegar ao relay; nenhuma fila foi criada.
+Causa no `deploy/hostinger-web/server.js`: ao remover cabeçalhos do
+navegador antes de encaminhar para o Worker privado, removia também
+`Content-Type`. O Worker de `integrations/import_bridge/worker.mjs`
+recusa POST sem `application/json` (HTTP 415).
+Correção: `restorePrivateJsonContentType` em `operational-relay.js`
+adiciona estritamente o tipo JSON de volta, apenas para POST de
+`/api/atlas-query/jobs` e `/api/confront/jobs`, sem encaminhar
+cookie nem CSRF do navegador. Teste Node no pacote:
+`tests/test_atlas_query_proxy_json.js`.
+
+A interface da QUERY passa a usar o HUD **DOMINIUM EM AÇÃO** existente
+em `static/motion-ui.js`: estados de envio, fila, anexo, conversão,
+sucesso e erro; o HTTP 202 nunca é tratado como planilha pronta.
+O histórico de mensagens não desaparece na atualização automática.
+Se a resposta do Atlas ficar incerta, o backend persiste
+`error_code=atlas_submit_unconfirmed` sem gerar solicitação duplicada.
+Essa alteração é somente da fila QUERY; nenhuma movimentação de estoque.
