@@ -661,6 +661,10 @@
         </div>
         <p id="atlasQueryProgress" role="status" aria-live="polite">Selecione a praça e clique em Gerar QUERY no Atlas.</p>
         <small id="atlasQueryStatus" role="status"></small>
+        <details class="atlas-query-activity-panel" open>
+          <summary>Histórico desta sessão — cada clique e retorno da automação</summary>
+          <ol id="atlasQueryActivity" class="atlas-query-activity" aria-live="polite" aria-relevant="additions"></ol>
+        </details>
         <div class="serials-actions">
           <strong id="atlasQuerySummary"></strong>
           <div>
@@ -2245,7 +2249,7 @@
   <script src="/query-import.js?v=20261023-1"></script>
   <script src="/confront.js?v=20261022-3"></script>
   <script src="/query-import-ui.js?v=20261023-1"></script>
-  <script src="/atlas-query-ui.js?v=20261023-1"></script>
+  <script src="/atlas-query-ui.js?v=20261023-2"></script>
   <script type="module" src="/motion-ui.js"></script>
 </body>
 </html>

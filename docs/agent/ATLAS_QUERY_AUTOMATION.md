@@ -101,3 +101,25 @@ smokes. Avoid touching managed Atlas/WhatsApp production tabs.
 - Checkouts no servidor: staging
   `C:\DominiumRuntime\SerialMultiCityPatch-20261022`, checkout
   separado de publicação `C:\DominiumRuntime\AtlasQueryShip-20261023`.
+
+## Sessão Atlas reutilizada e mensagens persistentes (2026-10-23)
+
+Observação de suporte: no servidor, o watchdog conservava a aba NetHome
+aberta, mas a automação anterior criava uma nova guia do Chrome.
+O SSO do Claro/NetScaler podia apresentar uma nova janela de login/CAPTCHA.
+Agora o conector usa um **iframe oculto e temporário dentro da aba
+Atlas gerenciada já autenticada**, sem fechar ou navegar essa aba.
+A inspeção read-only confirmou tanto o formulário de equipamentos quanto
+a página de filas NetTask nesse modelo, incluindo Mossoró e EMPREITEIRA.
+Geração real pelo novo modelo não foi realizada neste registro.
+
+O frontend tinha outro bug: uma atualização periódica apagava o aviso de
+resultado do clique depois de uma fração de segundo. Corrigimos a limpeza
+indevida e incluímos histórico de ações da sessão com hora, estado e erro.
+Se o Atlas solicitar login, o trabalho recebe estado explicativo
+`atlas_auth_required`, sem submissão de relatório.
+
+Antes dessa correção, o banco privado de trabalhos tinha somente uma
+QUERY de validação da praça Mossoró (sem operador associado) e nenhuma
+QUERY nova atribuída a operador. Não confundir clique do usuário com
+geração confirmada no Atlas. A observação foi feita sem ler dados de cliente.

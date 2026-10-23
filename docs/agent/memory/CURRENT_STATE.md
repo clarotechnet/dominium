@@ -47,3 +47,10 @@ em `docs/agent/memory/OPERATIONS_JOURNAL.md` via
 `python scripts/agent_memory.py record`, rode testes e quality gate,
 valide commit/deploy e deixe pendências explícitas.
 - A etapa automatica da QUERY Atlas foi codificada: praca/EMPREITEIRA, Chrome autenticado isolado, fila NetTask com ID persistido, espera 30s e retry 404 sem gerar duplicatas, tabela e CSV/XLSX. Relay privado e Cloudflare Worker atualizados em 2026-10-23; anexo real segue retornando 404 e nao ha planilha confirmada. Ver docs/agent/ATLAS_QUERY_AUTOMATION.md.
+
+- Em 2026-10-23, ao investigar clique sem retorno da QUERY: frontend
+  apagava mensagem na atualização automática; versão corrigida introduz
+  histórico persistente na tela e mantém falhas visíveis. O conector
+  passa a reutilizar a aba NetHome do watchdog por iframe temporário,
+  evitando abrir outro Chrome; preflight somente leitura aprovado.
+  Geração real no novo caminho ainda precisa confirmação operacional.

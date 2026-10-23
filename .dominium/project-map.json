@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-23T14:30:01+00:00",
+  "generated_at": "2026-10-23T16:19:58+00:00",
   "schema": 2,
-  "source_fingerprint": "4fc6110ff741d14a1266688df98e068a99b90684c25a80ccd0cdf4a7ee28c86a",
+  "source_fingerprint": "9230113ffadb93a280a75437a0910f6baa84055c66b91f77951971ae2d46b2be",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1110,8 +1110,8 @@
     {
       "path": "docs/agent/ATLAS_QUERY_AUTOMATION.md",
       "category": "docs",
-      "bytes": 4285,
-      "sha256": "f3bc149dfd46afccf070f78d4263610d03d1cd63b9fba00449fbabbb38e2c2f2",
+      "bytes": 6653,
+      "sha256": "fa3974889a274ee7b7652f4aba8b21206bd67b15fa0523e64ad9e5da04774d6b",
       "summary": "QUERY Atlas — relatório analítico por localização",
       "imports": [],
       "endpoints": [],
@@ -1123,8 +1123,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 3902,
-      "sha256": "0c1726453be3bd3196755643ce9d17cea6737237bb6eebbdab926711174a1ef4",
+      "bytes": 4553,
+      "sha256": "2904fa5c07dc53a454fa83ffc609aefd8e56ba79cb38d80b5e12123ebc656e50",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1136,8 +1136,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 3170,
-      "sha256": "d9b8fdba84a887f8befa2377c8350d00701b501cb51a7152d4e56436a2c5f748",
+      "bytes": 3600,
+      "sha256": "97cac5e5f16d820e03d98e639ac6c87584fb258545942649b862ccf6a7b20aa8",
       "summary": "DOMINIUM — handoff operacional (memória verificada)",
       "imports": [],
       "endpoints": [],
@@ -2099,8 +2099,8 @@
     {
       "path": "integrations/serial_consult/atlas_query_http.py",
       "category": "shared",
-      "bytes": 9564,
-      "sha256": "ca850c09ca23b6b18d24abe679d6ab79e3e5a768da4ee570b138e6972a262bb2",
+      "bytes": 9882,
+      "sha256": "c0c33a249eea50a4f14787144fe939a2f7d2dedd1163c938b05d15aeafa051da",
       "summary": "Authenticated DOMINIUM QUERY Atlas service, isolated by operator.",
       "imports": [
         "__future__",
@@ -2127,8 +2127,8 @@
     {
       "path": "integrations/serial_consult/atlas_query_pipeline.py",
       "category": "shared",
-      "bytes": 10936,
-      "sha256": "cf22d475c925419d355143270c52ec3f0d0217624fc0a08185e66fcddcfd51e9",
+      "bytes": 10984,
+      "sha256": "aa629792a58d53d78383ee8146e1a24edbf451738027b272029b22058b8ba185",
       "summary": "Private Atlas QUERY queue/attachment orchestrator (CLI foundation).",
       "imports": [
         "__future__",
@@ -2150,8 +2150,8 @@
     {
       "path": "integrations/serial_consult/atlas_query_report.py",
       "category": "shared",
-      "bytes": 10756,
-      "sha256": "bfdb244089d9e26a5149375d47bbf8354823acf8fd061fa32b1dbd591776897b",
+      "bytes": 14792,
+      "sha256": "c2bc804cdee8048bd5a578b136f11d425ea90372eb658baa54b538027da0a92c",
       "summary": "Atlas read-only equipment report generator in a dedicated managed Chrome tab.",
       "imports": [
         "__future__",
@@ -2168,12 +2168,9 @@
       ],
       "endpoints": [],
       "env_vars": [],
-      "datasnap_methods": [
-        "Target.closeTarget",
-        "Target.createTarget"
-      ],
+      "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 15
+      "symbol_count": 16
     },
     {
       "path": "integrations/serial_consult/confront_engine.py",
@@ -3724,8 +3721,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 6164,
-      "sha256": "fe0507aa5539379ba4a5e20874ef6374d752e8726c0782018d930dcc72bee8d2",
+      "bytes": 6218,
+      "sha256": "9dc53a7f44769dce9f49c0286b7bd508400021b5e392478bdad06ac01783775d",
       "summary": "",
       "imports": [
         "__future__",
@@ -3916,8 +3913,8 @@
     {
       "path": "static/atlas-query-ui.js",
       "category": "frontend",
-      "bytes": 7155,
-      "sha256": "49b92b1553cf0e0aa9da75157dce17743979116e8bf458be61cb354cac117bb6",
+      "bytes": 8579,
+      "sha256": "c7bc41000e3f141621572bc546341624f1327e1bcc9ab327e4fdf0825398ec86",
       "summary": "DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */",
       "imports": [],
       "endpoints": [
@@ -3927,7 +3924,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 10
+      "symbol_count": 11
     },
     {
       "path": "static/confront.js",
@@ -4012,8 +4009,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 125675,
-      "sha256": "17f0833fea823b00fe134af2234f7df3c0e9c6971cd29c961d62bfb708f0f51c",
+      "bytes": 125965,
+      "sha256": "ea80cd56e5527d84b2a4f061ff90abf604fe231030e2387779dcfc1399e6c6af",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4105,8 +4102,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 207889,
-      "sha256": "07bb3c56b72d54adc66c0cea259b826df5549c9e4d7d891b3c5acda5682bddb5",
+      "bytes": 208446,
+      "sha256": "d90d0c2aadf682d8ca3cf5ac7f9bee8a7e4a496e114f30e6b29720db802a6d73",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -4535,13 +4532,14 @@
     {
       "path": "tests/test_atlas_query_http.py",
       "category": "tests",
-      "bytes": 3175,
-      "sha256": "8b48d351cf8c8cfb62290e7d39fa587eb3bc4d51f16d92eb1debd7bf5fcfde18",
+      "bytes": 4118,
+      "sha256": "3ae038a4faf7941298f1461ca1e0491cb439e4471ea40086a43b689fd1d6d908",
       "summary": "QUERY Atlas authenticated API contract without contacting real Atlas.",
       "imports": [
         "atlas_query_data",
         "atlas_query_http",
         "atlas_query_pipeline",
+        "atlas_query_report",
         "pathlib",
         "sys",
         "tempfile",
@@ -4555,7 +4553,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 5
+      "symbol_count": 6
     },
     {
       "path": "tests/test_atlas_query_pipeline.py",
@@ -4613,6 +4611,19 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 12
+    },
+    {
+      "path": "tests/test_atlas_query_ui_status.js",
+      "category": "tests",
+      "bytes": 4067,
+      "sha256": "ac0bb6cb8a4fc7bbaa482106b3f8c808c90a6b60ba77f41e41fe44e051124386",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_auth_store.py",
@@ -7198,8 +7209,6 @@
     "TOA_REPLAY_HEADER_NAMES.has",
     "Tabela_codigo_baixa0711.catalog",
     "Tabela_codigo_baixa0711.pdf",
-    "Target.closeTarget",
-    "Target.createTarget",
     "Tecnico.pdf",
     "Text.UTF8Encoding",
     "Time.get"

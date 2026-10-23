@@ -7386,3 +7386,11 @@ dialog {
 #atlasQueryGrid td{font-variant-numeric:tabular-nums;}
 #atlasQueryProgress{margin:14px 0 8px;font-weight:600;}
 #atlasQueryStatus{display:block;min-height:1.5em;}
+
+.atlas-query-activity-panel{margin:12px 0;border:1px solid var(--line,#555);border-radius:9px;padding:12px;}
+.atlas-query-activity-panel summary{cursor:pointer;font-weight:600;}
+.atlas-query-activity{margin:10px 0 0;padding-left:22px;max-height:210px;overflow:auto;}
+.atlas-query-activity li{padding:5px 0;border-bottom:1px solid var(--line,#555);line-height:1.45;}
+.atlas-query-activity-error{color:var(--red,#ed6262);}
+.atlas-query-activity-warning{color:var(--yellow,#ffcc66);}
+#atlasQueryStatus{font-weight:600;line-height:1.4;overflow-wrap:anywhere;}

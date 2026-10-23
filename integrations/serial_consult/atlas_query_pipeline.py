@@ -15,8 +15,9 @@ from urllib.parse import urlsplit
 
 from atlas_query_report import ChromeAtlas, connect_db, read_job, DB
 
-QUEUE_URL = ("https://atlas.netservicos.com.br/nettask/singleSignOn.do?"
-             "j_url=filas/filas.do?acao=prepareSearch&tipoConsulta=consultaId&menu=yes")
+# Direct authenticated NetTask page, avoiding a new SSO login window.
+QUEUE_URL = ("https://atlas.netservicos.com.br/nettask/filas/filas.do?"
+             "acao=prepareSearch&tipoConsulta=consultaId&menu=yes")
 DATA = Path(r"C:\DominiumRuntime\AtlasQueryData\attachments")
 VALID_QUEUE = re.compile(r"\d{5,15}\Z")
 FILE_URL = re.compile(r"/app-1//RELATORIOS/\d{6}/[A-Za-z0-9_-]+\.xls\Z", re.I)

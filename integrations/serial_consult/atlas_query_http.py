@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from atlas_query_report import CITY,LOCATION,ChromeAtlas,claim_job,read_job,save_queue,connect_db,DB
+from atlas_query_report import CITY,LOCATION,ChromeAtlas,AtlasAuthRequired,claim_job,read_job,save_queue,connect_db,DB
 from atlas_query_pipeline import poll_report,fetch_file,upgrade_db,update_job,public_status
 from atlas_query_data import parse_report,store_records,page,export_csv,export_xlsx,COLUMNS
 
@@ -68,7 +68,13 @@ class AtlasQueryService:
         if not row or row["state"]!="submission_uncertain":return
         chrome=self.browser_factory()
         try:
-            chrome.open()
+            try:
+                chrome.open()
+            except AtlasAuthRequired:
+                # No report submitted. Keep a durable, actionable failure state.
+                update_job(job_id,self.db_path,state="atlas_auth_required",
+                           error_code="atlas_auth_required")
+                return
             remote=chrome.submit_once(row["city"],row["location"])
             save_queue(job_id,remote,self.db_path)
         finally:

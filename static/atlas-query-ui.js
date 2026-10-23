@@ -12,8 +12,25 @@
   if(Object.values(ui).some(value=>!value))return;
   let active=null;let fetching=false;let busy=false;let offset=0;let total=0;
   let selectedProfile='';
+  let lastBackendError='';
+  const activity=document.getElementById('atlasQueryActivity');
+  function writeNotice(message,kind='info'){
+    const stamp=new Date().toLocaleTimeString('pt-BR');
+    const summary=stamp+' — '+String(message||'');
+    ui.status.textContent=summary;
+    ui.status.dataset.level=kind;
+    if(activity){
+      const item=document.createElement('li');
+      item.textContent=summary;
+      item.className='atlas-query-activity-'+kind;
+      activity.prepend(item);
+      while(activity.children.length>12)activity.lastElementChild.remove();
+    }
+  }
+
   const statusLabels={
-    submission_uncertain:'Envio ao Atlas em verificação; não reenviar automaticamente',
+    submission_uncertain:'Solicitação registrada; confirmação do Atlas pendente (não reenviar)',
+    atlas_auth_required:'Autenticação do Atlas necessária; nenhuma fila confirmada',
     queued:'ID recebido; aguardando processamento',
     processing:'Relatório sendo processado no Atlas',
     attachment_missing:'Fila concluída; anexo ainda não publicado',
@@ -35,10 +52,19 @@
       active?'Solicitação '+active.id.slice(0,8):'Nenhuma fila criada';
     ui.progress.textContent=active?statusLabels[active.state]||'Estado: '+active.state:
       'Selecione a praça e clique em Gerar QUERY no Atlas.';
-    ui.status.textContent=active?.error_code==='attachment_http_404'?
-      'Anexo ainda retorna 404; o sistema verifica novamente sem gerar outra fila.':
-      (active?.error_code==='report_parse_not_confirmed'?
-      'O arquivo não foi convertido; nenhuma informação foi descartada.':'');
+    // NEVER clear status/last action during automatic polling.
+    const serverError=String(active?.error_code||'');
+    if(serverError && serverError!==lastBackendError){
+      const message=serverError==='attachment_http_404'
+        ? 'O anexo respondeu 404. Vamos consultar o MESMO ID; nenhuma fila nova foi criada.'
+        : serverError==='atlas_auth_required'
+        ? 'A sessão Atlas requer autenticação. Nenhuma geração de relatório foi confirmada.'
+        : serverError==='report_parse_not_confirmed'
+        ? 'Arquivo obtido, mas o formato precisa de revisão. Nenhuma linha foi descartada.'
+        : 'O serviço registrou uma pendência ('+serverError+').';
+      writeNotice(message,'warning');
+    }
+    lastBackendError=serverError;
     const ready=active?.state==='ready';
     ui.csv.disabled=!ready;ui.xlsx.disabled=!ready;
     ui.prev.disabled=!ready||offset<=0;
@@ -79,7 +105,7 @@
   async function refresh({quiet=false}={}){
     if(fetching||!allowed()||state.activeModule!=='confront')return;
     fetching=true;
-    if(!quiet)ui.status.textContent='Consultando andamento da QUERY...';
+    if(!quiet)writeNotice('Consultando andamento da QUERY...');
     try{
       if(!active||selectedProfile!==state.profile){
         selectedProfile=state.profile;active=null;offset=0;total=0;
@@ -95,15 +121,15 @@
           offset=0;await loadPage();
         }
       }
-      if(!quiet && !active)ui.status.textContent='Nenhuma QUERY gerada nesta praça.';
+      if(!quiet)writeNotice(active ? ('Consulta atualizada: '+(statusLabels[active.state]||active.state)+'.') : 'Nenhuma QUERY registrada nesta praça.');
     }catch(error){
-      if(!quiet)ui.status.textContent=safeError(error);
+      if(!quiet)writeNotice('Não foi possível consultar a fila: '+safeError(error),'error');
     }finally{fetching=false;renderStatus()}
   }
   async function create(){
     if(busy||fetching||!allowed())return;
     busy=true;renderStatus();
-    ui.status.textContent='Solicitando relatório ao Atlas...';
+    writeNotice('Pedido recebido no navegador. Enviando ao servidor...');
     try{
       const data=await request('/api/atlas-query/jobs',{
         method:'POST',
@@ -114,9 +140,11 @@
       active=data.job;offset=0;total=0;
       ui.table.replaceChildren();ui.summary.textContent='';
       selectedProfile=state.profile;
-      ui.status.textContent=data.reused?'Consulta anterior reutilizada; nenhuma nova fila enviada.':
-        'Solicitação registrada. Acompanhe o ID da fila abaixo.';
-    }catch(error){ui.status.textContent=safeError(error)}
+      writeNotice(data.reused
+        ? 'Reutilizando a solicitação '+active.id.slice(0,8)+'. Nenhuma fila nova foi enviada.'
+        : 'O servidor registrou a solicitação '+active.id.slice(0,8)+'. Aguardando confirmação do ID Atlas.',
+        data.reused?'warning':'success');
+    }catch(error){writeNotice('Falha ao solicitar QUERY: '+safeError(error),'error')}
     finally{busy=false;renderStatus()}
   }
   async function exportAs(ext){
@@ -125,7 +153,7 @@
       const result=await requestBlob('/api/atlas-query/jobs/'+active.id+'/export.'+ext,
           {timeoutMs:120000});
       saveBlob(result.blob,'dominium-query-'+active.city+'-'+localDate()+'.'+ext);
-    }catch(error){ui.status.textContent=safeError(error)}
+    }catch(error){writeNotice('Falha ao exportar planilha: '+safeError(error),'error')}
   }
   ui.start.addEventListener('click',()=>void create());
   ui.refresh.addEventListener('click',()=>void refresh());

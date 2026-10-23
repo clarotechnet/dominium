@@ -90,15 +90,23 @@ def read_job(job_id,db_path=DB):
     return dict(row) if row else None
 
 
+class AtlasAuthRequired(RuntimeError):
+    """Atlas navigation requires an operator to authenticate; no report sent."""
+
+
 class ChromeAtlas:
+    """Use an invisible same-origin frame IN the managed Atlas watchdog tab.
+
+    Never launch an additional Chrome tab/window or navigate the existing tab.
+    The bot/extension and the user's foreground Atlas remain untouched.
+    """
     def __init__(self,root=ROOT):
         portfile=root/"profile"/"DevToolsActivePort"
         port=int(portfile.read_text(encoding="utf-8").splitlines()[0])
         if not 1024<=port<=65535:raise ValueError("Porta de depuracao invalida")
         self.base=f"http://127.0.0.1:{port}"
-        self.browser=self._http("/json/version")["webSocketDebuggerUrl"]
-        self.target_id=None
         self.tab=None
+        self.frame_id=None
 
     def _http(self,path):
         with urllib.request.urlopen(self.base+path,timeout=5) as response:
@@ -117,36 +125,98 @@ class ChromeAtlas:
 
     def open(self,url=ATLAS_URL,*,form_id="RelatorioEquipamentosV2Form",
              require_generator=True):
-        if urlsplit(url).hostname!="atlas.netservicos.com.br":
+        uri=urlsplit(url)
+        if uri.hostname!="atlas.netservicos.com.br" or uri.scheme!="https":
             raise ValueError("Origem Atlas nao permitida")
-        ws=websocket.create_connection(self.browser,timeout=10,suppress_origin=True)
-        try:
-            self.target_id=self.call(ws,"Target.createTarget",
-                                     {"url":url,"background":True})["targetId"]
-        finally:ws.close()
-        deadline=time.monotonic()+28
-        while time.monotonic()<deadline:
-            for page in self._http("/json/list"):
-                if page.get("type")!="page" or page.get("id")!=self.target_id:continue
-                self.tab=websocket.create_connection(
-                    page["webSocketDebuggerUrl"],timeout=8,suppress_origin=True)
-                summary=self.eval("""(() => ({
-                  form:!!document.getElementById(%s),
-                  generator:typeof window.gerarRelatorio==='function',
-                  host:location.hostname}))()"""%json.dumps(form_id))
-                if (summary and summary.get("host")=="atlas.netservicos.com.br"
-                    and summary.get("form") and
-                    (not require_generator or summary.get("generator"))):return
-                self.tab.close();self.tab=None
-            time.sleep(1)
-        raise RuntimeError("Formulario Atlas nao carregou")
+        candidates=[page for page in self._http("/json/list")
+            if page.get("type")=="page" and
+            urlsplit(page.get("url") or "").hostname=="atlas.netservicos.com.br"]
+        if not candidates:
+            raise AtlasAuthRequired("A aba Atlas do watchdog nao esta aberta")
+        source=next((p for p in candidates
+                     if urlsplit(p.get("url") or "").path.startswith("/nethome")),candidates[0])
+        self.tab=websocket.create_connection(source["webSocketDebuggerUrl"],
+                                             timeout=12,suppress_origin=True)
+        self.frame_id="dominium-query-"+uuid.uuid4().hex
+        fid=json.dumps(self.frame_id)
+        expression="""(async function(){
+          const parent=globalThis.document.querySelector('frame[name=principal]')?.contentDocument
+            || globalThis.document;
+          const host=parent.body||parent.documentElement;
+          if(!host) return {error:'atlas_frame_missing'};
+          const frame=parent.createElement('iframe');
+          frame.id=%s;
+          frame.style.cssText='display:none!important;width:0;height:0;border:0';
+          frame.setAttribute('aria-hidden','true');
+          const result=await new Promise(function(resolve){
+            let finished=false;
+            function finish(){
+              if(finished)return;
+              finished=true;
+              let doc=null,frameHost='',pathname='',login=false,ready=false,generator=false;
+              try{
+                doc=frame.contentDocument;
+                frameHost=frame.contentWindow.location.hostname;
+                pathname=frame.contentWindow.location.pathname;
+                login=!!doc?.querySelector('input[type=password]');
+                ready=!!doc?.getElementById(%s);
+                generator=typeof frame.contentWindow.gerarRelatorio==='function';
+              }catch(err){frameHost='cross-origin';}
+              resolve({host:frameHost,path:pathname,login:login,
+                       ready:ready,generator:generator});
+            }
+            frame.addEventListener('load',function(){
+              let path='';try{path=frame.contentWindow.location.pathname}
+              catch(err){path='cross-origin'}
+              if(path==='cross-origin')finish();
+              else if(path && path!=='blank'){
+                try{
+                  if(frame.contentDocument.getElementById(%s)
+                     ||frame.contentDocument.querySelector('input[type=password]'))finish();
+                }catch(err){finish();}
+              }
+            });
+            frame.src=%s;
+            host.appendChild(frame);
+            setTimeout(finish,15000);
+          });
+          return result;
+        })()"""%(fid,json.dumps(form_id),json.dumps(form_id),json.dumps(url))
+        outcome=self.call(self.tab,"Runtime.evaluate",{
+             "expression":expression,"returnByValue":True,"awaitPromise":True},timeout=26)
+        if outcome.get("exceptionDetails"):
+            raise RuntimeError("Falha ao carregar quadro Atlas")
+        summary=(outcome.get("result") or {}).get("value") or {}
+        if (summary.get("host")!="atlas.netservicos.com.br" or summary.get("login")):
+            raise AtlasAuthRequired("Sessao Atlas precisa de login")
+        if not summary.get("ready") or (require_generator and not summary.get("generator")):
+            raise RuntimeError("Formulario Atlas nao carregou no navegador existente")
 
     def eval(self,expression,timeout=12):
+        if not self.tab or not self.frame_id:
+            raise RuntimeError("Atlas nao conectado")
+        # Scope existing expressions to our hidden same-origin report frame.
+        wrapped="""(() => {
+          const host=globalThis.document.querySelector('frame[name=principal]')?.contentDocument
+            || globalThis.document;
+          const target=host.getElementById(%s);
+          if(!target||!target.contentDocument)throw new Error('Atlas frame missing');
+          const window=target.contentWindow;
+          const document=target.contentDocument;
+          const location=window.location;
+          const gerarRelatorio=window.gerarRelatorio?.bind(window);
+          const BaseDWR=window.BaseDWR;
+          const addOptionListFila=window.addOptionListFila?.bind(window);
+          const buscarFilasTipoConsultaId=window.buscarFilasTipoConsultaId?.bind(window);
+          const abreDetalhesFila=window.abreDetalhesFila?.bind(window);
+          const selecionarTab=window.selecionarTab?.bind(window);
+          return (%s);
+        })()"""%(json.dumps(self.frame_id),expression)
         result=self.call(self.tab,"Runtime.evaluate",
-             {"expression":expression,"returnByValue":True,"awaitPromise":False},
+             {"expression":wrapped,"returnByValue":True,"awaitPromise":False},
              timeout=timeout)
         if result.get("exceptionDetails"):
-            raise RuntimeError("Erro JS no Atlas")
+            raise RuntimeError("Falha JS no quadro Atlas")
         return (result.get("result") or {}).get("value")
 
     def inspect_parameters(self,city,location):
@@ -192,13 +262,23 @@ class ChromeAtlas:
         raise RuntimeError("Resposta incerta; nao reenviar automaticamente")
 
     def close(self):
-        if self.tab:
-            self.tab.close();self.tab=None
-        if self.target_id:
-            ws=websocket.create_connection(self.browser,timeout=8,suppress_origin=True)
-            try:self.call(ws,"Target.closeTarget",{"targetId":self.target_id})
-            finally:ws.close()
-            self.target_id=None
+        try:
+            if self.tab and self.frame_id:
+                js="""(() => {
+                  const doc=globalThis.document.querySelector('frame[name=principal]')?.contentDocument
+                    || globalThis.document;
+                  const frame=doc.getElementById(%s);
+                  if(frame)frame.remove();
+                  return true;
+                })()"""%json.dumps(self.frame_id)
+                self.call(self.tab,"Runtime.evaluate",{"expression":js,
+                    "returnByValue":True},timeout=6)
+        except Exception:
+            pass
+        finally:
+            if self.tab:self.tab.close()
+            self.tab=None
+            self.frame_id=None
 
 
 def generate(city,location,dry_run=False,db_path=DB,chrome_factory=ChromeAtlas,

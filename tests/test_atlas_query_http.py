@@ -41,6 +41,25 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.svc.handle('GET','/api/atlas-query/jobs/'+job_id,'user-2')[0],404)
         self.assertEqual(self.svc.handle('POST','/api/atlas-query/jobs','viewer',body)[0],403)
 
+    def test_auth_required_records_failure_without_submitting_report(self):
+        from atlas_query_report import AtlasAuthRequired, claim_job, read_job
+        class LoginRequiredChrome:
+            submissions=0
+            def open(self):
+                raise AtlasAuthRequired("Atlas login required")
+            def submit_once(self,*args,**kwargs):
+                LoginRequiredChrome.submissions+=1
+            def close(self):pass
+        job,_=claim_job('mossoro','empreiteira',self.svc.db_path,
+                        created_by='user-123')
+        self.svc.browser_factory=LoginRequiredChrome
+        self.svc._submit_existing(job)
+        updated=read_job(job,self.svc.db_path)
+        self.assertEqual(updated['state'],'atlas_auth_required')
+        self.assertEqual(updated['error_code'],'atlas_auth_required')
+        self.assertIsNone(updated['remote_queue_id'])
+        self.assertEqual(LoginRequiredChrome.submissions,0)
+
     def test_ready_report_can_page_and_export_only_to_owner(self):
         job=self.svc.handle('POST','/api/atlas-query/jobs','user-1',
                             {'city':'natal','location':'empreiteira'})[1]['job']['id']

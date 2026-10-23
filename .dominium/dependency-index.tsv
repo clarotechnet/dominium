@@ -827,6 +827,7 @@ zipfile	tests/test_atlas_query_data.py
 atlas_query_data	tests/test_atlas_query_http.py
 atlas_query_http	tests/test_atlas_query_http.py
 atlas_query_pipeline	tests/test_atlas_query_http.py
+atlas_query_report	tests/test_atlas_query_http.py
 pathlib	tests/test_atlas_query_http.py
 sys	tests/test_atlas_query_http.py
 tempfile	tests/test_atlas_query_http.py
