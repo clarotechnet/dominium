@@ -231,11 +231,18 @@ jobs:
 
       - name: Instalar Hostinger CLI oficial
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           api="https://api.github.com/repos/hostinger/api-cli/releases/latest"
-          url="$(curl -fsSL "$api" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(a["browser_download_url"] for a in d["assets"] if a["name"].endswith("linux-amd64.tar.gz")))')"
-          curl -fsSL "$url" -o /tmp/hostinger.tar.gz
+          # GitHub API anonymous rate limiting may return HTTP 403 on runners.
+          # Use the workflow's read-only GitHub token, never Hostinger credentials.
+          url="$(curl --retry 3 --retry-delay 2 --retry-all-errors -fsSL \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$api" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(a["browser_download_url"] for a in d["assets"] if a["name"].endswith("linux-amd64.tar.gz")))')"
+          curl --retry 3 --retry-delay 2 --retry-all-errors -fsSL "$url" -o /tmp/hostinger.tar.gz
           mkdir -p "$HOME/bin"
           tar -xzf /tmp/hostinger.tar.gz -C "$HOME/bin"
           chmod +x "$HOME/bin/hostinger"
