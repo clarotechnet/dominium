@@ -1,13 +1,65 @@
 {
-  "generated_at": "2026-10-22T23:30:48+00:00",
+  "generated_at": "2026-10-23T04:43:26+00:00",
   "schema": 2,
-  "source_fingerprint": "9a957f448861c1d7f98a60cbd197be7541b222afd0d417696efca9fd98e3bba7",
+  "source_fingerprint": "69fd7d50c5fe2eaed1ea79f2dd75565a53cc4db029910f768151e88c7f13cfb4",
   "files": [
+    {
+      "path": ".agents/skills/dominium-memory/SKILL.md",
+      "category": "shared",
+      "bytes": 1388,
+      "sha256": "19671816f9f9435782c2aea227da6dd58e08b8ccdbec1ee94888cba27164a931",
+      "summary": "name: dominium-memory",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": ".claude/skills/dominium-memory/SKILL.md",
+      "category": "shared",
+      "bytes": 413,
+      "sha256": "7569397bb13d93f1c6c6028bae07f31c219d559a9e262cefb26d6bb482107568",
+      "summary": "name: dominium-memory",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "category": "shared",
+      "bytes": 499,
+      "sha256": "ef4afcfa39481e55c8d703a405b6f1f7d5229ca83bab7ce54a2b9134eae1dff8",
+      "summary": "DOMINIUM — instruções para GitHub Copilot",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
     {
       "path": ".imperium-project.json",
       "category": "imperium",
       "bytes": 38,
       "sha256": "a6c72b51e8822cc769608cc5a9da844075e87689a275b7f8f50c465e483d5f84",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": ".mcp.json",
+      "category": "shared",
+      "bytes": 130,
+      "sha256": "488abc9205f557701edfd77147def5fe22edb370647c2f34417ac1aec1add33d",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -45,8 +97,8 @@
     {
       "path": "AGENTS.md",
       "category": "shared",
-      "bytes": 3540,
-      "sha256": "8534f1137a77fb3ce3d09051949f178b70dc47d008d71a5f5c1375b56fa56267",
+      "bytes": 4007,
+      "sha256": "d23a2f7665c0ed431c774b17aafcd3467101f424eb8a5daecd128ed0c0f97587",
       "summary": "DOMINIUM agent guide",
       "imports": [],
       "endpoints": [],
@@ -414,8 +466,8 @@
     {
       "path": "CLAUDE.md",
       "category": "shared",
-      "bytes": 776,
-      "sha256": "ad7a8982c5c5b42a5bda0f5f00688344938cc73c9c952aa5bb99f53bdb1635d6",
+      "bytes": 1010,
+      "sha256": "de5472b9149c3be8bd1e8eb43f66194935f08b810db6e3c9b9dd30652e4d6cd7",
       "summary": "DOMINIUM / Claude Code",
       "imports": [],
       "endpoints": [],
@@ -1039,6 +1091,73 @@
       "symbol_count": 26
     },
     {
+      "path": "docs/agent/memory/AUTO_CHANGES.md",
+      "category": "docs",
+      "bytes": 1834,
+      "sha256": "cc51e24b19fb2f6445868081f290e61bb84900647f25942aee83487ffa548283",
+      "summary": "DOMINIUM — trilha automática de alterações versionadas",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/memory/CURRENT_STATE.md",
+      "category": "docs",
+      "bytes": 2487,
+      "sha256": "fa36432849224c41ed819e16eb13aba0b0d62125816965cd52711f050bcf9e14",
+      "summary": "DOMINIUM — handoff operacional (memória verificada)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TASK_ROUTER.md"
+      ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/memory/DECISIONS.md",
+      "category": "docs",
+      "bytes": 1238,
+      "sha256": "b202002e0144cb5fcc459bf666621410bccfe3e90e74e6b4b0df69a8b6ffa546",
+      "summary": "DOMINIUM — decisões arquiteturais permanentes",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
+      "category": "docs",
+      "bytes": 817,
+      "sha256": "290f82a7b6cd5ec6b2a8d1b16fa7bbb3e60b431dbe449a29238d14c6fead9c11",
+      "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/MEMORY_SYSTEM.md",
+      "category": "docs",
+      "bytes": 5465,
+      "sha256": "63bbf9a16b302c8cf6abab5a5278bf2818125b4931049333eeb008001fa557f8",
+      "summary": "DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/TASK_ROUTER.md",
       "category": "docs",
       "bytes": 4445,
@@ -1297,6 +1416,19 @@
       "bytes": 21956,
       "sha256": "f204ad89f8897c62ba8a33f7724cf0b5d137517a023a70b88fb4a27c6a18ff10",
       "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "GEMINI.md",
+      "category": "shared",
+      "bytes": 382,
+      "sha256": "1b1a88b0e02ad6a0e649834e109fc67e55463ee1ab8fca07da9e4a344e8d8e81",
+      "summary": "DOMINIUM — instruções para Gemini",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -3005,8 +3137,8 @@
     {
       "path": "README.md",
       "category": "shared",
-      "bytes": 2716,
-      "sha256": "a0f4a28883525e13056f326e2741b4e9b4acbae650319ee780b01625e4986969",
+      "bytes": 3343,
+      "sha256": "5e261ad16d56a5c69891b3ee1e9500a6d484e62ce60c70982931c44dedf9b58e",
       "summary": "DOMINIUM",
       "imports": [],
       "endpoints": [],
@@ -3053,6 +3185,54 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "scripts/agent_memory.py",
+      "category": "tooling-deploy",
+      "bytes": 12189,
+      "sha256": "2538fd2576a9f1837abaedbdff965e40ff8de4f1cc6ccaf0610e1eff0b2ceb8b",
+      "summary": "DOMINIUM portable agent memory: Git/Markdown source + rebuildable SQLite FTS5.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "datetime",
+        "hashlib",
+        "pathlib",
+        "re",
+        "sqlite3",
+        "subprocess",
+        "sys",
+        "zipfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TASK_ROUTER.md"
+      ],
+      "entrypoint": true,
+      "symbol_count": 13
+    },
+    {
+      "path": "scripts/agent_memory_mcp.py",
+      "category": "tooling-deploy",
+      "bytes": 4914,
+      "sha256": "a198c9aa044acd44d8090b7f8a3885d8d7f579b3ebf56fcb0776be22c5857c96",
+      "summary": "Portable MCP stdio entrypoint for DOMINIUM read/search/record memory.",
+      "imports": [
+        "__future__",
+        "agent_memory",
+        "argparse",
+        "contextlib",
+        "io",
+        "json",
+        "pathlib",
+        "sys"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 4
     },
     {
       "path": "scripts/bootstrap_admin.py",
@@ -3334,20 +3514,21 @@
     {
       "path": "scripts/install_agent_context_hooks.py",
       "category": "tooling-deploy",
-      "bytes": 1882,
-      "sha256": "3f284e6102d8feeb12fab9ba16f5ddd1cf8611b9e056ca38ee65aa65f18675eb",
-      "summary": "",
+      "bytes": 2746,
+      "sha256": "f5813377dae67559f5eb9a438d6baeee3a5469e2796b5b9b3a0a0fcadd8304f7",
+      "summary": "Install durable-memory Git hooks safely, including linked worktrees.",
       "imports": [
         "__future__",
         "os",
         "pathlib",
-        "stat"
+        "stat",
+        "subprocess"
       ],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 2
+      "symbol_count": 3
     },
     {
       "path": "scripts/install_confront_relay.py",
@@ -3392,8 +3573,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 5935,
-      "sha256": "16a9ff80d9b0e4c795c277061cc45444173b439725b8e12da1c1564536a38c35",
+      "bytes": 6068,
+      "sha256": "4c8c2dd35ea392eea9249289497d34ba1faa06ba97b16ed12b740d69d338151b",
       "summary": "",
       "imports": [
         "__future__",
@@ -4007,6 +4188,32 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 1
+    },
+    {
+      "path": "tests/test_agent_memory.py",
+      "category": "tests",
+      "bytes": 6913,
+      "sha256": "a00628018291348f49179d44549896bf218dad54d6b9f1d378ed35b972e7764e",
+      "summary": "Portable agent memory regression tests; no network, secrets or production changes.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "contextlib",
+        "importlib",
+        "io",
+        "pathlib",
+        "sqlite3",
+        "subprocess",
+        "sys",
+        "tempfile",
+        "unittest",
+        "zipfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 9
     },
     {
       "path": "tests/test_api_security.py",

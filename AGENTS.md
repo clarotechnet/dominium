@@ -4,12 +4,14 @@ Use this file as the first navigation layer for Codex, Claude Code, and other co
 
 ## First move
 
-1. Read `.dominium/project-map.md`.
-2. Use the TSV indexes for targeted lookup: `symbol-index.tsv` for symbols, `api-index.tsv` for API paths, `dependency-index.tsv` for imports, and `file-index.tsv` for file/category summaries. Use `project-map.json` only as structured file-metadata fallback.
-3. For a named symbol, endpoint, module, or concept, run `.\.venv\Scripts\python.exe .\scripts\query_agent_context.py <terms>` and open only the top candidates.
-4. Open only the source files relevant to the task.
-5. Verify behavior in real code before editing; the map is an index, not source of truth.
-6. Do not recursively scan the whole repository unless the map is stale or the target is genuinely unknown.
+1. Read `docs/agent/memory/CURRENT_STATE.md` and run `python scripts/agent_memory.py brief`.
+2. Search durable decisions with `python scripts/agent_memory.py search <task>`; see `docs/agent/MEMORY_SYSTEM.md`.
+3. Read `.dominium/project-map.md`.
+4. Use the TSV indexes for targeted lookup: `symbol-index.tsv` for symbols, `api-index.tsv` for API paths, `dependency-index.tsv` for imports, and `file-index.tsv` for file/category summaries. Use `project-map.json` only as structured file-metadata fallback.
+5. For a named symbol, endpoint, module, or concept, run `.\.venv\Scripts\python.exe .\scripts\query_agent_context.py <terms>` and open only the top candidates.
+6. Open only the source files relevant to the task.
+7. Verify behavior in real code before editing; the map is an index, not source of truth.
+8. Do not recursively scan the whole repository unless the map is stale or the target is genuinely unknown.
 
 Regenerate the map with:
 
@@ -56,13 +58,14 @@ Cross-system changes touching TOA and Imperium require tests on both sides.
 ## Change protocol
 
 For a normal code change:
-1. Locate with project map/symbol index.
+1. Recover memory with `python scripts/agent_memory.py search <task>` and locate with project map/symbol index.
 2. Read the smallest relevant implementation and tests.
 3. Inspect callers before changing public behavior.
 4. Add or update a regression test.
 5. Run the narrow test.
 6. Regenerate agent context if structure, routes, symbols, dependencies, or task routing changed.
-7. Run `scripts/quality_gate.py` before push/deploy.
+7. Register verified why/what/tests/next with `python scripts/agent_memory.py record` for significant changes. Update `docs/agent/memory/CURRENT_STATE.md` and `DECISIONS.md` when needed.
+8. Run `scripts/quality_gate.py` before push/deploy.
 
 Do not report success from UI state alone when the Imperium/TOA backend can be queried directly.
 Do not treat existence of an OS as proof that installer/controller/state reconciliation succeeded.

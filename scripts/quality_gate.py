@@ -149,6 +149,11 @@ def main() -> None:
     print("Repository secret audit: OK", flush=True)
 
     run(
+        "Portable agent memory index",
+        [sys.executable, str(ROOT / "scripts" / "agent_memory.py"), "build"],
+    )
+
+    run(
         "Python tests",
         [
             sys.executable,

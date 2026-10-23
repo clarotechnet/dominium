@@ -30,6 +30,19 @@ Os testes ficam em `tests/`. Antes de qualquer push/deploy, execute:
 O gate executa a suite Python, os testes JavaScript, lint critico, build do release,
 auditoria do pacote e valida se o contexto dos agentes esta atualizado.
 
+## Memória portátil para agentes
+
+Abra `docs/agent/MEMORY_SYSTEM.md` e `docs/agent/memory/CURRENT_STATE.md`.
+Antes de procurar arquivos: `python scripts/agent_memory.py brief` e
+`python scripts/agent_memory.py search "tema"`. O cache SQLite FTS5 é
+gratuito e reconstruível. Codex, Claude Code, Cursor, Gemini e Copilot
+possuem entradas específicas neste repositório.
+
+Após clonar, ative os hooks com
+`python scripts/install_agent_context_hooks.py`, para registrar caminhos
+alterados no pré-commit e manter o mapa atualizado. A memória de decisões
+e verificações deve ser atualizada pelo agente que fez o trabalho.
+
 ## Contexto para Codex e Claude Code
 
 Leia `AGENTS.md` / `CLAUDE.md` antes de explorar o repositorio. O indice compacto

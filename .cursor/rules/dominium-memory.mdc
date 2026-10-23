@@ -1,0 +1,11 @@
+---
+description: DOMINIUM — memória, recuperação e documentação de alterações
+alwaysApply: true
+---
+
+Ler `AGENTS.md`, `docs/agent/memory/CURRENT_STATE.md` e
+`docs/agent/MEMORY_SYSTEM.md`. Executar
+`python scripts/agent_memory.py brief` e usar `search` para recuperar
+decisões, histórico e arquitetura. Não fazer scan integral sem necessidade.
+Ao terminar, atualizar o handoff e registrar evidência de testes. Nunca
+versionar segredos, perfis de Chrome ou dados privados.

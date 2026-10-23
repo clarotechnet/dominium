@@ -2,6 +2,8 @@
 
 Read `AGENTS.md` first and follow it.
 
+**Durable cross-agent memory:** read `docs/agent/memory/CURRENT_STATE.md` and run `python scripts/agent_memory.py brief` (or `search <task>`). Document why/what/tests/next after significant changes per `docs/agent/MEMORY_SYSTEM.md`.
+
 For navigation, read `.dominium/project-map.md` before searching the repository. Use `.dominium/symbol-index.tsv`, `api-index.tsv`, `dependency-index.tsv`, and `file-index.tsv` for exact lookup; use `project-map.json` only as structured file-metadata fallback.
 
 Do not scan the whole repository by default. For named concepts/symbols/endpoints, run `.\.venv\Scripts\python.exe .\scripts\query_agent_context.py <terms>`, open only the top candidates, then verify the real implementation before editing.

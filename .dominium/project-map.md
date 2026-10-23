@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-22T23:30:48+00:00
-- Source fingerprint: `9a957f448861c1d7`
-- Indexed files: 337
-- Indexed symbols: 3258
+- Generated: 2026-10-23T04:43:26+00:00
+- Source fingerprint: `69fd7d50c5fe2eae`
+- Indexed files: 350
+- Indexed symbols: 3285
 - API path references: 302
 
 ## Navigation rule
@@ -100,6 +100,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## shared core
 
+- `.mcp.json`
 - `ABRIR LEITOR DE FLUXOS.cmd`
 - `Abrir Painel.cmd`
 - `AGENTS.md` (1 DataSnap methods) - DOMINIUM agent guide
@@ -125,6 +126,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `flow_reader/static/app.js` (30 symbols, 1 API paths) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `flow_reader/static/index.html`
 - `flow_reader/static/styles.css`
+- `GEMINI.md` - DOMINIUM — instruções para Gemini
 - `import_protocol_templates.json` (1 DataSnap methods)
 - `import_technicians_xlsx.py` (4 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `installer_change_protocol_templates.json` (1 DataSnap methods)
@@ -159,10 +161,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 119 files
-- tooling-deploy: 42 files
-- docs: 9 files
-- tests: 95 files
+- shared: 124 files
+- tooling-deploy: 44 files
+- docs: 14 files
+- tests: 96 files
 
 ## Search indexes
 
