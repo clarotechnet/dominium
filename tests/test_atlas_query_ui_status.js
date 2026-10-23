@@ -50,7 +50,7 @@ function setup(response){
 test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/id="atlasQueryActivity"/);
   assert.match(html,/Histórico desta sessão/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261023-4/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261023-5/);
 });
 
 test('successful POST leaves durable confirmation after automatic refresh',async()=>{
@@ -129,4 +129,27 @@ test('unconfirmed Atlas submit terminates the animation and automatic polling wi
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(calls.length,before,'no continuing background requests');
   assert.equal(calls.filter(x=>x.method==='POST').length,1,'never re-submit QUERY');
+});
+
+
+test('expired NetTask session stops spinner and keeps confirmed queue ID',async()=>{
+  const id='d'.repeat(32);
+  const job={id,city:'mossoro',location:'empreiteira',state:'queued',
+    error_code:'atlas_auth_required',remote_queue_id:'276850938'};
+  const {element,listeners,state,interval,calls,operations}=setup(async(url,opts)=>{
+    if(opts?.method==='POST')return {job};
+    if(url.includes('/'+id))return {job};
+    return {jobs:[job]};
+  });
+  listeners.get('atlasQueryStart:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.match(element('atlasQueryProgress').textContent,/Sessão Atlas expirada/);
+  assert.match(element('atlasQueryId').textContent,/276850938/);
+  assert.equal(element('atlasQueryStart').disabled,true);
+  assert.ok(operations.some(x=>x.phase==='error'&&x.label==='Sessão Atlas expirada'));
+  const before=calls.length;
+  state.activeModule='confront';interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.length,before);
+  assert.equal(calls.filter(x=>x.method==='POST').length,1);
 });
