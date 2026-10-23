@@ -27,3 +27,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Quality_gate_ok_relay_antigo_preservado
 
 **Próximo passo/pendência:** Validar_publicacao_e_anexo_404
+
+## 2026-10-23 14:29 UTC — Hostinger_runtime_dependency_guard
+
+**Motivo:** Restaurar_QUERY_Atlas_com_deploy_seguro
+
+**Alterado:** atlas-query-policy_js_incluido_no_pacote_e_testes_de_dependencias
+
+**Verificação:** hostinger_packaged_node_require_OK_quality_gate_OK
+
+**Próximo passo/pendência:** Validar_github_actions_e_site_publico

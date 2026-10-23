@@ -25,6 +25,8 @@ class HostingerNodeReleaseTests(unittest.TestCase):
             "static/app.js",
             "static/confront.js",
             "confront-policy.js",
+            "atlas-query-policy.js",
+            "static/atlas-query-ui.js",
             "static/styles.css",
             "RELEASE_MANIFEST.json",
         ):

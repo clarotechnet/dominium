@@ -62,3 +62,20 @@ O processo completo é `ready` apenas quando a fonte efetivamente
 retornou o anexo e o parser leu os registros. A simples existência de
 uma fila COMPLETO não garante documento disponível. Alguns anexos
 podem permanecer inacessíveis no Atlas; sinalizar o incidente.
+
+
+## Hostinger packaging incident and preventive fix (2026-10-23)
+
+The initial automatic QUERY release `89e69df` caused HTTP 503 because
+`scripts/build_hostinger_node_release.py` used an explicit `RUNTIME_FILES`
+allowlist and omitted `atlas-query-policy.js` even though
+`operational-relay.js` required it at Node startup. The website was restored
+by reverting the release in `ece0930`. The corrective release adds the
+policy to the packaging allowlist, checks the runtime dependency closure
+and boots the packaged relay module in CI. Deployment also verifies the
+private QUERY list route with a read-only request before upload.
+
+This file documents the failure so future agents should **never** equate
+a successful Hostinger build with a successful Node runtime startup.
+Always test the *packaged* runtime and verify authenticated deployment
+smokes. Avoid touching managed Atlas/WhatsApp production tabs.

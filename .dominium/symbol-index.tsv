@@ -1465,10 +1465,10 @@ main	function	scripts/bootstrap_admin.py	33	-
 allowed	function	scripts/build_hostinger_frontend.py	24	-
 sha256	function	scripts/build_hostinger_frontend.py	35	-
 main	function	scripts/build_hostinger_frontend.py	43	-
-_allowed_static	function	scripts/build_hostinger_node_release.py	44	-
-_sha256	function	scripts/build_hostinger_node_release.py	57	-
-build	function	scripts/build_hostinger_node_release.py	65	-
-main	function	scripts/build_hostinger_node_release.py	157	-
+_allowed_static	function	scripts/build_hostinger_node_release.py	45	-
+_sha256	function	scripts/build_hostinger_node_release.py	58	-
+build	function	scripts/build_hostinger_node_release.py	66	-
+main	function	scripts/build_hostinger_node_release.py	160	-
 release_source_allowed	function	scripts/build_web_release.py	52	-
 include_release_source	function	scripts/build_web_release.py	61	-
 runtime_python_files	function	scripts/build_web_release.py	65	-
@@ -1903,7 +1903,7 @@ test_history_totals_separate_new_and_already_closed	method	tests/test_auto_impro
 test_run_once_persists_history	method	tests/test_auto_improductive_close.py	225	AutoImproductiveCloserTests
 HostingerNodeReleaseTests	class	tests/test_build_hostinger_node_release.py	9	-
 test_release_contains_runtime_and_current_frontend	method	tests/test_build_hostinger_node_release.py	10	HostingerNodeReleaseTests
-test_release_does_not_contain_backup_or_secret_files	method	tests/test_build_hostinger_node_release.py	33	HostingerNodeReleaseTests
+test_release_does_not_contain_backup_or_secret_files	method	tests/test_build_hostinger_node_release.py	35	HostingerNodeReleaseTests
 WebReleaseBuildTests	class	tests/test_build_web_release.py	7	-
 test_local_runtime_directories_are_excluded	method	tests/test_build_web_release.py	8	WebReleaseBuildTests
 test_backups_and_temporary_files_are_excluded	method	tests/test_build_web_release.py	18	WebReleaseBuildTests
@@ -2126,6 +2126,8 @@ listOrders	function	tests/test_hostinger_dataset_regression.cjs	8	-
 packet	function	tests/test_hostinger_dataset_regression.cjs	12	-
 runWith	function	tests/test_hostinger_dataset_regression.cjs	17	-
 FakeClient	class	tests/test_hostinger_dataset_regression.cjs	19	-
+HostingerRuntimeDependencyTests	class	tests/test_hostinger_runtime_dependencies.py	12	-
+test_all_local_commonjs_dependencies_present_in_release	method	tests/test_hostinger_runtime_dependencies.py	13	HostingerRuntimeDependencyTests
 ApplyPacketTests	class	tests/test_imperium_api.py	29	-
 setUp	method	tests/test_imperium_api.py	30	ApplyPacketTests
 test_installer_context_keeps_open_order_layout	method	tests/test_imperium_api.py	33	ApplyPacketTests

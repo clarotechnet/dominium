@@ -952,6 +952,12 @@ io	tests/test_flow_reader.py
 struct	tests/test_flow_reader.py
 unittest	tests/test_flow_reader.py
 zipfile	tests/test_flow_reader.py
+pathlib	tests/test_hostinger_runtime_dependencies.py
+re	tests/test_hostinger_runtime_dependencies.py
+scripts	tests/test_hostinger_runtime_dependencies.py
+tempfile	tests/test_hostinger_runtime_dependencies.py
+unittest	tests/test_hostinger_runtime_dependencies.py
+zipfile	tests/test_hostinger_runtime_dependencies.py
 datasnap_client	tests/test_imperium_api.py
 datetime	tests/test_imperium_api.py
 decimal	tests/test_imperium_api.py

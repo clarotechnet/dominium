@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-23T13:59:24+00:00",
+  "generated_at": "2026-10-23T14:30:01+00:00",
   "schema": 2,
-  "source_fingerprint": "d53f751a02dc81cd7cdc7b0454bee144a948edf2f1ae1e58a630dea441df271c",
+  "source_fingerprint": "4fc6110ff741d14a1266688df98e068a99b90684c25a80ccd0cdf4a7ee28c86a",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1110,8 +1110,8 @@
     {
       "path": "docs/agent/ATLAS_QUERY_AUTOMATION.md",
       "category": "docs",
-      "bytes": 3380,
-      "sha256": "24dc166f10579967c330f4103d29768a600c398e004c5e71f7acb3cee2bf3464",
+      "bytes": 4285,
+      "sha256": "f3bc149dfd46afccf070f78d4263610d03d1cd63b9fba00449fbabbb38e2c2f2",
       "summary": "QUERY Atlas — relatório analítico por localização",
       "imports": [],
       "endpoints": [],
@@ -1123,8 +1123,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 3445,
-      "sha256": "c667c6f0e9a4a8cb0d57e55bbcec6e91fb724054331ce021fc36a476d5ebf797",
+      "bytes": 3902,
+      "sha256": "0c1726453be3bd3196755643ce9d17cea6737237bb6eebbdab926711174a1ef4",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1164,8 +1164,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 1095,
-      "sha256": "055f594d4bc77c947787ded571f35c4333e31d2bf44f9b355f648c54aa75e5bc",
+      "bytes": 1434,
+      "sha256": "7fcb7a53b3d149c13701eb972200bbe03b2f0b732902165087abb74d1a517979",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3435,8 +3435,8 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 4684,
-      "sha256": "589960bcf8c1f8e67260168178f8788660a1d8de49a35645262d6503155e9842",
+      "bytes": 4782,
+      "sha256": "0f41341d93d608c9b94c4f4f416aa31f2111d2940dce09bb8748ecc50a08e9bc",
       "summary": "",
       "imports": [
         "__future__",
@@ -4655,8 +4655,8 @@
     {
       "path": "tests/test_build_hostinger_node_release.py",
       "category": "tests",
-      "bytes": 1583,
-      "sha256": "7635e29bb2cd037b10647387eabc5dd1d3f5cdb557ba9ad0448ef2142f3f820d",
+      "bytes": 1660,
+      "sha256": "157aef4ebdf049a32bed1fa12e4a662566f99b768ed7304221ceb5a1dd6a827b",
       "summary": "",
       "imports": [
         "pathlib",
@@ -5118,6 +5118,26 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 4
+    },
+    {
+      "path": "tests/test_hostinger_runtime_dependencies.py",
+      "category": "tests",
+      "bytes": 1789,
+      "sha256": "853302619ce6a698393461e22bba51dc324c16b89d792775637b096c7d745433",
+      "summary": "Prevent Node startup failure due to missing relative require() files in release.",
+      "imports": [
+        "pathlib",
+        "re",
+        "scripts",
+        "tempfile",
+        "unittest",
+        "zipfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_imperium_api.py",

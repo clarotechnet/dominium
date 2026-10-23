@@ -20,6 +20,7 @@ RUNTIME_FILES = (
     "operational-policy.js",
     "operational-relay.js",
     "confront-policy.js",
+    "atlas-query-policy.js",
     "disconnection-proxy.js",
     "disconnection-policy.js",
     "server.js",
@@ -112,6 +113,8 @@ def build(output: Path = DEFAULT_OUTPUT) -> tuple[Path, Path]:
         "static/confront.js",
         "static/styles.css",
         "confront-policy.js",
+        "atlas-query-policy.js",
+        "static/atlas-query-ui.js",
     }
     packaged = {str(item["path"]) for item in entries}
     missing = sorted(required - packaged)
