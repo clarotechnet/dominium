@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-23T11:54:03+00:00
-- Source fingerprint: `96e6c0e54a334c66`
-- Indexed files: 355
-- Indexed symbols: 3330
-- API path references: 302
+- Generated: 2026-10-23T13:59:24+00:00
+- Source fingerprint: `d53f751a02dc81cd`
+- Indexed files: 368
+- Indexed symbols: 3427
+- API path references: 316
 
 ## Navigation rule
 
@@ -86,6 +86,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## frontend
 
+- `static/atlas-query-ui.js` (10 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
 - `static/confront.js` (8 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
 - `static/disconnection.js` (37 symbols, 10 API paths)
 - `static/fflate.browser.min.js` (22 symbols)
@@ -153,6 +154,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `productive_protocol_templates.json` (3 DataSnap methods)
 - `protocol_templates.json`
 - `README.md` - DOMINIUM
+- `requirements-atlas-query.txt` - Optional read-only .xls parser used by integrations/serial_consult/atlas_query_data.py
 - `requirements-dev.txt` - -r requirements-web.txt
 - `requirements-voice.txt` - Voz neural gratuita dos alertas TEC1. A voz local do navegador permanece como fallback.
 - `requirements-web.txt` - Runtime do DOMINIUM web em producao
@@ -165,10 +167,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 124 files
-- tooling-deploy: 44 files
-- docs: 14 files
-- tests: 97 files
+- shared: 129 files
+- tooling-deploy: 45 files
+- docs: 15 files
+- tests: 102 files
 
 ## Search indexes
 

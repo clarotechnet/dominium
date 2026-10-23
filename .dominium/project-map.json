@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-23T11:54:03+00:00",
+  "generated_at": "2026-10-23T13:59:24+00:00",
   "schema": 2,
-  "source_fingerprint": "96e6c0e54a334c668997808d7d5777157031d7d8db6126dea13ca5c154243c1a",
+  "source_fingerprint": "d53f751a02dc81cd7cdc7b0454bee144a948edf2f1ae1e58a630dea441df271c",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -682,6 +682,22 @@
       "symbol_count": 0
     },
     {
+      "path": "deploy/hostinger-web/atlas-query-policy.js",
+      "category": "tooling-deploy",
+      "bytes": 881,
+      "sha256": "5920be286b6b2e0fbecb6d00ad18cce3ea91a448fb63f55657d50d549b9de80d",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/atlas-query/",
+        "/api/atlas-query/jobs"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "deploy/hostinger-web/confront-policy.js",
       "category": "tooling-deploy",
       "bytes": 952,
@@ -803,8 +819,8 @@
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 1696,
-      "sha256": "7b2210ccae0558ba1539ff91ad36848933f6197710249070f728b285936919c0",
+      "bytes": 1819,
+      "sha256": "8415bbbd4cf3a05fed7d729b3b1ddc4922a6f328cf5614eaa97763a8f2fb11de",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -857,11 +873,12 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 42781,
-      "sha256": "d7e4fdc4980e03dfd12ca96e2ec50f0131f6919da1ccf23854b45ca0356e3d2d",
+      "bytes": 42917,
+      "sha256": "37b2943f83be2b28e705a3f8ce8a6a210f393ef988e91ff5a3e5477d6e953e9f",
       "summary": "",
       "imports": [],
       "endpoints": [
+        "/api/atlas-query/",
         "/api/auth/",
         "/api/auth/bootstrap",
         "/api/auth/login",
@@ -1091,10 +1108,23 @@
       "symbol_count": 26
     },
     {
+      "path": "docs/agent/ATLAS_QUERY_AUTOMATION.md",
+      "category": "docs",
+      "bytes": 3380,
+      "sha256": "24dc166f10579967c330f4103d29768a600c398e004c5e71f7acb3cee2bf3464",
+      "summary": "QUERY Atlas — relatório analítico por localização",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 2389,
-      "sha256": "5283f659a66a5e5de00ccb479e2b36088a57ee6dfcee2b048f8ecd2812b20222",
+      "bytes": 3445,
+      "sha256": "c667c6f0e9a4a8cb0d57e55bbcec6e91fb724054331ce021fc36a476d5ebf797",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1106,8 +1136,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 2810,
-      "sha256": "bf48dbfd3bab176612801a6f2f5e202269fa9ea70fffad23ae47bad5dcc86de3",
+      "bytes": 3170,
+      "sha256": "d9b8fdba84a887f8befa2377c8350d00701b501cb51a7152d4e56436a2c5f748",
       "summary": "DOMINIUM — handoff operacional (memória verificada)",
       "imports": [],
       "endpoints": [],
@@ -1134,8 +1164,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 817,
-      "sha256": "290f82a7b6cd5ec6b2a8d1b16fa7bbb3e60b431dbe449a29238d14c6fead9c11",
+      "bytes": 1095,
+      "sha256": "055f594d4bc77c947787ded571f35c4333e31d2bf44f9b355f648c54aa75e5bc",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -1881,8 +1911,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 3958,
-      "sha256": "d996b706ccfc1fa58374c4ce8b54f34c297179aaf265a0e031b256b1c748883b",
+      "bytes": 4224,
+      "sha256": "17aa0813d05ba14b99d689f6aabf8bbe2b5e63cb177b510783e31196432c9bdb",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2039,6 +2069,113 @@
       "symbol_count": 10
     },
     {
+      "path": "integrations/serial_consult/atlas_query_data.py",
+      "category": "shared",
+      "bytes": 12565,
+      "sha256": "41cab8f2805c8f9f26563e15407f6adcd69ec7a85ae231a0285c90722d9194e5",
+      "summary": "Parse Atlas analytic equipment report and export read-only CSV/XLSX.",
+      "imports": [
+        "__future__",
+        "atlas_query_pipeline",
+        "atlas_query_report",
+        "csv",
+        "html",
+        "io",
+        "json",
+        "pathlib",
+        "re",
+        "sqlite3",
+        "unicodedata",
+        "xlrd",
+        "xml",
+        "zipfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 17
+    },
+    {
+      "path": "integrations/serial_consult/atlas_query_http.py",
+      "category": "shared",
+      "bytes": 9564,
+      "sha256": "ca850c09ca23b6b18d24abe679d6ab79e3e5a768da4ee570b138e6972a262bb2",
+      "summary": "Authenticated DOMINIUM QUERY Atlas service, isolated by operator.",
+      "imports": [
+        "__future__",
+        "atlas_query_data",
+        "atlas_query_pipeline",
+        "atlas_query_report",
+        "json",
+        "logging",
+        "pathlib",
+        "re",
+        "threading",
+        "time",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/atlas-query/jobs",
+        "/api/atlas-query/jobs/("
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 8
+    },
+    {
+      "path": "integrations/serial_consult/atlas_query_pipeline.py",
+      "category": "shared",
+      "bytes": 10936,
+      "sha256": "cf22d475c925419d355143270c52ec3f0d0217624fc0a08185e66fcddcfd51e9",
+      "summary": "Private Atlas QUERY queue/attachment orchestrator (CLI foundation).",
+      "imports": [
+        "__future__",
+        "argparse",
+        "atlas_query_report",
+        "base64",
+        "json",
+        "pathlib",
+        "re",
+        "time",
+        "urllib"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 8
+    },
+    {
+      "path": "integrations/serial_consult/atlas_query_report.py",
+      "category": "shared",
+      "bytes": 10756,
+      "sha256": "bfdb244089d9e26a5149375d47bbf8354823acf8fd061fa32b1dbd591776897b",
+      "summary": "Atlas read-only equipment report generator in a dedicated managed Chrome tab.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "contextlib",
+        "json",
+        "pathlib",
+        "re",
+        "sqlite3",
+        "time",
+        "urllib",
+        "uuid",
+        "websocket"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "Target.closeTarget",
+        "Target.createTarget"
+      ],
+      "entrypoint": true,
+      "symbol_count": 15
+    },
+    {
       "path": "integrations/serial_consult/confront_engine.py",
       "category": "shared",
       "bytes": 8580,
@@ -2146,12 +2283,13 @@
     {
       "path": "integrations/serial_consult/desc_review_relay.py",
       "category": "shared",
-      "bytes": 8837,
-      "sha256": "c8f963bf2a6b8b97f0cceef5874511256ab8e447c5847d5217ba72d07bd6ee9b",
+      "bytes": 10669,
+      "sha256": "b02570586d1be5b2363013f71c7a693db0ca4f13b88bd32c5e5d2ad6362752bb",
       "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
       "imports": [
         "__future__",
         "argparse",
+        "atlas_query_http",
         "confront_http",
         "desc_order_verifier",
         "desc_review_proxy",
@@ -2173,7 +2311,7 @@
       ],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 7
+      "symbol_count": 8
     },
     {
       "path": "integrations/serial_consult/midas_reader.py",
@@ -3148,6 +3286,19 @@
       "symbol_count": 0
     },
     {
+      "path": "requirements-atlas-query.txt",
+      "category": "shared",
+      "bytes": 178,
+      "sha256": "911ebaeee10c6351fe20231cbfb7877c769dae24df8771f9fc60f892ed85990e",
+      "summary": "Optional read-only .xls parser used by integrations/serial_consult/atlas_query_data.py",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "requirements-dev.txt",
       "category": "shared",
       "bytes": 38,
@@ -3573,8 +3724,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 6113,
-      "sha256": "187c3ad31d6d4b4d2b2db29c7b350aea7ed348b9cc59080ce578787b30adaba2",
+      "bytes": 6164,
+      "sha256": "fe0507aa5539379ba4a5e20874ef6374d752e8726c0782018d930dcc72bee8d2",
       "summary": "",
       "imports": [
         "__future__",
@@ -3763,6 +3914,22 @@
       "symbol_count": 1
     },
     {
+      "path": "static/atlas-query-ui.js",
+      "category": "frontend",
+      "bytes": 7155,
+      "sha256": "49b92b1553cf0e0aa9da75157dce17743979116e8bf458be61cb354cac117bb6",
+      "summary": "DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */",
+      "imports": [],
+      "endpoints": [
+        "/api/atlas-query/jobs",
+        "/api/atlas-query/jobs/"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 10
+    },
+    {
       "path": "static/confront.js",
       "category": "frontend",
       "bytes": 11151,
@@ -3845,8 +4012,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 123157,
-      "sha256": "eeecbdeb6ed324900e43bc54a18dce9ff3e8963dcd832690a4228a6bed35488c",
+      "bytes": 125675,
+      "sha256": "17f0833fea823b00fe134af2234f7df3c0e9c6971cd29c961d62bfb708f0f51c",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3938,8 +4105,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 207547,
-      "sha256": "9795722cf268dfb0cb3527ea8fd91664f3561096bdf88939cdc6201527cb883d",
+      "bytes": 207889,
+      "sha256": "07bb3c56b72d54adc66c0cea259b826df5549c9e4d7d891b3c5acda5682bddb5",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -4342,6 +4509,110 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 14
+    },
+    {
+      "path": "tests/test_atlas_query_data.py",
+      "category": "tests",
+      "bytes": 2951,
+      "sha256": "0748addddb6b990dfd10299cb35e494cf34590982960015f7ddfa3eab306f959",
+      "summary": "QUERY Atlas table transformations and text-preserving exports.",
+      "imports": [
+        "atlas_query_data",
+        "atlas_query_report",
+        "io",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest",
+        "zipfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 6
+    },
+    {
+      "path": "tests/test_atlas_query_http.py",
+      "category": "tests",
+      "bytes": 3175,
+      "sha256": "8b48d351cf8c8cfb62290e7d39fa587eb3bc4d51f16d92eb1debd7bf5fcfde18",
+      "summary": "QUERY Atlas authenticated API contract without contacting real Atlas.",
+      "imports": [
+        "atlas_query_data",
+        "atlas_query_http",
+        "atlas_query_pipeline",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/atlas-query/jobs",
+        "/api/atlas-query/jobs/",
+        "/api/atlas-query/jobs?user=other"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 5
+    },
+    {
+      "path": "tests/test_atlas_query_pipeline.py",
+      "category": "tests",
+      "bytes": 3706,
+      "sha256": "56532d20597003a3542b1a28aa500f3579552e175673532196f83984dba3bc48",
+      "summary": "NetTask 404 handling: no duplicate report generation or insecure URLs.",
+      "imports": [
+        "atlas_query_pipeline",
+        "atlas_query_report",
+        "importlib",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 12
+    },
+    {
+      "path": "tests/test_atlas_query_policy.js",
+      "category": "tests",
+      "bytes": 1779,
+      "sha256": "350c51201727bacf6112f97f0f008c2b3d704a01cac6bea3b0f5059b45bc7d01",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/atlas-query/",
+        "/api/atlas-query/jobs",
+        "/api/atlas-query/jobs/",
+        "/api/atlas-query/jobs?actor=5"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
+      "path": "tests/test_atlas_query_report.py",
+      "category": "tests",
+      "bytes": 3299,
+      "sha256": "27681e94c9a02771dd50d58224d47030ddd9b1d108ba5762ff47a866d4a9642b",
+      "summary": "Safe report generator: no duplicate Atlas task after uncertainty.",
+      "imports": [
+        "importlib",
+        "pathlib",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 12
     },
     {
       "path": "tests/test_auth_store.py",
@@ -6907,6 +7178,8 @@
     "TOA_REPLAY_HEADER_NAMES.has",
     "Tabela_codigo_baixa0711.catalog",
     "Tabela_codigo_baixa0711.pdf",
+    "Target.closeTarget",
+    "Target.createTarget",
     "Tecnico.pdf",
     "Text.UTF8Encoding",
     "Time.get"

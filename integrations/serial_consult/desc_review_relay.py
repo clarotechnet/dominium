@@ -30,6 +30,7 @@ from desc_review_proxy import DescReviewProxy, ProxyError
 from official_stock_bridge import OfficialStockBridge, parse_route
 from serial_service import parse_route as parse_serial_route, consult_serials
 from confront_http import ConfrontService, parse_confront_route
+from atlas_query_http import AtlasQueryService, parse_query_route
 
 
 class DescRelayHandler(BaseHTTPRequestHandler):
@@ -58,6 +59,20 @@ class DescRelayHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def _binary(self, data, mime):
+        if not isinstance(data, bytes) or len(data) > 35_000_000:
+            self._json(413, {'ok': False, 'error': 'Relatório acima do limite'})
+            return
+        ext = 'csv' if mime.startswith('text/csv') else 'xlsx'
+        self.send_response(200)
+        self.send_header('Content-Type', mime)
+        self.send_header('Content-Disposition', 'attachment; filename="dominium-query-atlas.' + ext + '"')
+        self.send_header('Content-Length', str(len(data)))
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+        self.end_headers()
+        self.wfile.write(data)
+
     def _dispatch(self):
         supplied = str(self.headers.get('Authorization', ''))
         if not hmac.compare_digest(supplied.encode('utf-8'), ('Bearer ' + self.server.relay_token).encode('utf-8')):
@@ -66,6 +81,25 @@ class DescRelayHandler(BaseHTTPRequestHandler):
         actor = unquote(self.headers.get('X-Dominium-Actor', ''))[:100]
         if not actor:
             self._json(400, {'ok': False, 'error': 'Operador não identificado'})
+            return
+        query_route = parse_query_route(self.command, self.path)
+        if query_route is not None:
+            if self.headers.get('X-Dominium-Role') not in {'admin', 'controller'}:
+                self._json(403, {'ok': False, 'error': 'Perfil operacional necessario'})
+                return
+            service = getattr(self.server, 'atlas_query_service', None)
+            if service is None:
+                self._json(503, {'ok': False, 'error': 'QUERY Atlas indisponivel'})
+                return
+            try:
+                body = self._read_json() if self.command == 'POST' else None
+                status, payload, mime = service.handle(self.command, self.path, actor, body)
+                if mime and status == 200:
+                    self._binary(payload, mime)
+                else:
+                    self._json(status, payload)
+            except ValueError:
+                self._json(400, {'ok': False, 'error': 'Solicitacao invalida'})
             return
         confrontation = parse_confront_route(self.command, self.path)
         if confrontation is not None:
@@ -182,10 +216,12 @@ def main():
     server.stock_bridge = OfficialStockBridge()
     server.order_verifier = DescOrderVerifier(Path(os.environ.get('DOMINIUM_IMPERIUM_RUNTIME_ROOT', str(DEFAULT_RUNTIME_ROOT))))
     server.confront_service = ConfrontService()
+    server.atlas_query_service = AtlasQueryService()
     try:
         server.serve_forever()
     finally:
         server.confront_service.close()
+        server.atlas_query_service.close()
 
 
 if __name__ == '__main__':

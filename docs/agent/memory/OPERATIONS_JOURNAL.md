@@ -17,3 +17,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Sete testes de memoria aprovados e smoke FTS5 executado
 
 **Próximo passo/pendência:** Quality gate integrado commit push e validacao de CI
+
+## 2026-10-23 13:58 UTC — QUERY_Atlas_Automatica
+
+**Motivo:** Reproduzir_fluxo_do_video
+
+**Alterado:** Fila_Atlas_autenticada_retry_404_tabela_CSV_XLSX
+
+**Verificação:** Quality_gate_ok_relay_antigo_preservado
+
+**Próximo passo/pendência:** Validar_publicacao_e_anexo_404

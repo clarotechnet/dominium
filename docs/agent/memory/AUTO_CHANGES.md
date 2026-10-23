@@ -68,3 +68,30 @@ Alterações preparadas para commit (11 arquivos). Para motivação e resultado 
 - `static/query-import.js`
 - `static/styles.css`
 - `tests/test_query_import.js`
+
+## 2026-10-23 | staged:7f53a8d525dd3ef1
+
+Alterações preparadas para commit (22 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `deploy/hostinger-web/atlas-query-policy.js`
+- `deploy/hostinger-web/operational-relay.js`
+- `deploy/hostinger-web/server.js`
+- `docs/agent/ATLAS_QUERY_AUTOMATION.md`
+- `docs/agent/memory/CURRENT_STATE.md`
+- `docs/agent/memory/OPERATIONS_JOURNAL.md`
+- `integrations/import_bridge/worker.mjs`
+- `integrations/serial_consult/atlas_query_data.py`
+- `integrations/serial_consult/atlas_query_http.py`
+- `integrations/serial_consult/atlas_query_pipeline.py`
+- `integrations/serial_consult/atlas_query_report.py`
+- `integrations/serial_consult/desc_review_relay.py`
+- `requirements-atlas-query.txt`
+- `scripts/quality_gate.py`
+- `static/atlas-query-ui.js`
+- `static/index.html`
+- `static/styles.css`
+- `tests/test_atlas_query_data.py`
+- `tests/test_atlas_query_http.py`
+- `tests/test_atlas_query_pipeline.py`
+- `tests/test_atlas_query_policy.js`
+- `tests/test_atlas_query_report.py`
