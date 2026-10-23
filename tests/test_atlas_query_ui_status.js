@@ -50,7 +50,7 @@ function setup(response){
 test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/id="atlasQueryActivity"/);
   assert.match(html,/Histórico desta sessão/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261023-3/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261023-4/);
 });
 
 test('successful POST leaves durable confirmation after automatic refresh',async()=>{
