@@ -189,7 +189,7 @@ def fetch_file(job_id,db_path=DB,chrome_factory=ChromeAtlas,clock=time.time):
     try:
         attachment_url=job["attachment_url"]
         failures=job.get("attachment_failures",0)
-        if failures>=3 and failures%3==0:
+        if failures>=3:
             # Recheck only the same confirmed queue: the link may change later.
             refreshed=evaluate_query(chrome,job["remote_queue_id"])
             candidate=(refreshed.get("attachment_url") or "") if refreshed.get("state")=="complete" else ""
