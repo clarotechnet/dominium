@@ -44,10 +44,15 @@ def upgrade_db(db_path=DB):
             "next_attachment_check":"REAL NOT NULL DEFAULT 0",
             "attachment_failures":"INTEGER NOT NULL DEFAULT 0",
             "attachment_url":"TEXT NOT NULL DEFAULT ''",
-            "download_path":"TEXT NOT NULL DEFAULT ''"
+            "download_path":"TEXT NOT NULL DEFAULT ''",
+            "fallback_of":"TEXT NOT NULL DEFAULT ''",
+            "fallback_enabled":"INTEGER NOT NULL DEFAULT 0"
         }.items():
             if name not in existing:
                 db.execute(f"ALTER TABLE query_jobs ADD COLUMN {name} {definition}")
+        # At most one persisted reserve attempt per main QUERY.
+        db.execute("""CREATE UNIQUE INDEX IF NOT EXISTS idx_query_one_fallback
+            ON query_jobs(fallback_of) WHERE fallback_of!=''"""))
 
 
 def update_job(job_id, db_path=DB, **fields):
@@ -170,7 +175,8 @@ def poll_report(job_id,db_path=DB,browser_factory=ChromeAtlas,clock=time.time):
 def public_status(job):
     return {key:job[key] for key in (
         "id","city","location","state","remote_queue_id",
-        "attachment_failures","created_at","updated_at","error_code") if key in job}
+        "attachment_failures","created_at","updated_at","error_code",
+        "fallback_of","fallback_enabled") if key in job}
 
 
 def fetch_file(job_id,db_path=DB,chrome_factory=ChromeAtlas,clock=time.time):
