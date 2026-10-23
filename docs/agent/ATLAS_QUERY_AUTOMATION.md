@@ -194,3 +194,40 @@ Não marcar como sucesso/falha definitiva do Atlas por falta de confirmação.
 - **Pendente:** confirmar retorno HTTP 200 de um anexo real, magic bytes do
   formato, parsing, persistência das linhas e exportação XLSX. Até isso
   acontecer, o estado correto continua `attachment_wait`, não `ready`.
+
+
+## Teste controlado com duas filas e validação do BatAtlas app-3 — 23/10/2026
+
+- Contexto autorizado: praça Mossoró, localização EMPREITEIRA. Fila original
+  `276850938` concluída no NetTask, mas download do XLS em `app-2`
+  retornava HTTP 404.
+- A sessão Chrome gerenciada confirmou por dry-run os parâmetros e o gerador.
+  Uma única geração adicional foi registrada em banco SQLite privado e
+  recebeu o novo ID confirmado `276855582`. Não houve reenvio da fila
+  original nem terceira geração.
+- Inicialmente a fila `276855582` apareceu em `attachment_missing`:
+  a integração reconhecia apenas caminhos `/app-1/` e `/app-2/`,
+  enquanto o relatório real estava em `/app-3//RELATORIOS/...`.
+  Inspeção sanitizada da estrutura (sem divulgar URL, tokens ou clientes)
+  confirmou o endpoint. O download do `.xls` em app-3 retornou HTTP 200.
+- Patch `e85e65d`: aceitar exclusivamente `app-1`, `app-2` e
+  `app-3` sob a allowlist existente de URL HTTPS do BatAtlas; não
+  liberar servidores arbitrários. 21 testes Python + 12 Node passaram.
+  Relay privado atualizado com backup, compilação e smoke HTTP 401.
+- Com URL app-3 aceita, o arquivo XLS foi baixado e interpretado:
+  **893 registros**, estado `ready` em SQLite de laboratório.
+  Após backup consistente do banco de produção, o trabalho confirmado
+  (com seu ID de Atlas `276855582`) e as 893 linhas foram migrados
+  atomicamente para `C:\DominiumRuntime\AtlasQueryData\query_jobs.sqlite3`,
+  vinculados ao mesmo operador da fila original, sem apagar a fila 404.
+- Smoke do serviço `AtlasQueryService`: lista do operador HTTP 200
+  com fila `276855582` como mais recente e `ready`, detalhe HTTP 200
+  com `total_rows=893`, primeira página HTTP 200 com 100 linhas e 11
+  colunas, exportação `export.xlsx` HTTP 200 (57.626 bytes, ZIP válido).
+  Dados de clientes e URL real do anexo não foram impressos em logs.
+- **Importante:** o fallback com segundo ID foi executado de forma
+  controlada para este teste. O fluxo genérico do botão QUERY **ainda
+  não gera automaticamente uma segunda fila** depois do 404; esse
+  comportamento exigiria uma máquina de estados/idempotência própria
+  e controle de carga. A recuperação por reconsulta do MESMO ID após
+  404, implementada anteriormente, permanece distinta.
