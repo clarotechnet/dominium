@@ -17,6 +17,7 @@
   let lastBackendError='';
   let relatedJobs=[];
   let checkedAt=null;
+  let refreshPending=false;
   // Reuse DOMINIUM's existing animated orb HUD during the entire QUERY job.
   // A registered HTTP 202 only means queued, not that the Excel is ready.
   let hudToken='';
@@ -71,7 +72,8 @@
   const activity=document.getElementById('atlasQueryActivity');
   function writeNotice(message,kind='info'){
     const stamp=new Date().toLocaleTimeString('pt-BR');
-    const summary=stamp+' — '+String(message||'');
+    const profile=String(state.profile||'').toUpperCase();
+    const summary=stamp+(profile?' ['+profile+']':'')+' — '+String(message||'');
     ui.status.textContent=summary;
     ui.status.dataset.level=kind;
     if(activity){
@@ -181,8 +183,19 @@
       formatCount(Math.min(offset+100,total))+' de '+formatCount(total):'';
     if(!allowed()){
       ui.start.disabled=true;
-      ui.progress.textContent='Este recurso exige perfil administrador ou controlador.';
+      ui.progress.textContent=state.authReady===false
+        ? 'Validando sessão e permissões do operador...'
+        : 'Este recurso exige perfil administrador ou controlador.';
     }
+  }
+  function syncProfile(){
+    if(selectedProfile===state.profile)return false;
+    selectedProfile=state.profile;
+    active=null;relatedJobs=[];checkedAt=null;lastBackendError='';
+    offset=0;total=0;
+    ui.table.replaceChildren();ui.summary.textContent='';
+    renderStatus();
+    return true;
   }
   function cell(value,tag='td'){
     const element=document.createElement(tag);
@@ -191,8 +204,10 @@
   }
   async function loadPage(){
     if(!active||active.state!=='ready')return;
-    const data=await request('/api/atlas-query/jobs/'+active.id+'/rows/'+offset,
+    const expectedJob=active.id,expectedProfile=state.profile;
+    const data=await request('/api/atlas-query/jobs/'+expectedJob+'/rows/'+offset,
       {timeoutMs:25000});
+    if(active?.id!==expectedJob||state.profile!==expectedProfile)return;
     total=Number(data.total||0);
     const table=document.createElement('table');
     table.className='confront-preview-table';
@@ -211,7 +226,13 @@
     renderStatus();
   }
   async function refresh({quiet=false}={}){
-    if(fetching||!allowed()||state.activeModule!=='confront')return;
+    if(!allowed()||state.activeModule!=='confront')return;
+    if(fetching){
+      if(selectedProfile!==state.profile)refreshPending=true;
+      return;
+    }
+    syncProfile();
+    const targetProfile=state.profile;
     fetching=true;
     if(!quiet){
       writeNotice('Consultando andamento da QUERY...');
@@ -219,25 +240,22 @@
         'Verificando o ID e a situação do processamento.','refresh-'+Date.now());
     }
     try{
-      const profileChanged=selectedProfile!==state.profile;
-      if(profileChanged){
-        selectedProfile=state.profile;active=null;relatedJobs=[];
-        checkedAt=null;offset=0;total=0;
-        ui.table.replaceChildren();ui.summary.textContent='';
-      }
       // Re-read the listing every cycle: a reserve ID is created by the
       // server after a confirmed 404, not by another browser POST.
       const data=await request('/api/atlas-query/jobs',{timeoutMs:18000});
-      const jobs=(data.jobs||[]).filter(job=>job.city===state.profile);
+      if(targetProfile!==state.profile){refreshPending=true;return;}
+      const jobs=(data.jobs||[]).filter(job=>job.city===targetProfile);
       const previouslyActive=active;
       if(jobs.length)active=selectLatestGroup(jobs);
-      else if(!active)relatedJobs=[];
+      else{active=null;relatedJobs=[];}
       if(active){
         if(previouslyActive?.id!==active.id){
           offset=0;total=0;ui.table.replaceChildren();ui.summary.textContent='';
         }
-        const item=await request('/api/atlas-query/jobs/'+active.id,{timeoutMs:18000});
-        const previous=previouslyActive?.id===active.id?previouslyActive?.state:null;
+        const requestedId=active.id;
+        const item=await request('/api/atlas-query/jobs/'+requestedId,{timeoutMs:18000});
+        if(targetProfile!==state.profile){refreshPending=true;return;}
+        const previous=previouslyActive?.id===requestedId?previouslyActive?.state:null;
         active=item.job||active;
         const related=relatedJobs.findIndex(job=>job.id===active.id);
         if(related>=0)relatedJobs[related]=active;
@@ -251,11 +269,18 @@
       if(!active&&!quiet)queryHud('success','Consulta finalizada',
         'Não existe QUERY registrada nesta praça.','no-jobs-'+Date.now());
     }catch(error){
+      if(targetProfile!==state.profile){refreshPending=true;return;}
       if(!quiet){
         writeNotice('Não foi possível consultar a fila: '+safeError(error),'error');
         queryHud('error','Consulta da fila falhou',safeError(error),'refresh-error-'+Date.now());
       }
-    }finally{fetching=false;renderStatus()}
+    }finally{
+      fetching=false;
+      if(refreshPending){
+        refreshPending=false;
+        void refresh({quiet:true});
+      }else renderStatus();
+    }
   }
   async function create(){
     if(busy||fetching||!allowed())return;
@@ -330,10 +355,14 @@
   ui.next.addEventListener('click',()=>{offset+=100;void loadPage()});
   ui.city.addEventListener('change',async()=>{
     if(ui.city.value!==state.profile)await switchProfile(ui.city.value);
+    syncProfile();
     await refresh();
   });
   document.addEventListener('dominium:module-change',({detail})=>{
-    if(detail?.module==='confront')void refresh();
+    if(detail?.module==='confront'){
+      syncProfile();
+      void refresh();
+    }
   });
   setInterval(()=>{
     if(state.activeModule==='confront'){

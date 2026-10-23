@@ -10,6 +10,7 @@ const html=fs.readFileSync(path.join(__dirname,'../static/index.html'),'utf8');
 function setup(response){
   const elements=new Map();
   const listeners=new Map();
+  const documentListeners=new Map();
   function element(id){
     if(!elements.has(id)) elements.set(id,{
       id, value:'', textContent:'', dataset:{}, style:{}, disabled:false, children:[],
@@ -34,18 +35,18 @@ function setup(response){
   const document={
     getElementById:element,
     createElement:tag=>({tag,textContent:'',children:[],append(){},className:''}),
-    addEventListener(){}
+    addEventListener(type,fn){documentListeners.set(type,fn)}
   };
   let interval;
-  const state={profile:'mossoro',activeModule:'inactive',authUser:{role:'admin'}};
+  const state={profile:'mossoro',activeModule:'inactive',authReady:true,authUser:{role:'admin'}};
   const calls=[];
   const operations=[];
   const ctx={document,state,window:{confirm:()=>true,DOMINIUM_MOTION:{operation(payload){operations.push(payload)}}},setInterval(fn){interval=fn},
     request: async(url,opts)=>{calls.push({url,method:opts?.method||'GET'});return response(url,opts)},
     requestBlob:async()=>({blob:new Blob([])}),
-    saveBlob:()=>{},localDate:()=>'',switchProfile:async()=>{}};
+    saveBlob:()=>{},localDate:()=>'',switchProfile:async city=>{state.profile=city}};
   vm.runInNewContext(uiCode,ctx,{filename:'atlas-query-ui.js'});
-  return {elements,element,listeners,calls,operations,state,window:ctx.window,interval:()=>interval()};
+  return {elements,element,listeners,documentListeners,calls,operations,state,window:ctx.window,interval:()=>interval()};
 }
 
 test('dashboard includes visible permanent activity log',()=>{
@@ -53,7 +54,7 @@ test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/Histórico desta sessão/);
   assert.match(html,/id="atlasQueryTimestamps"/);
   assert.match(html,/id="atlasQueryReconcile"/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261023-7/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261023-8/);
 });
 
 test('successful POST leaves durable confirmation after automatic refresh',async()=>{
@@ -237,4 +238,56 @@ test('operator cancellation leaves stale submission untouched',async()=>{
   listeners.get('atlasQueryReconcile:click')();
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(calls.filter(c=>c.method==='POST').length,0);
+});
+
+test('switching cities mid-request never displays a previous city report',async()=>{
+  const natal={id:'a'.repeat(32),city:'natal',state:'submission_uncertain',
+      error_code:'atlas_submit_unconfirmed',remote_queue_id:null};
+  const fortaleza={id:'b'.repeat(32),city:'fortaleza',state:'queued',
+      remote_queue_id:'276888001',error_code:''};
+  let releaseFirst;
+  let reads=0;
+  const {state,element,listeners,interval,calls}=setup(async url=>{
+    if(url==='/api/atlas-query/jobs'){
+      reads++;
+      if(reads===1)return new Promise(resolve=>{releaseFirst=resolve});
+      return {jobs:[natal,fortaleza]};
+    }
+    if(url.includes(fortaleza.id))return {job:fortaleza};
+    if(url.includes(natal.id))return {job:natal};
+    throw Error('unexpected endpoint '+url);
+  });
+  state.profile='natal';state.activeModule='confront';interval();
+  assert.equal(typeof releaseFirst,'function');
+  element('atlasQueryCity').value='fortaleza';
+  await listeners.get('atlasQueryCity:change')();
+  assert.equal(element('atlasQueryId').textContent,'Nenhuma fila criada');
+  releaseFirst({jobs:[natal,fortaleza]});
+  await new Promise(resolve=>setImmediate(resolve));
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(element('atlasQueryId').textContent,'Fila Atlas: 276888001');
+  assert.doesNotMatch(element('atlasQueryProgress').textContent,/Confirmação do Atlas não obtida/);
+  assert.equal(calls.filter(x=>x.method==='POST').length,0);
+});
+
+test('temporary missing auth shows session validation rather than forbidden role',async()=>{
+  const {state,element,listeners}=setup(async()=>({jobs:[]}));
+  state.authUser=null;state.authReady=false;
+  element('atlasQueryCity').value='mossoro';
+  await listeners.get('atlasQueryCity:change')();
+  assert.match(element('atlasQueryProgress').textContent,/Validando sessão/);
+  assert.doesNotMatch(element('atlasQueryProgress').textContent,/exige perfil administrador/);
+  assert.equal(element('atlasQueryStart').disabled,true);
+});
+
+test('activity records display the city to avoid mixing Natal and Fortaleza',async()=>{
+  const {state,element,listeners}=setup(async()=>({jobs:[]}));
+  state.activeModule='confront';
+  element('atlasQueryCity').value='natal';
+  await listeners.get('atlasQueryCity:change')();
+  assert.match(element('atlasQueryActivity').children[0].textContent,/\[NATAL\]/);
+  element('atlasQueryCity').value='fortaleza';
+  await listeners.get('atlasQueryCity:change')();
+  assert.match(element('atlasQueryActivity').children[0].textContent,/\[FORTALEZA\]/);
+  assert.equal(element('atlasQueryActivity').children.some(x=>x.textContent.includes('[NATAL]')),true);
 });
