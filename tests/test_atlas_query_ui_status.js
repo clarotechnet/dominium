@@ -54,7 +54,7 @@ test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/Histórico desta sessão/);
   assert.match(html,/id="atlasQueryTimestamps"/);
   assert.match(html,/id="atlasQueryReconcile"/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261023-7/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261023-8/);
 });
 
 test('successful POST leaves durable confirmation after automatic refresh',async()=>{
