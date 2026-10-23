@@ -22,8 +22,7 @@ class Tests(unittest.TestCase):
                          ('rows',identifier,100))
         self.assertEqual(parse_query_route('GET','/api/atlas-query/jobs/'+identifier+'/export.xlsx'),
                          ('export',identifier,'xlsx'))
-        self.assertEqual(parse_query_route('POST','/api/atlas-query/jobs/'+identifier+'/reconcile'),
-                         ('reconcile',identifier,None))
+        self.assertIsNone(parse_query_route('POST','/api/atlas-query/jobs/'+identifier+'/reconcile'))
         for method,url in [
             ('GET','/api/atlas-query/jobs?user=other'),
             ('POST','/api/atlas-query/jobs/'+identifier+'/export.xlsx'),
@@ -166,19 +165,17 @@ class Tests(unittest.TestCase):
         jid,_=claim_job('natal','empreiteira',self.svc.db_path,
                         created_by=actor,timestamp=time.time()-4000)
         update_job(jid,self.svc.db_path,error_code='atlas_submit_unconfirmed')
-        route='/api/atlas-query/jobs/'+jid+'/reconcile'
-        self.assertEqual(self.svc.handle('POST',route,'user-72',
-                                         {'atlas_checked_no_queue':True})[0],404)
+        route='/api/atlas-query/jobs'
+        def verified(job):return {'reconcile_job_id':job,'atlas_checked_no_queue':True}
+        self.assertEqual(self.svc.handle('POST',route,'user-72',verified(jid))[0],404)
         self.assertEqual(self.svc.handle('POST',route,actor,{})[0],400)
         self.assertEqual(read_job(jid,self.svc.db_path)['state'],'submission_uncertain')
-        status,response,_=self.svc.handle('POST',route,actor,
-                                          {'atlas_checked_no_queue':True})
+        status,response,_=self.svc.handle('POST',route,actor,verified(jid))
         self.assertEqual(status,200)
         self.assertEqual(response['job']['state'],'failed')
         self.assertEqual(response['job']['error_code'],'manually_closed_unconfirmed')
         self.assertIsNone(response['job']['remote_queue_id'])
-        self.assertEqual(self.svc.handle('POST',route,actor,
-                                         {'atlas_checked_no_queue':True})[0],409)
+        self.assertEqual(self.svc.handle('POST',route,actor,verified(jid))[0],409)
         status,replacement,_=self.svc.handle('POST','/api/atlas-query/jobs',actor,
                                               {'city':'natal','location':'empreiteira'})
         self.assertEqual(status,202)
@@ -193,14 +190,14 @@ class Tests(unittest.TestCase):
         recent,_=claim_job('recife','empreiteira',self.svc.db_path,created_by=actor)
         update_job(recent,self.svc.db_path,error_code='atlas_submit_unconfirmed')
         self.assertEqual(self.svc.handle('POST',
-            '/api/atlas-query/jobs/'+recent+'/reconcile',actor,
-            {'atlas_checked_no_queue':True})[0],409)
+            '/api/atlas-query/jobs',actor,
+            {'reconcile_job_id':recent,'atlas_checked_no_queue':True})[0],409)
         confirmed,_=claim_job('fortaleza','empreiteira',self.svc.db_path,
                               created_by=actor,timestamp=time.time()-4000)
         save_queue(confirmed,'276800001',self.svc.db_path)
         self.assertEqual(self.svc.handle('POST',
-            '/api/atlas-query/jobs/'+confirmed+'/reconcile',actor,
-            {'atlas_checked_no_queue':True})[0],409)
+            '/api/atlas-query/jobs',actor,
+            {'reconcile_job_id':confirmed,'atlas_checked_no_queue':True})[0],409)
         self.assertEqual(read_job(confirmed,self.svc.db_path)['remote_queue_id'],'276800001')
 
     def test_auth_required_records_failure_without_submitting_report(self):
