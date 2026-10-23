@@ -121,3 +121,23 @@ histórica IMPERIUM** e os campos de situação/localização do Atlas,
 sem apresentar a movimentação como posse comprovada. O CSV recebeu
 essas colunas extras no final para não alterar as 13 colunas existentes.
 Não foram realizados baixas, transferências ou alterações de equipamentos.
+
+## Vídeos revisados: fluxo operacional de planilhas
+
+Em 2026-10-23 foram inspecionados três vídeos de treinamento do estoque:
+baixa da QUERY Claro, relatórios de análise de equipamentos e SUSPEITOS.
+
+**Lacuna anterior:** Pendente apenas aceitava seriais colados.
+**Melhoria agora:** bloco inicial na interface permite carregar CSV ou XLSX
+localmente (nenhum upload automático), escolher praça/Operação incluindo
+Mossoró, filtrar estado (p.ex. SUSPEITO, SUCATA) e local/estoque,
+ver a prévia e encaminhar até 500 seriais filtrados ao confronto read-only.
+
+Não presumir a praça quando a planilha não possui coluna de
+Cidade/Praça/Operação/Regional: a interface exige confirmação explícita
+sobre a origem, evitando cruzamento indevido de Natal e Mossoró.
+Seriais com notação científica são ignorados com alerta.
+O download diretamente do relatório Claro/Atlas **ainda não é automatizado**;
+o operador importa o arquivo exportado no fluxo oficial. Seriais reais,
+capturas de vídeos e planilhas confidenciais não são versionados.
+Usa fflate 0.8.2 (MIT, licença em static/fflate.LICENSE.txt) apenas no navegador.

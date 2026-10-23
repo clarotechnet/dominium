@@ -12,6 +12,7 @@ Código no Git; dados de runtime, perfis do Chrome e credenciais fora do Git.
 ## Estado recente confirmado
 
 - Consultar Seriais suporta Natal/Parnamirim, Fortaleza, Mossoró e Recife.
+- Em 2026-10-23, após revisar os três vídeos de treinamento, a aba Pendente ganhou importação local CSV/XLSX da QUERY Claro, filtros explícitos por praça (Mossoró etc.), estado e local, prévia e opção de usar os seriais filtrados no confronto. Exportação direta da QUERY pelo Atlas ainda não é automatizada.
 - Recursos → Pendente: confronto Atlas × IMPERIUM de até 500 seriais,
   trabalhos SQLite persistentes, idempotência por requisição, histórico por
   operador/praça, CSV, interface protegida pelo login e ponte privada.

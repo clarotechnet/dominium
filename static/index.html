@@ -631,9 +631,48 @@
         </div>
         <span class="serials-live-pill"><i data-lucide="shield-check"></i> LEITURA SOMENTE</span>
       </header>
+      <div class="serials-query-card" id="confrontQueryImportPanel">
+        <div class="serials-query-top">
+          <div><strong>1. Importar e filtrar a QUERY da Claro</strong><small>Como nos vídeos: carregar a planilha, selecionar Mossoró ou outra praça e filtrar pelo estado do equipamento antes do confronto. Nenhum arquivo é enviado ao servidor.</small></div>
+          <span class="serials-input-hint">CSV / XLSX</span>
+        </div>
+        <div class="confront-import-grid">
+          <label>Arquivo da QUERY
+            <input id="confrontQueryFile" type="file" accept=".xlsx,.csv,.txt,.tsv" aria-label="Importar planilha de equipamentos">
+          </label>
+          <label>Praça / operação
+            <select id="confrontCity" aria-label="Praça para o confronto">
+              <option value="natal">Natal</option>
+              <option value="fortaleza">Fortaleza</option>
+              <option value="mossoro">Mossoró</option>
+              <option value="recife">Recife</option>
+            </select>
+          </label>
+          <label>Estado do equipamento
+            <select id="confrontEquipmentStatus" aria-label="Filtrar estado do equipamento" disabled>
+              <option value="">Todos os estados</option>
+            </select>
+          </label>
+          <label>Local / estoque (planilha)
+            <select id="confrontLocationFilter" aria-label="Filtrar local de estoque" disabled>
+              <option value="">Todos os locais</option>
+            </select>
+          </label>
+        </div>
+        <label class="confront-assume-city" id="confrontAssumeCityLabel">
+          <input type="checkbox" id="confrontAssumeCity">
+          Confirmo que a planilha corresponde à praça escolhida, mesmo sem coluna de cidade/operação.
+        </label>
+        <p id="confrontQueryStatus" role="status" aria-live="polite">Importe a QUERY para visualizar os filtros por praça e status.</p>
+        <div id="confrontQueryPreview" class="confront-query-preview" aria-label="Prévia dos equipamentos filtrados"></div>
+        <div class="serials-actions">
+          <span id="confrontQueryCount">Nenhuma planilha importada</span>
+          <button type="button" class="button secondary" id="confrontUseFiltered" disabled>Usar seriais filtrados</button>
+        </div>
+      </div>
       <div class="serials-query-card">
         <div class="serials-query-top">
-          <div><strong>Novo confronto</strong><small>Até 500 seriais por trabalho, separados por espaço, vírgula ou linha. A praça acompanha a seleção do DOMINIUM.</small></div>
+          <div><strong>2. Confrontar Atlas × IMPERIUM</strong><small>Até 500 seriais por trabalho. Cole manualmente ou use a lista filtrada da QUERY acima.</small></div>
           <span id="confrontAtlasStatus" class="serials-input-hint">Verificando Atlas...</span>
         </div>
         <label for="confrontMode">Histórico IMPERIUM</label>
@@ -2156,7 +2195,10 @@
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
   <script src="/app.js?v=20261022-confront"></script>
+  <script src="/fflate.browser.min.js?v=0.8.2"></script>
+  <script src="/query-import.js?v=20261023-1"></script>
   <script src="/confront.js?v=20261022-3"></script>
+  <script src="/query-import-ui.js?v=20261023-1"></script>
   <script type="module" src="/motion-ui.js"></script>
 </body>
 </html>

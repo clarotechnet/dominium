@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-23T04:43:26+00:00
-- Source fingerprint: `69fd7d50c5fe2eae`
-- Indexed files: 350
-- Indexed symbols: 3285
+- Generated: 2026-10-23T11:54:03+00:00
+- Source fingerprint: `96e6c0e54a334c66`
+- Indexed files: 355
+- Indexed symbols: 3330
 - API path references: 302
 
 ## Navigation rule
@@ -88,12 +88,16 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 - `static/confront.js` (8 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
 - `static/disconnection.js` (37 symbols, 10 API paths)
+- `static/fflate.browser.min.js` (22 symbols)
+- `static/fflate.LICENSE.txt` - MIT License
 - `static/impeccable.css`
 - `static/index.html` (1 API paths)
 - `static/LUCIDE-LICENSE.txt` - ISC License
 - `static/lucide.min.js` (1 symbols)
 - `static/motion-ui.js` (12 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `static/operations-monitor.js` (34 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
+- `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
 - `static/styles.css`
 - `static/theme-init.js`
 - `static/workspace.css` - Shared workspace: the original Technet image, floating glass and Dominium red. */
@@ -164,7 +168,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - shared: 124 files
 - tooling-deploy: 44 files
 - docs: 14 files
-- tests: 96 files
+- tests: 97 files
 
 ## Search indexes
 

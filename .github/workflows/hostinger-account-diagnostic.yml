@@ -49,7 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check deploy/hostinger-web/server.js
-          node --test tests/test_order_dataset_hostinger.js tests/test_operational_relay.js tests/test_disconnection_hostinger.js tests/test_confront_frontend.js
+          node --test tests/test_order_dataset_hostinger.js tests/test_operational_relay.js tests/test_disconnection_hostinger.js tests/test_confront_frontend.js tests/test_query_import.js
           node --test tests/test_import_hostinger.js integrations/import_bridge/worker.test.mjs
           npm ci --prefix deploy/hostinger-web --ignore-scripts --no-audit --no-fund
           npm run build --prefix deploy/hostinger-web

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-23T04:43:26+00:00",
+  "generated_at": "2026-10-23T11:54:03+00:00",
   "schema": 2,
-  "source_fingerprint": "69fd7d50c5fe2eaed1ea79f2dd75565a53cc4db029910f768151e88c7f13cfb4",
+  "source_fingerprint": "96e6c0e54a334c668997808d7d5777157031d7d8db6126dea13ca5c154243c1a",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1093,8 +1093,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 1834,
-      "sha256": "cc51e24b19fb2f6445868081f290e61bb84900647f25942aee83487ffa548283",
+      "bytes": 2389,
+      "sha256": "5283f659a66a5e5de00ccb479e2b36088a57ee6dfcee2b048f8ecd2812b20222",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1106,8 +1106,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 2487,
-      "sha256": "fa36432849224c41ed819e16eb13aba0b0d62125816965cd52711f050bcf9e14",
+      "bytes": 2810,
+      "sha256": "bf48dbfd3bab176612801a6f2f5e202269fa9ea70fffad23ae47bad5dcc86de3",
       "summary": "DOMINIUM — handoff operacional (memória verificada)",
       "imports": [],
       "endpoints": [],
@@ -2133,8 +2133,8 @@
     {
       "path": "integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md",
       "category": "imperium",
-      "bytes": 6808,
-      "sha256": "20edd687eabc8fdb623b416f38c1389d5daa75c85995025aaa8f8bc49ba9eb27",
+      "bytes": 7949,
+      "sha256": "3ee171b567d7bafe9ea2280b8059ce05af37b9dfe25cdbe472fd6af32497cce8",
       "summary": "DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente",
       "imports": [],
       "endpoints": [],
@@ -3573,8 +3573,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 6068,
-      "sha256": "4c8c2dd35ea392eea9249289497d34ba1faa06ba97b16ed12b740d69d338151b",
+      "bytes": 6113,
+      "sha256": "187c3ad31d6d4b4d2b2db29c7b350aea7ed348b9cc59080ce578787b30adaba2",
       "summary": "",
       "imports": [
         "__future__",
@@ -3804,6 +3804,32 @@
       "symbol_count": 37
     },
     {
+      "path": "static/fflate.browser.min.js",
+      "category": "frontend",
+      "bytes": 32665,
+      "sha256": "c3b34f2e9f5e74d4d7d64e01cac7a0c01954c6c406414d42185c7b53d6875ddf",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 22
+    },
+    {
+      "path": "static/fflate.LICENSE.txt",
+      "category": "frontend",
+      "bytes": 1069,
+      "sha256": "805f6cb28bb8b6d3a0badd83c93bccd9671fa01a3b4b92b7042b0743325ac243",
+      "summary": "MIT License",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "static/impeccable.css",
       "category": "frontend",
       "bytes": 34761,
@@ -3819,8 +3845,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 120678,
-      "sha256": "e4ad6198c02581c49d1821eb3ab1ba78b8352e5d76c63c21d3ea9baea8956791",
+      "bytes": 123157,
+      "sha256": "eeecbdeb6ed324900e43bc54a18dce9ff3e8963dcd832690a4228a6bed35488c",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3884,10 +3910,36 @@
       "symbol_count": 34
     },
     {
+      "path": "static/query-import-ui.js",
+      "category": "frontend",
+      "bytes": 5617,
+      "sha256": "b62e24a0e52bb803e0070371bdc64ed29e3f850576e09c064d765d31ca8aeb84",
+      "summary": "DOMINIUM Pendente — import/query workflow from stock training recordings. */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
+      "path": "static/query-import.js",
+      "category": "frontend",
+      "bytes": 8059,
+      "sha256": "ababf90a8a393c7f7bd54d2997ad45de73b0a497f36878a75d0e2baa9dbe7e8f",
+      "summary": "DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 16
+    },
+    {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 206581,
-      "sha256": "85b28edadae92fb519cc8b04cc028f585d04e1c5860fbfb7bef79e47ec036453",
+      "bytes": 207547,
+      "sha256": "9795722cf268dfb0cb3527ea8fd91664f3561096bdf88939cdc6201527cb883d",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -5484,6 +5536,19 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 4
+    },
+    {
+      "path": "tests/test_query_import.js",
+      "category": "tests",
+      "bytes": 3219,
+      "sha256": "7af4ea366de3aed9457113f597dd1ade826137c4f0b1860cac34b0e1c66dc9fe",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_registration_flow.py",

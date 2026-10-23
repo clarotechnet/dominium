@@ -7366,3 +7366,16 @@ dialog {
 .desc-report-entry small { color:#a7a7b0; margin:5px 0; }
 .desc-heading-actions { flex-wrap:wrap; }
 @media (max-width:640px) { .desc-feedback-dialog { padding:16px; }.desc-feedback-dialog .desc-report-fields { grid-template-columns:1fr; } }
+
+
+/* QUERY da Claro — filtro de praça/local/estado antes do confronto (read-only). */
+.confront-import-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:12px 0}
+.confront-import-grid label{display:flex;flex-direction:column;gap:5px;font-size:.9rem;min-width:0}
+.confront-import-grid input,.confront-import-grid select{width:100%;min-width:0}
+.confront-assume-city{display:flex;align-items:start;gap:8px;margin:10px 0}
+.confront-assume-city input{flex:none;margin-top:4px}
+.confront-query-preview{overflow-x:auto;max-height:310px;overflow-y:auto}
+.confront-preview-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.confront-preview-table th,.confront-preview-table td{text-align:left;padding:8px;border-bottom:1px solid var(--line,#ddd);white-space:nowrap}
+.confront-preview-table th{position:sticky;top:0;background:var(--surface,#fff)}
+@media (max-width:560px){.confront-import-grid{grid-template-columns:1fr}}
