@@ -84,6 +84,68 @@ class Tests(unittest.TestCase):
         self.assertEqual(FakeChrome.created,1)
         self.assertEqual(read_job(self.job,self.db)["remote_queue_id"],"276841868")
 
+    def test_rechecks_same_queue_after_repeated_404_and_uses_new_link(self):
+        from unittest.mock import patch
+        self.ready()
+        old=read_job(self.job,self.db)['attachment_url']
+        new=old.replace('/app-1//','/app-2//').replace('2345.xls','5678.xls')
+        pipeline.update_job(self.job,self.db,attachment_failures=3,
+                            error_code='attachment_http_404')
+        urls=[]
+        class InspectChrome(FakeChrome):
+            def call(self,ws,method,params,timeout=12):
+                if method=='Network.loadNetworkResource':urls.append(params['url'])
+                return super().call(ws,method,params,timeout)
+        with patch.object(pipeline,'evaluate_query',
+                          return_value={'state':'complete','attachment_url':new}) as read_only:
+            outcome=pipeline.fetch_file(self.job,self.db,chrome_factory=InspectChrome,
+                                        clock=lambda:200)
+        self.assertEqual(outcome['http_code'],404)
+        self.assertEqual(read_only.call_args.args[1],'276841868')
+        self.assertEqual(urls,[new])
+        record=read_job(self.job,self.db)
+        self.assertEqual(record['remote_queue_id'],'276841868')
+        self.assertEqual(record['attachment_url'],new)
+        self.assertEqual(record['attachment_failures'],1)
+
+    def test_recheck_rejects_invalid_attachment_and_keeps_existing_one(self):
+        from unittest.mock import patch
+        self.ready()
+        old=read_job(self.job,self.db)['attachment_url']
+        pipeline.update_job(self.job,self.db,attachment_failures=3)
+        with patch.object(pipeline,'evaluate_query',
+            return_value={'state':'complete','attachment_url':'https://untrusted.invalid/file.xls'}):
+            outcome=pipeline.fetch_file(self.job,self.db,chrome_factory=FakeChrome,
+                                        clock=lambda:200)
+        self.assertEqual(outcome['http_code'],404)
+        record=read_job(self.job,self.db)
+        self.assertEqual(record['attachment_url'],old)
+        self.assertEqual(record['attachment_failures'],4)
+        self.assertEqual(record['remote_queue_id'],'276841868')
+
+    def test_no_queue_requery_before_three_404s(self):
+        from unittest.mock import patch
+        self.ready()
+        pipeline.update_job(self.job,self.db,attachment_failures=2)
+        with patch.object(pipeline,'evaluate_query',side_effect=AssertionError('not yet')):
+            outcome=pipeline.fetch_file(self.job,self.db,chrome_factory=FakeChrome,
+                                        clock=lambda:200)
+        self.assertEqual(outcome['http_code'],404)
+        self.assertEqual(read_job(self.job,self.db)['attachment_failures'],3)
+
+    def test_recheck_does_not_reissue_queue_generation(self):
+        from unittest.mock import patch
+        self.ready()
+        pipeline.update_job(self.job,self.db,attachment_failures=10)
+        with patch.object(pipeline,'evaluate_query',
+            return_value={'state':'complete','attachment_url':read_job(self.job,self.db)['attachment_url']}) as read_only:
+            outcome=pipeline.fetch_file(self.job,self.db,chrome_factory=FakeChrome,
+                                        clock=lambda:200)
+        self.assertEqual(outcome['http_code'],404)
+        self.assertEqual(read_only.call_count,1)
+        self.assertEqual(read_job(self.job,self.db)['remote_queue_id'],'276841868')
+        self.assertNotIn('Runtime.evaluate',FakeChrome.requests)
+
     def test_enforce_30_seconds_after_completed(self):
         self.ready(when=100)
         response=pipeline.fetch_file(self.job,self.db,chrome_factory=FakeChrome,clock=lambda:115)
