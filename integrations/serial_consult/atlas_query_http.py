@@ -9,6 +9,7 @@ import logging
 import re
 import threading
 import time
+import uuid
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -76,6 +77,43 @@ class AtlasQueryService:
         row=read_job(job_id,self.db_path)
         return bool(row and row["created_by"]==actor)
 
+    def _ensure_fallback(self,parent_id):
+        """Persist exactly one reserve job for a confirmed first-file HTTP 404.
+
+        A unique index and immediate SQLite transaction prevent duplicate IDs
+        after crashes or concurrent worker instances. Never resubmit uncertain
+        requests; a reserve's own id is durable before touching Atlas.
+        """
+        with connect_db(self.db_path) as db:
+            db.execute("BEGIN IMMEDIATE")
+            primary=db.execute("""SELECT id,city,location,created_by,state,
+                remote_queue_id,attachment_failures,error_code,fallback_enabled,
+                fallback_of FROM query_jobs WHERE id=?""",(parent_id,)).fetchone()
+            if not primary or not (
+                primary["fallback_enabled"]==1
+                and not primary["fallback_of"]
+                and primary["state"]=="attachment_wait"
+                and primary["remote_queue_id"]
+                and primary["attachment_failures"]>=1
+                and primary["error_code"]=="attachment_http_404"
+                and ACTOR_RE.fullmatch(primary["created_by"])
+                and primary["city"] in CITY
+                and primary["location"] in LOCATION
+            ):
+                return None
+            already=db.execute("SELECT id FROM query_jobs WHERE fallback_of=?",
+                               (parent_id,)).fetchone()
+            if already:return None
+            child_id=uuid.uuid4().hex
+            now=self.clock()
+            db.execute("""INSERT INTO query_jobs
+                (id,city,location,created_by,state,created_at,updated_at,
+                 error_code,fallback_of,fallback_enabled)
+                VALUES(?,?,?,?,'submission_uncertain',?,?,'',?,0)""",
+                (child_id,primary["city"],primary["location"],
+                 primary["created_by"],now,now,parent_id))
+            return child_id
+
     def _submit_existing(self,job_id):
         row=read_job(job_id,self.db_path)
         if not row or row["state"]!="submission_uncertain":return
@@ -113,7 +151,8 @@ class AtlasQueryService:
                     continue
                 self._mark_stale_unconfirmed()
                 with connect_db(self.db_path) as db:
-                    rows=db.execute("""SELECT id,state,next_attachment_check,error_code,updated_at FROM query_jobs
+                    rows=db.execute("""SELECT id,state,next_attachment_check,error_code,updated_at,
+                        attachment_failures,fallback_enabled,fallback_of FROM query_jobs
                         WHERE created_by LIKE 'user-%' AND state IN
                         ('queued','processing','attachment_missing','attachment_wait','download_ready')
                         ORDER BY created_at ASC LIMIT 30""").fetchall()
@@ -137,6 +176,21 @@ class AtlasQueryService:
                     if last_scanned.get(job_id,0)+12>now:continue
                     # Retry only reads after auth expiry; never submit another report.
                     if row["error_code"]=="atlas_auth_required" and row["updated_at"]+120>now:continue
+                    # A confirmed HTTP 404 on a new workflow unlocks one and
+                    # only one extra Atlas generation, for any supported city.
+                    # The primary ID remains unchanged and keeps retrying.
+                    if (row["state"]=="attachment_wait"
+                        and row["attachment_failures"]>=1
+                        and row["fallback_enabled"]==1
+                        and not row["fallback_of"]):
+                        reserve=self._ensure_fallback(job_id)
+                        if reserve:
+                            with self._lock:
+                                self._new_jobs.append(reserve)
+                                self._wake.set()
+                            logging.info("Atlas QUERY reserved alternative queued")
+                            processed=True
+                            break
                     if row["next_attachment_check"] and row["next_attachment_check"]>now:continue
                     last_scanned[job_id]=now
                     try:
@@ -167,7 +221,8 @@ class AtlasQueryService:
             if action=="list":
                 with connect_db(self.db_path) as db:
                     rows=db.execute("""SELECT id,city,location,state,remote_queue_id,
-                      created_at,updated_at,error_code FROM query_jobs
+                      created_at,updated_at,error_code,fallback_of,fallback_enabled
+                      FROM query_jobs
                       WHERE created_by=? ORDER BY created_at DESC LIMIT 20""",(actor,)).fetchall()
                 return 200,{"ok":True,"jobs":[dict(row) for row in rows]},None
             if action=="create":
@@ -179,6 +234,11 @@ class AtlasQueryService:
                 with self._lock:
                     job_id,created=claim_job(city,location,self.db_path,created_by=actor)
                     if created:
+                        # Only NEW submissions adopt the dual-ID policy. Existing
+                        # historical 404s cannot silently create extra queues.
+                        with connect_db(self.db_path) as db:
+                            db.execute("UPDATE query_jobs SET fallback_enabled=1 WHERE id=?",
+                                       (job_id,))
                         self._new_jobs.append(job_id)
                         self._wake.set()
                 return (202 if created else 200),{"ok":True,

@@ -231,3 +231,36 @@ Não marcar como sucesso/falha definitiva do Atlas por falta de confirmação.
   comportamento exigiria uma máquina de estados/idempotência própria
   e controle de carga. A recuperação por reconsulta do MESMO ID após
   404, implementada anteriormente, permanece distinta.
+
+
+## Fluxo principal + reserva automático, quatro cidades — 23/10/2026
+
+- Nas **novas** QUERYs geradas pelo botão DOMINIUM (Natal, Mossoró,
+  Fortaleza e Recife), o serviço habilita `fallback_enabled=1` em
+  SQLite; as antigas são migradas com `fallback_enabled=0`.
+- Após confirmação do ID principal **e da primeira tentativa de anexo
+  que retornar HTTP 404**, o serviço cria uma única solicitação reserva
+  da **mesma praça e localização**, no mesmo operador, com
+  `fallback_of=<id_da_solicitacao_principal>`.
+- O registro da reserva é durável com `state=submission_uncertain`
+  **antes de invocar o formulário Atlas**. A restrição UNIQUE em
+  `fallback_of` impede mais de uma reserva para a mesma principal,
+  mesmo após reinício ou entre dois workers.
+- Se o Atlas não confirmar o ID da reserva, a geração **não é
+  repetida automaticamente**; após 150 segundos o erro é registrado,
+  como na geração principal. Nenhuma reserva nasce de envio incerto,
+  de uma fila sem ID, de uma principal pronta ou de uma reserva.
+- Principal e reserva mantêm IDs, horários, estados, anexos e resultados
+  independentes. Na interface, a mais recente família de fila da cidade
+  apresenta os dois IDs. Um resultado `ready` tem preferência sobre
+  outro processamento pendente e continua exportável.
+- Ao lado do botão **Consultar fila**, ficam as datas de solicitação
+  de ambas as filas (quando há reserva), a última atualização da
+  tentativa ativa e a hora da última consulta, em
+  `America/Fortaleza`, usando data/hora `pt-BR`.
+- Tests: 27 Python, 14 JavaScript. Simulação migrando snapshot do
+  banco operacional confirmou relatório histórico `ready` com 893
+  registros, sem habilitar reservas retroativamente.
+- Limite: uma reserva **não garante** arquivo disponível em caso de
+  indisponibilidade geral do Atlas. Evitar terceira geração automática.
+  Nenhuma atualização de estoque, contratos ou O.S. é realizada.
