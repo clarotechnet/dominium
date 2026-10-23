@@ -131,7 +131,8 @@
       : active?.remote_queue_id?'Fila Atlas: '+active.remote_queue_id:
         active?'Solicitação '+active.id.slice(0,8):'Nenhuma fila criada';
     ui.times.textContent=active
-      ? 'Solicitada: '+formatMoment(primary?.created_at||active.created_at)+
+      ? 'Principal solicitada: '+formatMoment(primary?.created_at||active.created_at)+
+        (reserve?' • Reserva solicitada: '+formatMoment(reserve.created_at):'')+
         ' • Última atualização: '+formatMoment(active.updated_at)+
         (checkedAt?' • Consultada: '+formatMoment(checkedAt):'')
       : 'Sem consulta registrada para esta praça.';
