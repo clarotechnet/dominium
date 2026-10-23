@@ -296,9 +296,10 @@
     if(!checked)return;
     busy=true;renderStatus();
     try{
-      const result=await request('/api/atlas-query/jobs/'+active.id+'/reconcile',{
+      const result=await request('/api/atlas-query/jobs',{
         method:'POST',headers:{'content-type':'application/json'},
-        body:JSON.stringify({atlas_checked_no_queue:true}),timeoutMs:20000
+        body:JSON.stringify({reconcile_job_id:active.id,atlas_checked_no_queue:true}),
+        timeoutMs:20000
       });
       active=result.job||active;
       const i=relatedJobs.findIndex(job=>job.id===active.id);
