@@ -34,9 +34,11 @@
     if(active.error_code==='atlas_submit_unconfirmed'){
       queryHud('error','Envio Atlas não confirmado',
         'Não tente novamente sem verificar a fila existente.',id+'|uncertain-error');
-    } else if(active.state==='atlas_auth_required'){
-      queryHud('error','Atlas precisa de login',
-        'Faça login na sessão do watchdog; nenhuma fila foi confirmada.',id+'|auth');
+    } else if(active.state==='atlas_auth_required'||active.error_code==='atlas_auth_required'){
+      queryHud('error','Sessão Atlas expirada',
+        active.remote_queue_id
+          ? 'A fila '+active.remote_queue_id+' foi preservada. Renove o login do Atlas.'
+          : 'Renove o login na sessão Atlas.',id+'|auth');
     } else if(['failed','format_review'].includes(active.state)){
       queryHud('error','QUERY precisa de atenção',
         statusLabels[active.state]||'Consulte o histórico para detalhes.',id+'|'+active.state);
@@ -92,7 +94,7 @@
   // Stop background polling and keep manual reconciliation available.
   const pollingComplete=job=>Boolean(job && (
     ['ready','failed','format_review','atlas_auth_required'].includes(job.state)||
-    job.error_code==='atlas_submit_unconfirmed'));
+    job.error_code==='atlas_submit_unconfirmed'||job.error_code==='atlas_auth_required'));
   function renderStatus(){
     ui.city.value=state.profile;
     ui.start.disabled=busy||!allowed()||
@@ -102,6 +104,8 @@
       active?'Solicitação '+active.id.slice(0,8):'Nenhuma fila criada';
     ui.progress.textContent=active?.error_code==='atlas_submit_unconfirmed'
       ? 'Confirmação do Atlas não obtida. Verifique a fila antes de qualquer novo envio.'
+      : active?.error_code==='atlas_auth_required'
+      ? 'Sessão Atlas expirada. Fila preservada; renove o login para continuar a consulta.'
       : active?statusLabels[active.state]||'Estado: '+active.state:
       'Selecione a praça e clique em Gerar QUERY no Atlas.';
     // NEVER clear status/last action during automatic polling.
@@ -110,7 +114,9 @@
       const message=serverError==='attachment_http_404'
         ? 'O anexo respondeu 404. Vamos consultar o MESMO ID; nenhuma fila nova foi criada.'
         : serverError==='atlas_auth_required'
-        ? 'A sessão Atlas requer autenticação. Nenhuma geração de relatório foi confirmada.'
+        ? (active?.remote_queue_id
+            ? 'Sessão de consulta Atlas expirada. A fila existente foi preservada; faça login para retomar.'
+            : 'A sessão Atlas requer autenticação. Nenhuma geração de relatório foi confirmada.')
         : serverError==='atlas_submit_unconfirmed'
         ? 'O Atlas não confirmou a geração. Não repita o clique sem verificar a fila.'
         : serverError==='report_parse_not_confirmed'
