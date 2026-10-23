@@ -54,6 +54,14 @@ def claim_job(city,location,db_path=DB,*,timestamp=None,created_by=""):
     now=time.time() if timestamp is None else timestamp
     with connect_db(db_path) as db:
         db.execute("BEGIN IMMEDIATE")
+        # An Atlas submission without a confirmed ID must remain locked even
+        # after the regular 8-hour reuse window. Require explicit, audited
+        # operator reconciliation before any new submission can be created.
+        uncertain=db.execute("""SELECT id FROM query_jobs
+            WHERE city=? AND location=? AND created_by=?
+            AND state='submission_uncertain' AND remote_queue_id IS NULL
+            ORDER BY created_at DESC LIMIT 1""",(city,location,created_by)).fetchone()
+        if uncertain:return uncertain["id"],False
         previous=db.execute("""SELECT id FROM query_jobs WHERE city=? AND location=?
             AND created_by=? AND created_at>? AND state IN
             ('submitting','submission_uncertain','queued','processing',
