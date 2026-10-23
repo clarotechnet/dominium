@@ -44,10 +44,26 @@ class Tests(unittest.TestCase):
             state="attachment_wait",completed_at=when,
             attachment_url="https://batatlas.netservicos.com.br/app-1//RELATORIOS/261023/Relatorio_Equipamentos_Analitico_2345.xls")
 
+    def test_queue_uses_official_nethome_sso_entry(self):
+        from urllib.parse import urlsplit
+        url=urlsplit(pipeline.QUEUE_URL)
+        self.assertEqual(url.scheme,'https')
+        self.assertEqual(url.hostname,'atlas.netservicos.com.br')
+        self.assertEqual(url.port,443)
+        self.assertEqual(url.path,'/nettask/singleSignOn.do')
+        self.assertIn('j_url=filas/filas.do?acao=prepareSearch',url.query)
+        self.assertIn('tipoConsulta=consultaId',url.query)
+        self.assertIn('menu=yes',url.query)
+
     def test_restrict_report_download_urls(self):
         good="https://batatlas.netservicos.com.br/app-1//RELATORIOS/261023/Relatorio_Equipamentos_Analitico_2345.xls"
         self.assertTrue(pipeline.valid_report_url(good))
+        app2=good.replace('/app-1//','/app-2//')
+        self.assertTrue(pipeline.valid_report_url(app2))
         for malicious in (
+            good.replace('/app-1//','/app-3//'),
+            good.replace('/app-1//','/app-20//'),
+            good.replace('/app-1//','/app-2/'),
             "https://evil.example/app-1//RELATORIOS/261023/file.xls",
             "http://batatlas.netservicos.com.br/app-1//RELATORIOS/261023/file.xls",
             "https://batatlas.netservicos.com.br.evil.example/app-1//RELATORIOS/261023/file.xls",
