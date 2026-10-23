@@ -164,3 +164,29 @@ Não marcar como sucesso/falha definitiva do Atlas por falta de confirmação.
 - A extensão TOA gerenciada foi **configurada em disco** para keepalive de 80 segundos e serial de teste definido pelo operador. Arquivo original preservado em `content-atlas-main.before-keepalive-80s-20261023.js`. **A configuração ainda não está ativa até recarregar a extensão**. Não recarregar enquanto há uma consulta em andamento, e não garantir que consultar o serial evitará timeout de sessão.
 - A QUERY Natal, identificador interno prefixo `479289b9`, estava `submission_uncertain` sem ID remoto por mais de uma hora. O serviço de QUERY passou a registrar `atlas_submit_unconfirmed` após 150s; o estado continua incerto para impedir envio duplicado. O relay na porta 8793 foi atualizado com backup e reinício protegido; os endpoints `/api/atlas-query/jobs`, `/api/confront/status` e `/api/disconnection/reports` responderam HTTP 200. O erro foi confirmado persistido no banco.
 - Faltam a reconciliação humana pela fila do Atlas, confirmar disponibilização do anexo histórico de Mossoró e uma recarga segura da extensão quando o bot estiver ocioso.
+
+
+## Recuperação de anexos após 404 recorrente — 23/10/2026
+
+- Correção `995d47a`: quando um download falhou pelo menos três vezes, o
+  worker reconsulta a **mesma fila remota**, exclusivamente em modo leitura,
+  antes da próxima tentativa. Se o NetTask disponibilizar um **novo** link,
+  o serviço aceita-o somente após `valid_report_url()` e reinicia a
+  contagem do anexo. Caso contrário preserva o link, o ID e o backoff.
+- A rotina **nunca** submete nova geração de relatório nem modifica
+  equipamentos, contratos, técnicos ou O.S. após HTTP 404.
+- Verificação: 21 testes Python (pipeline, HTTP, parser) e 12 testes
+  JavaScript passaram. Arquivo publicado no relay privado após backup e
+  reinício com smoke de autenticação (GET anônimo retorna 401).
+- Diagnóstico autenticado real de uma fila de Mossoró: NetTask retornou
+  `complete`; dois links `.xls` distintos e links `.html` e `.zip`
+  foram identificados no painel de anexos. Todas as variantes testadas
+  retornaram HTTP 404 pela API CDP `Network.loadNetworkResource`.
+  Mesmo resultado com o `frameId` raiz e o frame do NetTask.
+- Ainda não foi confirmado o download navegando diretamente pelo Chrome
+  (clique humano). Um HTTP 404 no CDP não comprova falha permanente do
+  armazenamento; verificar acesso direto antes de atribuir o incidente ao
+  fornecedor. Não expor links, tokens, cookies ou conteúdo dos relatórios.
+- **Pendente:** confirmar retorno HTTP 200 de um anexo real, magic bytes do
+  formato, parsing, persistência das linhas e exportação XLSX. Até isso
+  acontecer, o estado correto continua `attachment_wait`, não `ready`.
