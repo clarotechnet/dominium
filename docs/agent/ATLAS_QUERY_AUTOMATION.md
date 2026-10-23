@@ -264,3 +264,33 @@ Não marcar como sucesso/falha definitiva do Atlas por falta de confirmação.
 - Limite: uma reserva **não garante** arquivo disponível em caso de
   indisponibilidade geral do Atlas. Evitar terceira geração automática.
   Nenhuma atualização de estoque, contratos ou O.S. é realizada.
+
+
+## Natal: tentativa antiga sem confirmação de fila (23/10/2026)
+
+- Registro local `479289b9d2354c5f8e93991c1d664067`, Natal /
+  EMPREITEIRA, criado em **23/10/2026 às 13:51:49 (UTC−3)**.
+  Estado `submission_uncertain`, `remote_queue_id=NULL`,
+  `error_code=atlas_submit_unconfirmed`. Na consulta por volta das
+  20:04, o código reaproveitava essa mesma solicitação pela janela de
+  idempotência de oito horas: não ocorreu nova criação de fila.
+- A consulta autenticada por intervalo no NetTask encontrou outras
+  filas próximas desse horário, mas **não identificou inequivocamente**
+  uma fila correspondente à tentativa antiga. É incorreto declarar
+  que o Atlas não recebeu a requisição, assim como inventar um ID.
+- Recuperação manual: um administrador/controlador deve conferir
+  independentemente no Atlas que não existe a fila dessa solicitação.
+  Somente então o controle `Reconciliar envio` confirma com
+  `POST /api/atlas-query/jobs` e corpo JSON contendo
+  `reconcile_job_id` e `atlas_checked_no_queue:true`. Reutiliza a
+  rota existente pelas políticas Hostinger/Cloudflare, sem abrir rotas.
+- O relay verifica operador, job exato, ausência de ID,
+  `submission_uncertain`, erro `atlas_submit_unconfirmed`,
+  pelo menos cinco minutos de idade e ausência de vínculo reserva.
+  Apenas marca o registro local como `failed` /
+  `manually_closed_unconfirmed`; **não transmite nada ao Atlas**.
+  A geração seguinte exige outro clique do operador, criando um novo
+  registro preservando integralmente o histórico original.
+- A confirmação manual é uma declaração do operador, não evidência
+  automática de que o Atlas não criou fila. Sem conferência, deixar
+  o registro pendente para evitar duplicação.
