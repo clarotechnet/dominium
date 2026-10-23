@@ -52,7 +52,7 @@ def upgrade_db(db_path=DB):
                 db.execute(f"ALTER TABLE query_jobs ADD COLUMN {name} {definition}")
         # At most one persisted reserve attempt per main QUERY.
         db.execute("""CREATE UNIQUE INDEX IF NOT EXISTS idx_query_one_fallback
-            ON query_jobs(fallback_of) WHERE fallback_of!=''"""))
+            ON query_jobs(fallback_of) WHERE fallback_of!=''""")
 
 
 def update_job(job_id, db_path=DB, **fields):
