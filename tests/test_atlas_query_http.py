@@ -56,7 +56,59 @@ class Tests(unittest.TestCase):
                 update_job(primary,self.svc.db_path,state='attachment_wait',
                     attachment_failures=1,error_code='attachment_http_404')
                 reserve=self.svc._ensure_fallback(primary)
-                self.assertRegex(reserve,r'^[a-f0-9]{32}
+                self.assertIsNotNone(reserve)
+                self.assertEqual(len(reserve),32)
+                self.assertNotEqual(reserve,primary)
+                self.assertIsNone(self.svc._ensure_fallback(primary))
+                child=read_job(reserve,self.svc.db_path)
+                self.assertEqual(child['fallback_of'],primary)
+                self.assertEqual(child['fallback_enabled'],0)
+                self.assertEqual(child['state'],'submission_uncertain')
+                self.assertIsNone(child['remote_queue_id'])
+                self.assertEqual(child['created_by'],'user-77')
+                save_queue(reserve,'276855583',self.svc.db_path)
+                self.assertEqual(read_job(reserve,self.svc.db_path)['remote_queue_id'],'276855583')
+                self.assertEqual(read_job(primary,self.svc.db_path)['remote_queue_id'],'276855582')
+                self.assertIsNone(self.svc._ensure_fallback(reserve))
+                status,info,_=self.svc.handle('GET','/api/atlas-query/jobs','user-77')
+                self.assertEqual(status,200)
+                self.assertTrue(any(x['id']==reserve and x['fallback_of']==primary for x in info['jobs']))
+
+    def test_historical_404_does_not_automatically_generate_backup(self):
+        from atlas_query_report import claim_job,save_queue,read_job
+        primary,_=claim_job('recife','empreiteira',self.svc.db_path,created_by='user-78')
+        save_queue(primary,'276855585',self.svc.db_path)
+        update_job(primary,self.svc.db_path,state='attachment_wait',attachment_failures=11,
+                   error_code='attachment_http_404')
+        self.assertEqual(read_job(primary,self.svc.db_path)['fallback_enabled'],0)
+        self.assertIsNone(self.svc._ensure_fallback(primary))
+
+    def test_uncertain_or_ready_primary_cannot_generate_backup(self):
+        from atlas_query_report import save_queue
+        primary=self.svc.handle('POST','/api/atlas-query/jobs','user-82',
+            {'city':'mossoro','location':'empreiteira'})[1]['job']['id']
+        update_job(primary,self.svc.db_path,error_code='atlas_submit_unconfirmed')
+        self.assertIsNone(self.svc._ensure_fallback(primary))
+        save_queue(primary,'276855586',self.svc.db_path)
+        update_job(primary,self.svc.db_path,state='ready',error_code='')
+        self.assertIsNone(self.svc._ensure_fallback(primary))
+
+    def test_fallback_singleton_with_concurrent_threads(self):
+        from concurrent.futures import ThreadPoolExecutor
+        from atlas_query_report import save_queue,connect_db
+        primary=self.svc.handle('POST','/api/atlas-query/jobs','user-83',
+            {'city':'fortaleza','location':'empreiteira'})[1]['job']['id']
+        save_queue(primary,'276855587',self.svc.db_path)
+        update_job(primary,self.svc.db_path,state='attachment_wait',
+                   attachment_failures=4,error_code='attachment_http_404')
+        with ThreadPoolExecutor(max_workers=5) as pool:
+            created=list(pool.map(self.svc._ensure_fallback,[primary]*5))
+        self.assertEqual(len([x for x in created if x]),1)
+        with connect_db(self.svc.db_path) as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM query_jobs WHERE fallback_of=?',
+                                        (primary,)).fetchone()[0],1)
+
+    def test_auth_required_records_failure_without_submitting_report(self):
         from atlas_query_report import AtlasAuthRequired, claim_job, read_job
         class LoginRequiredChrome:
             submissions=0
