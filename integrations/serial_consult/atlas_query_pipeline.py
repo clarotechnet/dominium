@@ -159,7 +159,7 @@ def poll_report(job_id,db_path=DB,browser_factory=ChromeAtlas,clock=time.time):
     elif state=="failed":
         update_job(job_id,db_path,state="failed",error_code="remote_queue_failed")
     else:
-        update_job(job_id,db_path,state="processing" if state=="processing" else "queued")
+        update_job(job_id,db_path,state="processing" if state=="processing" else "queued",error_code="")
     row=read_job(job_id,db_path)
     return public_status(row)
 
