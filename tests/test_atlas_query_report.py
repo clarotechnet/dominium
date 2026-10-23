@@ -72,6 +72,23 @@ class Tests(unittest.TestCase):
         self.assertEqual(answer["state"],"submission_uncertain")
         self.assertEqual(FakeBrowser.submissions,1)
 
+    def test_unconfirmed_job_remains_locked_after_eight_hours(self):
+        created,yes=mod.claim_job("natal","empreiteira",self.db,
+                                  timestamp=100000,created_by="user-1")
+        self.assertTrue(yes)
+        previous,again=mod.claim_job("natal","empreiteira",self.db,
+                                     timestamp=100000+9*3600,created_by="user-1")
+        self.assertEqual(previous,created)
+        self.assertFalse(again)
+        self.assertEqual(mod.read_job(created,self.db)["state"],"submission_uncertain")
+        with mod.connect_db(self.db) as db:
+            db.execute("UPDATE query_jobs SET state='failed',error_code='manually_closed_unconfirmed' WHERE id=?",
+                       (created,))
+        newer,ok=mod.claim_job("natal","empreiteira",self.db,
+                               timestamp=100000+9*3600,created_by="user-1")
+        self.assertTrue(ok)
+        self.assertNotEqual(newer,created)
+
     def test_invalid_inputs_never_contact_atlas(self):
         for city,location in [("no_city","empreiteira"),("natal","technical"),("","")]:
             with self.assertRaises(ValueError):
