@@ -1,0 +1,3 @@
+# Optional read-only .xls parser used by integrations/serial_consult/atlas_query_data.py
+# The server runtime has this installed (2026-10-23); HTML/.xlsx use stdlib.
+xlrd==2.0.2

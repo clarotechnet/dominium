@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { allowedOperationalRead } = require('./operational-policy');
 const { allowedConfrontRoute } = require('./confront-policy');
+const {allowedAtlasQueryRoute}=require('./atlas-query-policy');
 
 const WORKER_ORIGIN = 'https://dominium-import-bridge.jogador743.workers.dev';
 function readPrivateConnection() {
@@ -12,7 +13,8 @@ function readPrivateConnection() {
 }
 
 function resolveOperationalRead(req, connection = readPrivateConnection) {
-  const confrontation = allowedConfrontRoute(req.method, req.originalUrl);
+  const confrontation = allowedConfrontRoute(req.method, req.originalUrl) ||
+    allowedAtlasQueryRoute(req.method, req.originalUrl);
   if (!confrontation && !allowedOperationalRead(req.method, req.originalUrl)) return null;
   if (!req.dominiumSession || (confrontation
     ? !['admin','controller'].includes(req.dominiumUser?.role)
