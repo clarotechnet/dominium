@@ -4,7 +4,8 @@
   const $=id=>document.getElementById(id);
   const ui={city:$('atlasQueryCity'),location:$('atlasQueryLocation'),
     start:$('atlasQueryStart'),status:$('atlasQueryStatus'),
-    id:$('atlasQueryId'),table:$('atlasQueryGrid'),
+    id:$('atlasQueryId'),times:$('atlasQueryTimestamps'),
+    table:$('atlasQueryGrid'),
     progress:$('atlasQueryProgress'),page:$('atlasQueryPage'),
     prev:$('atlasQueryPrev'),next:$('atlasQueryNext'),
     csv:$('atlasQueryCsv'),xlsx:$('atlasQueryXlsx'),
@@ -13,6 +14,8 @@
   let active=null;let fetching=false;let busy=false;let offset=0;let total=0;
   let selectedProfile='';
   let lastBackendError='';
+  let relatedJobs=[];
+  let checkedAt=null;
   // Reuse DOMINIUM's existing animated orb HUD during the entire QUERY job.
   // A registered HTTP 202 only means queued, not that the Excel is ready.
   let hudToken='';
@@ -89,6 +92,26 @@
   };
   const allowed=()=>['admin','controller'].includes(String(state.authUser?.role||''));
   const formatCount=n=>Number(n||0).toLocaleString('pt-BR');
+  const formatMoment=value=>{
+    const millis=typeof value==='number' ? value*1000 : value;
+    const date=new Date(millis);
+    return Number.isFinite(date.getTime())
+      ? date.toLocaleString('pt-BR',{timeZone:'America/Fortaleza',
+          day:'2-digit',month:'2-digit',year:'numeric',
+          hour:'2-digit',minute:'2-digit',second:'2-digit'})
+      : '—';
+  };
+  function selectLatestGroup(jobs){
+    const root=jobs.find(job=>!job.fallback_of)||jobs[0]||null;
+    if(!root){relatedJobs=[];return null;}
+    const reserve=jobs.find(job=>job.fallback_of===root.id)||null;
+    relatedJobs=reserve?[root,reserve]:[root];
+    // The oldest confirmed report within the newest generation pair wins.
+    // Never display a reserve 'queued' in place of a READY principal.
+    return root.state==='ready'?root:
+      reserve?.state==='ready'?reserve:
+      reserve||root;
+  }
   const safeError=(error)=>String(error?.message||'Falha ao acessar a QUERY');
   // An unconfirmed Atlas submission is not a confirmed failure or a retryable job.
   // Stop background polling and keep manual reconciliation available.
@@ -100,8 +123,18 @@
     ui.start.disabled=busy||!allowed()||
       Boolean(active && !['ready','failed','format_review'].includes(active.state));
     ui.refresh.disabled=fetching;
-    ui.id.textContent=active?.remote_queue_id?'Fila Atlas: '+active.remote_queue_id:
-      active?'Solicitação '+active.id.slice(0,8):'Nenhuma fila criada';
+    const primary=relatedJobs.find(job=>!job.fallback_of);
+    const reserve=relatedJobs.find(job=>job.fallback_of);
+    ui.id.textContent=primary&&reserve
+      ? 'Principal: '+(primary.remote_queue_id||'aguardando ID')+
+        ' • Reserva: '+(reserve.remote_queue_id||'aguardando ID')
+      : active?.remote_queue_id?'Fila Atlas: '+active.remote_queue_id:
+        active?'Solicitação '+active.id.slice(0,8):'Nenhuma fila criada';
+    ui.times.textContent=active
+      ? 'Solicitada: '+formatMoment(primary?.created_at||active.created_at)+
+        ' • Última atualização: '+formatMoment(active.updated_at)+
+        (checkedAt?' • Consultada: '+formatMoment(checkedAt):'')
+      : 'Sem consulta registrada para esta praça.';
     ui.progress.textContent=active?.error_code==='atlas_submit_unconfirmed'
       ? 'Confirmação do Atlas não obtida. Verifique a fila antes de qualquer novo envio.'
       : active?.error_code==='atlas_auth_required'
@@ -112,7 +145,7 @@
     const serverError=String(active?.error_code||'');
     if(serverError && serverError!==lastBackendError){
       const message=serverError==='attachment_http_404'
-        ? 'O anexo respondeu 404. Vamos consultar o MESMO ID; nenhuma fila nova foi criada.'
+        ? 'O anexo respondeu 404. Verificando o ID principal e a reserva autorizada, quando aplicável.'
         : serverError==='atlas_auth_required'
         ? (active?.remote_queue_id
             ? 'Sessão de consulta Atlas expirada. A fila existente foi preservada; faça login para retomar.'
@@ -171,16 +204,29 @@
         'Verificando o ID e a situação do processamento.','refresh-'+Date.now());
     }
     try{
-      if(!active||selectedProfile!==state.profile){
-        selectedProfile=state.profile;active=null;offset=0;total=0;
-        ui.table.replaceChildren();
-        const data=await request('/api/atlas-query/jobs',{timeoutMs:18000});
-        const jobs=(data.jobs||[]).filter(j=>j.city===state.profile);
-        active=jobs[0]||null;
+      const profileChanged=selectedProfile!==state.profile;
+      if(profileChanged){
+        selectedProfile=state.profile;active=null;relatedJobs=[];
+        checkedAt=null;offset=0;total=0;
+        ui.table.replaceChildren();ui.summary.textContent='';
       }
+      // Re-read the listing every cycle: a reserve ID is created by the
+      // server after a confirmed 404, not by another browser POST.
+      const data=await request('/api/atlas-query/jobs',{timeoutMs:18000});
+      const jobs=(data.jobs||[]).filter(job=>job.city===state.profile);
+      const previouslyActive=active;
+      if(jobs.length)active=selectLatestGroup(jobs);
+      else if(!active)relatedJobs=[];
       if(active){
+        if(previouslyActive?.id!==active.id){
+          offset=0;total=0;ui.table.replaceChildren();ui.summary.textContent='';
+        }
         const item=await request('/api/atlas-query/jobs/'+active.id,{timeoutMs:18000});
-        const previous=active.state;active=item.job||active;
+        const previous=previouslyActive?.id===active.id?previouslyActive?.state:null;
+        active=item.job||active;
+        const related=relatedJobs.findIndex(job=>job.id===active.id);
+        if(related>=0)relatedJobs[related]=active;
+        checkedAt=new Date();
         updateQueryHud();
         if(active.state==='ready'&&(previous!=='ready'||!ui.table.firstChild)){
           offset=0;await loadPage();
@@ -209,7 +255,8 @@
         body:JSON.stringify({city:state.profile,location:ui.location.value}),
         timeoutMs:25000
       });
-      active=data.job;offset=0;total=0;
+      active=data.job;relatedJobs=active?[active]:[];
+      checkedAt=null;offset=0;total=0;
       ui.table.replaceChildren();ui.summary.textContent='';
       selectedProfile=state.profile;
       writeNotice(data.reused
