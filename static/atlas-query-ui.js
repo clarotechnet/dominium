@@ -133,6 +133,7 @@
     ui.refresh.disabled=fetching;
     ui.reconcile.hidden=!(active?.state==='submission_uncertain'&&
       active?.error_code==='atlas_submit_unconfirmed');
+    ui.reconcile.style.display=ui.reconcile.hidden?'none':'inline-flex';
     ui.reconcile.disabled=busy||fetching||!allowed()||ui.reconcile.hidden;
     const primary=relatedJobs.find(job=>!job.fallback_of);
     const reserve=relatedJobs.find(job=>job.fallback_of);
