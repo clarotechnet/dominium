@@ -9,7 +9,8 @@
     progress:$('atlasQueryProgress'),page:$('atlasQueryPage'),
     prev:$('atlasQueryPrev'),next:$('atlasQueryNext'),
     csv:$('atlasQueryCsv'),xlsx:$('atlasQueryXlsx'),
-    refresh:$('atlasQueryRefresh'),summary:$('atlasQuerySummary')};
+    refresh:$('atlasQueryRefresh'),reconcile:$('atlasQueryReconcile'),
+    summary:$('atlasQuerySummary')};
   if(Object.values(ui).some(value=>!value))return;
   let active=null;let fetching=false;let busy=false;let offset=0;let total=0;
   let selectedProfile='';
@@ -34,7 +35,11 @@
   function updateQueryHud(){
     if(!active)return;
     const id=active.id||'unknown';
-    if(active.error_code==='atlas_submit_unconfirmed'){
+    if(active.error_code==='manually_closed_unconfirmed'){
+      queryHud('error','Solicitação antiga encerrada',
+        'A conferência manual foi registrada. Uma nova QUERY exige outro clique.',
+        id+'|manual-reconciled');
+    } else if(active.error_code==='atlas_submit_unconfirmed'){
       queryHud('error','Envio Atlas não confirmado',
         'Não tente novamente sem verificar a fila existente.',id+'|uncertain-error');
     } else if(active.state==='atlas_auth_required'||active.error_code==='atlas_auth_required'){
@@ -113,6 +118,9 @@
       reserve||root;
   }
   const safeError=(error)=>String(error?.message||'Falha ao acessar a QUERY');
+  const jobStatus=job=>job?.error_code==='manually_closed_unconfirmed'
+    ? 'Tentativa antiga encerrada após conferência manual; nova QUERY liberada.'
+    : statusLabels[job?.state]||job?.state||'';
   // An unconfirmed Atlas submission is not a confirmed failure or a retryable job.
   // Stop background polling and keep manual reconciliation available.
   const pollingComplete=job=>Boolean(job && (
@@ -123,6 +131,10 @@
     ui.start.disabled=busy||!allowed()||
       Boolean(active && !['ready','failed','format_review'].includes(active.state));
     ui.refresh.disabled=fetching;
+    ui.reconcile.hidden=!(active?.state==='submission_uncertain'&&
+      active?.error_code==='atlas_submit_unconfirmed');
+    ui.reconcile.style.display=ui.reconcile.hidden?'none':'inline-flex';
+    ui.reconcile.disabled=busy||fetching||!allowed()||ui.reconcile.hidden;
     const primary=relatedJobs.find(job=>!job.fallback_of);
     const reserve=relatedJobs.find(job=>job.fallback_of);
     ui.id.textContent=primary&&reserve
@@ -140,7 +152,7 @@
       ? 'Confirmação do Atlas não obtida. Verifique a fila antes de qualquer novo envio.'
       : active?.error_code==='atlas_auth_required'
       ? 'Sessão Atlas expirada. Fila preservada; renove o login para continuar a consulta.'
-      : active?statusLabels[active.state]||'Estado: '+active.state:
+      : active?jobStatus(active):
       'Selecione a praça e clique em Gerar QUERY no Atlas.';
     // NEVER clear status/last action during automatic polling.
     const serverError=String(active?.error_code||'');
@@ -155,6 +167,8 @@
         ? 'O Atlas não confirmou a geração. Não repita o clique sem verificar a fila.'
         : serverError==='report_parse_not_confirmed'
         ? 'Arquivo obtido, mas o formato precisa de revisão. Nenhuma linha foi descartada.'
+        : serverError==='manually_closed_unconfirmed'
+        ? 'Solicitação anterior encerrada após conferência manual. Nova QUERY requer outro clique.'
         : 'O serviço registrou uma pendência ('+serverError+').';
       writeNotice(message,'warning');
     }
@@ -233,7 +247,7 @@
           offset=0;await loadPage();
         }
       }
-      if(!quiet)writeNotice(active ? ('Consulta atualizada: '+(statusLabels[active.state]||active.state)+'.') : 'Nenhuma QUERY registrada nesta praça.');
+      if(!quiet)writeNotice(active ? ('Consulta atualizada: '+jobStatus(active)+'.') : 'Nenhuma QUERY registrada nesta praça.');
       if(!active&&!quiet)queryHud('success','Consulta finalizada',
         'Não existe QUERY registrada nesta praça.','no-jobs-'+Date.now());
     }catch(error){
@@ -271,6 +285,31 @@
     }
     finally{busy=false;renderStatus()}
   }
+  async function reconcileOld(){
+    if(!active||busy||fetching||!allowed()||
+       active.state!=='submission_uncertain'||
+       active.error_code!=='atlas_submit_unconfirmed')return;
+    const checked=window.confirm(
+      'Você verificou no Atlas que a solicitação antiga NÃO criou nenhuma fila? '+
+      'Confirme apenas após consultar o histórico do Atlas. '+
+      'O registro será preservado e uma nova QUERY só será enviada se você clicar em Gerar QUERY.');
+    if(!checked)return;
+    busy=true;renderStatus();
+    try{
+      const result=await request('/api/atlas-query/jobs',{
+        method:'POST',headers:{'content-type':'application/json'},
+        body:JSON.stringify({reconcile_job_id:active.id,atlas_checked_no_queue:true}),
+        timeoutMs:20000
+      });
+      active=result.job||active;
+      const i=relatedJobs.findIndex(job=>job.id===active.id);
+      if(i>=0)relatedJobs[i]=active;
+      writeNotice('Tentativa antiga encerrada após conferência. Nova geração disponível, sem envio automático.','success');
+      updateQueryHud();
+    }catch(error){
+      writeNotice('Não foi possível reconciliar a tentativa: '+safeError(error),'error');
+    }finally{busy=false;renderStatus()}
+  }
   async function exportAs(ext){
     if(active?.state!=='ready')return;
     try{
@@ -284,6 +323,7 @@
   }
   ui.start.addEventListener('click',()=>void create());
   ui.refresh.addEventListener('click',()=>void refresh());
+  ui.reconcile.addEventListener('click',()=>void reconcileOld());
   ui.csv.addEventListener('click',()=>void exportAs('csv'));
   ui.xlsx.addEventListener('click',()=>void exportAs('xlsx'));
   ui.prev.addEventListener('click',()=>{offset=Math.max(0,offset-100);void loadPage()});

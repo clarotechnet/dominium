@@ -114,6 +114,34 @@ class AtlasQueryService:
                  primary["created_by"],now,now,parent_id))
             return child_id
 
+    def _reconcile_unconfirmed(self,actor,body):
+        job_id=body.get("reconcile_job_id")
+        if not isinstance(job_id,str) or not JOB_RE.fullmatch(job_id):
+            return 400,{"ok":False,"error":"Solicitação inválida"},None
+        if body.get("atlas_checked_no_queue") is not True:
+            return 400,{"ok":False,"error":"Confirme que verificou no Atlas a ausência da fila."},None
+        # Explicit operator acknowledgment only. This closes the local
+        # uncertain record; it does not prove whether Atlas received it.
+        with self._lock:
+            with connect_db(self.db_path) as db:
+                db.execute("BEGIN IMMEDIATE")
+                row=db.execute("""SELECT id,created_by,created_at,state,
+                    remote_queue_id,error_code,fallback_of
+                    FROM query_jobs WHERE id=?""",(job_id,)).fetchone()
+                if not row or row["created_by"]!=actor:
+                    return 404,{"ok":False,"error":"Trabalho não encontrado"},None
+                if (row["state"]!="submission_uncertain"
+                    or row["remote_queue_id"]
+                    or row["error_code"]!="atlas_submit_unconfirmed"
+                    or row["fallback_of"]):
+                    return 409,{"ok":False,"error":"Esta solicitação não pode ser encerrada por reconciliação."},None
+                if self.clock()-row["created_at"]<300:
+                    return 409,{"ok":False,"error":"Aguarde cinco minutos para verificar o Atlas."},None
+                db.execute("""UPDATE query_jobs SET state='failed',
+                    error_code='manually_closed_unconfirmed',updated_at=?
+                    WHERE id=?""",(self.clock(),job_id))
+        return 200,{"ok":True,"job":public_status(read_job(job_id,self.db_path))},None
+
     def _submit_existing(self,job_id):
         row=read_job(job_id,self.db_path)
         if not row or row["state"]!="submission_uncertain":return
@@ -226,6 +254,8 @@ class AtlasQueryService:
                       WHERE created_by=? ORDER BY created_at DESC LIMIT 20""",(actor,)).fetchall()
                 return 200,{"ok":True,"jobs":[dict(row) for row in rows]},None
             if action=="create":
+                if isinstance(body,dict) and set(body)=={"reconcile_job_id","atlas_checked_no_queue"}:
+                    return self._reconcile_unconfirmed(actor,body)
                 if not isinstance(body,dict) or set(body)!={"city","location"}:
                     return 400,{"ok":False,"error":"Informe praça e localização"},None
                 city,location=body["city"],body["location"]

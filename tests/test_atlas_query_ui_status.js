@@ -12,7 +12,7 @@ function setup(response){
   const listeners=new Map();
   function element(id){
     if(!elements.has(id)) elements.set(id,{
-      id, value:'', textContent:'', dataset:{}, disabled:false, children:[],
+      id, value:'', textContent:'', dataset:{}, style:{}, disabled:false, children:[],
       addEventListener(type,fn){listeners.set(id+':'+type,fn)},
       prepend(node){this.children.unshift(node)},
       get lastElementChild(){return this.children[this.children.length-1]},
@@ -27,7 +27,8 @@ function setup(response){
     'atlasQueryCity','atlasQueryLocation','atlasQueryStart',
     'atlasQueryStatus','atlasQueryId','atlasQueryTimestamps','atlasQueryGrid','atlasQueryProgress',
     'atlasQueryPage','atlasQueryPrev','atlasQueryNext','atlasQueryCsv',
-    'atlasQueryXlsx','atlasQueryRefresh','atlasQuerySummary','atlasQueryActivity'
+    'atlasQueryXlsx','atlasQueryRefresh','atlasQueryReconcile',
+    'atlasQuerySummary','atlasQueryActivity'
   ].forEach(element);
   element('atlasQueryLocation').value='empreiteira';
   const document={
@@ -39,19 +40,20 @@ function setup(response){
   const state={profile:'mossoro',activeModule:'inactive',authUser:{role:'admin'}};
   const calls=[];
   const operations=[];
-  const ctx={document,state,window:{DOMINIUM_MOTION:{operation(payload){operations.push(payload)}}},setInterval(fn){interval=fn},
+  const ctx={document,state,window:{confirm:()=>true,DOMINIUM_MOTION:{operation(payload){operations.push(payload)}}},setInterval(fn){interval=fn},
     request: async(url,opts)=>{calls.push({url,method:opts?.method||'GET'});return response(url,opts)},
     requestBlob:async()=>({blob:new Blob([])}),
     saveBlob:()=>{},localDate:()=>'',switchProfile:async()=>{}};
   vm.runInNewContext(uiCode,ctx,{filename:'atlas-query-ui.js'});
-  return {elements,element,listeners,calls,operations,state,interval:()=>interval()};
+  return {elements,element,listeners,calls,operations,state,window:ctx.window,interval:()=>interval()};
 }
 
 test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/id="atlasQueryActivity"/);
   assert.match(html,/Histórico desta sessão/);
   assert.match(html,/id="atlasQueryTimestamps"/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261023-6/);
+  assert.match(html,/id="atlasQueryReconcile"/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261023-7/);
 });
 
 test('successful POST leaves durable confirmation after automatic refresh',async()=>{
@@ -193,4 +195,46 @@ test('ready principal wins over pending reserve and preserves ready report',asyn
   assert.match(element('atlasQueryId').textContent,/Principal: 276855590.*Reserva: 276855591/);
   assert.match(element('atlasQueryProgress').textContent,/QUERY disponível/);
   assert.equal(element('atlasQueryCsv').disabled,false);
+});
+
+test('Natal old unconfirmed shows reconciliation without a new Atlas POST',async()=>{
+  const id='f'.repeat(32);
+  const stale={id,city:'natal',location:'empreiteira',
+    state:'submission_uncertain',error_code:'atlas_submit_unconfirmed',
+    created_at:1792760000,updated_at:1792760400,remote_queue_id:null};
+  const closed={...stale,state:'failed',error_code:'manually_closed_unconfirmed'};
+  const {state,element,listeners,interval,calls}=setup(async(url,opts)=>{
+    if(url==='/api/atlas-query/jobs'&&opts?.method==='POST'&&
+       JSON.parse(opts.body||'{}').reconcile_job_id===id)return {job:closed};
+    if(url.includes('/'+id))return {job:stale};
+    return {jobs:[stale]};
+  });
+  state.profile='natal';state.activeModule='confront';interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(element('atlasQueryReconcile').hidden,false);
+  assert.equal(element('atlasQueryStart').disabled,true);
+  assert.equal(calls.filter(c=>c.method==='POST').length,0);
+  listeners.get('atlasQueryReconcile:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.filter(c=>c.method==='POST').length,1);
+  assert.ok(calls.some(c=>c.method==='POST'&&c.url==='/api/atlas-query/jobs'));
+  assert.equal(element('atlasQueryStart').disabled,false);
+  assert.equal(element('atlasQueryReconcile').hidden,true);
+  assert.match(element('atlasQueryProgress').textContent,/Tentativa antiga encerrada/);
+});
+
+test('operator cancellation leaves stale submission untouched',async()=>{
+  const id='e'.repeat(32);
+  const stale={id,city:'natal',location:'empreiteira',state:'submission_uncertain',
+    error_code:'atlas_submit_unconfirmed',remote_queue_id:null};
+  const {window,state,listeners,interval,calls}=setup(async(url)=>{
+    if(url.includes('/'+id))return {job:stale};
+    return {jobs:[stale]};
+  });
+  state.profile='natal';state.activeModule='confront';interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  window.confirm=()=>false;
+  listeners.get('atlasQueryReconcile:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.filter(c=>c.method==='POST').length,0);
 });
