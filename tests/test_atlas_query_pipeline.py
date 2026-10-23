@@ -74,6 +74,15 @@ class Tests(unittest.TestCase):
         self.assertEqual(response["state"],"waiting_30_seconds")
         self.assertEqual(FakeChrome.created,0)
 
+    def test_successful_read_after_reauthentication_clears_session_error(self):
+        from unittest.mock import patch
+        pipeline.update_job(self.job,self.db,error_code='atlas_auth_required')
+        with patch.object(pipeline,'evaluate_query',return_value={'state':'processing'}):
+            result=pipeline.poll_report(self.job,self.db,browser_factory=FakeChrome)
+        self.assertEqual(result['state'],'processing')
+        self.assertEqual(read_job(self.job,self.db)['error_code'],'')
+        self.assertEqual(result['remote_queue_id'],'276841868')
+
     def test_unknown_report_and_missing_link_are_rejected(self):
         with self.assertRaises(ValueError):
             pipeline.fetch_file("0"*32,self.db,chrome_factory=FakeChrome)

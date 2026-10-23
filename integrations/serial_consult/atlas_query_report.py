@@ -160,6 +160,11 @@ class ChromeAtlas:
                 pathname=frame.contentWindow.location.pathname;
                 login=!!doc?.querySelector('input[type=password]');
                 ready=!!doc?.getElementById(%s);
+                // NetTask expiry may show no password field or query form.
+                if(!ready && doc?.body &&
+                   /sess.{0,12}expirou|sess.{0,12}expirada|session expired/i.test(doc.body.innerText||'')){
+                  login=true;
+                }
                 generator=typeof frame.contentWindow.gerarRelatorio==='function';
               }catch(err){frameHost='cross-origin';}
               resolve({host:frameHost,path:pathname,login:login,
