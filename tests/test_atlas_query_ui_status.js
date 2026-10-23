@@ -25,7 +25,7 @@ function setup(response){
   }
   [
     'atlasQueryCity','atlasQueryLocation','atlasQueryStart',
-    'atlasQueryStatus','atlasQueryId','atlasQueryGrid','atlasQueryProgress',
+    'atlasQueryStatus','atlasQueryId','atlasQueryTimestamps','atlasQueryGrid','atlasQueryProgress',
     'atlasQueryPage','atlasQueryPrev','atlasQueryNext','atlasQueryCsv',
     'atlasQueryXlsx','atlasQueryRefresh','atlasQuerySummary','atlasQueryActivity'
   ].forEach(element);
@@ -50,7 +50,8 @@ function setup(response){
 test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/id="atlasQueryActivity"/);
   assert.match(html,/Histórico desta sessão/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261023-5/);
+  assert.match(html,/id="atlasQueryTimestamps"/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261023-6/);
 });
 
 test('successful POST leaves durable confirmation after automatic refresh',async()=>{
@@ -152,4 +153,43 @@ test('expired NetTask session stops spinner and keeps confirmed queue ID',async(
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(calls.length,before);
   assert.equal(calls.filter(x=>x.method==='POST').length,1);
+});
+
+test('queue lookup displays full date and time and follows a confirmed reserve',async()=>{
+  const original={id:'1'.repeat(32),city:'mossoro',location:'empreiteira',
+      state:'attachment_wait',remote_queue_id:'276850938',error_code:'attachment_http_404',
+      fallback_of:'',created_at:1792800000,updated_at:1792800300};
+  const reserve={id:'2'.repeat(32),city:'mossoro',location:'empreiteira',
+      state:'queued',remote_queue_id:'276855582',fallback_of:original.id,
+      created_at:1792800500,updated_at:1792800600};
+  const {element,state,interval}=setup(async(url)=>{
+    if(url.endsWith(reserve.id))return {job:reserve};
+    return {jobs:[reserve,original]};
+  });
+  state.activeModule='confront';
+  interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.match(element('atlasQueryId').textContent,/Principal: 276850938.*Reserva: 276855582/);
+  assert.match(element('atlasQueryTimestamps').textContent,/Solicitada: \d{2}\/\d{2}\/\d{4}/);
+  assert.match(element('atlasQueryTimestamps').textContent,/Consultada: \d{2}\/\d{2}\/\d{4}/);
+  assert.match(element('atlasQueryTimestamps').textContent,/\d{2}:\d{2}:\d{2}/);
+  assert.match(element('atlasQueryProgress').textContent,/ID recebido/);
+});
+
+test('ready principal wins over pending reserve and preserves ready report',async()=>{
+  const primary={id:'3'.repeat(32),city:'mossoro',location:'empreiteira',
+      state:'ready',remote_queue_id:'276855590',fallback_of:'',
+      created_at:1792800000,updated_at:1792800100};
+  const reserve={id:'4'.repeat(32),city:'mossoro',location:'empreiteira',
+      state:'queued',remote_queue_id:'276855591',fallback_of:primary.id};
+  const {element,state,interval}=setup(async(url)=>{
+    if(url.includes('/rows/'))return {total:0,rows:[],columns:[]};
+    if(url.endsWith(primary.id))return {job:primary};
+    return {jobs:[reserve,primary]};
+  });
+  state.activeModule='confront';interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.match(element('atlasQueryId').textContent,/Principal: 276855590.*Reserva: 276855591/);
+  assert.match(element('atlasQueryProgress').textContent,/QUERY disponível/);
+  assert.equal(element('atlasQueryCsv').disabled,false);
 });
