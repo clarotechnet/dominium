@@ -113,7 +113,7 @@ class AtlasQueryService:
                     continue
                 self._mark_stale_unconfirmed()
                 with connect_db(self.db_path) as db:
-                    rows=db.execute("""SELECT id,state,next_attachment_check FROM query_jobs
+                    rows=db.execute("""SELECT id,state,next_attachment_check,error_code,updated_at FROM query_jobs
                         WHERE created_by LIKE 'user-%' AND state IN
                         ('queued','processing','attachment_missing','attachment_wait','download_ready')
                         ORDER BY created_at ASC LIMIT 30""").fetchall()
@@ -135,6 +135,8 @@ class AtlasQueryService:
                         processed=True
                         continue
                     if last_scanned.get(job_id,0)+12>now:continue
+                    # Retry only reads after auth expiry; never submit another report.
+                    if row["error_code"]=="atlas_auth_required" and row["updated_at"]+120>now:continue
                     if row["next_attachment_check"] and row["next_attachment_check"]>now:continue
                     last_scanned[job_id]=now
                     try:
@@ -143,6 +145,10 @@ class AtlasQueryService:
                         elif row["state"]=="attachment_wait":
                             fetch_file(job_id,self.db_path,chrome_factory=self.browser_factory)
                         processed=True
+                    except AtlasAuthRequired:
+                        logging.warning("Atlas QUERY NetTask session expired; existing queue kept")
+                        try:update_job(job_id,self.db_path,error_code="atlas_auth_required")
+                        except Exception:logging.exception("Atlas QUERY could not persist login warning")
                     except Exception as exc:
                         logging.warning("Atlas QUERY poll unavailable type=%s",type(exc).__name__)
                 self._wake.wait(2 if processed else 5)
