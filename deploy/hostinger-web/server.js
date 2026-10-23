@@ -887,7 +887,7 @@ app.use(async (req, res, next) => {
     req.dominiumSession = session;
     req.dominiumUser = session.user;
 
-    if ((req.path.startsWith("/api/confront/") || req.path.startsWith("/api/atlas-query/")) &&
+    if (req.path.startsWith("/api/confront/") &&
         !["admin","controller"].includes(String(session.user?.role || ""))) {
       return res.status(403).json({ok:false,error:"Apenas perfis operacionais podem consultar confrontos"});
     }
@@ -1001,7 +1001,7 @@ async function proxyOperationalRequest(req, res, next) {
     // Prefer the existing authenticated Workers VPC connector for approved reads.
     // Never forward browser session cookies or CSRF tokens to this private relay.
     const relay = resolveOperationalRead(req);
-    if ((req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/')) && !relay) {
+    if (req.path.startsWith('/api/confront/') && !relay) {
       return res.status(404).json({ok:false,error:"Rota de confronto nao autorizada"});
     }
     if (relay) {
@@ -1039,7 +1039,7 @@ async function proxyOperationalRequest(req, res, next) {
       method: req.method,
       error: error instanceof Error ? error.message : "bridge_error",
     });
-    if (allowedOperationalRead(req.method, req.originalUrl) || req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/')) {
+    if (allowedOperationalRead(req.method, req.originalUrl) || req.path.startsWith('/api/confront/')) {
       return res.status(502).json({ ok: false, error: 'Consulta operacional indisponivel; dados nao confirmados' });
     }
     if (safeGetFallback) return next();

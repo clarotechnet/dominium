@@ -22,7 +22,6 @@ JS_TESTS = (
     ROOT / "tests" / "test_semiauto_frontend.js",
     ROOT / "tests" / "test_confront_frontend.js",
     ROOT / "tests" / "test_query_import.js",
-    ROOT / "tests" / "test_atlas_query_policy.js",
 )
 SECRET_PATTERNS = (
     re.compile(r"sb_secret_[A-Za-z0-9_-]{10,}"),

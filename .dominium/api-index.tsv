@@ -85,8 +85,6 @@ endpoint	path
 /api/toa/v1/status	app.py
 /api/voice/status	app.py
 /api/voice/synthesize	app.py
-/api/atlas-query/	deploy/hostinger-web/atlas-query-policy.js
-/api/atlas-query/jobs	deploy/hostinger-web/atlas-query-policy.js
 /api/confront/	deploy/hostinger-web/confront-policy.js
 /api/confront/jobs	deploy/hostinger-web/confront-policy.js
 /api/confront/status	deploy/hostinger-web/confront-policy.js
@@ -118,7 +116,6 @@ endpoint	path
 /api/toa-capture/lots	deploy/hostinger-web/operational-policy.js
 /api/toa-contracts	deploy/hostinger-web/operational-policy.js
 /api/toa-live/status	deploy/hostinger-web/operational-policy.js
-/api/atlas-query/	deploy/hostinger-web/server.js
 /api/auth/	deploy/hostinger-web/server.js
 /api/auth/bootstrap	deploy/hostinger-web/server.js
 /api/auth/login	deploy/hostinger-web/server.js
@@ -155,8 +152,6 @@ endpoint	path
 /api/imperium-official/stocks?profile=natal	integrations/import_bridge/worker.test.mjs
 /api/imports/preview?url=evil	integrations/import_bridge/worker.test.mjs
 /api/imperium-official/stocks	integrations/official_stock_relay/official_stock_bridge.py
-/api/atlas-query/jobs	integrations/serial_consult/atlas_query_http.py
-/api/atlas-query/jobs/(	integrations/serial_consult/atlas_query_http.py
 /api/confront/jobs	integrations/serial_consult/confront_http.py
 /api/confront/jobs/(	integrations/serial_consult/confront_http.py
 /api/confront/status	integrations/serial_consult/confront_http.py
@@ -175,8 +170,6 @@ endpoint	path
 /api/confront/jobs/	scripts/smoke_confront_private_relay.py
 /api/confront/status	scripts/smoke_confront_private_relay.py
 /api/disconnection/reports	scripts/smoke_confront_private_relay.py
-/api/atlas-query/jobs	static/atlas-query-ui.js
-/api/atlas-query/jobs/	static/atlas-query-ui.js
 /api/confront/jobs	static/confront.js
 /api/confront/jobs/	static/confront.js
 /api/confront/status	static/confront.js
@@ -213,13 +206,6 @@ endpoint	path
 /api/imperium-official/stocks?profile=natal	tests/test_app.py
 /api/orders/2207229/material-inventory?profile=natal	tests/test_app.py
 /api/orders/{order.id_os}/close?profile=natal	tests/test_app.py
-/api/atlas-query/jobs	tests/test_atlas_query_http.py
-/api/atlas-query/jobs/	tests/test_atlas_query_http.py
-/api/atlas-query/jobs?user=other	tests/test_atlas_query_http.py
-/api/atlas-query/	tests/test_atlas_query_policy.js
-/api/atlas-query/jobs	tests/test_atlas_query_policy.js
-/api/atlas-query/jobs/	tests/test_atlas_query_policy.js
-/api/atlas-query/jobs?actor=5	tests/test_atlas_query_policy.js
 /api/confront/jobs	tests/test_confront_frontend.js
 /api/confront/jobs/	tests/test_confront_frontend.js
 /api/confront/status	tests/test_confront_frontend.js

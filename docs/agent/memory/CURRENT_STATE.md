@@ -46,4 +46,3 @@ Atualize este handoff se o estado mudou, registre motivo/decisão/testes
 em `docs/agent/memory/OPERATIONS_JOURNAL.md` via
 `python scripts/agent_memory.py record`, rode testes e quality gate,
 valide commit/deploy e deixe pendências explícitas.
-- A etapa automatica da QUERY Atlas foi codificada: praca/EMPREITEIRA, Chrome autenticado isolado, fila NetTask com ID persistido, espera 30s e retry 404 sem gerar duplicatas, tabela e CSV/XLSX. Relay privado e Cloudflare Worker atualizados em 2026-10-23; anexo real segue retornando 404 e nao ha planilha confirmada. Ver docs/agent/ATLAS_QUERY_AUTOMATION.md.

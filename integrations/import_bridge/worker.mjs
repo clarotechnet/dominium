@@ -2,11 +2,9 @@ import policy from '../../deploy/hostinger-web/import-policy.js';
 import descPolicy from '../../deploy/hostinger-web/disconnection-policy.js';
 import operationalPolicy from '../../deploy/hostinger-web/operational-policy.js';
 import confrontPolicy from '../../deploy/hostinger-web/confront-policy.js';
-import atlasPolicy from '../../deploy/hostinger-web/atlas-query-policy.js';
 const {allowedImportRoute, MAX_IMPORT_BYTES} = policy;
 const {allowedOperationalRead} = operationalPolicy;
 const {allowedConfrontRoute} = confrontPolicy;
-const {allowedAtlasQueryRoute} = atlasPolicy;
 function json(status, error) {
   return Response.json({ok:false,error},{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 }
@@ -24,29 +22,28 @@ export default {
     const officialStock=/^\/api\/imperium-official\/stocks(?:\/[1-9][0-9]{0,9}\/items)?$/.test(url.pathname);
     const serialConsult=url.pathname==='/api/serials/consult';
     const confrontation=allowedConfrontRoute(request.method,url.pathname+url.search);
-    const query=allowedAtlasQueryRoute(request.method,url.pathname+url.search);
     const operational=allowedOperationalRead(request.method,url.pathname+url.search);
     const role=request.headers.get('x-dominium-role');
-    if (!((operational && !officialStock && !serialConsult && !confrontation && !query) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
+    if (!((operational && !officialStock && !serialConsult && !confrontation) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
         !request.headers.get('x-dominium-actor')) return json(403,'Operador não identificado');
     let route;
-    try {route=(operational || confrontation || query) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
+    try {route=(operational || confrontation) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
     catch {return json(404,'Rota não permitida');}
     const headers=new Headers({Accept:'application/json','X-Dominium-Actor':request.headers.get('x-dominium-actor')});
-    if(desc || officialStock || serialConsult || confrontation || query)headers.set('Authorization',request.headers.get('authorization'));
-    if(desc || officialStock || serialConsult || confrontation || query)headers.set('X-Dominium-Role',role);
+    if(desc || officialStock || serialConsult || confrontation)headers.set('Authorization',request.headers.get('authorization'));
+    if(desc || officialStock || serialConsult || confrontation)headers.set('X-Dominium-Role',role);
     let body;
     if (request.method==='POST') {
       if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return json(415,'Envie JSON');
-      const maxBytes=(desc || confrontation || query) ? 64*1024 : MAX_IMPORT_BYTES;
+      const maxBytes=(desc || confrontation) ? 64*1024 : MAX_IMPORT_BYTES;
       if (Number(request.headers.get('content-length')||0)>maxBytes) return json(413,'Arquivo acima do limite');
       body=await request.arrayBuffer();
       if(body.byteLength>maxBytes)return json(413,'Arquivo acima do limite');
       headers.set('Content-Type','application/json');
     }
     try {
-      const service=(desc || officialStock || serialConsult || confrontation || query) ? env.DESC_SERVICE : env.IMPORT_SERVICE;
-      const origin=(desc || officialStock || serialConsult || confrontation || query) ? 'http://127.0.0.1:8793' : 'http://127.0.0.1:8765';
+      const service=(desc || officialStock || serialConsult || confrontation) ? env.DESC_SERVICE : env.IMPORT_SERVICE;
+      const origin=(desc || officialStock || serialConsult || confrontation) ? 'http://127.0.0.1:8793' : 'http://127.0.0.1:8765';
       const upstream=await service.fetch(new Request(origin+route,
         {method:request.method,headers,body,redirect:'manual'}));
       if (upstream.status>=300 && upstream.status<400) return json(502,'Redirecionamento interno bloqueado');

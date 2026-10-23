@@ -27,18 +27,17 @@ toa	configure_toa_cloud_bridge.py	1			Grava a credencial primaria da ponte com p
 shared	consolidate_dominium.ps1			4	DOMINIUM | MAPA DE RESPONSABILIDADE	c82b6b36d57d2f66
 shared	datasnap_client.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	18769b58c990389a
 tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para migracao futura	bbfe97a6ef6f2341
-tooling-deploy	deploy/hostinger-web/atlas-query-policy.js	1	2			5920be286b6b2e0f
 tooling-deploy	deploy/hostinger-web/confront-policy.js	1	3			9834dd541ca9ff51
 tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			b000d7e6a37d1516
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
 tooling-deploy	deploy/hostinger-web/operational-policy.js	1	22			bbf57769219b3266
-tooling-deploy	deploy/hostinger-web/operational-relay.js	2				8415bbbd4cf3a05f
+tooling-deploy	deploy/hostinger-web/operational-relay.js	2				7b2210ccae0558ba
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	25	1		37b2943f83be2b28
+tooling-deploy	deploy/hostinger-web/server.js	41	24	1		d7e4fdc4980e03df
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -50,11 +49,10 @@ shared	desc_order_verifier.py	7			Fail-closed, read-only Imperium order/installe
 shared	desc_review_proxy.py	10	1		Authenticated Dominium boundary to the Bot's existing DESC review service.	af5c440b35d2eb65
 shared	desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	79346c1e1b556a5d
 orchestration	disconnect_automation.py	26			DOMINIUM | MAPA DE RESPONSABILIDADE	b4aaf01ad3a34fad
-docs	docs/agent/ATLAS_QUERY_AUTOMATION.md				QUERY Atlas — relatório analítico por localização	24dc166f10579967
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	c667c6f0e9a4a8cb
-docs	docs/agent/memory/CURRENT_STATE.md			1	DOMINIUM — handoff operacional (memória verificada)	d9b8fdba84a887f8
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	5283f659a66a5e5d
+docs	docs/agent/memory/CURRENT_STATE.md			1	DOMINIUM — handoff operacional (memória verificada)	bf48dbfd3bab1766
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	055f594d4bc77c94
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	290f82a7b6cd5ec6
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
 docs	docs/reference/DOMINIUM X IMPERIUM Especificacoes_requisicoes.txt				﻿================================================================================	0888eec3d49a2ab5
@@ -99,7 +97,7 @@ shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
 shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
-shared	integrations/import_bridge/worker.mjs	3	2			17aa0813d05ba14b
+shared	integrations/import_bridge/worker.mjs	3	2			d996b706ccfc1fa5
 shared	integrations/import_bridge/worker.test.mjs		4			261fdec6b802631c
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
@@ -108,16 +106,12 @@ shared	integrations/official_stock_relay/desc_review_relay.py	6			Authenticated 
 shared	integrations/official_stock_relay/official_stock_bridge.py	5	1		Read-only official Imperium inventory for the authenticated private DESC relay.	3074b95c68197e4c
 shared	integrations/official_stock_relay/README.md				API Oficial — Estoque (somente leitura)	dfc23a1d9e9b911e
 shared	integrations/serial_consult/atlas_bridge_client.py	10			Read-only Atlas serial lookups via the existing localhost BotDMV queue.	55e9381c023c155d
-shared	integrations/serial_consult/atlas_query_data.py	17			Parse Atlas analytic equipment report and export read-only CSV/XLSX.	41cab8f2805c8f9f
-shared	integrations/serial_consult/atlas_query_http.py	8	2		Authenticated DOMINIUM QUERY Atlas service, isolated by operator.	ca850c09ca23b6b1
-shared	integrations/serial_consult/atlas_query_pipeline.py	8			Private Atlas QUERY queue/attachment orchestrator (CLI foundation).	cf22d475c925419d
-shared	integrations/serial_consult/atlas_query_report.py	15		2	Atlas read-only equipment report generator in a dedicated managed Chrome tab.	bfdb244089d9e26a
 shared	integrations/serial_consult/confront_engine.py	7			Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.	c8a5eece9b26cd06
 shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-only Atlas x Imperium confrontation results.	70854357c13c117e
 shared	integrations/serial_consult/confront_http.py	7	3		Private HTTP interface and supervised background job scheduler.	86da7071f7da0062
 shared	integrations/serial_consult/confront_job_runner.py	14			Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).	46db8339b45b1bf4
 imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	3ee171b567d7bafe
-shared	integrations/serial_consult/desc_review_relay.py	8			Authenticated relay for DESC review and private read-only Imperium checks.	b02570586d1be5b2
+shared	integrations/serial_consult/desc_review_relay.py	7			Authenticated relay for DESC review and private read-only Imperium checks.	c8f963bf2a6b8b97
 shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	6f5b01f448826d25
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
 shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
@@ -173,7 +167,6 @@ toa	patch_remote_toa.py		2	5		cb6eb87e50eeb356
 shared	productive_protocol_templates.json			3		c04b19e6f576ff97
 shared	protocol_templates.json					dea41cc769da2970
 shared	README.md				DOMINIUM	5e261ad16d56a5c6
-shared	requirements-atlas-query.txt				Optional read-only .xls parser used by integrations/serial_consult/atlas_query_data.py	911ebaeee10c6351
 shared	requirements-dev.txt				-r requirements-web.txt	04613c3898d0f090
 shared	requirements-voice.txt				Voz neural gratuita dos alertas TEC1. A voz local do navegador permanece como fallback.	37ed02602fc9f231
 shared	requirements-web.txt				Runtime do DOMINIUM web em producao	a9f5230558034692
@@ -195,7 +188,7 @@ tooling-deploy	scripts/inspect_managed_atlas_readonly.py	1			Safe Chrome-for-Tes
 tooling-deploy	scripts/install_agent_context_hooks.py	3			Install durable-memory Git hooks safely, including linked worktrees.	f5813377dae67559
 tooling-deploy	scripts/install_confront_relay.py	3	1		Minimal, backup-first insertion of the confront read-only API into live DESC relay.	4ae20a35e3eeb9d3
 tooling-deploy	scripts/probe_atlas_synthetic.py				Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.	865b81e754d5a762
-tooling-deploy	scripts/quality_gate.py	5				fe0507aa5539379b
+tooling-deploy	scripts/quality_gate.py	5				187c3ad31d6d4b4d
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 tooling-deploy	scripts/restart_confront_relay.ps1					de8c58415028c25c
 tooling-deploy	scripts/smoke_confront_cloudflare.mjs		3		Verify private Worker route with the same Node fetch transport used by Hostinger. */	5d9320441c44eea2
@@ -205,20 +198,19 @@ tooling-deploy	scripts/verify_confront_runtime.py				Import live DESC relay and 
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
-frontend	static/atlas-query-ui.js	10	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	49b92b1553cf0e0a
 frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	0b07900bcc977ee8
 frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			17f0833fea823b00
+frontend	static/index.html		1			eeecbdeb6ed32490
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
-frontend	static/styles.css					07bb3c56b72d54ad
+frontend	static/styles.css					9795722cf268dfb0
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
@@ -240,11 +232,6 @@ tests	tests/test_agent_memory.py	9			Portable agent memory regression tests; no 
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
 tests	tests/test_app.py	37	5	2		dec92061f9dc6147
 tests	tests/test_atlas_bridge_client.py	14			Tests for the real BotDMV Atlas HTTP queue contract (synthetic only).	97a6ec2888879cf6
-tests	tests/test_atlas_query_data.py	6			QUERY Atlas table transformations and text-preserving exports.	0748addddb6b990d
-tests	tests/test_atlas_query_http.py	5	3		QUERY Atlas authenticated API contract without contacting real Atlas.	8b48d351cf8c8cfb
-tests	tests/test_atlas_query_pipeline.py	12			NetTask 404 handling: no duplicate report generation or insecure URLs.	56532d20597003a3
-tests	tests/test_atlas_query_policy.js	2	4			350c51201727bacf
-tests	tests/test_atlas_query_report.py	12			Safe report generator: no duplicate Atlas task after uncertainty.	27681e94c9a02771
 tests	tests/test_auth_store.py	7				2131129f824fbae2
 tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
 tests	tests/test_build_hostinger_node_release.py	3				7635e29bb2cd037b

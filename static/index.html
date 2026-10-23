@@ -631,55 +631,9 @@
         </div>
         <span class="serials-live-pill"><i data-lucide="shield-check"></i> LEITURA SOMENTE</span>
       </header>
-      <div class="serials-query-card" id="atlasQueryAutomation">
-        <div class="serials-query-top">
-          <div><strong>1. Gerar QUERY automaticamente no Atlas</strong>
-          <small>Gera o relatório de equipamentos, acompanha o ID da fila, aguarda o anexo e mostra a planilha sem upload manual.</small></div>
-          <span class="serials-input-hint">Atlas · leitura somente</span>
-        </div>
-        <div class="confront-import-grid">
-          <label>Praça / Operação
-            <select id="atlasQueryCity" aria-label="Praça da QUERY automática">
-              <option value="natal">Natal</option>
-              <option value="fortaleza">Fortaleza</option>
-              <option value="mossoro">Mossoró</option>
-              <option value="recife">Recife</option>
-            </select>
-          </label>
-          <label>Tipo de localização
-            <select id="atlasQueryLocation" aria-label="Localização da QUERY">
-              <option value="empreiteira">EMPREITEIRA</option>
-            </select>
-          </label>
-        </div>
-        <div class="serials-actions">
-          <span id="atlasQueryId">Nenhuma fila criada</span>
-          <div>
-            <button class="button secondary" type="button" id="atlasQueryRefresh">Consultar fila</button>
-            <button class="button primary" type="button" id="atlasQueryStart">Gerar QUERY no Atlas</button>
-          </div>
-        </div>
-        <p id="atlasQueryProgress" role="status" aria-live="polite">Selecione a praça e clique em Gerar QUERY no Atlas.</p>
-        <small id="atlasQueryStatus" role="status"></small>
-        <div class="serials-actions">
-          <strong id="atlasQuerySummary"></strong>
-          <div>
-            <button class="button secondary" type="button" id="atlasQueryCsv" disabled>Exportar CSV</button>
-            <button class="button secondary" type="button" id="atlasQueryXlsx" disabled>Exportar XLSX</button>
-          </div>
-        </div>
-        <div class="confront-query-preview" id="atlasQueryGrid" aria-label="Planilha da QUERY Atlas"></div>
-        <div class="serials-actions">
-          <span id="atlasQueryPage"></span>
-          <div>
-            <button type="button" class="button secondary" id="atlasQueryPrev" disabled>Página anterior</button>
-            <button type="button" class="button secondary" id="atlasQueryNext" disabled>Próxima página</button>
-          </div>
-        </div>
-      </div>
       <div class="serials-query-card" id="confrontQueryImportPanel">
         <div class="serials-query-top">
-          <div><strong>2. Importar QUERY manualmente (alternativa)</strong><small>Como nos vídeos: carregar a planilha, selecionar Mossoró ou outra praça e filtrar pelo estado do equipamento antes do confronto. Nenhum arquivo é enviado ao servidor.</small></div>
+          <div><strong>1. Importar e filtrar a QUERY da Claro</strong><small>Como nos vídeos: carregar a planilha, selecionar Mossoró ou outra praça e filtrar pelo estado do equipamento antes do confronto. Nenhum arquivo é enviado ao servidor.</small></div>
           <span class="serials-input-hint">CSV / XLSX</span>
         </div>
         <div class="confront-import-grid">
@@ -718,7 +672,7 @@
       </div>
       <div class="serials-query-card">
         <div class="serials-query-top">
-          <div><strong>3. Confrontar Atlas × IMPERIUM</strong><small>Até 500 seriais por trabalho. Cole manualmente ou use a lista filtrada da QUERY acima.</small></div>
+          <div><strong>2. Confrontar Atlas × IMPERIUM</strong><small>Até 500 seriais por trabalho. Cole manualmente ou use a lista filtrada da QUERY acima.</small></div>
           <span id="confrontAtlasStatus" class="serials-input-hint">Verificando Atlas...</span>
         </div>
         <label for="confrontMode">Histórico IMPERIUM</label>
@@ -2245,7 +2199,6 @@
   <script src="/query-import.js?v=20261023-1"></script>
   <script src="/confront.js?v=20261022-3"></script>
   <script src="/query-import-ui.js?v=20261023-1"></script>
-  <script src="/atlas-query-ui.js?v=20261023-1"></script>
   <script type="module" src="/motion-ui.js"></script>
 </body>
 </html>

@@ -7379,10 +7379,3 @@ dialog {
 .confront-preview-table th,.confront-preview-table td{text-align:left;padding:8px;border-bottom:1px solid var(--line,#ddd);white-space:nowrap}
 .confront-preview-table th{position:sticky;top:0;background:var(--surface,#fff)}
 @media (max-width:560px){.confront-import-grid{grid-template-columns:1fr}}
-
-/* Atlas QUERY read-only grid and Excel-like presentation */
-#atlasQueryGrid{margin-top:14px;max-height:530px;overflow:auto;min-width:0;}
-#atlasQueryGrid table{min-width:1200px;}
-#atlasQueryGrid td{font-variant-numeric:tabular-nums;}
-#atlasQueryProgress{margin:14px 0 8px;font-weight:600;}
-#atlasQueryStatus{display:block;min-height:1.5em;}
