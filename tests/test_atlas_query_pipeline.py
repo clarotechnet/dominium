@@ -60,8 +60,11 @@ class Tests(unittest.TestCase):
         self.assertTrue(pipeline.valid_report_url(good))
         app2=good.replace('/app-1//','/app-2//')
         self.assertTrue(pipeline.valid_report_url(app2))
+        app3=good.replace('/app-1//','/app-3//')
+        self.assertTrue(pipeline.valid_report_url(app3))
         for malicious in (
-            good.replace('/app-1//','/app-3//'),
+            good.replace('/app-1//','/app-4//'),
+            good.replace('/app-1//','/app-30//'),
             good.replace('/app-1//','/app-20//'),
             good.replace('/app-1//','/app-2/'),
             "https://evil.example/app-1//RELATORIOS/261023/file.xls",
