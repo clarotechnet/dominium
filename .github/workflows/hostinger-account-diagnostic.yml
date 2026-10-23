@@ -54,8 +54,8 @@ jobs:
           npm ci --prefix deploy/hostinger-web --ignore-scripts --no-audit --no-fund
           npm run build --prefix deploy/hostinger-web
           python -m unittest tests.test_build_hostinger_node_release tests.test_hostinger_runtime_dependencies -v
-          node -e "const runtime = require('./output/hostinger-node-release/operational-relay.js'); if (typeof runtime.resolveOperationalRead !== 'function') process.exit(1); console.log('Release Node require smoke: OK')"
           python scripts/build_hostinger_node_release.py
+          node -e "const runtime = require('./output/hostinger-node-release/operational-relay.js'); if (typeof runtime.resolveOperationalRead !== 'function') process.exit(1); console.log('Release Node require smoke: OK')"
           test -s output/hostinger-node-release.zip
 
       - name: Verificar ponte privada de importacao sem importar dados
