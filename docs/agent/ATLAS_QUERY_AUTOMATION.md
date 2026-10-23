@@ -183,10 +183,14 @@ Não marcar como sucesso/falha definitiva do Atlas por falta de confirmação.
   foram identificados no painel de anexos. Todas as variantes testadas
   retornaram HTTP 404 pela API CDP `Network.loadNetworkResource`.
   Mesmo resultado com o `frameId` raiz e o frame do NetTask.
-- Ainda não foi confirmado o download navegando diretamente pelo Chrome
-  (clique humano). Um HTTP 404 no CDP não comprova falha permanente do
-  armazenamento; verificar acesso direto antes de atribuir o incidente ao
-  fornecedor. Não expor links, tokens, cookies ou conteúdo dos relatórios.
+- Também foi testada navegação HTTP normal pelo próprio Chromium,
+  iniciada por iframe temporário e oculto dentro do NetTask autenticado,
+  sem criar outra aba nem registrar cookies. Tanto um anexo HTML quanto
+  o relatório XLS retornaram HTTP 404 em eventos `Network.responseReceived`.
+  Isso indica que o problema não se limita a `Network.loadNetworkResource`.
+  Um clique humano fora do iframe ainda não foi validado; não declarar
+  falha definitiva do armazenamento sem verificação do fornecedor.
+  Não expor links, tokens, cookies ou conteúdo dos relatórios.
 - **Pendente:** confirmar retorno HTTP 200 de um anexo real, magic bytes do
   formato, parsing, persistência das linhas e exportação XLSX. Até isso
   acontecer, o estado correto continua `attachment_wait`, não `ready`.
