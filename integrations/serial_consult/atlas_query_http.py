@@ -30,7 +30,9 @@ def parse_query_route(method,target):
     if uri.query or uri.fragment or uri.scheme or uri.netloc or "%" in uri.path or "//" in uri.path:return None
     if uri.path=="/api/atlas-query/jobs":
         return ("create" if method=="POST" else "list",None,None)
-    if method!="GET":return None
+    if method=="POST":
+        reconcile=re.fullmatch(r"/api/atlas-query/jobs/([0-9a-f]{32})/reconcile",uri.path)
+        return ("reconcile",reconcile.group(1),None) if reconcile else None
     match=ROUTE_RE.fullmatch(uri.path)
     if not match:return None
     if match.group(3) is not None:return ("rows",match.group(1),int(match.group(3)))
@@ -247,6 +249,30 @@ class AtlasQueryService:
             if not self._owned(job_id,actor):
                 return 404,{"ok":False,"error":"Trabalho não encontrado"},None
             current=read_job(job_id,self.db_path)
+            if action=="reconcile":
+                # Explicit operator acknowledgment only. This closes the local
+                # uncertain record; it cannot prove whether Atlas received it.
+                if body!={"atlas_checked_no_queue":True}:
+                    return 400,{"ok":False,"error":"Confirme que verificou no Atlas a ausência da fila."},None
+                with self._lock:
+                    with connect_db(self.db_path) as db:
+                        db.execute("BEGIN IMMEDIATE")
+                        row=db.execute("""SELECT id,created_by,created_at,state,
+                            remote_queue_id,error_code,fallback_of
+                            FROM query_jobs WHERE id=?""",(job_id,)).fetchone()
+                        if not row or row["created_by"]!=actor:
+                            return 404,{"ok":False,"error":"Trabalho não encontrado"},None
+                        if (row["state"]!="submission_uncertain"
+                            or row["remote_queue_id"]
+                            or row["error_code"]!="atlas_submit_unconfirmed"
+                            or row["fallback_of"]):
+                            return 409,{"ok":False,"error":"Esta solicitação não pode ser encerrada por reconciliação."},None
+                        if self.clock()-row["created_at"]<300:
+                            return 409,{"ok":False,"error":"Aguarde pelo menos cinco minutos para verificar o Atlas."},None
+                        db.execute("""UPDATE query_jobs SET state='failed',
+                            error_code='manually_closed_unconfirmed',updated_at=?
+                            WHERE id=?""",(self.clock(),job_id))
+                return 200,{"ok":True,"job":public_status(read_job(job_id,self.db_path))},None
             if action=="detail":
                 status=public_status(current)
                 if current["state"]=="ready":
