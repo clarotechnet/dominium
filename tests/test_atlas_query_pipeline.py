@@ -108,7 +108,64 @@ class Tests(unittest.TestCase):
         again=pipeline.fetch_file(self.job,self.db,chrome_factory=TimedOutChrome,
                                   clock=lambda:220)
         self.assertEqual(again['state'],'retry_scheduled')
-        self.assertEqual(FakeChrome.created,1)
+        self.assertEqual(FakeChrome.created,2)  # first CDP request plus one native fallback
+
+    def test_native_browser_fallback_promotes_existing_queue_without_repost(self):
+        from websocket import WebSocketTimeoutException
+        from unittest.mock import patch
+        from pathlib import Path
+        self.ready()
+        class SlowCDP(FakeChrome):
+            def call(self,ws,method,params,timeout=12):
+                if method=="Network.loadNetworkResource":
+                    raise WebSocketTimeoutException("CDP did not stream large report")
+                return super().call(ws,method,params,timeout)
+        native=Path(self.temp.name)/"native.xls"
+        native.write_bytes(b"<table><tr><td>demo</td></tr></table>")
+        with patch.object(pipeline,"download_native_browser",
+                          return_value=(native,native.stat().st_size)) as download:
+            result=pipeline.fetch_file(self.job,self.db,chrome_factory=SlowCDP,clock=lambda:200)
+        self.assertEqual(result["state"],"download_ready")
+        self.assertTrue(result["browser_native"])
+        self.assertEqual(download.call_count,1)
+        self.assertEqual(download.call_args.args[0],self.job)
+        row=read_job(self.job,self.db)
+        self.assertEqual(row["remote_queue_id"],"276841868")
+        self.assertEqual(row["download_path"],str(native))
+        self.assertEqual(row["attachment_failures"],0)
+        self.assertEqual(row["error_code"],"")
+
+    def test_native_browser_download_rejects_bad_urls_and_unexpected_files(self):
+        import tempfile
+        from unittest.mock import patch
+        from pathlib import Path
+        good="https://batatlas.netservicos.com.br/app-3//RELATORIOS/261024/Relatorio_Equipamentos_Analitico_2345.xls"
+        with self.assertRaises(ValueError):
+            pipeline.download_native_browser(self.job,good.replace("batatlas.netservicos.com.br","bad.example"))
+        with tempfile.TemporaryDirectory() as folder:
+            class NativeBrowser:
+                def __init__(self):
+                    self.tab="fake"
+                    self.download_path=None
+                def open(self,*args,**kwargs):pass
+                def call(self,tab,method,params,timeout=12):
+                    if method=="Page.setDownloadBehavior" and params["behavior"]=="allow":
+                        self.download_path=Path(params["downloadPath"])
+                    return {}
+                def eval(self,script):
+                    if "anchor.src=" in script:
+                        (self.download_path/"safe.xls").write_bytes(
+                            b"<table>"+b" "*2048+b"</table>")
+                        return True
+                    return True
+                def close(self):pass
+            with patch.object(pipeline,"DATA",Path(folder)):
+                path,size=pipeline.download_native_browser(self.job,good,
+                                           chrome_factory=NativeBrowser,timeout=4)
+                self.assertEqual(path,Path(folder)/(self.job+".xls"))
+                self.assertEqual(size,path.stat().st_size)
+                with path.open("rb") as fh:
+                    self.assertTrue(fh.read(6).startswith(b"<table"))
 
     def test_rechecks_same_queue_after_repeated_404_and_uses_new_link(self):
         from unittest.mock import patch
