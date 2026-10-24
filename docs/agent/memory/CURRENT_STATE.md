@@ -1,11 +1,11 @@
 # DOMINIUM — handoff operacional verificado
 
-> Revisado em 24/10/2026, 17:26, America/Sao_Paulo. Confirmar novamente o
+> Revisado em 24/10/2026, 17:46, America/Sao_Paulo. Confirmar novamente o
 > ambiente antes de agir. Não registrar credenciais, URLs privadas ou clientes.
 
 ## Prioridade atual: QUERY de Fortaleza
 
-Meta do usuário: concluir o fluxo da QUERY com planilha e exportação válidas.
+Meta do usuário: só concluir com fluxo da QUERY testado e funcional nas quatro cidades, com planilha e exportações válidas.
 **Meta ainda pendente.** Não encerrar como corrigida por existir fila COMPLETO.
 
 | Cidade | Fila existente | Estado | Linhas |
@@ -83,3 +83,26 @@ esses fluxos não foram retestados nesta sessão.
   e estados/contagens SQLite. Não foram repetidos testes automatizados nem UI.
 - Sem geração, alteração operacional ou reinício do Chrome. Meta pendente;
   preservar acompanhamento enquanto o fornecedor não disponibiliza os anexos.
+
+## Validação adicional de 24/10/2026, 17:43–17:46
+
+- Critério de conclusão reforçado pelo usuário: as QUATRO cidades precisam estar
+  testadas e funcionais. Acompanhamento existente atualizado e mantido ativo.
+- Cloud Browser autenticado: Natal mostrou fila 276868277, 20.179 registros e
+  primeira página. XLSX baixado pelo botão e efetivamente recebido: 1.228.297
+  bytes, ZIP íntegro, 20.179 linhas de dados e nenhuma fórmula.
+- Mossoró mostrou 893 registros. XLSX baixado pelo botão e recebido: 57.626 bytes,
+  ZIP íntegro, 893 linhas e nenhuma fórmula. Isso resolve a pendência anterior
+  de captura dos downloads XLSX de Natal/Mossoró no ambiente compartilhado.
+- Serviço real de exportação executado em cópia descartável do backup (worker
+  desativado): CSV e XLSX HTTP 200 nas três cidades ready, 11 colunas, conteúdos
+  idênticos célula por célula; 893/55.807/20.179 linhas. Banco operacional intacto.
+- NetTask/Chrome autenticado: os seis anexos anunciados XLS/HTML/ZIP das duas
+  filas de Fortaleza continuam404; os dois XLS equivalentes em app-2/app-3
+  também404. Não foi encontrado defeito de código novo.
+- Cloud Browser, Fortaleza: principal 276868465 e reserva 276868467, mensagem
+  "Fila concluída; aguardando a disponibilidade do anexo", CSV/XLSX desabilitados.
+  Ainda sem relatório validado; não encerrar meta nem criar terceira fila.
+- Implementado/publicado: somente documentação e critério de acompanhamento.
+  Testado: downloads UI, integridade XLSX, exportações do serviço e consultas
+  existentes. Nenhum patch de runtime, deploy operacional ou reinício do Chrome.
