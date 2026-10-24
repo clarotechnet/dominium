@@ -67,3 +67,19 @@ esses fluxos não foram retestados nesta sessão.
    persistência e exportações. Abrir Recursos → Pendente no Cloud Browser.
 5. Corrigir código apenas com defeito reproduzido, teste regressivo e verificação.
 6. Atualizar documentação com o que foi implementado, testado e publicado.
+
+## Rechecagem de 24/10/2026, 17:32 (America/Sao_Paulo)
+
+- Servidor online. Consulta autenticada e somente leitura ao NetTask confirmou
+  novamente as filas 276868465 e 276868467 como complete, com XLS em app-1.
+  Download CDP sem cache retornou HTTP 404 para ambas. Nenhum anexo recuperado.
+- SQLite lido em modo somente leitura: ambas permanecem attachment_wait /
+  attachment_http_404, sem linhas. O worker havia atualizado os registros
+  aproximadamente às 17:30 e 17:31, respectivamente; retry segue ativo.
+- Relatórios ready preservados: Natal 20.179, Recife 55.807 e Mossoró 893
+  linhas, contadas diretamente em query_rows. O banco continua com 8 trabalhos.
+- Implementado/publicado: somente este registro técnico; nenhum patch ou deploy
+  operacional. Testado nesta rechecagem: leitura NetTask, download dos dois XLS
+  e estados/contagens SQLite. Não foram repetidos testes automatizados nem UI.
+- Sem geração, alteração operacional ou reinício do Chrome. Meta pendente;
+  preservar acompanhamento enquanto o fornecedor não disponibiliza os anexos.
