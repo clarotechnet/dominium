@@ -108,7 +108,7 @@ class Tests(unittest.TestCase):
         again=pipeline.fetch_file(self.job,self.db,chrome_factory=TimedOutChrome,
                                   clock=lambda:220)
         self.assertEqual(again['state'],'retry_scheduled')
-        self.assertEqual(FakeChrome.created,1)
+        self.assertEqual(FakeChrome.created,2)  # first CDP request plus one native fallback
 
     def test_native_browser_fallback_promotes_existing_queue_without_repost(self):
         from websocket import WebSocketTimeoutException
@@ -164,7 +164,8 @@ class Tests(unittest.TestCase):
                                            chrome_factory=NativeBrowser,timeout=4)
                 self.assertEqual(path,Path(folder)/(self.job+".xls"))
                 self.assertEqual(size,path.stat().st_size)
-                self.assertTrue(path.open("rb").read(6).startswith(b"<table"))
+                with path.open("rb") as fh:
+                    self.assertTrue(fh.read(6).startswith(b"<table"))
 
     def test_rechecks_same_queue_after_repeated_404_and_uses_new_link(self):
         from unittest.mock import patch
