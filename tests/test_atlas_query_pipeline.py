@@ -87,6 +87,29 @@ class Tests(unittest.TestCase):
         self.assertEqual(FakeChrome.created,1)
         self.assertEqual(read_job(self.job,self.db)["remote_queue_id"],"276841868")
 
+    def test_websocket_timeout_preserves_queue_and_schedules_retry(self):
+        from websocket import WebSocketTimeoutException
+        self.ready()
+        class TimedOutChrome(FakeChrome):
+            def call(self,ws,method,params,timeout=12):
+                if method=='Network.loadNetworkResource':
+                    raise WebSocketTimeoutException('simulated BatAtlas response timeout')
+                return super().call(ws,method,params,timeout)
+        result=pipeline.fetch_file(self.job,self.db,chrome_factory=TimedOutChrome,
+                                   clock=lambda:200)
+        self.assertEqual(result['state'],'attachment_wait')
+        self.assertEqual(result['retry_after'],90)
+        self.assertEqual(result['error_code'],'attachment_transport_timeout')
+        row=read_job(self.job,self.db)
+        self.assertEqual(row['remote_queue_id'],'276841868')
+        self.assertEqual(row['attachment_failures'],0)
+        self.assertEqual(row['next_attachment_check'],290)
+        self.assertEqual(row['error_code'],'attachment_transport_timeout')
+        again=pipeline.fetch_file(self.job,self.db,chrome_factory=TimedOutChrome,
+                                  clock=lambda:220)
+        self.assertEqual(again['state'],'retry_scheduled')
+        self.assertEqual(FakeChrome.created,1)
+
     def test_rechecks_same_queue_after_repeated_404_and_uses_new_link(self):
         from unittest.mock import patch
         self.ready()
