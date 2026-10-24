@@ -122,3 +122,17 @@ esses fluxos não foram retestados nesta sessão.
 - Implementado/publicado nesta rechecagem: somente este registro técnico.
   Nenhum patch, deploy operacional, alteração de banco ou reinício do Chrome.
   Fortaleza permanece pendente de disponibilidade do anexo; manter acompanhamento.
+
+## Rechecagem de 24/10/2026, 19:31 (America/Sao_Paulo)
+
+- NetTask autenticado confirmou 276868465 e 276868467 como complete; os links
+  XLS anunciados em app-1 não mudaram. Download CDP sem cache: HTTP 404 em ambos.
+- SQLite somente leitura: attachment_wait / attachment_http_404, zero linhas
+  nas duas filas. Principal com 15 tentativas e reserva com 14; timestamps e
+  próxima consulta demonstram que o worker continua o retry com backoff.
+- Banco preservado com 8 trabalhos. Natal ready/20.179, Recife ready/55.807,
+  Mossoró ready/893. Nenhuma geração, alteração operacional ou reinício Chrome.
+- Testado nesta rechecagem: NetTask, download existente, estados e contagens.
+  Sem código novo ou falha nas cidades ready, testes já aprovados não repetidos.
+- Implementado/publicado: somente documentação; nenhum patch/deploy operacional.
+  Meta pendente, acompanhamento mantido; nenhum relatório de Fortaleza obtido.
