@@ -183,7 +183,7 @@ class AtlasQueryService:
                         attachment_failures,fallback_enabled,fallback_of FROM query_jobs
                         WHERE created_by LIKE 'user-%' AND state IN
                         ('queued','processing','attachment_missing','attachment_wait','download_ready')
-                        ORDER BY created_at ASC LIMIT 30""").fetchall()
+                        ORDER BY created_at DESC LIMIT 30""").fetchall()
                 now=self.clock()
                 processed=False
                 for row in rows:
