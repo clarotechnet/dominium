@@ -106,3 +106,19 @@ esses fluxos não foram retestados nesta sessão.
 - Implementado/publicado: somente documentação e critério de acompanhamento.
   Testado: downloads UI, integridade XLSX, exportações do serviço e consultas
   existentes. Nenhum patch de runtime, deploy operacional ou reinício do Chrome.
+
+## Rechecagem de 24/10/2026, 18:36 (America/Sao_Paulo)
+
+- Servidor online. Consulta NetTask autenticada, somente leitura, confirmou as
+  filas existentes 276868465 e 276868467 como complete, com XLS anunciado em
+  app-1. Download CDP sem cache retornou HTTP 404 para ambos novamente.
+- SQLite aberto em modo somente leitura: ambos attachment_wait /
+  attachment_http_404, 11 falhas de anexo por fila e nenhuma linha persistida.
+  Atualizações recentes do worker e próxima consulta agendada confirmam backoff
+  ativo. O banco continua com 8 trabalhos; não houve geração adicional.
+- Ready e contagens preservados: Natal 20.179, Recife 55.807 e Mossoró 893.
+  Não foram repetidos testes de parser, exportações e UI já aprovados, pois
+  nenhum código foi alterado e não surgiu nova falha nessas cidades.
+- Implementado/publicado nesta rechecagem: somente este registro técnico.
+  Nenhum patch, deploy operacional, alteração de banco ou reinício do Chrome.
+  Fortaleza permanece pendente de disponibilidade do anexo; manter acompanhamento.
