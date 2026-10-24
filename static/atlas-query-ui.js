@@ -48,6 +48,11 @@
         active.remote_queue_id
           ? 'A fila '+active.remote_queue_id+' foi preservada. Renove o login do Atlas.'
           : 'Renove o login na sessão Atlas.',id+'|auth');
+    } else if(active.error_code==='attachment_transport_timeout'){
+      queryHud('solving','Servidor de arquivos demorando',
+        'A fila '+(active.remote_queue_id||'Atlas')+
+        ' foi preservada. Nova tentativa programada; não gere outra QUERY.',
+        id+'|attachment-transport-timeout');
     } else if(['failed','format_review'].includes(active.state)){
       queryHud('error','QUERY precisa de atenção',
         statusLabels[active.state]||'Consulte o histórico para detalhes.',id+'|'+active.state);
@@ -150,7 +155,9 @@
         ' • Última atualização: '+formatMoment(active.updated_at)+
         (checkedAt?' • Consultada: '+formatMoment(checkedAt):'')
       : 'Sem consulta registrada para esta praça.';
-    ui.progress.textContent=active?.error_code==='atlas_submit_unconfirmed'
+    ui.progress.textContent=active?.error_code==='attachment_transport_timeout'
+      ? 'A consulta do anexo expirou. A fila foi preservada; nova tentativa automática programada.'
+      : active?.error_code==='atlas_submit_unconfirmed'
       ? 'Confirmação do Atlas não obtida. Verifique a fila antes de qualquer novo envio.'
       : active?.error_code==='atlas_auth_required'
       ? 'Sessão Atlas expirada. Fila preservada; renove o login para continuar a consulta.'
@@ -159,7 +166,9 @@
     // NEVER clear status/last action during automatic polling.
     const serverError=String(active?.error_code||'');
     if(serverError && serverError!==lastBackendError){
-      const message=serverError==='attachment_http_404'
+      const message=serverError==='attachment_transport_timeout'
+        ? 'O servidor do anexo demorou a responder. O ID existente foi preservado; nova tentativa programada, sem segunda geração.'
+        : serverError==='attachment_http_404'
         ? 'O anexo respondeu 404. Verificando o ID principal e a reserva autorizada, quando aplicável.'
         : serverError==='atlas_auth_required'
         ? (active?.remote_queue_id
