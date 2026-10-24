@@ -155,7 +155,7 @@ class Tests(unittest.TestCase):
                 def eval(self,script):
                     if "anchor.src=" in script:
                         (self.download_path/"safe.xls").write_bytes(
-                            b"<table><tr><td>report</td></tr></table>")
+                            b"<table>"+b" "*2048+b"</table>")
                         return True
                     return True
                 def close(self):pass
@@ -163,7 +163,7 @@ class Tests(unittest.TestCase):
                 path,size=pipeline.download_native_browser(self.job,good,
                                            chrome_factory=NativeBrowser,timeout=4)
                 self.assertEqual(path,Path(folder)/(self.job+".xls"))
-                self.assertEqual(size,path.stat().st_size) if size>1024 else self.assertTrue(path.exists())
+                self.assertEqual(size,path.stat().st_size)
                 self.assertTrue(path.open("rb").read(6).startswith(b"<table"))
 
     def test_rechecks_same_queue_after_repeated_404_and_uses_new_link(self):
