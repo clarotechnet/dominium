@@ -12,6 +12,7 @@ import re
 import time
 from pathlib import Path
 from urllib.parse import urlsplit
+from websocket import WebSocketTimeoutException
 
 from atlas_query_report import ChromeAtlas, connect_db, read_job, DB
 
@@ -251,6 +252,15 @@ def fetch_file(job_id,db_path=DB,chrome_factory=ChromeAtlas,clock=time.time):
             raise ValueError("Unknown report content signature")
         update_job(job_id,db_path,state="download_ready",download_path=str(dest),error_code="")
         return {"state":"download_ready","bytes":total}
+    except WebSocketTimeoutException:
+        # BatAtlas/Chrome CDP can time out without returning an HTTP status.
+        # Never treat this as a 404 or authorize a backup Atlas report.
+        retry_after=90
+        update_job(job_id,db_path,state="attachment_wait",
+                   next_attachment_check=when+retry_after,
+                   error_code="attachment_transport_timeout")
+        return {"state":"attachment_wait","retry_after":retry_after,
+                "error_code":"attachment_transport_timeout"}
     finally:chrome.close()
 
 

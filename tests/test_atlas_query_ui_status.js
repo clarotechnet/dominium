@@ -54,7 +54,7 @@ test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/Histórico desta sessão/);
   assert.match(html,/id="atlasQueryTimestamps"/);
   assert.match(html,/id="atlasQueryReconcile"/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261023-8/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261024-1/);
 });
 
 test('successful POST leaves durable confirmation after automatic refresh',async()=>{
@@ -290,4 +290,23 @@ test('activity records display the city to avoid mixing Natal and Fortaleza',asy
   await listeners.get('atlasQueryCity:change')();
   assert.match(element('atlasQueryActivity').children[0].textContent,/\[FORTALEZA\]/);
   assert.equal(element('atlasQueryActivity').children.some(x=>x.textContent.includes('[NATAL]')),true);
+});
+
+test('BatAtlas transport timeout shows recoverable warning without second submission',async()=>{
+  const job={id:'8'.repeat(32),city:'recife',location:'empreiteira',
+    state:'attachment_wait',error_code:'attachment_transport_timeout',
+    attachment_failures:0,remote_queue_id:'276861849',
+    created_at:1792843000,updated_at:1792843100};
+  const {element,state,interval,calls,operations}=setup(async(url)=>{
+    if(url.endsWith('/'+job.id))return {job};
+    return {jobs:[job]};
+  });
+  state.profile='recife';state.activeModule='confront';
+  interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.match(element('atlasQueryProgress').textContent,/A consulta do anexo expirou/);
+  assert.equal(element('atlasQueryStart').disabled,true);
+  assert.match(element('atlasQueryId').textContent,/276861849/);
+  assert.ok(operations.some(x=>x.label==='Servidor de arquivos demorando'));
+  assert.equal(calls.filter(x=>x.method==='POST').length,0);
 });
