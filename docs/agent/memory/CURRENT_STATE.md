@@ -136,3 +136,16 @@ esses fluxos não foram retestados nesta sessão.
   Sem código novo ou falha nas cidades ready, testes já aprovados não repetidos.
 - Implementado/publicado: somente documentação; nenhum patch/deploy operacional.
   Meta pendente, acompanhamento mantido; nenhum relatório de Fortaleza obtido.
+
+## Rechecagem de 24/10/2026, 20:44 (America/Sao_Paulo)
+
+- Servidor online. NetTask autenticado: 276868465 e 276868467 complete; links
+  XLS em app-1 inalterados. Download CDP sem cache retornou HTTP 404 nos dois.
+- SQLite somente leitura: ambas attachment_wait / attachment_http_404,
+  19 falhas por fila, zero linhas. Atualizações e próximas consultas indicam
+  retry ativo. Permanecem 8 trabalhos, sem nova geração.
+- Natal ready/20.179, Recife ready/55.807 e Mossoró ready/893 preservados.
+- Testado: consultas dos IDs existentes, tentativa dos dois XLS e contagens.
+  Testes previamente aprovados não repetidos; nenhum código alterado.
+- Implementado/publicado: somente documentação. Nenhum patch, deploy operacional,
+  alteração de banco ou reinício Chrome. Meta pendente; manter acompanhamento.
