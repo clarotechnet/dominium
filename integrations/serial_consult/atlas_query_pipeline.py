@@ -7,6 +7,9 @@ from __future__ import annotations
 
 import argparse
 import base64
+import logging
+import tempfile
+import shutil
 import json
 import re
 import time
@@ -180,6 +183,76 @@ def public_status(job):
         "fallback_of","fallback_enabled") if key in job}
 
 
+
+def download_native_browser(job_id,attachment_url,chrome_factory=ChromeAtlas,timeout=55):
+    """Use authenticated Chromium download when CDP network streaming times out.
+
+    The fallback opens ONE temporary browser tab, navigates a hidden iframe to
+    the already validated BatAtlas XLS and accepts only a completed .xls file.
+    It cannot submit any report or fetch an untrusted URL.
+    """
+    if not re.fullmatch(r"[0-9a-f]{32}",str(job_id)) or not valid_report_url(attachment_url):
+        raise ValueError("Invalid job/attachment")
+    DATA.mkdir(parents=True,exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="batatlas-file-",dir=DATA) as tempdir:
+        browser=chrome_factory()
+        enabled=False
+        try:
+            browser.open(QUEUE_URL,form_id="FilasForm",require_generator=False)
+            browser.call(browser.tab,"Page.setDownloadBehavior",
+                         {"behavior":"allow","downloadPath":tempdir},timeout=10)
+            enabled=True
+            initiated=browser.eval("""(() => {
+                const anchor=document.createElement('iframe');
+                anchor.id='dominium-temporary-report-download';
+                anchor.style.cssText='display:none!important;width:0;height:0;border:0';
+                anchor.src=%s;
+                document.body.appendChild(anchor);
+                return Boolean(document.getElementById(anchor.id));
+            })()"""%json.dumps(attachment_url))
+            if initiated is not True:
+                raise RuntimeError("Browser report navigation not confirmed")
+            expires=time.monotonic()+timeout
+            last_size=-1
+            stable=0
+            while time.monotonic()<expires:
+                files=list(Path(tempdir).iterdir())
+                if len(files)>2 or any(not f.is_file() for f in files):
+                    raise ValueError("Unexpected browser download output")
+                if any(f.stat().st_size>60_000_000 for f in files):
+                    raise ValueError("Report too large")
+                ready=[f for f in files if f.suffix.lower()==".xls"]
+                downloading=any(f.name.lower().endswith(".crdownload") for f in files)
+                if len(ready)==1 and not downloading:
+                    size=ready[0].stat().st_size
+                    if size>1024 and size==last_size:stable+=1
+                    else:stable=0
+                    last_size=size
+                    if stable>=1:
+                        with ready[0].open("rb") as src:signature=src.read(8)
+                        if not (signature.startswith(bytes.fromhex("d0cf11e0"))
+                                or signature.startswith(b"PK")
+                                or signature.lstrip().startswith(b"<")):
+                            raise ValueError("Unknown report signature")
+                        destination=DATA/(job_id+".xls")
+                        shutil.move(str(ready[0]),str(destination))
+                        return destination,size
+                time.sleep(.7)
+            raise TimeoutError("Browser report download exceeded deadline")
+        finally:
+            try:
+                browser.eval("""(() => {
+                    document.getElementById('dominium-temporary-report-download')?.remove();
+                    return true;
+                })()""")
+            except Exception:pass
+            if enabled:
+                try:browser.call(browser.tab,"Page.setDownloadBehavior",
+                                 {"behavior":"default"},timeout=7)
+                except Exception:pass
+            browser.close()
+
+
 def fetch_file(job_id,db_path=DB,chrome_factory=ChromeAtlas,clock=time.time):
     upgrade_db(db_path)
     job=read_job(job_id,db_path)
@@ -238,7 +311,7 @@ def fetch_file(job_id,db_path=DB,chrome_factory=ChromeAtlas,clock=time.time):
                           (chunk.get("data") or "").encode("latin1"))
                     if not magic:magic=data[:8]
                     total+=len(data)
-                    if total>30_000_000:raise ValueError("Report too large")
+                    if total>60_000_000:raise ValueError("Report too large")
                     file.write(data)
                     if chunk.get("eof"):break
         except:
@@ -253,8 +326,18 @@ def fetch_file(job_id,db_path=DB,chrome_factory=ChromeAtlas,clock=time.time):
         update_job(job_id,db_path,state="download_ready",download_path=str(dest),error_code="")
         return {"state":"download_ready","bytes":total}
     except WebSocketTimeoutException:
-        # BatAtlas/Chrome CDP can time out without returning an HTTP status.
-        # Never treat this as a 404 or authorize a backup Atlas report.
+        # A large XLS may be served normally by Chrome even when its CDP
+        # Network.loadNetworkResource times out. Use only the original URL.
+        try:
+            file_path,size=download_native_browser(job_id,attachment_url,
+                                                    chrome_factory=chrome_factory)
+            update_job(job_id,db_path,state="download_ready",
+                       download_path=str(file_path),error_code="")
+            return {"state":"download_ready","bytes":size,"browser_native":True}
+        except Exception as err:
+            logging.warning("Atlas QUERY native download unsuccessful type=%s",
+                            type(err).__name__)
+        # Never turn a transport timeout into a false HTTP 404 or another ID.
         retry_after=90
         update_job(job_id,db_path,state="attachment_wait",
                    next_attachment_check=when+retry_after,
