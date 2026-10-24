@@ -1,60 +1,69 @@
-# DOMINIUM — handoff operacional (memória verificada)
+# DOMINIUM — handoff operacional verificado
 
-> Estado revisado em 2026-10-23. Para datas futuras, confirmar com o código,
-> testes e ambiente real. Não armazenar senhas, tokens, nomes ou seriais de clientes.
+> Revisado em 24/10/2026, 17:26, America/Sao_Paulo. Confirmar novamente o
+> ambiente antes de agir. Não registrar credenciais, URLs privadas ou clientes.
 
-## Produto e arquitetura
+## Prioridade atual: QUERY de Fortaleza
 
-DOMINIUM é o painel operacional da TECHNET que integra TOA/Oracle Field
-Service, IMPERIUM/DataSnap, Atlas, estoque, agenda e fluxos DESC/WhatsApp.
-Código no Git; dados de runtime, perfis do Chrome e credenciais fora do Git.
+Meta do usuário: concluir o fluxo da QUERY com planilha e exportação válidas.
+**Meta ainda pendente.** Não encerrar como corrigida por existir fila COMPLETO.
 
-## Estado recente confirmado
+| Cidade | Fila existente | Estado | Linhas |
+| --- | --- | --- | ---: |
+| Fortaleza principal | 276868465 | attachment_wait / attachment_http_404 | — |
+| Fortaleza reserva | 276868467 | attachment_wait / attachment_http_404 | — |
+| Natal | 276868277 | ready | 20.179 |
+| Recife | 276861849 | ready | 55.807 |
+| Mossoró | 276855582 | ready | 893 |
 
-- Consultar Seriais suporta Natal/Parnamirim, Fortaleza, Mossoró e Recife.
-- Em 2026-10-23, após revisar os três vídeos de treinamento, a aba Pendente ganhou importação local CSV/XLSX da QUERY Claro, filtros explícitos por praça (Mossoró etc.), estado e local, prévia e opção de usar os seriais filtrados no confronto. Exportação direta da QUERY pelo Atlas ainda não é automatizada.
-- Recursos → Pendente: confronto Atlas × IMPERIUM de até 500 seriais,
-  trabalhos SQLite persistentes, idempotência por requisição, histórico por
-  operador/praça, CSV, interface protegida pelo login e ponte privada.
-- Um serial real foi consultado somente para validação e retornou informação
-  em ambos os sistemas, mas **posse atual não confirmada**; classificação
-  correta: `inconclusivo`. Histórico não significa responsável atual.
-- Extensão Atlas/TOA fica no Chrome gerenciado separado do Chrome pessoal;
-  a fila do Atlas é atendida pelo BotDMV em WSL.
-- Pendência importante: entrada Windows 0.0.0.0:8787 ainda ativa na última
-  checagem; exige elevação de administrador para remover. O script da
-  tarefa de reparação foi corrigido para criar apenas loopback.
-- Não declarar equivalência definitiva de estados Atlas/IMPERIUM sem
-  validação da área de estoque com exemplos reais.
-- Não inferir situação atual dos serviços somente desta memória; fazer
-  health check e consultar GitHub Actions antes de afirmar deploy OK.
+- As duas filas de Fortaleza terminaram no NetTask, servidor atlasBatch01,
+  às 16:58:19 e 16:59:44. XLS/HTML/ZIP anunciados em app-1 retornam 404.
+  XLS com o mesmo caminho em app-2/app-3 também404. Navegação Chrome normal
+  e leitura CDP confirmam os dois 404. Falta evidência interna do fornecedor
+  para explicar a ausência dos arquivos; não inventar causa de armazenamento.
+- Não gerar terceira fila, não reenviar geração, não alterar estoque/O.S. e
+  não reiniciar Chrome autenticado. O retry existente consulta os mesmos IDs.
+- Natal/Recife/Mossoró foram verificados na interface real, nos arquivos locais
+  e nas linhas SQLite. Backend exporta CSV/XLSX equivalentes nas três cidades.
+  Downloads Cloud Browser: CSV das três e XLSX de Recife verificados; captura
+  dos XLSX de Natal/Mossoró não confirmada no diretório compartilhado.
+- Memória detalhada: `docs/agent/ATLAS_QUERY_AUTOMATION.md`. Lá estão testes,
+  evidências, horários, hashes de versão e backup. Não repetir geração.
+- Meta Work com acompanhamento horário ativo para rever apenas os IDs existentes
+  e validar a conclusão quando o anexo estiver disponível. Sem nova evidência,
+  preservar o estado e evitar avisos repetidos.
 
-## Navegação rápida
+## Ambiente e versão
 
-- `docs/agent/TASK_ROUTER.md`: subsistema → código.
-- `.dominium/project-map.md`: mapa e índices auto-gerados.
-- `python scripts/agent_memory.py brief`: contexto curto.
-- `python scripts/agent_memory.py search "confronto atlas"`: memória pesquisável.
-- `python scripts/query_agent_context.py "endpoint"`: símbolos e APIs.
-- Confronto: `integrations/serial_consult/`, `static/confront.js`,
-  `integrations/import_bridge/worker.mjs`, `deploy/hostinger-web/`.
-- `scripts/quality_gate.py`: verificação integrada antes de publicar.
+- Sistema: https://dominium.clarotechnet.com.br; repo clarotechnet/dominium.
+- Servidor DESKTOP-K7J3E1N, relay privado 8793,
+  `C:\DominiumRuntime\DescRelay-20261010`.
+- SQLite operacional: `C:\DominiumRuntime\AtlasQueryData\query_jobs.sqlite3`.
+- Três módulos QUERY do servidor coincidem com main `fea43ba` em SHA-256.
+- Frontend QUERY servido coincide com main; deploy web Actions 40090652088,
+  commit 29197dd, success. fea43ba não altera caminhos de deploy Hostinger.
+- Supabase: projeto DOMINIUM ACTIVE_HEALTHY na consulta da sessão. Relatórios
+  QUERY ficam em SQLite no servidor; nenhuma alteração Supabase foi necessária.
+- Backup SQLite consistente de 17:21:38 íntegro, preservado no servidor. Nenhum
+  registro operacional alterado por esta investigação; nenhum deploy de runtime.
+- 38 testes Python QUERY + 20 JavaScript passaram. Quality gate completo
+  aprovado usando TZ=America/Sao_Paulo. Índices do agente regenerados.
 
-## Ao concluir uma entrega
+## Contexto permanente
 
-Atualize este handoff se o estado mudou, registre motivo/decisão/testes
-em `docs/agent/memory/OPERATIONS_JOURNAL.md` via
-`python scripts/agent_memory.py record`, rode testes e quality gate,
-valide commit/deploy e deixe pendências explícitas.
-- A etapa automatica da QUERY Atlas foi codificada: praca/EMPREITEIRA, Chrome autenticado isolado, fila NetTask com ID persistido, espera 30s e retry 404 sem gerar duplicatas, tabela e CSV/XLSX. Relay privado e Cloudflare Worker atualizados em 2026-10-23; anexo real segue retornando 404 e nao ha planilha confirmada. Ver docs/agent/ATLAS_QUERY_AUTOMATION.md.
+DOMINIUM integra TOA/Oracle Field Service, IMPERIUM/DataSnap, Atlas, estoque,
+agenda e DESC/WhatsApp. Código no Git; dados privados e perfis fora do Git.
+Consultar Seriais e Pendente atendem Natal/Parnamirim, Fortaleza, Mossoró e
+Recife. Confronto em lote é somente leitura; histórico não comprova posse atual.
+Não presumir que automações TOA/DESC funcionam apenas pela saúde da QUERY;
+esses fluxos não foram retestados nesta sessão.
 
-- Em 2026-10-23, ao investigar clique sem retorno da QUERY: frontend
-  apagava mensagem na atualização automática; versão corrigida introduz
-  histórico persistente na tela e mantém falhas visíveis. O conector
-  passa a reutilizar a aba NetHome do watchdog por iframe temporário,
-  evitando abrir outro Chrome; preflight somente leitura aprovado.
-  Geração real no novo caminho ainda precisa confirmação operacional.
+## Retomada segura
 
-- Em 2026-10-23, erro de criação QUERY HTTP 415 'Envie JSON' identificado na perda do Content-Type Hostinger -> Cloudflare; corrigido com cabeçalho JSON restrito nas rotas de jobs e teste regressivo. HUD 'DOMINIUM EM AÇÃO' reutilizado pela QUERY, com fases até download e estado de falha visível; veja docs/agent/ATLAS_QUERY_AUTOMATION.md.
-
-- 2026-10-23: reparo de Atlas/QUERY feito no servidor. WSL BotDMV `src/atlas_rastreio.py` recebe proteção contra Chrome AtlasBot duplicado quando porta de debug falha; monitor NetScaler passou por 8 janelas e decaiu a 4. Chrome for Testing gerenciado preservado. Relay da QUERY agora sinaliza `atlas_submit_unconfirmed` após 150s sem ID remoto, sem reenviar a solicitação. Extensão gerenciada alterada em disco para keepalive 80s e serial de teste escolhido, aguardando reload seguro para valer; consultar `docs/agent/ATLAS_QUERY_AUTOMATION.md`.
+1. Ler este arquivo e ATLAS_QUERY_AUTOMATION.md; executar agent_memory.py brief/search.
+2. Descobrir servidor conectado; ler estado dos dois IDs sem expor URLs/linhas.
+3. Se continuar404, consultar os mesmos anexos no NetTask e manter o backoff.
+4. Se disponível, backup antes de alterar runtime/banco, download válido, parser,
+   persistência e exportações. Abrir Recursos → Pendente no Cloud Browser.
+5. Corrigir código apenas com defeito reproduzido, teste regressivo e verificação.
+6. Atualizar documentação com o que foi implementado, testado e publicado.

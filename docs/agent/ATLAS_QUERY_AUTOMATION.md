@@ -1,6 +1,93 @@
 # QUERY Atlas — relatório analítico por localização
 
-Estado em 2026-10-23: código integrado em staging; validar publicação
+## Estado verificado em 24/10/2026 — Cloud Browser e servidor
+
+Verificação prática entre 17:14 e 17:26 (America/Sao_Paulo), sem gerar filas.
+Os registros abaixo prevalecem sobre os checkpoints históricos deste documento.
+
+| Cidade | Fila | Estado comprovado | Registros |
+| --- | --- | --- | ---: |
+| Natal | 276868277 | ready, tabela e exportação | 20.179 |
+| Recife | 276861849 | ready, tabela e exportação | 55.807 |
+| Mossoró | 276855582 | ready, tabela e exportação | 893 |
+| Fortaleza, principal | 276868465 | COMPLETO no NetTask; anexo HTTP 404 | — |
+| Fortaleza, reserva | 276868467 | COMPLETO no NetTask; anexo HTTP 404 | — |
+
+### Bloqueio de Fortaleza reproduzido
+
+- DOMINIUM autenticado → Recursos → Pendente → Fortaleza → Consultar fila:
+  mostra os dois IDs, horários e `attachment_wait`; CSV/XLSX desabilitados.
+- Consulta direta dos dois IDs no NetTask autenticado: tarefa de geração de
+  relatório, status COMPLETO, servidor `atlasBatch01`. A principal terminou
+  às **16:58:19** e a reserva às **16:59:44** de 24/10/2026.
+- Cada fila lista XLS, HTML e ZIP no BatAtlas `app-1`. Os seis links efetivamente
+  listados retornaram **HTTP 404** usando o Chrome autenticado, sem cache.
+- Para os dois XLS, o mesmo caminho de arquivo em `app-2` e `app-3` também
+  retornou 404. São sondagens controladas, não links anunciados pelo NetTask;
+  nenhuma URL alternativa foi gravada no banco.
+- Navegação normal do Chromium para cada XLS, em iframe temporário, confirmou
+  `Network.responseReceived` com **404 / text/html** para os dois IDs. Portanto,
+  o resultado não decorre apenas de `Network.loadNetworkResource` nem de um
+  timeout de streaming do CDP. Nenhuma aba operacional foi navegada ou fechada.
+- Não havia cópia local correspondente aos dois anexos nos diretórios
+  operacionais de anexos/downloads e Downloads do usuário do servidor.
+- Limite da conclusão: os arquivos anunciados pelo NetTask não estavam
+  disponíveis pelo BatAtlas. Não temos logs internos do fornecedor para afirmar
+  por que o armazenamento/publicador `app-1` não entregou os arquivos.
+  Não há defeito de parser ou proxy demonstrado para esses dois 404.
+- O worker existente mantém as duas filas e continua repetindo apenas a leitura
+  e o download, com backoff máximo de 15 minutos. **Não criar terceira fila.**
+
+### Verificações concluídas
+
+- Os três módulos operacionais `atlas_query_report.py`, `atlas_query_pipeline.py`
+  e `atlas_query_http.py` coincidem em SHA-256 com `main` no commit `fea43ba`.
+- O frontend em produção respondeu HTTP 200 e coincide com `static/atlas-query-ui.js`
+  de `main`: SHA-256 `1fbef678842616abcf8a1f5c597eb85f7447e5a6400b03e9fce10f8df168d68c`.
+  Último deploy web consultado: Actions `40090652088`, commit `29197dd`, success.
+  O commit posterior `fea43ba` altera a integração privada e não dispara deploy
+  Hostinger pelo filtro de caminhos. Não confundir versões web e relay.
+- Natal, Recife e Mossoró: tabela real com 100 linhas na primeira página,
+  contagens totais corretas e controles CSV/XLSX habilitados no Cloud Browser.
+- Arquivos originais privados foram reinterpretados: 20.179 / 55.807 / 893 linhas,
+  iguais às contagens persistidas. Todos os três anexos válidos ficam em `app-3`.
+- Exportações do serviço real verificadas numa cópia descartável do backup:
+  HTTP 200 para CSV e XLSX nas três cidades, 11 colunas, conteúdos equivalentes,
+  ZIP XLSX íntegro e ausência de fórmulas. Nenhum dado de cliente foi impresso.
+- Downloads pelo Cloud Browser: três CSV recebidos e contados; XLSX de Recife
+  recebido, ZIP verificado e comparado célula por célula com o CSV (55.807 linhas).
+  Os eventos de download dos XLSX de Natal e Mossoró devolveram caminhos, mas os
+  arquivos não ficaram disponíveis no diretório compartilhado. Essa captura do
+  Cloud Browser permanece não confirmada; não atribuir causa ao DOMINIUM sem
+  evidência. Os bytes de exportação do backend foram verificados nas três cidades.
+- Testes focados: **38 Python e 20 JavaScript passaram**. Quality gate completo
+  aprovado com `TZ=America/Sao_Paulo` e dependências de teste instaladas no
+  ambiente isolado. Sem TZ, o teste preexistente do monitor operacional depende
+  do fuso local e falha; nenhuma correção desse subsistema foi incluída.
+- Backup consistente do SQLite preservado no servidor:
+  `AtlasQueryData/backups/query_jobs.before-work-verification-20261024-172138.sqlite3`,
+  38.989.824 bytes, `PRAGMA integrity_check=ok`, 8 trabalhos.
+  SHA-256 `f72d7942f515dc3ebfb859b7605ac873a5f45e9cbfab581eb5276c717265bc04`.
+
+### Implementado / testado / publicado / pendente
+
+- **Implementado nesta sessão:** somente memória técnica e índices atualizados;
+  sondagens privadas de diagnóstico, backup e validações. Nenhum patch de runtime.
+- **Testado:** integração existente, interface real, anexos dos dois IDs e
+  relatórios das três cidades acima. Nenhuma submissão, baixa ou transferência.
+- **Publicado:** documentação desta investigação no GitHub; não houve novo deploy
+  de código operacional nesta sessão por não existir defeito demonstrado a corrigir.
+- **Pendente:** BatAtlas disponibilizar pelo menos um dos anexos de Fortaleza;
+  então confirmar assinatura, parser, linhas persistidas, ready, tabela e CSV/XLSX.
+  O acesso ao armazenamento interno do Atlas não está disponível a este agente.
+- A meta do Work possui acompanhamento horário para reexaminar os IDs existentes,
+  agir diante de nova evidência e avisar quando o relatório estiver validado ou
+  surgir intervenção indispensável. O retry de download do servidor segue
+  independente desse acompanhamento. A meta **não está concluída**.
+
+## Checkpoints históricos
+
+Estado inicial em 2026-10-23: código integrado em staging; validar publicação
 e acesso ao anexo antes de declarar a etapa totalmente operacional.
 
 ## Fluxo confirmado contra Atlas autenticado
