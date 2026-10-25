@@ -149,3 +149,16 @@ esses fluxos não foram retestados nesta sessão.
   Testes previamente aprovados não repetidos; nenhum código alterado.
 - Implementado/publicado: somente documentação. Nenhum patch, deploy operacional,
   alteração de banco ou reinício Chrome. Meta pendente; manter acompanhamento.
+
+## Rechecagem de 24/10/2026, 21:04 (America/Sao_Paulo)
+
+- NetTask autenticado: 276868465 e 276868467 complete; links XLS em app-1
+  inalterados. Nova tentativa CDP sem cache confirmou HTTP 404 em ambos.
+- Worker operacional executou às 21:01:13 e 21:02:40, respectivamente:
+  21 falhas de anexo por fila, attachment_wait / attachment_http_404,
+  zero linhas. Próximas tentativas previstas às 21:16:09 e 21:17:36.
+- Leitura SQLite confirmou 8 trabalhos e ready preservados: Natal 20.179,
+  Recife 55.807 e Mossoró 893. Nenhuma geração ou alteração operacional.
+- Testado: leitura NetTask, tentativa XLS e estados/contagens. Implementado e
+  publicado: somente documentação. Sem patch/deploy ou reinício Chrome.
+  Meta pendente; a execução está ativa, mas os anexos continuam indisponíveis.
