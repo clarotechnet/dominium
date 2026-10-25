@@ -308,3 +308,24 @@ esses fluxos não foram retestados nesta sessão.
   alteração operacional de banco, fila nova ou reinício do Chrome.
   Meta pendente; manter acompanhamento dos mesmos IDs. A indisponibilidade
   da origem permanece a reexaminar, sem novidade que exija aviso repetido.
+
+
+## Rechecagem de 25/10/2026, 04:38–04:40 (America/Sao_Paulo)
+
+- Servidor online. Download direto Chrome/CDP sem cache dos XLS existentes
+  de Fortaleza 276868465 e 276868467: HTTP 404 em ambos; nenhum anexo obtido.
+- Reconsulta dos dois IDs no NetTask falhou com RuntimeError de formulário
+  indisponível. Não foi possível reconfirmar COMPLETO. Uma sondagem separada
+  do formulário de geração indicou AtlasAuthRequired; isso, isoladamente,
+  não comprova a causa da indisponibilidade do NetTask.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404, 33 falhas por
+  fila, zero linhas. updated_at e next_attachment_check continuam iguais às
+  verificações anteriores; não declarar retry saudável.
+- Banco preservado com 8 trabalhos. Natal ready/20.179, Recife ready/55.807
+  e Mossoró ready/893, por contagem direta em query_rows.
+- Testado: downloads existentes, acesso NetTask e estados/contagens SQLite.
+  Nenhuma fila criada, alteração de banco, patch/deploy operacional ou reinício
+  Chrome. Sem mudança de código ou disponibilidade, não repetidos parser,
+  exportações e UI. Implementado/publicado: somente este registro.
+- Meta pendente. Indisponibilidade da origem permanece a reexaminar;
+  preservar acompanhamento dos IDs existentes, sem aviso repetido de 404.
