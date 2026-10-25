@@ -474,3 +474,24 @@ esses fluxos não foram retestados nesta sessão.
 - Implementado/publicado: somente este registro técnico; nenhum patch/deploy
   operacional. Meta pendente; reexaminar disponibilidade da origem e anexos
   existentes. Sem novidade que exija aviso repetido ou intervenção comprovada.
+
+
+## Rechecagem de 25/10/2026, 13:56 (America/Sao_Paulo)
+
+- Servidor online. Consulta direta dos XLS existentes de Fortaleza pelo
+  Chrome/CDP, com credenciais da sessão e cache desabilitado: HTTP 404
+  nas filas 276868465 e 276868467. Nenhum arquivo recuperado.
+- SQLite aberto em mode=ro: ambas attachment_wait / attachment_http_404,
+  33 falhas por fila; updated_at e next_attachment_check continuam iguais
+  aos registros anteriores. Não declarar retry saudável.
+- Contagem direta em query_rows preservada: Natal ready/20.179,
+  Recife ready/55.807 e Mossoró ready/893. Permanecem 8 trabalhos.
+- A tentativa de reconsulta NetTask desta execução não produziu resultado
+  recuperável da sessão de processo remoto; não reconfirmar COMPLETO
+  nem atribuir causa à autenticação com base nesta execução.
+- Testado: downloads CDP dos dois XLS e estados/contagens SQLite.
+  Implementado/publicado: somente este registro técnico; nenhum patch
+  ou deploy operacional. Sem alteração de banco, geração de fila ou
+  reinício Chrome. Parser, exportações e UI não repetidos sem novo anexo.
+- Meta pendente. Indisponibilidade dos anexos permanece; manter acompanhamento
+  dos IDs existentes sem aviso repetido de HTTP 404.
