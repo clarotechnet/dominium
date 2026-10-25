@@ -517,3 +517,23 @@ esses fluxos não foram retestados nesta sessão.
   Meta pendente; indisponibilidade da origem permanece a reexaminar.
   Sem novidade que exija aviso repetido. Esta execução ficou restrita às
   duas filas existentes; não interferiu com trabalho interativo posterior.
+
+
+## Rechecagem de 25/10/2026, 15:25–15:27 (America/Sao_Paulo)
+
+- Servidor online. Downloads Chrome/CDP com cache desabilitado e credenciais
+  da sessão dos XLS existentes 276868465 e 276868467: HTTP 404 em ambos.
+  Nenhum arquivo recuperado. Consulta somente leitura pelo conector NetTask
+  falhou nos dois IDs com RuntimeError de formulário indisponível; não foi
+  possível reconfirmar COMPLETO nem determinar autenticação como causa.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404, 33 falhas
+  por fila, zero linhas. updated_at e next_attachment_check inalterados;
+  não declarar retry saudável. Permanecem 8 trabalhos.
+- Contagens diretas preservadas: Natal ready/20.179, Recife ready/55.807,
+  Mossoró ready/893. Nenhuma geração, alteração operacional ou reinício Chrome.
+- Testado: downloads existentes, acesso NetTask, estados e contagens SQLite.
+  Sem novo anexo ou mudança de código, não repetidos parser, exportações,
+  interface e testes automatizados previamente aprovados.
+- Implementado/publicado: somente este registro técnico; nenhum patch/deploy.
+  Meta pendente; manter acompanhamento dos mesmos IDs e reexaminar a origem.
+  Sem novidade que exija aviso repetido ou intervenção comprovada.
