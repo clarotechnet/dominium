@@ -495,3 +495,25 @@ esses fluxos não foram retestados nesta sessão.
   reinício Chrome. Parser, exportações e UI não repetidos sem novo anexo.
 - Meta pendente. Indisponibilidade dos anexos permanece; manter acompanhamento
   dos IDs existentes sem aviso repetido de HTTP 404.
+
+
+## Rechecagem de 25/10/2026, a partir de 14:11 (America/Sao_Paulo)
+
+- Servidor online. Download direto Chrome/CDP dos XLS existentes das filas
+  276868465 e 276868467, com cache desabilitado e credenciais da sessão:
+  HTTP 404 em ambos. Nenhum arquivo recuperado.
+- Consulta somente leitura dos dois IDs via evaluate_query falhou:
+  RuntimeError de formulário não carregado no navegador existente.
+  Não foi possível reconfirmar COMPLETO ou atribuir a causa à autenticação.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404, 33 falhas
+  por fila, zero linhas. updated_at e next_attachment_check permanecem
+  inalterados; não declarar retry saudável.
+- Contagens diretas preservadas: Natal ready/20.179, Recife ready/55.807,
+  Mossoró ready/893. Nenhuma geração, alteração operacional ou reinício Chrome.
+- Testado: downloads existentes, acesso NetTask, estados e contagens SQLite.
+  Sem novo anexo ou alteração de código, parser, exportações, interface e
+  testes automatizados não repetidos. Nenhum defeito novo demonstrado.
+- Implementado/publicado: somente registro técnico; nenhum patch ou deploy.
+  Meta pendente; indisponibilidade da origem permanece a reexaminar.
+  Sem novidade que exija aviso repetido. Esta execução ficou restrita às
+  duas filas existentes; não interferiu com trabalho interativo posterior.
