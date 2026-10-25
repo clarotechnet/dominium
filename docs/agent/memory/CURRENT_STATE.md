@@ -537,3 +537,29 @@ esses fluxos não foram retestados nesta sessão.
 - Implementado/publicado: somente este registro técnico; nenhum patch/deploy.
   Meta pendente; manter acompanhamento dos mesmos IDs e reexaminar a origem.
   Sem novidade que exija aviso repetido ou intervenção comprovada.
+
+
+## Rechecagem de 25/10/2026, 16:50–16:52 (America/Sao_Paulo)
+
+- Servidor online. Downloads diretos Chrome/CDP dos XLS existentes
+  276868465 e 276868467, com cache desabilitado e credenciais da sessão:
+  HTTP 404 em ambos. Nenhum anexo recuperado.
+- Consulta somente leitura evaluate_query dos dois IDs falhou com
+  RuntimeError de formulário não carregado no navegador existente.
+  Não foi possível reconfirmar COMPLETO. Sondagem estrutural adicional
+  apresentou sinais divergentes (resultado inicial login=true, seguido
+  de documento de detalhes sem campo de senha ou aviso de expiração);
+  não concluir autenticação como causa sem reprodução isolada.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404, 33 falhas
+  por fila, zero linhas; updated_at e next_attachment_check continuam
+  inalterados. Não declarar retry saudável. Permanecem 8 trabalhos.
+- Natal ready/20.179, Recife ready/55.807 e Mossoró ready/893,
+  por contagem direta em query_rows. Relay 8793 responde HTTP 401 ao
+  GET anônimo de /api/atlas-query/jobs, conforme proteção esperada.
+- Testado: downloads existentes, consulta NetTask, banco somente leitura
+  e disponibilidade protegida do relay. Nenhuma geração, alteração
+  operacional de banco ou reinício Chrome. Sem novo anexo ou patch,
+  parser, exportações, UI e testes automatizados não repetidos.
+- Implementado/publicado: somente este registro técnico; nenhum patch
+  ou deploy operacional. Meta pendente; preservar acompanhamento dos
+  mesmos IDs. Sem novidade conclusiva para notificação repetida.
