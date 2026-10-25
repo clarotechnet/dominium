@@ -242,3 +242,25 @@ esses fluxos não foram retestados nesta sessão.
 - Implementado/publicado: somente este registro técnico. Meta pendente;
   reexaminar disponibilidade do NetTask e anexos existentes. Preservar
   acompanhamento, sem aviso repetido de 404 nem nova geração.
+
+## Rechecagem de 25/10/2026, 01:52–01:53 (America/Sao_Paulo)
+
+- Servidor online. Os dois XLS existentes de Fortaleza (276868465 e
+  276868467) foram consultados diretamente pelo Chrome/CDP autenticado, sem
+  cache: ambos retornaram HTTP 404. Nenhum arquivo recuperado.
+- Reconsulta somente leitura pelo conector NetTask falhou nos dois IDs:
+  RuntimeError de formulário indisponível. Não foi possível reconfirmar
+  COMPLETO nesta execução; não atribuir a falha à autenticação sem evidência.
+  A indisponibilidade já observada na execução anterior continua pendente.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404, 33 falhas por
+  fila e zero linhas. updated_at e next_attachment_check não avançaram em
+  relação à verificação de 00:30; não afirmar que o retry está saudável.
+- Permanecem 8 trabalhos. Contagens diretas preservadas:
+  Natal ready/20.179, Recife ready/55.807, Mossoró ready/893.
+- Testado: tentativa dos dois XLS, acesso ao formulário NetTask e
+  estados/contagens SQLite. Nenhum patch/deploy operacional, alteração do
+  banco, nova geração ou reinício do Chrome. Sem mudança de código ou
+  disponibilidade, não repetidos parser, exportações e UI já aprovados.
+- Implementado/publicado: somente este registro técnico no GitHub.
+  Meta pendente; manter acompanhamento dos mesmos IDs, reexaminar NetTask
+  quando a origem voltar e evitar avisos repetidos sem novidade.
