@@ -329,3 +329,24 @@ esses fluxos não foram retestados nesta sessão.
   exportações e UI. Implementado/publicado: somente este registro.
 - Meta pendente. Indisponibilidade da origem permanece a reexaminar;
   preservar acompanhamento dos IDs existentes, sem aviso repetido de 404.
+
+
+## Rechecagem de 25/10/2026, 05:27–05:28 (America/Sao_Paulo)
+
+- Servidor online. Download dos XLS existentes de Fortaleza 276868465 e
+  276868467 pelo Chrome/CDP, sem cache: HTTP 404 em ambos. Nenhum arquivo
+  recuperado; nenhuma geração adicional.
+- Reconsulta somente leitura dos IDs no NetTask falhou com RuntimeError de
+  formulário indisponível. Não foi possível reconfirmar COMPLETO nem atribuir
+  a falha à autenticação. Indisponibilidade da origem permanece a reexaminar.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404, 33 falhas por
+  fila, zero linhas. updated_at e next_attachment_check permanecem iguais às
+  verificações anteriores; não declarar retry saudável.
+- Permanecem 8 trabalhos; contagens diretas preservadas: Natal ready/20.179,
+  Recife ready/55.807 e Mossoró ready/893.
+- Testado: acesso NetTask, download dos dois XLS e estados/contagens SQLite.
+  Nenhum patch, deploy, alteração operacional de banco ou reinício do Chrome.
+  Sem mudança de código ou disponibilidade, não repetidos parser, exportações,
+  UI e testes automatizados previamente aprovados.
+- Implementado/publicado: somente este registro técnico. Meta pendente;
+  preservar acompanhamento dos IDs existentes. Sem novidade que exija aviso.
