@@ -605,3 +605,20 @@ esses fluxos não foram retestados nesta sessão.
 - Implementado/publicado: somente registro técnico; nenhum patch/deploy
   operacional. Meta pendente; acompanhamento preservado sem aviso repetido
   de 404 e sem interferir na investigação interativa.
+
+
+## Rechecagem de 25/10/2026, 19:09–19:14 (America/Sao_Paulo)
+
+- Servidor online. Download direto Chrome/CDP dos XLS existentes das filas
+  276868465 e 276868467, sem cache e com credenciais da sessão:
+  HTTP 404 / success=false em ambos. Nenhum anexo recuperado.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404,
+  33 falhas por fila e zero linhas. updated_at e next_attachment_check
+  permanecem inalterados; não declarar retry saudável. Banco com 8 trabalhos.
+- Contagens diretas preservadas: Natal ready/20.179, Recife ready/55.807,
+  Mossoró ready/893. Nenhuma geração, alteração operacional ou reinício Chrome.
+- Testado: downloads existentes e estados/contagens SQLite. O estado atual
+  COMPLETO no NetTask não foi reconfirmado nesta execução. Sem novo anexo ou
+  alteração de código, não repetidos parser, exportações, UI e testes aprovados.
+- Implementado/publicado: somente este registro; nenhum patch/deploy operacional.
+  Meta pendente; acompanhamento preservado, sem aviso repetido de HTTP 404.
