@@ -179,3 +179,20 @@ esses fluxos não foram retestados nesta sessão.
   operacional. Não foram repetidos testes automatizados e UI sem mudança de
   código ou de disponibilidade. Nenhuma fila gerada, alteração operacional
   ou reinício Chrome. Meta pendente; manter acompanhamento sem aviso repetido.
+
+## Rechecagem de 24/10/2026, 22:46 (America/Sao_Paulo)
+
+- Servidor online. Consulta autenticada somente leitura ao NetTask confirmou
+  276868465 e 276868467 como complete. Os XLS continuam anunciados em app-1;
+  tentativa CDP sem cache retornou HTTP 404 em ambos. Nenhum arquivo recuperado.
+- SQLite mode=ro: principal attachment_wait / attachment_http_404, 28 falhas;
+  reserva no mesmo estado, 27 falhas; zero linhas nas duas. Timestamps e próxima
+  consulta continuam avançando pelo worker. Permanecem 8 trabalhos.
+- Contagens diretas preservadas: Natal ready/20.179, Recife ready/55.807,
+  Mossoró ready/893. Nenhuma geração, alteração operacional ou reinício Chrome.
+- Testado nesta rechecagem: NetTask, download dos dois XLS e estados/contagens.
+  Testes automatizados, exportações e UI não repetidos sem alteração de código
+  ou disponibilidade. Nenhum defeito novo demonstrado no DOMINIUM.
+- Implementado/publicado: somente este registro técnico. Sem patch ou deploy
+  operacional. Meta pendente, preservar acompanhamento dos IDs existentes;
+  ausência de novidade não exige aviso repetido ao usuário.
