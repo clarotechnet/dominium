@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-24T20:27:08+00:00",
+  "generated_at": "2026-10-25T23:09:08+00:00",
   "schema": 2,
-  "source_fingerprint": "10bbcd241033bc941f34012c8287442314f0bf4823a45425d4856e5e181984f5",
+  "source_fingerprint": "b9f8c3ce72b2ea78611d2f5f32da308f2c27d3e051999f3e5d5194a1b21bbbe3",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1123,9 +1123,22 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 5749,
-      "sha256": "26e5fc232758625713b08526e63b1c5ca686ac2baca1be056963a87537660322",
+      "bytes": 5965,
+      "sha256": "799f400b16efb2c7ec4e95d8d001bd8ac416fa7ec6233e6264e9600c9aec2b8f",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md",
+      "category": "docs",
+      "bytes": 1659,
+      "sha256": "de86a098d21f58c72346dcaf9044e4b9fcdf3ce8d223da410009c4252e593608",
+      "summary": "Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1136,8 +1149,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 4028,
-      "sha256": "b8dbee5d90fcda91525dbe513826188c91d422d35be7682977c99e456edd30e1",
+      "bytes": 40447,
+      "sha256": "3ffeb6054e1e05096eca723f773228902646f4af77df3e020aa59cc456e6d2b5",
       "summary": "DOMINIUM — handoff operacional verificado",
       "imports": [],
       "endpoints": [],
