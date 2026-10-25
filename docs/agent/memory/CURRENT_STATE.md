@@ -163,12 +163,12 @@ esses fluxos não foram retestados nesta sessão.
   publicado: somente documentação. Sem patch/deploy ou reinício Chrome.
   Meta pendente; a execução está ativa, mas os anexos continuam indisponíveis.
 
-## Rechecagem de 24/10/2026, 21:37–21:39 (America/Sao_Paulo)
+## Rechecagem de 24/10/2026, 21:37 (America/Sao_Paulo)
 
 - Servidor online. Diagnóstico autenticado somente leitura dos IDs existentes:
   276868465 e 276868467 continuam complete no NetTask. Anexos XLS anunciados
-  em app-1; download CDP sem cache retornou HTTP 404 em ambos. Os hashes dos
-  links coincidem com o diagnóstico anterior; nenhum relatório recuperado.
+  em app-1; download CDP sem cache retornou HTTP 404 em ambos. Nenhum
+  relatório recuperado.
 - SQLite aberto explicitamente em mode=ro: ambas attachment_wait /
   attachment_http_404, 23 falhas por fila e zero linhas. Últimas atualizações
   do worker às 21:31:23 e 21:32:49. Permanecem 8 trabalhos.
