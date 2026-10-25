@@ -414,3 +414,23 @@ esses fluxos não foram retestados nesta sessão.
   Sem novidade que exija aviso repetido. A autorização posterior do usuário
   para novas gerações consta no histórico, mas esta verificação agendada
   permaneceu restrita às duas filas existentes conforme seu escopo.
+
+
+## Rechecagem de 25/10/2026, 09:08–09:09 (America/Sao_Paulo)
+
+- Servidor online. Downloads diretos Chrome/CDP sem cache dos XLS existentes
+  de Fortaleza 276868465 e 276868467: HTTP 404 em ambos; nenhum anexo obtido.
+- Reconsulta somente leitura no NetTask falhou para os dois IDs com
+  RuntimeError de formulário não carregado no navegador existente. Não foi
+  possível reconfirmar COMPLETO ou determinar autenticação como causa.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404, 33 falhas
+  por fila e zero linhas. updated_at e next_attachment_check permanecem
+  inalterados; não declarar retry saudável. Permanecem 8 trabalhos.
+- Contagens diretas preservadas: Natal ready/20.179, Recife ready/55.807,
+  Mossoró ready/893. Nenhuma geração, alteração operacional ou reinício Chrome.
+- Testado: downloads existentes, acesso NetTask, estados e contagens SQLite.
+  Sem mudança de código ou disponibilidade, não repetidos parser, exportações,
+  UI ou testes automatizados já aprovados. Nenhum defeito novo demonstrado.
+- Implementado/publicado: somente este registro técnico; nenhum patch/deploy
+  operacional. Meta pendente; reexaminar indisponibilidade da origem e mesmos
+  anexos. Sem novidade que exija aviso repetido ou intervenção comprovada.
