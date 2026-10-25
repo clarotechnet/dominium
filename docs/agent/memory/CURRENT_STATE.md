@@ -350,3 +350,23 @@ esses fluxos não foram retestados nesta sessão.
   UI e testes automatizados previamente aprovados.
 - Implementado/publicado: somente este registro técnico. Meta pendente;
   preservar acompanhamento dos IDs existentes. Sem novidade que exija aviso.
+
+
+## Rechecagem de 25/10/2026, 06:21–06:22 (America/Sao_Paulo)
+
+- Servidor online. Consulta somente leitura dos dois IDs existentes pelo
+  conector NetTask falhou com RuntimeError de formulário indisponível.
+  Não foi possível reconfirmar COMPLETO ou demonstrar perda de autenticação.
+- Tentativa direta Chrome/CDP sem cache dos XLS existentes 276868465 e
+  276868467: HTTP 404 em ambos. Nenhum arquivo recuperado.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404, 33 falhas
+  por fila e zero linhas. updated_at e next_attachment_check não avançaram;
+  não declarar retry saudável. Permanecem 8 trabalhos.
+- Contagens diretas preservadas: Natal ready/20.179, Recife ready/55.807,
+  Mossoró ready/893. Nenhuma geração, alteração de banco ou reinício Chrome.
+- Testado: acesso NetTask, downloads existentes e estados/contagens SQLite.
+  Nenhum defeito novo demonstrado. Sem alteração de código ou disponibilidade,
+  testes automatizados, exportações e UI previamente aprovados não repetidos.
+- Implementado/publicado: somente documentação; nenhum patch/deploy operacional.
+  Meta pendente. Reexaminar indisponibilidade da origem e mesmos anexos;
+  sem novidade que exija aviso repetido ou intervenção comprovadamente necessária.
