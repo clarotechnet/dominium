@@ -212,3 +212,33 @@ esses fluxos não foram retestados nesta sessão.
 - Implementado/publicado: somente este registro técnico. Nenhum patch ou deploy
   operacional. Meta pendente, manter acompanhamento dos IDs existentes; sem
   novidade que exija aviso ao usuário.
+
+## Rechecagem de 25/10/2026, 00:30–00:33 (America/Sao_Paulo)
+
+- Servidor online. Leitura direta pelo Chrome autenticado, sem cache, dos
+  mesmos XLS anunciados anteriormente: HTTP 404 nas filas 276868465 e
+  276868467. Nenhum arquivo recuperado; não houve terceira geração.
+- A reconsulta dos IDs no NetTask não pôde confirmar novamente o estado
+  COMPLETO nesta execução: o iframe recebeu página "Weblogic Bridge Message",
+  sem formulário FilasForm, sem campo de senha nem indicação de login.
+  O conector registrou RuntimeError de formulário indisponível. Tratar como
+  indisponibilidade a reexaminar; não presumir perda de autenticação nem
+  confirmar a causa interna sem evidência adicional.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404, 33 falhas
+  por fila e zero linhas. Últimos updated_at observados:
+  1792897325.7907596 / 1792897412.358884; next_attachment_check:
+  1792898221.4787345 / 1792898308.6661613. Esses horários já haviam passado
+  nesta verificação. O log contém avisos de poll indisponível; não afirmar
+  que o retry está saudável apenas porque existe uma próxima data no banco.
+- Banco preservado com 8 trabalhos; contagens diretas:
+  Natal ready/20.179, Recife ready/55.807, Mossoró ready/893.
+- Uma sondagem Python HTTPS adicional falhou na verificação da cadeia de
+  certificados; não foi desabilitada a validação TLS. O HTTP 404 acima foi
+  confirmado separadamente pelo Chrome/CDP, não por essa sondagem.
+- Testado: downloads CDP dos dois XLS, disponibilidade do formulário NetTask
+  e estados/contagens SQLite. Sem alteração de código, não foram repetidos
+  parser, exportações, testes automatizados e UI. Não houve patch/deploy,
+  alteração operacional de banco ou reinício do Chrome.
+- Implementado/publicado: somente este registro técnico. Meta pendente;
+  reexaminar disponibilidade do NetTask e anexos existentes. Preservar
+  acompanhamento, sem aviso repetido de 404 nem nova geração.
