@@ -49,16 +49,16 @@ chrome_factory=ChromeAtlas, queue_reader=evaluate_query)->dict;
 record_health(db_path,output_path)->dict. Instalador copia módulo já publicado
 e insere chamada idempotente no watchdog existente após backup.
 
-- [ ] Escrever testes: erroauth=>login_required, timeout=>unknown,
+- [x] Escrever testes: erroauth=>login_required, timeout=>unknown,
   confirmação real=>authenticated sem statusready, not_found=>unknown,
   DB ausente permanece ausente, seleção de ID válido, banco inalterado,
   persistência substitui sucesso por erro e não revela URL/erro bruto.
-- [ ] Executar unittest e confirmar RED pela ausência do comportamento.
-- [ ] Implementar somente leitura e instalação com backup.
-- [ ] Executar testes QUERY, quality_gate, revisão independente e publicar no GitHub.
-- [ ] Instalar no servidor, executar tarefa existente e confirmar JSON/timestamp,
+- [x] Executar unittest e confirmar RED pela ausência do comportamento.
+- [x] Implementar somente leitura e instalação com backup.
+- [x] Executar testes QUERY, quality_gate, revisão independente e publicar no GitHub.
+- [x] Instalar no servidor, executar tarefa existente e confirmar JSON/timestamp,
   código implantado, integridade/contagens SQLite e próxima execução agendada.
-- [ ] Registrar evidências atuais de Natal e pedido técnico exato para fornecedor.
+- [x] Registrar evidências atuais de Natal e pedido técnico exato para fornecedor.
 
 ## Ledger
 
@@ -79,4 +79,5 @@ Verificação final pré-publicação: fixture Windows GREEN em seis verificaç�
 sintaxe inválida e marcadores invertidos). Gate completo: 913 testes Python,
 21 ignorados; JavaScript, Ruff, build e auditoria aprovados, QUALITY_GATE_OK.
 Revisão independente concluída; único apontamento corrigido por RED/GREEN.
-As alterações operacionais ainda aguardam instalação no servidor neste registro.
+Instalação concluída com backup às08:37; execução automática08:40 também
+comprovou sessão real. Evidências finais em ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md.

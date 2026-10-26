@@ -1,5 +1,24 @@
 # DOMINIUM — handoff operacional verificado
 
+## Estado vigente — 26/10/2026, 08:42, America/Sao_Paulo
+
+Monitor real de sessão implementado/testado/publicado: commit5fa3132,
+atlas_query_health.py integrado ao Browser Watchdog existente, PT5M. Consultas
+reais ao ID276908572 comprovaram sessão às08:37:33 e na execução automática
+08:40:08. Não gera QUERY nem renova SSO/captcha. unknown não é login válido;
+anexo anunciado não é relatório disponível. Backup do watchdog preservado.
+
+51 testes Python QUERY e gate completo913/21skip aprovados;6 verificações
+Windows e revisão independente concluídas. Banco íntegro20 trabalhos/163.049
+linhas; serviço QUERY/frontend seguemc94984b. Três cidades prontas reconferidas
+na UI; Natal mantém IDs276908463/276908572,404 e exports bloqueados após recarga.
+Nenhuma nova QUERY gerada nesta retomada. Meta quatro cidades segue incompleta.
+
+Evidências: ../ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md. Pedido técnico
+preparado para administrador da origem: ../ATLAS_BATATLAS_NATAL_ESCALATION_20261026.md.
+Falta acesso aos logs/armazenamento Atlas/BatAtlas ou atuação de quem administra
+a origem. Não repetir filas sem hipótese nova. Nenhuma tarefa ChatGPT criada.
+
 ## Estado vigente — 26/10/2026, 00:58, America/Sao_Paulo
 
 Sessão Atlas revalidada por consulta real NetTask. **O bloqueio atual é anexo

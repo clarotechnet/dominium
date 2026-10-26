@@ -77,3 +77,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Consulta NetTask real autenticada; formulario quatro cidades; SQLite20jobs163049rows integrityok; smokes QUERYconfrontreports200; runtimec94984b hashes iguais; sem novos testes de codigo inalterado
 
 **Próximo passo/pendência:** AtlasBatAtlas disponibilizar anexos dos IDs276908463 e276908572 em batch02app2 e batch01app1; apos200 validar Natal e concluir quatro cidades
+
+## 2026-10-26 11:42 UTC — Atlas watchdog comprova sessao por NetTask
+
+**Motivo:** Aba Atlas aberta e tarefa exit0 nao comprovam autenticacao; Natal atual tem anexos404
+
+**Alterado:** Monitor somente leitura instalado em tarefa existentePT5M; commit5fa3132; backup preservado; pedido tecnico Atlas/BatAtlas preparado sem envio
+
+**Verificação:** 9 novos RED-GREEN;51 QUERY Python;gate913 com21skip;6 verificacoes Windows;revisao independente;execucoes08:37 e08:40 autenticadas;DB20jobs163049linhas integro;UI3cidades ready eNatal404 persistente apos recarga
+
+**Próximo passo/pendência:** Administrador Atlas/BatAtlas investigar anexos276908463e276908572; depois validar Natal ate CSV-XLSX e recarga. Monitor nao renova SSO. Nenhuma tarefa ChatGPT criada
