@@ -114,6 +114,58 @@ class AtlasQueryService:
                  primary["created_by"],now,now,parent_id))
             return child_id
 
+    def _retry_family(self,actor,body):
+        """Explicit recovery only: preserve old IDs and deduplicate across restarts."""
+        parent_id=body.get('retry_job_id')
+        if not isinstance(parent_id,str) or not JOB_RE.fullmatch(parent_id):
+            return 400,{'ok':False,'error':'Solicitação inválida'},None
+        created=False
+        with self._lock:
+            with connect_db(self.db_path) as db:
+                db.execute('BEGIN IMMEDIATE')
+                parent=db.execute('SELECT * FROM query_jobs WHERE id=?',(parent_id,)).fetchone()
+                if not parent or parent['created_by']!=actor:
+                    return 404,{'ok':False,'error':'Trabalho não encontrado'},None
+                if (parent['city']!=body['city'] or parent['location']!=body['location']
+                    or parent['fallback_of']):
+                    return 409,{'ok':False,'error':'Família de QUERY incompatível'},None
+                existing=db.execute('SELECT id FROM query_jobs WHERE retry_of=?',(parent_id,)).fetchone()
+                if existing:
+                    job_id=existing['id']
+                else:
+                    latest=db.execute('''SELECT id FROM query_jobs WHERE created_by=?
+                        AND city=? AND location=? AND fallback_of='' ORDER BY created_at DESC LIMIT 1''',
+                        (actor,parent['city'],parent['location'])).fetchone()
+                    family=db.execute('SELECT * FROM query_jobs WHERE id=? OR fallback_of=?',
+                                      (parent_id,parent_id)).fetchall()
+                    uncertain=db.execute('''SELECT id FROM query_jobs WHERE created_by=?
+                        AND city=? AND location=? AND state='submission_uncertain'
+                        AND remote_queue_id IS NULL LIMIT 1''',
+                        (actor,parent['city'],parent['location'])).fetchone()
+                    other=db.execute('''SELECT id FROM query_jobs WHERE city=? AND location=?
+                        AND created_by!=? AND created_by!='' AND created_at>? AND state IN
+                        ('submitting','submission_uncertain','queued','processing','attachment_wait') LIMIT 1''',
+                        (parent['city'],parent['location'],actor,self.clock()-3600)).fetchone()
+                    if (not latest or latest['id']!=parent_id or uncertain or other or len(family)!=2
+                        or not all(row['state']=='attachment_wait'
+                            and re.fullmatch(r'\d{5,15}',row['remote_queue_id'] or '')
+                            and row['error_code']=='attachment_http_404'
+                            and row['attachment_failures']>=2
+                            and row['created_at']<=self.clock()-120 for row in family)):
+                        return 409,{'ok':False,'error':'Aguarde duas falhas 404 nos dois IDs e dois minutos; envios incertos devem ser reconciliados.'},None
+                    job_id=uuid.uuid4().hex
+                    now=self.clock()
+                    db.execute('''INSERT INTO query_jobs
+                        (id,city,location,created_by,state,created_at,updated_at,retry_of,fallback_enabled)
+                        VALUES(?,?,?,?,'submission_uncertain',?,?,?,1)''',
+                        (job_id,parent['city'],parent['location'],actor,now,now,parent_id))
+                    created=True
+            if created:
+                self._new_jobs.append(job_id)
+                self._wake.set()
+        return (202 if created else 200),{'ok':True,
+            'job':public_status(read_job(job_id,self.db_path)),'reused':not created},None
+
     def _reconcile_unconfirmed(self,actor,body):
         job_id=body.get("reconcile_job_id")
         if not isinstance(job_id,str) or not JOB_RE.fullmatch(job_id):
@@ -249,18 +301,20 @@ class AtlasQueryService:
             if action=="list":
                 with connect_db(self.db_path) as db:
                     rows=db.execute("""SELECT id,city,location,state,remote_queue_id,
-                      created_at,updated_at,error_code,fallback_of,fallback_enabled
+                      created_at,updated_at,error_code,fallback_of,fallback_enabled,
+                      attachment_failures,retry_of
                       FROM query_jobs
                       WHERE created_by=? ORDER BY created_at DESC LIMIT 20""",(actor,)).fetchall()
                 return 200,{"ok":True,"jobs":[dict(row) for row in rows]},None
             if action=="create":
                 if isinstance(body,dict) and set(body)=={"reconcile_job_id","atlas_checked_no_queue"}:
                     return self._reconcile_unconfirmed(actor,body)
-                if not isinstance(body,dict) or set(body)!={"city","location"}:
+                if not isinstance(body,dict) or set(body) not in ({"city","location"},{"city","location","retry_job_id"}):
                     return 400,{"ok":False,"error":"Informe praça e localização"},None
                 city,location=body["city"],body["location"]
                 if city not in CITY or location not in LOCATION:
                     return 400,{"ok":False,"error":"Seleção inválida"},None
+                if 'retry_job_id' in body:return self._retry_family(actor,body)
                 with self._lock:
                     job_id,created=claim_job(city,location,self.db_path,created_by=actor)
                     if created:

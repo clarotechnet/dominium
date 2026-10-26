@@ -52,7 +52,7 @@ shared	desc_review_relay.py	6			Authenticated relay for DESC review and private 
 orchestration	disconnect_automation.py	26			DOMINIUM | MAPA DE RESPONSABILIDADE	b4aaf01ad3a34fad
 docs	docs/agent/ATLAS_QUERY_AUTOMATION.md				QUERY Atlas — relatório analítico por localização	64027bb69d0bb4ad
 docs	docs/agent/ATLAS_QUERY_EXECUTION_20261025.md				QUERY Atlas — execução e bloqueio atual em 25/10/2026	15041ecfeba3abea
-docs	docs/agent/ATLAS_QUERY_RECOVERY_PLAN_20261025.md				Recuperação QUERY Atlas — design e execução	559a26872d750d2d
+docs	docs/agent/ATLAS_QUERY_RECOVERY_PLAN_20261025.md				Recuperação QUERY Atlas — design e execução	788a153aaec4117d
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	799f400b16efb2c7
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
 docs	docs/agent/memory/CURRENT_STATE.md				DOMINIUM — handoff operacional verificado	bcbebcd08752b1ee
@@ -112,8 +112,8 @@ shared	integrations/official_stock_relay/official_stock_bridge.py	5	1		Read-only
 shared	integrations/official_stock_relay/README.md				API Oficial — Estoque (somente leitura)	dfc23a1d9e9b911e
 shared	integrations/serial_consult/atlas_bridge_client.py	10			Read-only Atlas serial lookups via the existing localhost BotDMV queue.	55e9381c023c155d
 shared	integrations/serial_consult/atlas_query_data.py	17			Parse Atlas analytic equipment report and export read-only CSV/XLSX.	090ecd08db961ee5
-shared	integrations/serial_consult/atlas_query_http.py	11	2		Authenticated DOMINIUM QUERY Atlas service, isolated by operator.	828dce170ddd0791
-shared	integrations/serial_consult/atlas_query_pipeline.py	9			Private Atlas QUERY queue/attachment orchestrator (CLI foundation).	68238ab03a08a194
+shared	integrations/serial_consult/atlas_query_http.py	12	2		Authenticated DOMINIUM QUERY Atlas service, isolated by operator.	792813ca9b7ba2b5
+shared	integrations/serial_consult/atlas_query_pipeline.py	9			Private Atlas QUERY queue/attachment orchestrator (CLI foundation).	7c2f2ba8bf0860c5
 shared	integrations/serial_consult/atlas_query_report.py	16			Atlas read-only equipment report generator in a dedicated managed Chrome tab.	1009a0d3eaf843c5
 shared	integrations/serial_consult/confront_engine.py	7			Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.	c8a5eece9b26cd06
 shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-only Atlas x Imperium confrontation results.	70854357c13c117e
@@ -208,13 +208,13 @@ tooling-deploy	scripts/verify_confront_runtime.py				Import live DESC relay and 
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
-frontend	static/atlas-query-ui.js	20	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	9df466750d5e61e5
+frontend	static/atlas-query-ui.js	21	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	501bdfb4b49a4958
 frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	0b07900bcc977ee8
 frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			6819bee073921822
+frontend	static/index.html		1			c1aca3c7b70d74e1
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	16eb80367d94b05d
@@ -244,12 +244,12 @@ tests	tests/test_api_security.py	14	2			6a9274ff24f39348
 tests	tests/test_app.py	37	5	2		dec92061f9dc6147
 tests	tests/test_atlas_bridge_client.py	14			Tests for the real BotDMV Atlas HTTP queue contract (synthetic only).	97a6ec2888879cf6
 tests	tests/test_atlas_query_data.py	6			QUERY Atlas table transformations and text-preserving exports.	0748addddb6b990d
-tests	tests/test_atlas_query_http.py	16	3		QUERY Atlas authenticated API contract without contacting real Atlas.	c312130b2d5bd364
+tests	tests/test_atlas_query_http.py	21	3		QUERY Atlas authenticated API contract without contacting real Atlas.	d9124764aa01e7bb
 tests	tests/test_atlas_query_pipeline.py	21			NetTask 404 handling: no duplicate report generation or insecure URLs.	99014d453eb991f2
 tests	tests/test_atlas_query_policy.js	2	4			350c51201727bacf
 tests	tests/test_atlas_query_proxy_json.js	1	3			4e8277a7c89ce12f
 tests	tests/test_atlas_query_report.py	13			Safe report generator: no duplicate Atlas task after uncertainty.	9a490f5df2a54a18
-tests	tests/test_atlas_query_ui_status.js	3	1			80e0a5fc416d8ab8
+tests	tests/test_atlas_query_ui_status.js	3	1			c64bb120d696b1d1
 tests	tests/test_auth_store.py	7				2131129f824fbae2
 tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
 tests	tests/test_build_hostinger_node_release.py	3				157aef4ebdf049a3

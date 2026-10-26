@@ -42,7 +42,7 @@ function setup(response,now){
   const calls=[];
   const operations=[];
   const ctx={document,state,window:{confirm:()=>true,DOMINIUM_MOTION:{operation(payload){operations.push(payload)}}},setInterval(fn){interval=fn},
-    request: async(url,opts)=>{calls.push({url,method:opts?.method||'GET'});return response(url,opts)},
+    request: async(url,opts)=>{calls.push({url,method:opts?.method||'GET',body:opts?.body});return response(url,opts)},
     requestBlob:async()=>({blob:new Blob([])}),
     saveBlob:()=>{},localDate:()=>'',switchProfile:async city=>{state.profile=city}};
   if(now!==undefined)ctx.Date=class extends Date {static now(){return now}};
@@ -55,7 +55,7 @@ test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/Histórico desta sessão/);
   assert.match(html,/id="atlasQueryTimestamps"/);
   assert.match(html,/id="atlasQueryReconcile"/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261025-1/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261026-1/);
 });
 
 test('old completed family permits one explicit generation without automatic POST',async()=>{
@@ -79,6 +79,27 @@ test('old completed family permits one explicit generation without automatic POS
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(calls.filter(c=>c.method==='POST').length,1);
   assert.equal(element('atlasQueryStart').disabled,true);
+});
+
+test('repeated 404 on both confirmed IDs permits one linked explicit recovery before eight hours',async()=>{
+  const primary={id:'7'.repeat(32),city:'natal',state:'attachment_wait',
+    error_code:'attachment_http_404',remote_queue_id:'276907780',
+    created_at:Date.now()/1000-300,attachment_failures:2,fallback_of:''};
+  const reserve={...primary,id:'8'.repeat(32),remote_queue_id:'276907783',fallback_of:primary.id};
+  const next={id:'9'.repeat(32),city:'natal',state:'submission_uncertain',remote_queue_id:null};
+  const {element,state,interval,listeners,calls}=setup(async(url,opts)=>{
+    if(opts?.method==='POST')return {job:next};
+    return url.endsWith(reserve.id)?{job:reserve}:{jobs:[reserve,primary]};
+  });
+  state.profile='natal';state.activeModule='confront';interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(element('atlasQueryStart').disabled,false);
+  assert.equal(calls.filter(c=>c.method==='POST').length,0);
+  listeners.get('atlasQueryStart:click')();listeners.get('atlasQueryStart:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  const posts=calls.filter(c=>c.method==='POST');
+  assert.equal(posts.length,1);
+  assert.deepEqual(JSON.parse(posts[0].body),{city:'natal',location:'empreiteira',retry_job_id:primary.id});
 });
 
 for(const [label,override] of [

@@ -50,6 +50,7 @@ def upgrade_db(db_path=DB):
             "attachment_url":"TEXT NOT NULL DEFAULT ''",
             "download_path":"TEXT NOT NULL DEFAULT ''",
             "fallback_of":"TEXT NOT NULL DEFAULT ''",
+            "retry_of":"TEXT NOT NULL DEFAULT ''",
             "fallback_enabled":"INTEGER NOT NULL DEFAULT 0"
         }.items():
             if name not in existing:
@@ -57,6 +58,8 @@ def upgrade_db(db_path=DB):
         # At most one persisted reserve attempt per main QUERY.
         db.execute("""CREATE UNIQUE INDEX IF NOT EXISTS idx_query_one_fallback
             ON query_jobs(fallback_of) WHERE fallback_of!=''""")
+        db.execute("""CREATE UNIQUE INDEX IF NOT EXISTS idx_query_one_retry
+            ON query_jobs(retry_of) WHERE retry_of!=''""")
 
 
 def update_job(job_id, db_path=DB, **fields):
@@ -180,7 +183,7 @@ def public_status(job):
     return {key:job[key] for key in (
         "id","city","location","state","remote_queue_id",
         "attachment_failures","created_at","updated_at","error_code",
-        "fallback_of","fallback_enabled") if key in job}
+        "fallback_of","fallback_enabled","retry_of") if key in job}
 
 
 

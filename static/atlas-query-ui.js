@@ -133,8 +133,18 @@
   const pollingComplete=job=>Boolean(job && (
     ['ready','failed','format_review','atlas_auth_required'].includes(job.state)||
     job.error_code==='atlas_submit_unconfirmed'||job.error_code==='atlas_auth_required'));
+  function retryFamilyId(){
+    const primary=relatedJobs.find(job=>!job.fallback_of);
+    if(!primary || relatedJobs.length!==2)return '';
+    return relatedJobs.every(job=>job.state==='attachment_wait' &&
+      /^\d{5,15}$/.test(String(job.remote_queue_id||'')) &&
+      job.error_code==='attachment_http_404' && job.attachment_failures>=2 &&
+      typeof job.created_at==='number' && Number.isFinite(job.created_at) &&
+      Date.now()-job.created_at*1000>=120000) ? primary.id : '';
+  }
   function canCreateQuery(){
     if(!active || ['ready','failed','format_review'].includes(active.state))return true;
+    if(retryFamilyId())return true;
     // Match the backend's eight-hour reuse window. Recovery is an explicit
     // operator action and requires every existing attempt to have a confirmed ID.
     return relatedJobs.length>0 && relatedJobs.every(job=>
@@ -147,6 +157,7 @@
   function renderStatus(){
     ui.city.value=state.profile;
     ui.start.disabled=busy||!allowed()||!canCreateQuery();
+    ui.start.textContent=retryFamilyId()?'Gerar nova QUERY após falha dos anexos':'Gerar QUERY no Atlas';
     ui.refresh.disabled=fetching;
     ui.reconcile.hidden=!(active?.state==='submission_uncertain'&&
       active?.error_code==='atlas_submit_unconfirmed');
@@ -303,6 +314,7 @@
   }
   async function create(){
     if(busy||fetching||!allowed()||!canCreateQuery())return;
+    const retryId=retryFamilyId();
     busy=true;renderStatus();
     writeNotice('Pedido recebido no navegador. Enviando ao servidor...');
     queryHud('searching','Gerando QUERY no Atlas',
@@ -311,7 +323,8 @@
       const data=await request('/api/atlas-query/jobs',{
         method:'POST',
         headers:{'content-type':'application/json'},
-        body:JSON.stringify({city:state.profile,location:ui.location.value}),
+        body:JSON.stringify({city:state.profile,location:ui.location.value,
+          ...(retryId?{retry_job_id:retryId}:{})}),
         timeoutMs:25000
       });
       active=data.job;relatedJobs=active?[active]:[];

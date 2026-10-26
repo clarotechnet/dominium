@@ -52,3 +52,23 @@ bloqueados. O backend continua como autoridade para criar/reutilizar.
   276907771/app-3 chegou a ready com 29.529 linhas. Falta validar exportações/UI.
 - Recife foi gerada pela UI: 276907778. Natal pela UI: 276907780. Acompanhamento
   e validação final continuam; não declarar conclusão enquanto faltar cidade.
+
+## Ampliação necessária após teste real — 26/10, 00:05
+
+Natal principal276907780 e reserva276907783 retornam404 em app-2; oito horas
+impediriam recuperação prática. Adicionar recuperação explícita na mesma rota
+POST com retry_job_id, após duas falhas404 por membro e 120s de idade, apenas
+para a família mais recente do operador/cidade. Ambas devem ter ID confirmado.
+Persistir retry_of com índice UNIQUE; repetição do mesmo POST retorna o mesmo
+trabalho. Não alterar IDs antigos nem gerar por timer. Nova família conserva
+uma reserva automática. Bloquear envios incertos em qualquer família da cidade.
+Adicionar testes de concorrência, propriedade, replay, prazo, erros e restart.
+Migrar/deploy relay com backup e sem reiniciar Chrome; verificar UI e produção.
+
+Implementação ampliada: migração aditiva retry_of/índice único; validação da
+família mais recente e proteção de concorrência entre operadores preservada.
+Revisão encontrou bypass dessa proteção na primeira versão; teste reproduziu
+202 indevido, correção passou a retornar409. Sem envio ao Atlas nos testes.
+O keepalive em execução foi observado em logs CDP: sucessos a cerca de80s
+após o login; existe lacuna extensa anterior. Isso comprova funcionamento
+atual da consulta, não renovação automática de SSO nem causa exata da expiração.

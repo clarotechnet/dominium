@@ -42,6 +42,93 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.svc.handle('GET','/api/atlas-query/jobs/'+job_id,'user-2')[0],404)
         self.assertEqual(self.svc.handle('POST','/api/atlas-query/jobs','viewer',body)[0],403)
 
+    def _failed_family(self):
+        import time
+        from atlas_query_report import save_queue,connect_db
+        primary=self.svc.handle('POST','/api/atlas-query/jobs','user-1',
+            {'city':'natal','location':'empreiteira'})[1]['job']['id']
+        save_queue(primary,'276907780',self.svc.db_path)
+        update_job(primary,self.svc.db_path,state='attachment_wait',
+            error_code='attachment_http_404',attachment_failures=2)
+        reserve=self.svc._ensure_fallback(primary)
+        save_queue(reserve,'276907783',self.svc.db_path)
+        update_job(reserve,self.svc.db_path,state='attachment_wait',
+            error_code='attachment_http_404',attachment_failures=2)
+        with connect_db(self.svc.db_path) as db:
+            db.execute('UPDATE query_jobs SET created_at=?',(time.time()-300,))
+        return primary,reserve
+
+    def test_explicit_404_recovery_reuses_durable_attempt_across_services(self):
+        from atlas_query_report import read_job
+        primary,reserve=self._failed_family()
+        body={'city':'natal','location':'empreiteira','retry_job_id':primary}
+        first=self.svc.handle('POST','/api/atlas-query/jobs','user-1',body)
+        self.assertEqual(first[0],202)
+        replacement=first[1]['job']['id']
+        self.assertNotEqual(replacement,primary)
+        self.assertEqual(read_job(replacement,self.svc.db_path)['retry_of'],primary)
+        self.assertEqual(read_job(replacement,self.svc.db_path)['fallback_enabled'],1)
+        restarted=AtlasQueryService(db_path=self.svc.db_path,start_worker=False)
+        self.addCleanup(restarted.close)
+        replay=restarted.handle('POST','/api/atlas-query/jobs','user-1',body)
+        self.assertEqual(replay[0],200)
+        self.assertTrue(replay[1]['reused'])
+        self.assertEqual(replay[1]['job']['id'],replacement)
+        self.assertEqual(restarted._new_jobs,[])
+        self.assertEqual(read_job(primary,self.svc.db_path)['remote_queue_id'],'276907780')
+        self.assertEqual(read_job(reserve,self.svc.db_path)['remote_queue_id'],'276907783')
+
+    def test_explicit_404_recovery_checks_actor_city_and_each_member(self):
+        import time
+        from atlas_query_report import connect_db
+        primary,reserve=self._failed_family()
+        body={'city':'natal','location':'empreiteira','retry_job_id':primary}
+        route='/api/atlas-query/jobs'
+        self.assertEqual(self.svc.handle('POST',route,'user-2',body)[0],404)
+        self.assertEqual(self.svc.handle('POST',route,'user-1',{**body,'city':'recife'})[0],409)
+        for fields in [
+            {'state':'submission_uncertain','remote_queue_id':None},
+            {'state':'processing'}, {'state':'ready'},
+            {'error_code':'attachment_transport_timeout'},
+            {'attachment_failures':1},
+        ]:
+            with self.subTest(fields=fields):
+                update_job(reserve,self.svc.db_path,state='attachment_wait',
+                    remote_queue_id='276907783',error_code='attachment_http_404',attachment_failures=2)
+                update_job(reserve,self.svc.db_path,**fields)
+                self.assertEqual(self.svc.handle('POST',route,'user-1',body)[0],409)
+        update_job(reserve,self.svc.db_path,attachment_failures=2)
+        with connect_db(self.svc.db_path) as db:
+            db.execute('UPDATE query_jobs SET created_at=? WHERE id=?',(time.time(),reserve))
+        self.assertEqual(self.svc.handle('POST',route,'user-1',body)[0],409)
+
+    def test_explicit_404_recovery_is_singleton_under_concurrency(self):
+        from concurrent.futures import ThreadPoolExecutor
+        from atlas_query_report import connect_db
+        primary,_=self._failed_family()
+        def recover(_):
+            svc=AtlasQueryService(db_path=self.svc.db_path,start_worker=False)
+            try:return svc.handle('POST','/api/atlas-query/jobs','user-1',
+                {'city':'natal','location':'empreiteira','retry_job_id':primary})
+            finally:svc.close()
+        with ThreadPoolExecutor(max_workers=4) as pool:responses=list(pool.map(recover,range(4)))
+        self.assertEqual(sum(r[0]==202 for r in responses),1)
+        self.assertEqual(len({r[1]['job']['id'] for r in responses}),1)
+        with connect_db(self.svc.db_path) as db:
+            self.assertEqual(db.execute('select count(*) from query_jobs where retry_of=?',(primary,)).fetchone()[0],1)
+
+    def test_explicit_404_recovery_preserves_cross_operator_guard(self):
+        import time
+        from atlas_query_report import connect_db
+        primary,_=self._failed_family()
+        with connect_db(self.svc.db_path) as db:
+            db.execute('UPDATE query_jobs SET created_at=?',(time.time()-9*3600,))
+        standard={'city':'natal','location':'empreiteira'}
+        self.assertEqual(self.svc.handle('POST','/api/atlas-query/jobs','user-2',standard)[0],202)
+        self.assertEqual(self.svc.handle('POST','/api/atlas-query/jobs','user-1',standard)[0],409)
+        self.assertEqual(self.svc.handle('POST','/api/atlas-query/jobs','user-1',
+            {**standard,'retry_job_id':primary})[0],409)
+
     def test_confirmed_404_spawns_exactly_one_backup_for_all_cities(self):
         from atlas_query_report import read_job,save_queue
         for city in ('natal','mossoro','fortaleza','recife'):
