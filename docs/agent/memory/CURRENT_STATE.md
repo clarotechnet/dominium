@@ -1,3 +1,23 @@
+# Estado vigente — espera visível e aba Atlas recuperada26/10/2026,14:48
+
+UIpublicada56581179: fasewaiting,painelAGUARDANDO RESPOSTA semanimação contínua,
+avisopersistente;polling/IDs/guardas mantidos. AssetsQUERY/motion/CSS20261026-4,
+Actions40371348485success.36UI/947Python/21skip,JS/Ruff/build aprovados;UIreal
+verificouCSSpaused,IDs365/412preservados,exportsbloqueados.
+
+AbaAtlasparouderesponderaCDP;Browsermainrespondia,CPU17%,8GBRAMlivre. UMArecarga
+somente daaba recuperouJavaScript econsultaNetTaskreal;Chromeeperfilmantidos.
+Apósrecarga276938313complete eattachment_recognizedtrue no pipelinee6170b9:
+validoua integraçãoapp4instalada antespendente detimeout. Fonte313manual20084
+jávalidadaHTTP200; nãoinseridacomoautomático.
+
+Workerretomouconsultas,mas276935365/276935412permanecemattachment_http_404.
+Bancoíntegro27jobs183194linhas;nenhumIDnovo. MetaautomáticaNatalcontinuaaberta.
+Detalhes:../ATLAS_QUERY_WAITING_HUD_20261026.md. Não repetir reload/restart
+emlaço;tentativarecuperaçãofoiúnica,fundamentadaemtargettravado.
+
+## Histórico anterior — checkpoints abaixo superados
+
 # Estado vigente — app4 corrigido em26/10/2026,14:29 America/Sao_Paulo
 
 Vídeo novo revelou313manual comanexoapp-4. Defeito confirmado:FILE_URL só

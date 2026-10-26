@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T17:41:34+00:00",
+  "generated_at": "2026-10-26T17:48:54+00:00",
   "schema": 2,
-  "source_fingerprint": "deb50ecf2c4bdae22cf7cd1ea1419a823bd692a39c10359773edb64b45cabaf9",
+  "source_fingerprint": "0d04f3f7e24f3aac5b7483d298d5b1072c52798aa88c92b06c0784dbb32e2b0a",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1264,6 +1264,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/ATLAS_QUERY_WAITING_HUD_20261026.md",
+      "category": "docs",
+      "bytes": 2589,
+      "sha256": "cfd355576cf2880e167e1533faa0d914d0e7bf4e170e0055e1f056057de628fb",
+      "summary": "QUERY — distinguir espera de processamento",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md",
       "category": "docs",
       "bytes": 4890,
@@ -1318,9 +1331,9 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 57454,
-      "sha256": "7670b6f43a21459f47a9ae8be2ab590e9d451299c8140a414bd41b13771ed5d3",
-      "summary": "Estado vigente — app4 corrigido em26/10/2026,14:29 America/Sao_Paulo",
+      "bytes": 58564,
+      "sha256": "638321d73710b61fb2653c1f58f09844f694024355ab4467d84c5cc17bf3ba24",
+      "summary": "Estado vigente — espera visível e aba Atlas recuperada26/10/2026,14:48",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
