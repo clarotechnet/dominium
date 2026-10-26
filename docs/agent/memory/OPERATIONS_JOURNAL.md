@@ -107,3 +107,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** RegressaoREDprocessing_vs_failed depoisGREEN;52QUERY Python;gate914com21skip;revisao14pipelineOK;consulta real180failed;DB24jobs163049linhasintegridadeok;smokes200anon401;parserXLS20150NATAL
 
 **Próximo passo/pendência:** Obter primeiro ID que entregou XLS, comparar parametros/processador e download/hash servidor; nao gerar outras filas
+
+## 2026-10-26 12:54 UTC — Natal manual2051 recuperado e video comparado
+
+**Motivo:** Usuario comprovou downloadsapp3 e forneceu video amarelo-verde; comparar sem inferir garantia
+
+**Alterado:** Manual2051 recuperado combackup no pipeline;20145linhas ready; datasAtlas corrigidas combackup; automacao horaria diferenciada. Nenhum novo ID nem patch produzido nesta etapa
+
+**Verificação:** OriginalDBtodosdadosiguais;servicoCSV-XLSX200integros;browserCSV-XLSX20145x11todascelulasiguais;reloadID2051;DB25jobs183194linhasok;video51s eGETprocessosverde tambem em081404;parametros2051e081iguais
+
+**Próximo passo/pendência:** Validar geracao automatica atual Natal sem depender de recuperacao manual. Nao gerar novas filas na observacao e nao declarar quatro cidades prontas

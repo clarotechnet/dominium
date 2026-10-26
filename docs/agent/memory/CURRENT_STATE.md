@@ -1,5 +1,24 @@
 # DOMINIUM — handoff operacional verificado
 
+## Estado vigente — 26/10/2026, 09:53, America/Sao_Paulo
+
+Natal manual276922051 recuperado no pipeline existente, job3926df0c8a924e8fb455cd4be36f06ac,
+ready/20.145registros. Servidor baixou200app-3; todos os dados conferidos com
+original/SQLite, tabela/recarga e CSV/XLSX navegador íntegros e célula por célula.
+Origemmanual registrada, nenhum envio novo. Backup antes da inclusão e correção
+de horários reais09:24:50/09:24:58/09:25:15. DB25jobs183194linhasíntegro.
+
+Vídeo51s mostra276922323: amarelo→verde, batch03, início de downloadapp-3.
+Página processos.do atualiza20s e também mostra verde no automático081404.
+Parâmetros bom2051/ruim081 iguais179/5/0/0/0; não dizer que apenas abrirpopup
+evitaerro. Pipeline já esperaCOMPLETO+30s. Código inalterado nesta etapa.
+
+Meta automática quatro cidades ainda aberta: ready manual não comprova criação
+automática de Natal. Observação ChatGPT horária ativa, prompt atualizado com
+relatório recuperado e casos do vídeo; sem novas gerações. Registro completo
+../ATLAS_QUERY_VIDEO_RECOVERY_20261026.md. Não voltar a pedir o primeiro ID
+antigo: candidato309404 excluído;2051é caso válido já confirmado no servidor.
+
 ## Estado vigente — 26/10/2026, 09:11, America/Sao_Paulo
 
 Usuário conseguiu uma geração manual válida: XLS recebido, parser confirmou

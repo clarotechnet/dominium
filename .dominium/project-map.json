@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T12:12:19+00:00",
+  "generated_at": "2026-10-26T12:54:41+00:00",
   "schema": 2,
-  "source_fingerprint": "90184208b8bfca02a596e6f94f9f0b8ab7688f618a05d49f3cb09b939ba16b28",
+  "source_fingerprint": "9fa50df629abfd8ac52f44041ca0674bd0e29268c04e377a26428c946f95a073",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1212,6 +1212,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/ATLAS_QUERY_VIDEO_RECOVERY_20261026.md",
+      "category": "docs",
+      "bytes": 6621,
+      "sha256": "3a8dd0aa334a57b13463ec6bd8865c3159b3f500b9d3b27b2b092707e369c76a",
+      "summary": "Natal — vídeo, comparação e recuperação do relatório atual",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md",
       "category": "docs",
       "bytes": 4890,
@@ -1266,8 +1279,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 53087,
-      "sha256": "78b6de4e5a0ac93d238dd54728cf265a3efd4396a5b42111a5f46f814aeeb36b",
+      "bytes": 54283,
+      "sha256": "aa99a9b601779c6d932ac680d70af3d3e52a83b7069230845190b40455d48fc1",
       "summary": "DOMINIUM — handoff operacional verificado",
       "imports": [],
       "endpoints": [],
@@ -1292,8 +1305,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 6912,
-      "sha256": "7d6a30bec01df39c985d20088629c00b4dd80d413f414935721bdaa2e556ea78",
+      "bytes": 7686,
+      "sha256": "c6413e5ddbd0476f54c724cf8c18c2747104f69616b62c5951d6fc1deb57e0d1",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],

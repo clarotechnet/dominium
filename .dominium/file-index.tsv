@@ -58,13 +58,14 @@ docs	docs/agent/ATLAS_QUERY_MANUAL_COMPARISON_20261026.md				Natal — comparaç
 docs	docs/agent/ATLAS_QUERY_RECOVERY_PLAN_20261025.md				Recuperação QUERY Atlas — design e execução	4580311a6d99a46a
 docs	docs/agent/ATLAS_QUERY_USER_WATCH_20261026.md				Natal — novos IDs e acompanhamento solicitado pelo usuário	97867df4f4405a8d
 docs	docs/agent/ATLAS_QUERY_VERIFICATION_20261026.md				QUERY Atlas — execução prática de 25/10 a 26/10/2026	0ad6755105122351
+docs	docs/agent/ATLAS_QUERY_VIDEO_RECOVERY_20261026.md				Natal — vídeo, comparação e recuperação do relatório atual	3a8dd0aa334a57b1
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor de sessão instalado em 26/10/2026	cd87d67d5054efb8
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	799f400b16efb2c7
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md				DOMINIUM — handoff operacional verificado	78b6de4e5a0ac93d
+docs	docs/agent/memory/CURRENT_STATE.md				DOMINIUM — handoff operacional verificado	aa99a9b601779c6d
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	7d6a30bec01df39c
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	c6413e5ddbd0476f
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
 docs	docs/reference/DOMINIUM X IMPERIUM Especificacoes_requisicoes.txt				﻿================================================================================	0888eec3d49a2ab5
