@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T17:25:25+00:00",
+  "generated_at": "2026-10-26T17:32:47+00:00",
   "schema": 2,
-  "source_fingerprint": "e5516f6cf450fe3503a37d075a3f86d9d85b92e7ec7798121bb7d284e4363c7c",
+  "source_fingerprint": "e42a74e0ab5be9d4cf8e027c644f7fded85dbcdbd6ffa605a57ff5c7909282fc",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1108,6 +1108,19 @@
       "symbol_count": 26
     },
     {
+      "path": "docs/agent/ATLAS_APP4_VIDEO_COMPARISON_20261026.md",
+      "category": "docs",
+      "bytes": 4289,
+      "sha256": "d45d66712a40645b656d70630a635de4ef9c0c71c92873f392ed99ad2514e403",
+      "summary": "Atlas — quarto nó de anexos identificado nos vídeos",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/ATLAS_BATATLAS_NATAL_ESCALATION_20261026.md",
       "category": "docs",
       "bytes": 2839,
@@ -1305,9 +1318,9 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 56076,
-      "sha256": "e51c42e5930fb28e4a48fce5eb4b3107245b4d160e709eb47aa3ed5ae09dbece",
-      "summary": "Estado vigente — QUERY publicada em26/10/2026,13:58 America/Sao_Paulo",
+      "bytes": 57454,
+      "sha256": "7670b6f43a21459f47a9ae8be2ab590e9d451299c8140a414bd41b13771ed5d3",
+      "summary": "Estado vigente — app4 corrigido em26/10/2026,14:29 America/Sao_Paulo",
       "imports": [],
       "endpoints": [],
       "env_vars": [],

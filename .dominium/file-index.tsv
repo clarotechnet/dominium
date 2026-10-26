@@ -50,6 +50,7 @@ shared	desc_order_verifier.py	7			Fail-closed, read-only Imperium order/installe
 shared	desc_review_proxy.py	10	1		Authenticated Dominium boundary to the Bot's existing DESC review service.	af5c440b35d2eb65
 shared	desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	79346c1e1b556a5d
 orchestration	disconnect_automation.py	26			DOMINIUM | MAPA DE RESPONSABILIDADE	b4aaf01ad3a34fad
+docs	docs/agent/ATLAS_APP4_VIDEO_COMPARISON_20261026.md				Atlas — quarto nó de anexos identificado nos vídeos	d45d66712a40645b
 docs	docs/agent/ATLAS_BATATLAS_NATAL_ESCALATION_20261026.md				Natal: anexos de relatório indisponíveis no Atlas/BatAtlas	508ab44f8caddc5a
 docs	docs/agent/ATLAS_PROCESS_FLOW_PLAN_20261026.md				Fluxo Atlas: conclusão do processo, reserva e nova geração explícita	7604277452933687
 docs	docs/agent/ATLAS_QUERY_AUTOMATION.md				QUERY Atlas — relatório analítico por localização	23dcdc7a07105c8c
@@ -65,7 +66,7 @@ docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor d
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	799f400b16efb2c7
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md				Estado vigente — QUERY publicada em26/10/2026,13:58 America/Sao_Paulo	e51c42e5930fb28e
+docs	docs/agent/memory/CURRENT_STATE.md				Estado vigente — app4 corrigido em26/10/2026,14:29 America/Sao_Paulo	7670b6f43a21459f
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
 docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	c6413e5ddbd0476f
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c

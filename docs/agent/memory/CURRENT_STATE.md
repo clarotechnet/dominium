@@ -1,3 +1,25 @@
+# Estado vigente — app4 corrigido em26/10/2026,14:29 America/Sao_Paulo
+
+Vídeo novo revelou313manual comanexoapp-4. Defeito confirmado:FILE_URL só
+aceitavaapp1/2/3 e descartava4antes doGET. Corrigido epublicado/instaladoe6170b9;
+947Python/21skip,JS,Ruff,build aprovados, regressõesRED→GREEN. Somentepipeline
+alterado, backup íntegro27jobs183194linhas preservadas;Chrome preservado.
+Hashpipeline6f12cce2e571194558f69e233647adaa7ca1cfd8ce18da595b21e528d1c5a98a.
+UIHostinger2475433/asset20261026-3 permaneceinalterada.
+
+MesmoChrome do servidor baixou manual276938313HTTP200app4,15.746.227bytes,
+20.084NATAL,hash7af9e8ecdc3fa9b240ea47ab329a39d6937b2a1f190be19c01511becfa66af17.
+Origemmanual,não inserido comoautomático. Nenhum novoID nessa intervenção.
+201app1/404,266app2/404 confirmados;198failed. Não afirmar que app4corrige404
+nem que troca denavegador era necessária. Detalhes:../ATLAS_APP4_VIDEO_COMPARISON_20261026.md.
+Validador instalado aceitaapp4 ehashconfere;reconsultas pósinstalação tiveram
+timeoutCDP, não concluir sucesso completo nemloginexpirado. Download200313
+foi comprovado antes dainstalação no mesmoChrome.
+MetaautomáticaNatal aindaaberta; manterpar276935365/276935412semreenvio.
+AcessoDesktopCommander restabelecido pelo usuário; cotaantiga é históricosuperado.
+
+## Histórico anterior — estados abaixo superados por este checkpoint
+
 # Estado vigente — QUERY publicada em26/10/2026,13:58 America/Sao_Paulo
 
 Principal+reserva45s e antecipação porFALHOU publicados/instalados no commit
