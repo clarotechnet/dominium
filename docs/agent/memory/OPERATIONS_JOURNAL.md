@@ -67,3 +67,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 42 Python QUERY e33 JS; quality gate904 Python21skip aprovado; fonte banco e CSV/XLSX de Fortaleza29529 Recife55749 Mossoro892 identicos; UI recarga e seis downloads integros; smokes200; SQLite18jobs163049rows ok
 
 **Próximo passo/pendência:** Atlas/BatAtlas disponibilizar anexos Natal276907890 e276907939, completos no NetTask mas XLS HTML ZIP404 inclusive navegacao Chrome; depois validar Natal atual e so entao concluir quatro cidades
+
+## 2026-10-26 03:58 UTC — Retomada Atlas autenticado; Natal novos IDs463572 com anexos404
+
+**Motivo:** Continuar execucao apos usuario citar bloqueio antigo de login
+
+**Alterado:** Somente diagnostico e recuperacao explicita na UI: principal276908463 e reserva276908572, NetTask COMPLETO, XLS HTML ZIP404 e navegacao Chrome404; nenhum patch ou restart
+
+**Verificação:** Consulta NetTask real autenticada; formulario quatro cidades; SQLite20jobs163049rows integrityok; smokes QUERYconfrontreports200; runtimec94984b hashes iguais; sem novos testes de codigo inalterado
+
+**Próximo passo/pendência:** AtlasBatAtlas disponibilizar anexos dos IDs276908463 e276908572 em batch02app2 e batch01app1; apos200 validar Natal e concluir quatro cidades

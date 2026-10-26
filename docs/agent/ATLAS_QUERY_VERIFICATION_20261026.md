@@ -1,5 +1,42 @@
 # QUERY Atlas — execução prática de 25/10 a 26/10/2026
 
+## Retomada de 26/10, 00:48–00:58, America/Sao_Paulo
+
+O usuário solicitou continuar após citar o bloqueio antigo de login. A sessão
+foi revalidada pelo formulário e por consulta real NetTask. **O bloqueio atual
+não é autenticação: os anexos continuam indisponíveis na origem.**
+
+Uma nova recuperação explícita foi acionada pela interface às 00:51:19, com
+ID principal confirmado 276908463 e uma reserva automática 276908572. Nenhum
+envio incerto foi repetido. Ambos os IDs estão COMPLETO no NetTask:
+
+| ID novo | Servidor anunciado | Anexo anunciado | XLS / HTML / ZIP | Navegação Chrome XLS |
+| --- | --- | --- | --- | --- |
+| 276908463 | atlasBatch02 | app-2 | 404 / 404 / 404 | 404, text/html |
+| 276908572 | atlasBatch01 | app-1 | 404 / 404 / 404 | 404, text/html |
+
+O formulário expõe a geração por fila via
+NetHomeEquipamentoService.relatorioEquipamentosAnaliticoExportacaoTaskV2.
+A inspeção somente leitura não encontrou seletor de servidor de processamento
+nem download síncrono alternativo nessa tela; não se afirma que inexista outra
+API no fornecedor. Nenhuma URL alternativa foi inventada ou gravada no banco.
+
+Conferência às 00:57:45: SQLite integrity_check=ok,20 trabalhos e 163.049 linhas;
+rotas QUERY jobs, confront/status e disconnection/reports autenticadas 200.
+Hashes dos módulos operacionais continuam iguais a c94984b. Não houve patch,
+deploy, restart de relay/Chrome ou testes automatizados novos nesta retomada;
+foram usados o código publicado e os testes previamente aprovados.
+
+Natal acumula oito IDs novos confirmados nesta investigação, todos sem anexo
+válido. Fortaleza, Recife e Mossoró preservam os relatórios aprovados abaixo.
+A meta das quatro cidades continua não concluída. Intervenção necessária:
+Atlas/BatAtlas verificar a publicação dos documentos dos IDs 276908463 e
+276908572 em atlasBatch02/app-2 e atlasBatch01/app-1, disponibilizar os anexos
+ou indicar uma forma operacional de gerar o relatório. Acesso ao armazenamento
+e aos logs internos do fornecedor não está disponível neste ambiente.
+
+## Registro da execução anterior
+
 Verificado até 26/10, 00:29, America/Sao_Paulo. **Meta das quatro cidades não
 concluída: a geração atual de Natal não entregou anexo disponível.**
 Este registro substitui o bloqueio inicial de autenticação e as restrições
@@ -89,7 +126,7 @@ o código corrigido retorna409. Essa versão intermediária não foi implantada.
 
 Backup consistente anterior à migração:
 `C:\DominiumRuntime\AtlasQueryData\backups\query_jobs.before-linked-recovery-20261026-001352.sqlite3`.
-14 trabalhos e163.049 linhas preservados no restart. Arquivos anteriores
+14 trabalhos e 163.049 linhas preservados no restart. Arquivos anteriores
 do relay em `DescRelay-20261010/backups/linked-recovery-20261026-001352`.
 O script de implantação verifica hashes, compila antes da troca e prevê rollback.
 
@@ -136,7 +173,7 @@ comprovada por leitura NetTask e geração real, não pela aparência da janela.
 - Nenhuma tarefa ChatGPT contínua foi configurada ou verificada nesta execução.
   O worker do servidor é separado e mantém leitura/retry dos IDs existentes.
 - Ação externa necessária: equipe Atlas/BatAtlas verificar geração/publicação
-  dos documentos de Natal 276907890 e276907939 em atlasBatch02/app-2 e
+  dos documentos de Natal 276907890 e 276907939 em atlasBatch02/app-2 e
   atlasBatch01/app-1; disponibilizar os arquivos ou indicar geração em nó
   operacional. Não temos acesso ao armazenamento ou logs internos do fornecedor.
 - Depois de um anexo atual de Natal retornar200: interpretar, persistir,

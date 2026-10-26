@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T03:33:08+00:00",
+  "generated_at": "2026-10-26T04:02:05+00:00",
   "schema": 2,
-  "source_fingerprint": "82e6240f10333249edfe6e381e660dfce0d79d319fea0770aced38f93afba7c4",
+  "source_fingerprint": "c47419613a7006a585d682ba90802c3c5723d5c812ae3c884add2cd018a54daa",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1134,6 +1134,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/ATLAS_QUERY_FORTALEZA_RECHECK_20261026_0055.md",
+      "category": "docs",
+      "bytes": 3257,
+      "sha256": "eab7146a96221cf2918e7cef366149cdb827bc440cc1c53bfed1f63ddcdc65f5",
+      "summary": "Fortaleza — rechecagem operacional 26/10/2026, 00:54–00:55",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/ATLAS_QUERY_RECOVERY_PLAN_20261025.md",
       "category": "docs",
       "bytes": 5119,
@@ -1149,8 +1162,8 @@
     {
       "path": "docs/agent/ATLAS_QUERY_VERIFICATION_20261026.md",
       "category": "docs",
-      "bytes": 8945,
-      "sha256": "0faa7b9152d32d7ac6572e366985d59f9ee316d57757d1599579e2c7e615f57c",
+      "bytes": 11067,
+      "sha256": "0ad675510512235198c906019933e783cdc5d8b6a07483c2f7d232351154f227",
       "summary": "QUERY Atlas — execução prática de 25/10 a 26/10/2026",
       "imports": [],
       "endpoints": [],
@@ -1188,8 +1201,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 48005,
-      "sha256": "f3732b3d20906d7b09d9944569bf9b7f64361f5aa6a7a63a55151993f06ec265",
+      "bytes": 49069,
+      "sha256": "57a461ed43fc778e2cc0467f5b53ffb7815e8f24f6a2dff9992daeb5970ea901",
       "summary": "DOMINIUM — handoff operacional verificado",
       "imports": [],
       "endpoints": [],
@@ -1214,8 +1227,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 3953,
-      "sha256": "cee6541f72581936dc38d102195cee58941b4ad9781682afd879a5fe7cae9efb",
+      "bytes": 4700,
+      "sha256": "35e657bacd2f64b6f4e83bbc56ee921eed5a249bf7cf41809943d8e628a2d66f",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],

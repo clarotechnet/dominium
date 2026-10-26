@@ -1,5 +1,23 @@
 # DOMINIUM — handoff operacional verificado
 
+## Estado vigente — 26/10/2026, 00:58, America/Sao_Paulo
+
+Sessão Atlas revalidada por consulta real NetTask. **O bloqueio atual é anexo
+404 na origem, não login expirado.** Recuperação pela UI confirmou principal
+276908463 e reserva automática 276908572; ambos COMPLETO, respectivamente
+atlasBatch02/app-2 e atlasBatch01/app-1. XLS/HTML/ZIP 404 e navegação normal
+Chrome 404/text-html confirmados para ambos.
+
+Oito IDs novos de Natal sem documento válido nesta investigação. Ação externa:
+Atlas/BatAtlas disponibilizar documentos dos IDs 276908463 e 276908572 ou indicar
+geração operacional. Não concluir a meta quatro cidades. Fortaleza 29.529,
+Recife 55.749 e Mossoró 892 permanecem com os relatórios aprovados anteriormente.
+
+Banco íntegro: 20 trabalhos,163.049 linhas; smokes QUERY/confront/reports 200.
+Runtime continua c94984b, hashes conferidos; sem patch, deploy ou restart nesta
+retomada. Formulário não expõe seletor de servidor nem alternativa síncrona de
+download. Evidência atual em ../ATLAS_QUERY_VERIFICATION_20261026.md.
+
 ## Estado vigente — 26/10/2026, 00:29, America/Sao_Paulo
 
 **Meta não concluída: Natal atual segue sem anexo na origem.** Evidências e
