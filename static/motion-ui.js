@@ -218,28 +218,30 @@ function ensureOperationHud() {
 
 function renderOperationState(payload = {}) {
   const hud = ensureOperationHud();
-  const phase = ["searching", "working", "solving", "busy", "success", "error"].includes(payload.phase)
+  const phase = ["searching", "working", "solving", "waiting", "busy", "success", "error"].includes(payload.phase)
     ? payload.phase
     : "working";
   clearTimeout(operationHudHideTimer);
 
-  if (["searching", "working", "solving"].includes(phase)) {
+  if (["searching", "working", "solving", "waiting"].includes(phase)) {
     activeOperationToken = payload.token || activeOperationToken;
   } else if (payload.token && activeOperationToken && payload.token !== activeOperationToken) {
     return;
   }
 
   hud.dataset.phase = phase;
+  hud.querySelector(".operation-orb-eyebrow").textContent = phase === "waiting" ? "AGUARDANDO RESPOSTA" : "DOMINIUM EM AÇÃO";
   hud.querySelector(".operation-orb-label").textContent = payload.label || "Processando operação";
   hud.querySelector(".operation-orb-detail").textContent = payload.detail || (
     phase === "searching" ? "Buscando dados em tempo real"
       : phase === "working" ? "Executando a etapa solicitada"
         : phase === "solving" ? "Validando respostas e consistência"
-          : phase === "busy" ? "Outra rotina segura está usando o Imperium"
+          : phase === "waiting" ? "Nova consulta automática programada"
+            : phase === "busy" ? "Outra rotina segura está usando o Imperium"
             : phase === "success" ? "Operação confirmada"
               : "A operação precisa de atenção"
   );
-  hud.querySelector(".orb-core-glyph").textContent = phase === "success" ? "✓" : phase === "error" ? "×" : phase === "busy" ? "…" : "";
+  hud.querySelector(".orb-core-glyph").textContent = phase === "success" ? "✓" : phase === "error" ? "×" : ["busy", "waiting"].includes(phase) ? "…" : "";
   hud.classList.remove("hidden", "operation-orb-leaving");
   hud.classList.add("operation-orb-visible");
 

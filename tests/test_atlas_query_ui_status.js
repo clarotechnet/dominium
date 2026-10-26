@@ -55,7 +55,7 @@ test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/Histórico desta sessão/);
   assert.match(html,/id="atlasQueryTimestamps"/);
   assert.match(html,/id="atlasQueryReconcile"/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261026-3/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261026-4/);
 });
 
 test('old completed family permits one explicit generation without automatic POST',async()=>{
@@ -405,7 +405,7 @@ test('BatAtlas transport timeout shows recoverable warning without second submis
   assert.match(element('atlasQueryProgress').textContent,/A consulta do anexo expirou/);
   assert.equal(element('atlasQueryStart').disabled,true);
   assert.match(element('atlasQueryId').textContent,/276861849/);
-  assert.ok(operations.some(x=>x.label==='Servidor de arquivos demorando'));
+  assert.ok(operations.some(x=>x.label==='Servidor de arquivos demorando'&&x.phase==='waiting'));
   assert.equal(calls.filter(x=>x.method==='POST').length,0);
 });
 
@@ -482,4 +482,40 @@ for(const [label,primary,reserve,enabled] of [
   await new Promise(r=>setImmediate(r));
   assert.equal(element('atlasQueryStart').disabled,!enabled);
   assert.equal(calls.filter(c=>c.method==='POST').length,0);
+});
+
+for(const [stateName,error] of [['attachment_wait','attachment_http_404'],['attachment_missing','attachment_not_listed']]){
+ test(stateName+' uses a persistent waiting indication without continuous working animation',async()=>{
+  const job={id:'1'.repeat(32),city:'natal',state:stateName,error_code:error,
+    remote_queue_id:'276935365',fallback_of:'',created_at:Date.now()/1000};
+  const {element,state,interval,calls,operations}=setup(async url=>
+    url.endsWith(job.id)?{job}:{jobs:[job]});
+  state.profile='natal';state.activeModule='confront';interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(operations.at(-1).phase,'waiting');
+  assert.equal(element('atlasQueryCsv').disabled,true);
+  interval();await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.filter(x=>x.method==='POST').length,0);
+  assert.equal(operations.filter(x=>x.phase==='waiting').length,1);
+  assert.ok(calls.filter(x=>x.method==='GET').length>=2);
+ });
+}
+
+test('shared waiting HUD preserves feedback without a busy heading or animation',()=>{
+ const src=fs.readFileSync(path.join(__dirname,'../static/motion-ui.js'),'utf8');
+ const cut=src.slice(src.indexOf('function renderOperationState('),src.indexOf('document.addEventListener("dominium:operation-state"'));
+ const children=new Map();
+ const hud={dataset:{},classList:{add(){},remove(){}},querySelector(s){
+  if(!children.has(s))children.set(s,{textContent:''});return children.get(s);
+ }};
+ const timers=[];
+ const context={ensureOperationHud:()=>hud,activeOperationToken:'',operationHudHideTimer:null,
+  clearTimeout(){},window:{setTimeout(fn){timers.push(fn)}}};
+ vm.runInNewContext(cut+';renderOperationState({token:"query",phase:"waiting",label:"Aguardando arquivo",detail:"ID preservado"})',context);
+ assert.equal(hud.dataset.phase,'waiting');
+ assert.match(children.get('.operation-orb-eyebrow').textContent,/AGUARDANDO/);
+ assert.equal(children.get('.operation-orb-label').textContent,'Aguardando arquivo');
+ assert.equal(timers.length,0);
+ const css=fs.readFileSync(path.join(__dirname,'../static/styles.css'),'utf8');
+ assert.match(css,/data-phase="waiting"[^}]*animation-play-state:\s*paused/s);
 });

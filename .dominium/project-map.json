@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T17:32:47+00:00",
+  "generated_at": "2026-10-26T17:41:34+00:00",
   "schema": 2,
-  "source_fingerprint": "e42a74e0ab5be9d4cf8e027c644f7fded85dbcdbd6ffa605a57ff5c7909282fc",
+  "source_fingerprint": "deb50ecf2c4bdae22cf7cd1ea1419a823bd692a39c10359773edb64b45cabaf9",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -4139,7 +4139,7 @@
       "path": "static/atlas-query-ui.js",
       "category": "frontend",
       "bytes": 22387,
-      "sha256": "e8bdb080bf9190b2a316ea104d3a5a0bc231759e47029dab9bd7e2ea19804972",
+      "sha256": "957ab583aedf62128595b16081443882d36067644f464026f3b53f6cb9a9a689",
       "summary": "DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */",
       "imports": [],
       "endpoints": [
@@ -4234,8 +4234,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 126321,
-      "sha256": "2d6742552abc55eae0491f5db9577e448aa42b0db9cb3d2f04f33acf803e0a03",
+      "bytes": 126347,
+      "sha256": "27162aeffbd1b6c40c856c5d02dcae30bcc125b8baeccaa4077fef378047bc19",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4275,8 +4275,8 @@
     {
       "path": "static/motion-ui.js",
       "category": "frontend",
-      "bytes": 10087,
-      "sha256": "16eb80367d94b05dd97d151669985c5f3c41c6550d3e1cd68f8ba4a7b028885d",
+      "bytes": 10331,
+      "sha256": "1c23e30b47c0ff06d0ea7f2c2a566f7c12b48f8dc804f48630575858f9bdd651",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [],
       "endpoints": [],
@@ -4327,8 +4327,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 208446,
-      "sha256": "d90d0c2aadf682d8ca3cf5ac7f9bee8a7e4a496e114f30e6b29720db802a6d73",
+      "bytes": 208625,
+      "sha256": "e41c2e3ce270cf502aefa5ac0bdb498217f03670376a8bd56e135bf8c0d8d419",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -4943,8 +4943,8 @@
     {
       "path": "tests/test_atlas_query_ui_status.js",
       "category": "tests",
-      "bytes": 26049,
-      "sha256": "bbbfa08b72907fc4509baf9fedfb2337b81868e7e691c9d33d30c3d20fd87466",
+      "bytes": 28262,
+      "sha256": "1517ab6e45a9a75f8aafc48e437bf021e24bb31ecd4f55320bed0eda73669fd7",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4953,7 +4953,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 3
+      "symbol_count": 4
     },
     {
       "path": "tests/test_auth_store.py",

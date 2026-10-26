@@ -49,7 +49,7 @@
           ? 'A fila '+active.remote_queue_id+' foi preservada. Renove o login do Atlas.'
           : 'Renove o login na sessão Atlas.',id+'|auth');
     } else if(active.error_code==='attachment_transport_timeout'){
-      queryHud('solving','Servidor de arquivos demorando',
+      queryHud('waiting','Servidor de arquivos demorando',
         'A fila '+(active.remote_queue_id||'Atlas')+
         ' foi preservada. Nova tentativa programada; não gere outra QUERY.',
         id+'|attachment-transport-timeout');
@@ -60,7 +60,7 @@
       queryHud('success','QUERY pronta',
         'Tabela e exportações CSV/XLSX estão disponíveis.',id+'|ready');
     } else if(['attachment_wait','attachment_missing'].includes(active.state)){
-      queryHud('solving','Aguardando arquivo do Atlas',
+      queryHud('waiting','Aguardando arquivo do Atlas',
         'Fila concluída: verificando anexo e possíveis atrasos de publicação.',id+'|'+active.state);
     } else if(active.state==='download_ready'){
       queryHud('solving','Preparando planilha',

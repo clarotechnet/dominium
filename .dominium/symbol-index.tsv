@@ -1997,6 +1997,7 @@ test_two_definitive_failures_allow_explicit_recovery	method	tests/test_atlas_que
 setup	function	tests/test_atlas_query_ui_status.js	10	-
 element	function	tests/test_atlas_query_ui_status.js	14	-
 extends	class	tests/test_atlas_query_ui_status.js	48	-
+renderOperationState	function	tests/test_atlas_query_ui_status.js	506	-
 AuthStoreTests	class	tests/test_auth_store.py	8	-
 setUp	method	tests/test_auth_store.py	9	AuthStoreTests
 tearDown	method	tests/test_auth_store.py	13	AuthStoreTests
