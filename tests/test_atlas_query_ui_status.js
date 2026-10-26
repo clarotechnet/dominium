@@ -7,7 +7,7 @@ const path = require('node:path');
 const uiCode=fs.readFileSync(path.join(__dirname,'../static/atlas-query-ui.js'),'utf8');
 const html=fs.readFileSync(path.join(__dirname,'../static/index.html'),'utf8');
 
-function setup(response){
+function setup(response,now){
   const elements=new Map();
   const listeners=new Map();
   const documentListeners=new Map();
@@ -45,6 +45,7 @@ function setup(response){
     request: async(url,opts)=>{calls.push({url,method:opts?.method||'GET'});return response(url,opts)},
     requestBlob:async()=>({blob:new Blob([])}),
     saveBlob:()=>{},localDate:()=>'',switchProfile:async city=>{state.profile=city}};
+  if(now!==undefined)ctx.Date=class extends Date {static now(){return now}};
   vm.runInNewContext(uiCode,ctx,{filename:'atlas-query-ui.js'});
   return {elements,element,listeners,documentListeners,calls,operations,state,window:ctx.window,interval:()=>interval()};
 }
@@ -54,7 +55,83 @@ test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/Histórico desta sessão/);
   assert.match(html,/id="atlasQueryTimestamps"/);
   assert.match(html,/id="atlasQueryReconcile"/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261024-1/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261025-1/);
+});
+
+test('old completed family permits one explicit generation without automatic POST',async()=>{
+  const old=(Date.now()-9*3600*1000)/1000;
+  const primary={id:'7'.repeat(32),city:'fortaleza',state:'attachment_wait',
+    error_code:'attachment_http_404',remote_queue_id:'276868465',created_at:old,fallback_of:''};
+  const reserve={...primary,id:'8'.repeat(32),remote_queue_id:'276868467',fallback_of:primary.id};
+  const next={id:'9'.repeat(32),city:'fortaleza',state:'submission_uncertain',remote_queue_id:null};
+  const {element,state,interval,listeners,calls}=setup(async(url,opts)=>{
+    if(opts?.method==='POST')return {job:next,reused:false};
+    if(url.endsWith(reserve.id))return {job:reserve};
+    return {jobs:[reserve,primary]};
+  });
+  state.profile='fortaleza';state.activeModule='confront';interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(element('atlasQueryStart').disabled,false);
+  interval();await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.filter(c=>c.method==='POST').length,0);
+  listeners.get('atlasQueryStart:click')();
+  listeners.get('atlasQueryStart:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.filter(c=>c.method==='POST').length,1);
+  assert.equal(element('atlasQueryStart').disabled,true);
+});
+
+for(const [label,override] of [
+  ['recent family',{created_at:Date.now()/1000-3600}],
+  ['missing ID',{remote_queue_id:null}],
+  ['uncertain submission',{state:'submission_uncertain',error_code:'atlas_submit_unconfirmed'}],
+  ['processing queue',{state:'processing'}],
+  ['transport timeout',{error_code:'attachment_transport_timeout'}],
+  ['missing timestamp',{created_at:null}],
+])test('recovery keeps '+label+' blocked even when a click handler is invoked',async()=>{
+  const job={id:'6'.repeat(32),city:'fortaleza',state:'attachment_wait',
+    remote_queue_id:'276868465',created_at:Date.now()/1000-9*3600,
+    error_code:'attachment_http_404',fallback_of:'',...override};
+  const {element,state,interval,listeners,calls}=setup(async url=>
+    url.endsWith(job.id)?{job}:{jobs:[job]});
+  state.profile='fortaleza';state.activeModule='confront';interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(element('atlasQueryStart').disabled,true);
+  listeners.get('atlasQueryStart:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.filter(c=>c.method==='POST').length,0);
+});
+
+test('recent reserve keeps an old completed primary blocked',async()=>{
+  const primary={id:'7'.repeat(32),city:'fortaleza',state:'attachment_wait',
+    remote_queue_id:'276868465',created_at:Date.now()/1000-9*3600,fallback_of:'',
+    error_code:'attachment_http_404'};
+  const reserve={...primary,id:'8'.repeat(32),remote_queue_id:'276868467',
+    created_at:Date.now()/1000-60,fallback_of:primary.id};
+  const {element,state,interval,listeners,calls}=setup(async url=>
+    url.endsWith(reserve.id)?{job:reserve}:{jobs:[reserve,primary]});
+  state.profile='fortaleza';state.activeModule='confront';interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(element('atlasQueryStart').disabled,true);
+  listeners.get('atlasQueryStart:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.filter(c=>c.method==='POST').length,0);
+});
+
+for(const [label,stateValue,error,created,wantDisabled] of [
+  ['eight-hour boundary','attachment_wait','attachment_http_404',1999971200,false],
+  ['inside reuse window','attachment_wait','attachment_http_404',1999971201,true],
+  ['missing attachment','attachment_missing','attachment_not_listed',1999970000,false],
+  ['auth warning on confirmed completed queue','attachment_wait','atlas_auth_required',1999970000,false],
+])test('explicit recovery handles '+label,async()=>{
+  const job={id:'5'.repeat(32),city:'fortaleza',state:stateValue,error_code:error,
+    remote_queue_id:'276868465',created_at:created,fallback_of:''};
+  const {element,state,interval,calls}=setup(async url=>
+    url.endsWith(job.id)?{job}:{jobs:[job]},2000000000000);
+  state.profile='fortaleza';state.activeModule='confront';interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(element('atlasQueryStart').disabled,wantDisabled);
+  assert.equal(calls.filter(c=>c.method==='POST').length,0);
 });
 
 test('successful POST leaves durable confirmation after automatic refresh',async()=>{

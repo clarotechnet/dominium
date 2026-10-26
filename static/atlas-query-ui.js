@@ -133,10 +133,20 @@
   const pollingComplete=job=>Boolean(job && (
     ['ready','failed','format_review','atlas_auth_required'].includes(job.state)||
     job.error_code==='atlas_submit_unconfirmed'||job.error_code==='atlas_auth_required'));
+  function canCreateQuery(){
+    if(!active || ['ready','failed','format_review'].includes(active.state))return true;
+    // Match the backend's eight-hour reuse window. Recovery is an explicit
+    // operator action and requires every existing attempt to have a confirmed ID.
+    return relatedJobs.length>0 && relatedJobs.every(job=>
+      ['attachment_wait','attachment_missing'].includes(job.state) &&
+      ['attachment_http_404','attachment_not_listed','atlas_auth_required'].includes(job.error_code) &&
+      /^\d{5,15}$/.test(String(job.remote_queue_id||'')) &&
+      typeof job.created_at==='number' && Number.isFinite(job.created_at) &&
+      Date.now()-job.created_at*1000>=8*3600*1000);
+  }
   function renderStatus(){
     ui.city.value=state.profile;
-    ui.start.disabled=busy||!allowed()||
-      Boolean(active && !['ready','failed','format_review'].includes(active.state));
+    ui.start.disabled=busy||!allowed()||!canCreateQuery();
     ui.refresh.disabled=fetching;
     ui.reconcile.hidden=!(active?.state==='submission_uncertain'&&
       active?.error_code==='atlas_submit_unconfirmed');
@@ -292,7 +302,7 @@
     }
   }
   async function create(){
-    if(busy||fetching||!allowed())return;
+    if(busy||fetching||!allowed()||!canCreateQuery())return;
     busy=true;renderStatus();
     writeNotice('Pedido recebido no navegador. Enviando ao servidor...');
     queryHud('searching','Gerando QUERY no Atlas',

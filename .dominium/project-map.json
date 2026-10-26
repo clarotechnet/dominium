@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T02:42:39+00:00",
+  "generated_at": "2026-10-26T03:00:04+00:00",
   "schema": 2,
-  "source_fingerprint": "737ee959370cc700771b6384081380dd4d7dbb7b7208f9ff86a7aab7b3021e01",
+  "source_fingerprint": "3b2e2b42b0437befa5753fadfd543df4fac86f790638cd8c94ef6bd218f9d71b",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1134,6 +1134,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/ATLAS_QUERY_RECOVERY_PLAN_20261025.md",
+      "category": "docs",
+      "bytes": 3439,
+      "sha256": "559a26872d750d2d4e9174b77e6c3eef48186c5318e00814eff13b26aa3df18c",
+      "summary": "Recuperação QUERY Atlas — design e execução",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
       "bytes": 5965,
@@ -1162,8 +1175,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 45103,
-      "sha256": "b0c39421d834f0d8208394759d53e78e0ff952adbd9172634d28cbaf1a4e966b",
+      "bytes": 46248,
+      "sha256": "bcbebcd08752b1eeb37a595c9a8f8930c412a637acf1ef388fdc8855fcd06872",
       "summary": "DOMINIUM — handoff operacional verificado",
       "imports": [],
       "endpoints": [],
@@ -3942,8 +3955,8 @@
     {
       "path": "static/atlas-query-ui.js",
       "category": "frontend",
-      "bytes": 19034,
-      "sha256": "1fbef678842616abcf8a1f5c597eb85f7447e5a6400b03e9fce10f8df168d68c",
+      "bytes": 19689,
+      "sha256": "9df466750d5e61e57c52ad9e82eec850a9f68913e05c7c1a89a67956e6d5e33f",
       "summary": "DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */",
       "imports": [],
       "endpoints": [
@@ -3953,7 +3966,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 19
+      "symbol_count": 20
     },
     {
       "path": "static/confront.js",
@@ -4039,7 +4052,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 126321,
-      "sha256": "3629fce0ca4d844316ad89192c71bffe2742b2c55795918c517fd6aae5028ec0",
+      "sha256": "6819bee073921822dab983add5c845b906a452718dab0ca8f3bf974f1c479317",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4665,8 +4678,8 @@
     {
       "path": "tests/test_atlas_query_ui_status.js",
       "category": "tests",
-      "bytes": 15584,
-      "sha256": "f0e8681fb4793405883b3a597e076c9cad0f28062e4ba95fbbc6d5edb0fbda95",
+      "bytes": 19998,
+      "sha256": "80e0a5fc416d8ab8e6e14e4364b55e7162276a5f25fb6549036fd3b462f4c08c",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4675,7 +4688,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 2
+      "symbol_count": 3
     },
     {
       "path": "tests/test_auth_store.py",

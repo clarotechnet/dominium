@@ -1,5 +1,25 @@
 # DOMINIUM — handoff operacional verificado
 
+## Retomada vigente — 25/10/2026, 23:59, America/Sao_Paulo
+
+Sessão Atlas renovada pelo operador; conector confirmou controles das quatro
+cidades e leitura NetTask real. Checkpoint anterior de login bloqueado foi
+superado. Watchdog Browser apenas monitora processos/abas, sem renovar SSO;
+janela aberta não comprova autenticação.
+
+Nova Fortaleza: principal 276907735 com404/app-1; reserva automática 276907771
+ready/app-3, 29.529 linhas. Recife atual 276907778 e Natal atual 276907780
+geradas pela interface e em acompanhamento. Validar geração atual Mossoró e
+fonte/banco/UI/exportações nas quatro cidades antes de concluir a meta.
+
+Defeito UI confirmado e corrigido com RED/GREEN: botão bloqueava para sempre
+uma família concluída sem anexo, embora o backend libere nova geração após
+oito horas. Nova elegibilidade conservadora exige todos os IDs confirmados,
+estados de anexo, prazo e erro404/não-listado/auth; timeout/envio incerto seguem
+bloqueados. Somente clique explícito envia POST. Ver
+`../ATLAS_QUERY_RECOVERY_PLAN_20261025.md`. Publicação/validação final pendentes
+neste checkpoint; nenhum Chrome reiniciado.
+
 ## Checkpoint vigente — 25/10/2026, 23:38, America/Sao_Paulo
 
 **Meta não concluída.** Ver `../ATLAS_QUERY_EXECUTION_20261025.md` para evidências
