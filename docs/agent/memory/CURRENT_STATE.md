@@ -1,5 +1,31 @@
 # DOMINIUM — handoff operacional verificado
 
+## Estado vigente — 26/10/2026, 08:58, America/Sao_Paulo
+
+Novo par276921081/276921083 confirmado, ambosattachment_http_404 no worker e
+no teste manual do usuário. Banco íntegro24 trabalhos/163.049 linhas; smokes200.
+Usuário vai gerar um ID manualmente e informar o número: não criar novas filas;
+comparar esse ID quando chegar. Automação ChatGPT Acompanhar QUERY de Natal
+ativa(is_enabled=true), horária, restrita ao novo par; worker continua leitura/
+download combackoff. Não confundir monitor de sessão com entrega de anexo.
+Registro: ../ATLAS_QUERY_USER_WATCH_20261026.md. Meta quatro cidades incompleta.
+
+## Estado vigente — 26/10/2026, 08:56, America/Sao_Paulo
+
+Usuário pediu nova QUERY de Natal e observação; depois solicitou mais dois IDs.
+Confirmados276921081/276921083, jobs7b7b7ac2707e4201b88fef8845c1775e e
+ec629fb48e714ab38995363920194002. Par adicional ao276920952/276921013
+(primeiro cliqueUI e reserva). Novo par via conector existente e lote manual
+auditado, backup íntegro e persistência antes dos envios; nenhuma terceira
+geração automática no lote. Não reenviar script nem gerar IDs adicionais sem
+nova instrução. Principalapp-2 aguardando anexo, reservaem processamento às08:56.
+
+Agora existe automação ChatGPT solicitada: Acompanhar QUERY de Natal, horária,
+separada do worker de downloads e watchdog de sessãoPT5M. Observar somente
+novo par, avisar mudança relevante/resultado validado/intervenção nova e pausar
+após validação. Não repetir aviso404 sem novidade. Ver
+../ATLAS_QUERY_USER_WATCH_20261026.md. Meta quatro cidades continua incompleta.
+
 ## Estado vigente — 26/10/2026, 08:42, America/Sao_Paulo
 
 Monitor real de sessão implementado/testado/publicado: commit5fa3132,

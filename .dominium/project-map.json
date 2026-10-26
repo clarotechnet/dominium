@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T11:42:41+00:00",
+  "generated_at": "2026-10-26T11:58:29+00:00",
   "schema": 2,
-  "source_fingerprint": "973250ee431e9b6d2ae39fcc98a3a38bc958f7b566f3d25fae3cab2307379f16",
+  "source_fingerprint": "20d49b816c13b3b5b681b9d738ca5fd0014ebbba6150bebc34b8c015098cfdd8",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1173,6 +1173,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/ATLAS_QUERY_USER_WATCH_20261026.md",
+      "category": "docs",
+      "bytes": 4656,
+      "sha256": "97867df4f4405a8db16be6ab589af1db2e19cee64ba8a51d0dbfe6aec486eed6",
+      "summary": "Natal — novos IDs e acompanhamento solicitado pelo usuário",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/ATLAS_QUERY_VERIFICATION_20261026.md",
       "category": "docs",
       "bytes": 11067,
@@ -1240,8 +1253,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 50254,
-      "sha256": "974276cd3ea73bedffa38a1c1694e58c5173829d5b6ca45adf0a4f4904a66c8a",
+      "bytes": 51861,
+      "sha256": "61c27525a472d2160b6eff8f832b00385d2a8e2c0875b8cbe23002f0993a46d4",
       "summary": "DOMINIUM — handoff operacional verificado",
       "imports": [],
       "endpoints": [],
@@ -1266,8 +1279,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 5459,
-      "sha256": "608f1562a1f2cfbee4a1feb8cc3f314bde4644a3955c1a1e67ffc0154e07e20e",
+      "bytes": 6171,
+      "sha256": "f760c1703885bd33871880a2b2962ea54c8f34b6f7dec8e9e85e99303ae318cc",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],

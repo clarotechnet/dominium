@@ -87,3 +87,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 9 novos RED-GREEN;51 QUERY Python;gate913 com21skip;6 verificacoes Windows;revisao independente;execucoes08:37 e08:40 autenticadas;DB20jobs163049linhas integro;UI3cidades ready eNatal404 persistente apos recarga
 
 **Próximo passo/pendência:** Administrador Atlas/BatAtlas investigar anexos276908463e276908572; depois validar Natal ate CSV-XLSX e recarga. Monitor nao renova SSO. Nenhuma tarefa ChatGPT criada
+
+## 2026-10-26 11:57 UTC — Natal novo par pedido pelo usuario e observacao horaria
+
+**Motivo:** Usuario pediu novos IDs para testar apesar da dificuldade com suporte Atlas
+
+**Alterado:** Confirmados276921081e276921083 em lote explicito auditado; backup antes; conector existente; sem terceiro automatico. Automacao ChatGPT horaria criada para observar par, distinta do worker
+
+**Verificação:** IDs confirmados e salvos; manifestotwo_ids_confirmed;SQLiteintegrityok;principalapp2aguarda anexo e reservaem processamento;sem mudanca de codigo
+
+**Próximo passo/pendência:** Observar somente par novo, conferir anexo e validar fonteDBUIexportacoesrecarga se disponivel; nao gerar mais IDs nem repetir avisos404
