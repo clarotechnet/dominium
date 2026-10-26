@@ -1,5 +1,28 @@
 # Natal — comparação de geração manual e reconhecimento de FALHOU
 
+## Publicação verificada09:11
+
+Patch publicado em main e instalado no servidor:
+`ceae3fd22bbbd953586ce72dbd4047e8b2fd46d5`.
+SHA256 do pipeline implantado:
+`6b0fd4dd8831d116ada242ec8fbd85cd7368db4ad7bb77b7194d8df6e673c7e5`.
+Backup SQLite query_jobs.before-falhou-status-20261026-091000.sqlite3 e
+backup do módulo em DescRelay-20261010/backups/falhou-status-20261026-091000.
+Reiniciado somente relay, protegido pelo mutex do watchdog; Chrome preservado.
+GETautenticado200, anônimo401, banco íntegro24 trabalhos/163.049 linhas;
+QUERY/confront/reports200. Frontend não alterado, sem deploy Hostinger novo.
+
+Prova real pós-instalação: evaluate_query retorna **failed** para276921180.
+276921301 retorna complete, sem XLS válido anunciado na inspeção atual;
+usuário mostrou linkapp-1 com404. Não confundir complete com download válido.
+O arquivo bom enviado pelo usuário tem20.150 linhasNATAL e não foi importado
+como se pertencesse a qualquer desses IDs.
+
+Automação horária ativa atualizada para ler também os manuais por
+AtlasQueryData/natal_manual_status_20261026.py (saída sanitizada em
+natal_manual_status_current.json). Falta o primeiro ID bem-sucedido para
+comparação do download no servidor. Não gerar novos IDs nesta observação.
+
 ## Evidências novas do usuário
 
 ID manual276921180, log26/10/2026,08:58:39, America/Sao_Paulo:

@@ -1,5 +1,25 @@
 # DOMINIUM — handoff operacional verificado
 
+## Estado vigente — 26/10/2026, 09:11, America/Sao_Paulo
+
+Usuário conseguiu uma geração manual válida: XLS recebido, parser confirmou
+20.150 registros todosNATAL. Primeiro ID não informado; screenshot é do segundo
+276921301, com404app-1. Pedir primeiro ID para comparar parâmetro/processador
+e download pelo servidor. Não inserir arquivo como relatório de outroID.
+
+Manual anterior276921180 FALHOU no atlasBatch03; log fornecido comprova NPE
+DAOFactory.getDAO196→getJDBCDAO→executarQueryRelEquipamento623. Não generalizar
+esse erro Java às filas COMPLETO404. Falha não é exclusiva de app-1/app-2.
+
+Defeito conector FALHOU→processing corrigido, testado52PythonQUERY e gate914/
+21skip, revisão aprovada; publicado/instaladoceae3fd combackup. Pipelinehash
+6b0fd4dd8831d116ada242ec8fbd85cd7368db4ad7bb77b7194d8df6e673c7e5,
+somente relay reiniciado, Chrome preservado. Consulta real manual agorafailed.
+DB24trabalhos163049linhas íntegro; smokes200. UI e HTTPQUERY seguemc94984b.
+AutomaçãoChatGPT horária ativa inclui consulta aos dois manuais conhecidos,
+além do par276921081/276921083. Nenhum novo ID gerado após usuário assumir
+o teste manual. Registro ../ATLAS_QUERY_MANUAL_COMPARISON_20261026.md.
+
 ## Estado vigente — 26/10/2026, 08:58, America/Sao_Paulo
 
 Novo par276921081/276921083 confirmado, ambosattachment_http_404 no worker e

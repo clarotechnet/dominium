@@ -97,3 +97,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** IDs confirmados e salvos; manifestotwo_ids_confirmed;SQLiteintegrityok;principalapp2aguarda anexo e reservaem processamento;sem mudanca de codigo
 
 **Próximo passo/pendência:** Observar somente par novo, conferir anexo e validar fonteDBUIexportacoesrecarga se disponivel; nao gerar mais IDs nem repetir avisos404
+
+## 2026-10-26 12:12 UTC — Natal manual valido e parser FALHOU corrigido
+
+**Motivo:** Arquivo manual valido20150NATAL e log NPE manual180 revelaram falha intermitente; estadoFALHOU era classificado processing
+
+**Alterado:** Pipeline ceae3fd publicado e instalado combackup; apenas relay reiniciado; automacao horaria atualizada com manuais180e301; primeiro ID valido ainda falta
+
+**Verificação:** RegressaoREDprocessing_vs_failed depoisGREEN;52QUERY Python;gate914com21skip;revisao14pipelineOK;consulta real180failed;DB24jobs163049linhasintegridadeok;smokes200anon401;parserXLS20150NATAL
+
+**Próximo passo/pendência:** Obter primeiro ID que entregou XLS, comparar parametros/processador e download/hash servidor; nao gerar outras filas

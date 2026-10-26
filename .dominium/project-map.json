@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T12:08:26+00:00",
+  "generated_at": "2026-10-26T12:12:19+00:00",
   "schema": 2,
-  "source_fingerprint": "2dcd7411a2766b463a1877c05fff47af24ae2dbee5483dd50660635dcac2012d",
+  "source_fingerprint": "90184208b8bfca02a596e6f94f9f0b8ab7688f618a05d49f3cb09b939ba16b28",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1162,8 +1162,8 @@
     {
       "path": "docs/agent/ATLAS_QUERY_MANUAL_COMPARISON_20261026.md",
       "category": "docs",
-      "bytes": 3026,
-      "sha256": "a42a42c6eebf85baf9a050691b4b618a36a006703e30b8140a76f7a870aa7752",
+      "bytes": 4285,
+      "sha256": "e16f3fc8edf799018617e0202f347a90aff4ff250bcd0b76c133fcdc7d2cedc1",
       "summary": "Natal — comparação de geração manual e reconhecimento de FALHOU",
       "imports": [],
       "endpoints": [],
@@ -1266,8 +1266,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 51861,
-      "sha256": "61c27525a472d2160b6eff8f832b00385d2a8e2c0875b8cbe23002f0993a46d4",
+      "bytes": 53087,
+      "sha256": "78b6de4e5a0ac93d238dd54728cf265a3efd4396a5b42111a5f46f814aeeb36b",
       "summary": "DOMINIUM — handoff operacional verificado",
       "imports": [],
       "endpoints": [],
@@ -1292,8 +1292,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 6171,
-      "sha256": "f760c1703885bd33871880a2b2962ea54c8f34b6f7dec8e9e85e99303ae318cc",
+      "bytes": 6912,
+      "sha256": "7d6a30bec01df39c985d20088629c00b4dd80d413f414935721bdaa2e556ea78",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
