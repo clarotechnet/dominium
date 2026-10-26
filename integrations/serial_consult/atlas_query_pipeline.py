@@ -114,7 +114,7 @@ def evaluate_query(chrome, remote_id):
                     continue
                 upper=text.upper()
                 if "COMPLETO" in upper:state="complete"
-                elif any(term in upper for term in ("ERRO","CANCEL","FALHA")):state="failed"
+                elif any(term in upper for term in ("ERRO","CANCEL","FALHA","FALHOU")):state="failed"
                 else:state="processing"
                 info={"state":state,"detail_link":row.get("detail") or ""}
                 break

@@ -54,6 +54,7 @@ docs	docs/agent/ATLAS_BATATLAS_NATAL_ESCALATION_20261026.md				Natal: anexos de 
 docs	docs/agent/ATLAS_QUERY_AUTOMATION.md				QUERY Atlas — relatório analítico por localização	23dcdc7a07105c8c
 docs	docs/agent/ATLAS_QUERY_EXECUTION_20261025.md				QUERY Atlas — execução e bloqueio atual em 25/10/2026	15041ecfeba3abea
 docs	docs/agent/ATLAS_QUERY_FORTALEZA_RECHECK_20261026_0055.md				Fortaleza — rechecagem operacional 26/10/2026, 00:54–00:55	eab7146a96221cf2
+docs	docs/agent/ATLAS_QUERY_MANUAL_COMPARISON_20261026.md				Natal — comparação de geração manual e reconhecimento de FALHOU	a42a42c6eebf85ba
 docs	docs/agent/ATLAS_QUERY_RECOVERY_PLAN_20261025.md				Recuperação QUERY Atlas — design e execução	4580311a6d99a46a
 docs	docs/agent/ATLAS_QUERY_USER_WATCH_20261026.md				Natal — novos IDs e acompanhamento solicitado pelo usuário	97867df4f4405a8d
 docs	docs/agent/ATLAS_QUERY_VERIFICATION_20261026.md				QUERY Atlas — execução prática de 25/10 a 26/10/2026	0ad6755105122351
@@ -120,7 +121,7 @@ shared	integrations/serial_consult/atlas_bridge_client.py	10			Read-only Atlas s
 shared	integrations/serial_consult/atlas_query_data.py	17			Parse Atlas analytic equipment report and export read-only CSV/XLSX.	090ecd08db961ee5
 shared	integrations/serial_consult/atlas_query_health.py	3			Read-only Atlas session proof through an already confirmed NetTask ID.	399c8f6ddfe3558a
 shared	integrations/serial_consult/atlas_query_http.py	12	2		Authenticated DOMINIUM QUERY Atlas service, isolated by operator.	792813ca9b7ba2b5
-shared	integrations/serial_consult/atlas_query_pipeline.py	9			Private Atlas QUERY queue/attachment orchestrator (CLI foundation).	7c2f2ba8bf0860c5
+shared	integrations/serial_consult/atlas_query_pipeline.py	9			Private Atlas QUERY queue/attachment orchestrator (CLI foundation).	6b0fd4dd8831d116
 shared	integrations/serial_consult/atlas_query_report.py	16			Atlas read-only equipment report generator in a dedicated managed Chrome tab.	1009a0d3eaf843c5
 shared	integrations/serial_consult/confront_engine.py	7			Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.	c8a5eece9b26cd06
 shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-only Atlas x Imperium confrontation results.	70854357c13c117e
@@ -255,7 +256,7 @@ tests	tests/test_atlas_bridge_client.py	14			Tests for the real BotDMV Atlas HTT
 tests	tests/test_atlas_query_data.py	6			QUERY Atlas table transformations and text-preserving exports.	0748addddb6b990d
 tests	tests/test_atlas_query_health.py	15			Session health must depend on a fresh queue response, not an open tab.	7962f15659401e64
 tests	tests/test_atlas_query_http.py	21	3		QUERY Atlas authenticated API contract without contacting real Atlas.	d9124764aa01e7bb
-tests	tests/test_atlas_query_pipeline.py	21			NetTask 404 handling: no duplicate report generation or insecure URLs.	99014d453eb991f2
+tests	tests/test_atlas_query_pipeline.py	22			NetTask 404 handling: no duplicate report generation or insecure URLs.	200df66bf76e287a
 tests	tests/test_atlas_query_policy.js	2	4			350c51201727bacf
 tests	tests/test_atlas_query_proxy_json.js	1	3			4e8277a7c89ce12f
 tests	tests/test_atlas_query_report.py	13			Safe report generator: no duplicate Atlas task after uncertainty.	9a490f5df2a54a18

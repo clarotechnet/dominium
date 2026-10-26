@@ -55,6 +55,30 @@ class Tests(unittest.TestCase):
         self.assertIn('tipoConsulta=consultaId',url.query)
         self.assertIn('menu=yes',url.query)
 
+    def test_falhou_queue_is_terminal_failure_instead_of_processing(self):
+        class FailedQueueBrowser:
+            def open(self,*args,**kwargs):
+                pass
+            def eval(self,expression):
+                if "buscarFilasTipoConsultaId('/nettask'" in expression:
+                    return {'started':True}
+                if "querySelector('#divFilas')" in expression:
+                    return [{'text':'276921180 RELATORIO_EQUIPAMENTOS FALHOU '
+                             '26/10/2026 08:58:39 26/10/2026 08:58:39',
+                             'detail':"abreDetalhesFila('/nettask','276921180','3','false')"}]
+                raise AssertionError('Failed queue must not wait for attachments')
+            def close(self):
+                pass
+        self.assertEqual(pipeline.evaluate_query(FailedQueueBrowser(),'276921180'),
+                         {'state':'failed'})
+        pipeline.update_job(self.job,self.db,remote_queue_id='276921180')
+        outcome=pipeline.poll_report(self.job,self.db,browser_factory=FailedQueueBrowser)
+        self.assertEqual(outcome['state'],'failed')
+        record=read_job(self.job,self.db)
+        self.assertEqual(record['state'],'failed')
+        self.assertEqual(record['error_code'],'remote_queue_failed')
+        self.assertEqual(record['remote_queue_id'],'276921180')
+
     def test_restrict_report_download_urls(self):
         good="https://batatlas.netservicos.com.br/app-1//RELATORIOS/261023/Relatorio_Equipamentos_Analitico_2345.xls"
         self.assertTrue(pipeline.valid_report_url(good))

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T11:58:29+00:00",
+  "generated_at": "2026-10-26T12:08:26+00:00",
   "schema": 2,
-  "source_fingerprint": "20d49b816c13b3b5b681b9d738ca5fd0014ebbba6150bebc34b8c015098cfdd8",
+  "source_fingerprint": "2dcd7411a2766b463a1877c05fff47af24ae2dbee5483dd50660635dcac2012d",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1160,6 +1160,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/ATLAS_QUERY_MANUAL_COMPARISON_20261026.md",
+      "category": "docs",
+      "bytes": 3026,
+      "sha256": "a42a42c6eebf85baf9a050691b4b618a36a006703e30b8140a76f7a870aa7752",
+      "summary": "Natal — comparação de geração manual e reconhecimento de FALHOU",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/ATLAS_QUERY_RECOVERY_PLAN_20261025.md",
       "category": "docs",
       "bytes": 5119,
@@ -2266,8 +2279,8 @@
     {
       "path": "integrations/serial_consult/atlas_query_pipeline.py",
       "category": "shared",
-      "bytes": 17291,
-      "sha256": "7c2f2ba8bf0860c535542a5ebf27ac05b9d5894ab1aca16500c56966e5c752a8",
+      "bytes": 17300,
+      "sha256": "6b0fd4dd8831d116ada242ec8fbd85cd7368db4ad7bb77b7194d8df6e673c7e5",
       "summary": "Private Atlas QUERY queue/attachment orchestrator (CLI foundation).",
       "imports": [
         "__future__",
@@ -4754,8 +4767,8 @@
     {
       "path": "tests/test_atlas_query_pipeline.py",
       "category": "tests",
-      "bytes": 13162,
-      "sha256": "99014d453eb991f24f415bd190a652dcf71aa69abcd6691780d4de1529933fd9",
+      "bytes": 14505,
+      "sha256": "200df66bf76e287af6003e616dbacc1aa2bbe09b210e704d38262ec945bb89d6",
       "summary": "NetTask 404 handling: no duplicate report generation or insecure URLs.",
       "imports": [
         "atlas_query_pipeline",
@@ -4772,7 +4785,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 21
+      "symbol_count": 22
     },
     {
       "path": "tests/test_atlas_query_policy.js",
