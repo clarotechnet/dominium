@@ -663,3 +663,26 @@ esses fluxos não foram retestados nesta sessão.
   repetidos. Nenhum defeito novo demonstrado no DOMINIUM.
 - Implementado/publicado: somente documentação; nenhum patch/deploy operacional.
   Meta pendente; manter acompanhamento dos IDs existentes sem aviso repetido.
+
+
+## Rechecagem de 25/10/2026, 22:20–22:21 (America/Sao_Paulo)
+
+- Servidor online. Download direto Chrome/CDP dos XLS existentes das filas
+  276868465 e 276868467, sem cache e com credenciais da sessão:
+  HTTP 404 / success=false em ambos. Nenhum arquivo recuperado.
+- Consulta somente leitura evaluate_query dos dois IDs retornou RuntimeError.
+  COMPLETO não reconfirmado nesta execução; não atribuir causa à autenticação.
+- SQLite mode=ro: ambas attachment_wait, zero linhas. Permanecem 8 trabalhos.
+  Leitura inicial dos estados confirmou attachment_http_404, 33 falhas por
+  fila, updated_at e next_attachment_check inalterados. Não declarar retry saudável.
+- Contagens diretas preservadas: Natal ready/20.179, Recife ready/55.807,
+  Mossoró ready/893. Nenhuma geração, alteração operacional ou reinício Chrome.
+- Resultados da sondagem recuperados integralmente por saída temporária
+  sanitizada no servidor, inclusive confirmação final de término; a sessão
+  de processo remoto deixou de estar disponível, sem perda das evidências.
+- Testado: download dos dois anexos existentes, consulta NetTask e
+  estados/contagens SQLite. Sem novo anexo ou mudança de código,
+  parser, exportações, UI e testes previamente aprovados não repetidos.
+- Implementado/publicado: somente este registro; nenhum patch/deploy operacional.
+  Meta pendente; indisponibilidade da origem a reexaminar nos mesmos IDs.
+  Sem novidade que justifique aviso repetido ao usuário.
