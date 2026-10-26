@@ -642,3 +642,24 @@ esses fluxos não foram retestados nesta sessão.
   aprovados não repetidos. Nenhum defeito novo comprovado no DOMINIUM.
 - Implementado/publicado: somente documentação; nenhum patch/deploy operacional.
   Meta pendente; manter acompanhamento dos IDs existentes sem aviso repetido.
+
+
+## Rechecagem de 25/10/2026, a partir de 21:51 (America/Sao_Paulo)
+
+- Servidor online. Download direto Chrome/CDP dos XLS existentes de Fortaleza
+  276868465 e 276868467, com cache desabilitado e credenciais da sessão:
+  HTTP 404 / success=false em ambos. Nenhum arquivo recuperado.
+- SQLite mode=ro: ambas attachment_wait / attachment_http_404, 33 falhas por
+  fila e zero linhas. updated_at e next_attachment_check permanecem inalterados;
+  não declarar retry saudável. Permanecem 8 trabalhos.
+- Contagens diretas preservadas: Natal ready/20.179, Recife ready/55.807,
+  Mossoró ready/893. Nenhuma geração, alteração operacional ou reinício Chrome.
+- A sessão remota da tentativa de consulta NetTask não disponibilizou resultado
+  final recuperável. COMPLETO não reconfirmado nesta execução; não atribuir
+  causa à autenticação. Downloads foram reconfirmados com saída sanitizada
+  temporária para evitar perda do resultado da sessão remota.
+- Testado: downloads existentes e estados/contagens SQLite. Sem novo anexo ou
+  código alterado, parser, exportações, interface e testes já aprovados não
+  repetidos. Nenhum defeito novo demonstrado no DOMINIUM.
+- Implementado/publicado: somente documentação; nenhum patch/deploy operacional.
+  Meta pendente; manter acompanhamento dos IDs existentes sem aviso repetido.
