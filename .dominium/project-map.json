@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T17:48:54+00:00",
+  "generated_at": "2026-10-26T18:22:11+00:00",
   "schema": 2,
-  "source_fingerprint": "0d04f3f7e24f3aac5b7483d298d5b1072c52798aa88c92b06c0784dbb32e2b0a",
+  "source_fingerprint": "7ed0ed34db537ee9260affbfbf1bba84f7f21f23ee075e18298986d0dc28cf9c",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1305,8 +1305,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 5965,
-      "sha256": "799f400b16efb2c7ec4e95d8d001bd8ac416fa7ec6233e6264e9600c9aec2b8f",
+      "bytes": 6396,
+      "sha256": "fd1d547435c6973909d92d547b34238b88e36315caf29c0c3ea1b01bfd84023e",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -2315,8 +2315,8 @@
     {
       "path": "integrations/serial_consult/atlas_query_http.py",
       "category": "shared",
-      "bytes": 24962,
-      "sha256": "26a03f23d7083585252c6a19570c7e4046fdd17021eb6f62ec6321e408c4123f",
+      "bytes": 25287,
+      "sha256": "4fb1eec9be98b3ee26c4137a7b696decf67e1dda2fe60eebad67b735fc21950c",
       "summary": "Authenticated DOMINIUM QUERY Atlas service, isolated by operator.",
       "imports": [
         "__future__",
@@ -2372,8 +2372,8 @@
     {
       "path": "integrations/serial_consult/atlas_query_report.py",
       "category": "shared",
-      "bytes": 16231,
-      "sha256": "3cf7a75c9d2f14406da6d28263ac91a2c44753e0667aaddfa4cb74ad591a4e92",
+      "bytes": 17063,
+      "sha256": "e11cf3ddfb207a198f33dc6085188ac99c7007ee104db2e3696f9efa1d0b4a6a",
       "summary": "Atlas read-only equipment report generator in a dedicated managed Chrome tab.",
       "imports": [
         "__future__",
@@ -4151,8 +4151,8 @@
     {
       "path": "static/atlas-query-ui.js",
       "category": "frontend",
-      "bytes": 22387,
-      "sha256": "957ab583aedf62128595b16081443882d36067644f464026f3b53f6cb9a9a689",
+      "bytes": 22954,
+      "sha256": "e187590e36e6e6ac6a618a3419c05e313b87aff89ddfbd3f9336a4465890bcf6",
       "summary": "DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */",
       "imports": [],
       "endpoints": [
@@ -4248,7 +4248,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 126347,
-      "sha256": "27162aeffbd1b6c40c856c5d02dcae30bcc125b8baeccaa4077fef378047bc19",
+      "sha256": "41dde13b7a1f4ea7d71a5d7f097c4202cae1ae347d4494586fd7f8638c94b547",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4340,8 +4340,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 208625,
-      "sha256": "e41c2e3ce270cf502aefa5ac0bdb498217f03670376a8bd56e135bf8c0d8d419",
+      "bytes": 208804,
+      "sha256": "f825f3d2d982014f533881756275348fd6b68efa7b57f63d82e4ba47a7c3fc45",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -4805,8 +4805,8 @@
     {
       "path": "tests/test_atlas_query_http.py",
       "category": "tests",
-      "bytes": 21683,
-      "sha256": "bdf1944566951258c5c8e09b140cc8d90a10b08b760f927bf1a9fb2e4996163b",
+      "bytes": 23264,
+      "sha256": "79bd4a7467dcce54e0c1c1b25484f85e960f782409374c8b4c3b99d6c986c7ce",
       "summary": "QUERY Atlas authenticated API contract without contacting real Atlas.",
       "imports": [
         "atlas_query_data",
@@ -4828,7 +4828,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 22
+      "symbol_count": 24
     },
     {
       "path": "tests/test_atlas_query_pipeline.py",
@@ -4956,8 +4956,8 @@
     {
       "path": "tests/test_atlas_query_ui_status.js",
       "category": "tests",
-      "bytes": 28262,
-      "sha256": "1517ab6e45a9a75f8aafc48e437bf021e24bb31ecd4f55320bed0eda73669fd7",
+      "bytes": 30554,
+      "sha256": "f9172992b8656ecb7d6cc31df41cc165c300ad725903b3fa32bd3c60f5f725d2",
       "summary": "",
       "imports": [],
       "endpoints": [

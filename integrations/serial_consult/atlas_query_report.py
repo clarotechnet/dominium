@@ -48,7 +48,7 @@ def connect_db(db_path=DB):
     finally:db.close()
 
 
-def claim_job(city,location,db_path=DB,*,timestamp=None,created_by=""):
+def claim_job(city,location,db_path=DB,*,timestamp=None,created_by="",fresh_session=False):
     if city not in CITY or location not in LOCATION:
         raise ValueError("Praca ou localizacao nao permitida")
     now=time.time() if timestamp is None else timestamp
@@ -62,12 +62,24 @@ def claim_job(city,location,db_path=DB,*,timestamp=None,created_by=""):
             AND state='submission_uncertain' AND remote_queue_id IS NULL
             ORDER BY created_at DESC LIMIT 1""",(city,location,created_by)).fetchone()
         if uncertain:return uncertain["id"],False
-        previous=db.execute("""SELECT id FROM query_jobs WHERE city=? AND location=?
-            AND created_by=? AND created_at>? AND state IN
-            ('submitting','submission_uncertain','queued','processing',
-             'attachment_wait','attachment_missing','download_ready','ready')
-            ORDER BY created_at DESC LIMIT 1""",
-            (city,location,created_by,now-8*3600)).fetchone()
+        if fresh_session:
+            # A new page can request a new run, but never duplicate in-flight
+            # submissions or bypass the authorized 45-second reserve.
+            previous=db.execute("""SELECT id FROM query_jobs p WHERE city=? AND location=?
+                AND created_by=? AND created_at>? AND fallback_of='' AND (
+                    state IN ('submitting','submission_uncertain','queued','processing','download_ready')
+                    OR created_at>?
+                    OR (fallback_delay_seconds=45 AND fallback_due_at>0
+                        AND NOT EXISTS(SELECT 1 FROM query_jobs c WHERE c.fallback_of=p.id)))
+                ORDER BY created_at DESC LIMIT 1""",
+                (city,location,created_by,now-8*3600,now-30)).fetchone()
+        else:
+            previous=db.execute("""SELECT id FROM query_jobs WHERE city=? AND location=?
+                AND created_by=? AND created_at>? AND state IN
+                ('submitting','submission_uncertain','queued','processing',
+                 'attachment_wait','attachment_missing','download_ready','ready')
+                ORDER BY created_at DESC LIMIT 1""",
+                (city,location,created_by,now-8*3600)).fetchone()
         if previous:return previous["id"],False
         columns={r['name'] for r in db.execute('PRAGMA table_info(query_jobs)')}
         timed_pending=""" OR (fallback_delay_seconds=45 AND fallback_of=''

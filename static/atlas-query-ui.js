@@ -13,6 +13,9 @@
     summary:$('atlasQuerySummary')};
   if(Object.values(ui).some(value=>!value))return;
   let active=null;let fetching=false;let busy=false;let offset=0;let total=0;
+  // This browser page only follows QUERYs explicitly started on this page.
+  // The server keeps audit history, but reloading the site starts with a clean panel.
+  let sessionRootId='';
   let selectedProfile='';
   let lastBackendError='';
   let relatedJobs=[];
@@ -244,7 +247,7 @@
   function syncProfile(){
     if(selectedProfile===state.profile)return false;
     selectedProfile=state.profile;
-    active=null;relatedJobs=[];checkedAt=null;lastBackendError='';
+    active=null;relatedJobs=[];sessionRootId='';checkedAt=null;lastBackendError='';
     offset=0;total=0;
     ui.table.replaceChildren();ui.summary.textContent='';
     renderStatus();
@@ -280,6 +283,10 @@
   }
   async function refresh({quiet=false}={}){
     if(!allowed()||state.activeModule!=='confront')return;
+    if(!sessionRootId){
+      if(!quiet)writeNotice('Nenhuma QUERY iniciada nesta sessão. Clique em Gerar QUERY no Atlas.');
+      return;
+    }
     if(fetching){
       if(selectedProfile!==state.profile)refreshPending=true;
       return;
@@ -297,7 +304,8 @@
       // server at the 45-second deadline, not by another browser POST.
       const data=await request('/api/atlas-query/jobs',{timeoutMs:18000});
       if(targetProfile!==state.profile){refreshPending=true;return;}
-      const jobs=(data.jobs||[]).filter(job=>job.city===targetProfile);
+      const jobs=(data.jobs||[]).filter(job=>job.city===targetProfile &&
+        (job.id===sessionRootId || job.fallback_of===sessionRootId));
       const previouslyActive=active;
       if(jobs.length)active=selectLatestGroup(jobs);
       else{active=null;relatedJobs=[];}
@@ -348,10 +356,12 @@
         method:'POST',
         headers:{'content-type':'application/json'},
         body:JSON.stringify({city:state.profile,location:ui.location.value,
-          ...(retryId?{retry_job_id:retryId}:refreshId?{refresh_job_id:refreshId}:{})}),
+          ...(retryId?{retry_job_id:retryId}:refreshId?{refresh_job_id:refreshId}:
+            !sessionRootId?{fresh_session:true}:{})}),
         timeoutMs:25000
       });
       active=data.job;relatedJobs=active?[active]:[];
+      sessionRootId=active?.id||'';
       checkedAt=null;offset=0;total=0;
       ui.table.replaceChildren();ui.summary.textContent='';
       selectedProfile=state.profile;
@@ -417,15 +427,15 @@
   document.addEventListener('dominium:module-change',({detail})=>{
     if(detail?.module==='confront'){
       syncProfile();
-      void refresh();
+      if(sessionRootId)void refresh();
     }
   });
   setInterval(()=>{
     if(state.activeModule==='confront'){
-      if(selectedProfile!==state.profile || !active || !pollingComplete(active))
+      if(sessionRootId && (selectedProfile!==state.profile || !active || !pollingComplete(active)))
         void refresh({quiet:true});
     }
   },6500);
   renderStatus();
-  if(state.activeModule==='confront')void refresh();
+  // No automatic restore of a previous browser session's QUEUE on page load.
 })();

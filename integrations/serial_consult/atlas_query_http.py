@@ -359,11 +359,13 @@ class AtlasQueryService:
             if action=="create":
                 if isinstance(body,dict) and set(body)=={"reconcile_job_id","atlas_checked_no_queue"}:
                     return self._reconcile_unconfirmed(actor,body)
-                if not isinstance(body,dict) or set(body) not in ({"city","location"},{"city","location","retry_job_id"},{"city","location","refresh_job_id"}):
+                if not isinstance(body,dict) or set(body) not in ({"city","location"},{"city","location","retry_job_id"},{"city","location","refresh_job_id"},{"city","location","fresh_session"}):
                     return 400,{"ok":False,"error":"Informe praça e localização"},None
                 city,location=body["city"],body["location"]
                 if city not in CITY or location not in LOCATION:
                     return 400,{"ok":False,"error":"Seleção inválida"},None
+                if 'fresh_session' in body and body['fresh_session'] is not True:
+                    return 400,{"ok":False,"error":"Sessão inválida"},None
                 if 'retry_job_id' in body or 'refresh_job_id' in body:return self._retry_family(actor,body)
                 with self._lock:
                     with connect_db(self.db_path) as db:
@@ -372,12 +374,13 @@ class AtlasQueryService:
                             ORDER BY created_at DESC LIMIT 1""",(city,location,actor)).fetchone()
                     # Timed pairs advance only through explicit linked recovery/refresh.
                     # A failed primary is still waiting for its authorized reserve.
-                    if (latest and latest['fallback_delay_seconds']==45 and not (
+                    if (not body.get('fresh_session') and latest and latest['fallback_delay_seconds']==45 and not (
                         not latest['remote_queue_id'] and latest['error_code'] in
                         ('manually_closed_unconfirmed','atlas_auth_required'))):
                         job_id,created=latest['id'],False
                     else:
-                        job_id,created=claim_job(city,location,self.db_path,created_by=actor)
+                        job_id,created=claim_job(city,location,self.db_path,created_by=actor,
+                                                 fresh_session=body.get('fresh_session',False))
                     if created:
                         # Only NEW submissions adopt the dual-ID policy. Existing
                         # historical 404s cannot silently create extra queues.

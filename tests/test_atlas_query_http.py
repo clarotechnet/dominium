@@ -42,6 +42,34 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.svc.handle('GET','/api/atlas-query/jobs/'+job_id,'user-2')[0],404)
         self.assertEqual(self.svc.handle('POST','/api/atlas-query/jobs','viewer',body)[0],403)
 
+    def test_fresh_browser_session_requires_explicit_post_and_preserves_history(self):
+        from atlas_query_report import read_job
+        previous,reserve=self._failed_family()
+        body={'city':'natal','location':'empreiteira','fresh_session':True}
+        status,data,_=self.svc.handle('POST','/api/atlas-query/jobs','user-1',body)
+        self.assertEqual(status,202)
+        newer=data['job']['id']
+        self.assertNotEqual(previous,newer)
+        self.assertEqual(read_job(previous,self.svc.db_path)['remote_queue_id'],'276907780')
+        self.assertEqual(read_job(reserve,self.svc.db_path)['remote_queue_id'],'276907783')
+        replay=self.svc.handle('POST','/api/atlas-query/jobs','user-1',body)
+        self.assertEqual(replay[0],200)
+        self.assertEqual(replay[1]['job']['id'],newer)
+        self.assertTrue(replay[1]['reused'])
+
+    def test_fresh_browser_session_never_duplicates_an_inflight_queue(self):
+        from atlas_query_report import save_queue
+        body={'city':'natal','location':'empreiteira'}
+        old=self.svc.handle('POST','/api/atlas-query/jobs','user-1',body)[1]['job']['id']
+        save_queue(old,'276955001',self.svc.db_path)
+        attempt=self.svc.handle('POST','/api/atlas-query/jobs','user-1',
+            {**body,'fresh_session':True})
+        self.assertEqual(attempt[0],200)
+        self.assertEqual(attempt[1]['job']['id'],old)
+        self.assertEqual(len(self.svc._new_jobs),1)
+        self.assertEqual(self.svc.handle('POST','/api/atlas-query/jobs','user-1',
+            {**body,'fresh_session':False})[0],400)
+
     def _legacy_confirm(self,primary,remote,db_path):
         # Existing durable workflows keep the old 404 policy after migration.
         from atlas_query_report import connect_db,save_queue

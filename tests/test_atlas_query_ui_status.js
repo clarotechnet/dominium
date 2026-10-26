@@ -7,7 +7,7 @@ const path = require('node:path');
 const uiCode=fs.readFileSync(path.join(__dirname,'../static/atlas-query-ui.js'),'utf8');
 const html=fs.readFileSync(path.join(__dirname,'../static/index.html'),'utf8');
 
-function setup(response,now){
+function setup(response,now,{freshSession=false}={}){
   const elements=new Map();
   const listeners=new Map();
   const documentListeners=new Map();
@@ -46,7 +46,14 @@ function setup(response,now){
     requestBlob:async()=>({blob:new Blob([])}),
     saveBlob:()=>{},localDate:()=>'',switchProfile:async city=>{state.profile=city}};
   if(now!==undefined)ctx.Date=class extends Date {static now(){return now}};
-  vm.runInNewContext(uiCode,ctx,{filename:'atlas-query-ui.js'});
+  // Existing tests represent a QUERY already started in this page. The two
+  // session-boundary lines are exercised separately with unmodified source.
+  const inSessionCode=freshSession?uiCode:uiCode
+    .replace("let sessionRootId='';","let sessionRootId='existing-page-session';")
+    .replace('(job.id===sessionRootId || job.fallback_of===sessionRootId)','true')
+    .replace("active=null;relatedJobs=[];sessionRootId='';checkedAt=null;",
+      "active=null;relatedJobs=[];sessionRootId='existing-page-session';checkedAt=null;");
+  vm.runInNewContext(inSessionCode,ctx,{filename:'atlas-query-ui.js'});
   return {elements,element,listeners,documentListeners,calls,operations,state,window:ctx.window,interval:()=>interval()};
 }
 
@@ -55,7 +62,7 @@ test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/Histórico desta sessão/);
   assert.match(html,/id="atlasQueryTimestamps"/);
   assert.match(html,/id="atlasQueryReconcile"/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261026-4/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261026-5/);
 });
 
 test('old completed family permits one explicit generation without automatic POST',async()=>{
@@ -501,6 +508,37 @@ for(const [stateName,error] of [['attachment_wait','attachment_http_404'],['atta
  });
 }
 
+test('new browser session does not restore old queues or send Atlas jobs automatically',async()=>{
+  const old={id:'e'.repeat(32),city:'natal',state:'attachment_wait',
+    remote_queue_id:'276935365',fallback_of:''};
+  const fresh={id:'f'.repeat(32),city:'natal',state:'queued',
+    remote_queue_id:'276945001',fallback_of:''};
+  const {state,element,interval,listeners,calls,operations}=setup(async(url,opts)=>{
+    if(opts?.method==='POST')return {job:fresh,reused:false};
+    if(url.endsWith('/'+fresh.id))return {job:fresh};
+    return {jobs:[old,fresh]};
+  },undefined,{freshSession:true});
+  state.profile='natal';state.activeModule='confront';
+  interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.length,0,'reopen must not read or resume old jobs');
+  assert.equal(operations.length,0,'reopen must not show old waiting animation');
+  assert.equal(element('atlasQueryId').textContent,'Nenhuma fila criada');
+  listeners.get('atlasQueryRefresh:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(calls.length,0,'manual refresh without current run stays empty');
+  listeners.get('atlasQueryStart:click')();
+  await new Promise(resolve=>setImmediate(resolve));
+  const posts=calls.filter(x=>x.method==='POST');
+  assert.equal(posts.length,1);
+  assert.deepEqual(JSON.parse(posts[0].body),
+    {city:'natal',location:'empreiteira',fresh_session:true});
+  interval();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.match(element('atlasQueryId').textContent,/276945001/);
+  assert.doesNotMatch(element('atlasQueryId').textContent,/276935365/);
+});
+
 test('shared waiting HUD preserves feedback without a busy heading or animation',()=>{
  const src=fs.readFileSync(path.join(__dirname,'../static/motion-ui.js'),'utf8');
  const cut=src.slice(src.indexOf('function renderOperationState('),src.indexOf('document.addEventListener("dominium:operation-state"'));
@@ -517,5 +555,6 @@ test('shared waiting HUD preserves feedback without a busy heading or animation'
  assert.equal(children.get('.operation-orb-label').textContent,'Aguardando arquivo');
  assert.equal(timers.length,0);
  const css=fs.readFileSync(path.join(__dirname,'../static/styles.css'),'utf8');
- assert.match(css,/data-phase="waiting"[^}]*animation-play-state:\s*paused/s);
+ assert.doesNotMatch(css,/data-phase="waiting"\] \*\s*\{\s*animation-play-state:\s*paused/s);
+ assert.match(css,/data-phase="waiting"\] \.orb-ring-a\s*\{\s*animation-duration:/);
 });
