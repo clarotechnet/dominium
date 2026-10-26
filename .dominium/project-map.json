@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-25T23:09:08+00:00",
+  "generated_at": "2026-10-26T02:42:39+00:00",
   "schema": 2,
-  "source_fingerprint": "b9f8c3ce72b2ea78611d2f5f32da308f2c27d3e051999f3e5d5194a1b21bbbe3",
+  "source_fingerprint": "737ee959370cc700771b6384081380dd4d7dbb7b7208f9ff86a7aab7b3021e01",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1110,9 +1110,22 @@
     {
       "path": "docs/agent/ATLAS_QUERY_AUTOMATION.md",
       "category": "docs",
-      "bytes": 24187,
-      "sha256": "ad28c6d621efae174cccfa26648d045df88090da03d1e92b0e8520132c0bf655",
+      "bytes": 24892,
+      "sha256": "64027bb69d0bb4ad06bde162b67276dc3781d3bb862f8992b325b6f37d58d0df",
       "summary": "QUERY Atlas — relatório analítico por localização",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/ATLAS_QUERY_EXECUTION_20261025.md",
+      "category": "docs",
+      "bytes": 7338,
+      "sha256": "15041ecfeba3abea8a34987b7fd293c528ae1d09fa8be83df36ef1c36cac6254",
+      "summary": "QUERY Atlas — execução e bloqueio atual em 25/10/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1149,8 +1162,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 40447,
-      "sha256": "3ffeb6054e1e05096eca723f773228902646f4af77df3e020aa59cc456e6d2b5",
+      "bytes": 45103,
+      "sha256": "b0c39421d834f0d8208394759d53e78e0ff952adbd9172634d28cbaf1a4e966b",
       "summary": "DOMINIUM — handoff operacional verificado",
       "imports": [],
       "endpoints": [],
@@ -1175,8 +1188,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 2382,
-      "sha256": "3d012b5f2ef6c69d9c58d29aa4947b649dc6431568f46caa1eea9e19818e30ab",
+      "bytes": 3087,
+      "sha256": "775139c36a1c66886aca63c400a2c11c9433d567da389d3e387613a828da0fbf",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],

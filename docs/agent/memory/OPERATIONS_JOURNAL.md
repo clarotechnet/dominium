@@ -47,3 +47,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 38 Python QUERY e 20 JavaScript passaram; quality_gate completo com TZ America/Sao_Paulo aprovado; tres fontes reparseadas, backend CSV/XLSX equivalente; CSV tres cidades e XLSX Recife baixados/verificados; backup SQLite integro.
 
 **Próximo passo/pendência:** Preservar filas 276868465 e 276868467; continuar leitura/download pelo retry existente e acompanhamento horario Work; nao gerar terceira fila; concluir somente apos anexo, parser, ready, tabela e exportacao Fortaleza verificados.
+
+## 2026-10-26 02:40 UTC — QUERY Atlas: sessao atual bloqueia geracao nas quatro cidades
+
+**Motivo:** Executar nova validacao autorizada sem repetir a restricao historica de Fortaleza
+
+**Alterado:** Diagnostico atual de servidor e producao; autorizacao de novas QUERYs registrada; sessao Atlas exige login; dois XLS existentes ainda404; nenhum patch operacional
+
+**Verificação:** 38 Python e 20 JavaScript passaram; Fortaleza persiste apos recarga; fontes e banco iguais em tres cidades; CSV/XLSX equivalentes e integros; backup SQLite ok
+
+**Próximo passo/pendência:** Operador renovar login Atlas no Chrome gerenciado do servidor; depois nova geracao Fortaleza e validacao atual nas quatro cidades

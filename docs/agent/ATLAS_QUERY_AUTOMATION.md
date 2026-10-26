@@ -1,5 +1,16 @@
 # QUERY Atlas — relatório analítico por localização
 
+## Checkpoint vigente — 25/10/2026, 23:38
+
+Ver [execução atual](ATLAS_QUERY_EXECUTION_20261025.md). O usuário autoriza novas
+QUERYs para investigar e validar as quatro cidades; a proibição histórica de
+terceira fila de Fortaleza está substituída. O bloqueio atual é login Atlas no
+Chrome gerenciado do servidor: formulário de geração retorna AtlasAuthRequired,
+NetTask não disponibiliza FilasForm e os dois links antigos ainda retornam404.
+DOMINIUM autenticado, IDs e aviso de sessão persistem após recarga. Nenhuma nova
+fila, patch de runtime ou deploy operacional nesta execução. Meta não concluída.
+Os registros abaixo são históricos e não substituem essa autorização atual.
+
 ## Estado verificado em 24/10/2026 — Cloud Browser e servidor
 
 Verificação prática entre 17:14 e 17:26 (America/Sao_Paulo), sem gerar filas.

@@ -1,5 +1,31 @@
 # DOMINIUM — handoff operacional verificado
 
+## Checkpoint vigente — 25/10/2026, 23:38, America/Sao_Paulo
+
+**Meta não concluída.** Ver `../ATLAS_QUERY_EXECUTION_20261025.md` para evidências
+atuais, hashes, backup e testes. As seções seguintes são histórico.
+
+- O usuário autoriza novas QUERYs Atlas necessárias à solução e aos testes nas
+  quatro cidades. Isso substitui a proibição antiga de terceira fila Fortaleza.
+  Preservar IDs/idempotência; não executar TOA, baixas nem alterações operacionais
+  fora dos relatórios. Não reiniciar Chrome sem necessidade comprovada.
+- Servidor online, relay 127.0.0.1:8793; quatro módulos QUERY iguais a main.
+  Frontend em produção igual ao código atual; último deploy web confirmado
+  permanece 29197dd / Actions 40090652088. Nenhum patch/deploy de runtime novo.
+- **Bloqueio atual:** formulário de geração exige autenticação Atlas. NetTask
+  não disponibiliza FilasForm. Necessário renovar login no Chrome gerenciado
+  já aberto no DESKTOP-K7J3E1N. DOMINIUM autenticado pelo Cloud Browser.
+- XLS antigos de Fortaleza 276868465/276868467 continuam404. Consulta atual
+  não reconfirma COMPLETO nem sessão válida. Banco registra atlas_auth_required;
+  interface mostra aviso, preserva IDs após recarga e desabilita exportação.
+- 38 testes Python + 20 JavaScript passaram. Backup atual íntegro. Fontes privadas
+  e linhas salvas das três cidades ready foram comparadas integralmente; CSV/XLSX
+  equivalentes e íntegros. Isso não comprova geração atual.
+- Após renovar login: criar QUERY controlada Fortaleza, registrar ID e validar
+  até fonte/banco/tabela/exportações; depois geração atual nas outras três cidades.
+  Nenhuma nova fila foi enviada durante o bloqueio. Não foi configurada tarefa
+  de acompanhamento nesta execução, nem verificada a automação histórica.
+
 > Revisado em 24/10/2026, 17:46, America/Sao_Paulo. Confirmar novamente o
 > ambiente antes de agir. Não registrar credenciais, URLs privadas ou clientes.
 

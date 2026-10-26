@@ -50,12 +50,13 @@ shared	desc_order_verifier.py	7			Fail-closed, read-only Imperium order/installe
 shared	desc_review_proxy.py	10	1		Authenticated Dominium boundary to the Bot's existing DESC review service.	af5c440b35d2eb65
 shared	desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	79346c1e1b556a5d
 orchestration	disconnect_automation.py	26			DOMINIUM | MAPA DE RESPONSABILIDADE	b4aaf01ad3a34fad
-docs	docs/agent/ATLAS_QUERY_AUTOMATION.md				QUERY Atlas — relatório analítico por localização	ad28c6d621efae17
+docs	docs/agent/ATLAS_QUERY_AUTOMATION.md				QUERY Atlas — relatório analítico por localização	64027bb69d0bb4ad
+docs	docs/agent/ATLAS_QUERY_EXECUTION_20261025.md				QUERY Atlas — execução e bloqueio atual em 25/10/2026	15041ecfeba3abea
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	799f400b16efb2c7
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md				DOMINIUM — handoff operacional verificado	3ffeb6054e1e0509
+docs	docs/agent/memory/CURRENT_STATE.md				DOMINIUM — handoff operacional verificado	b0c39421d834f0d8
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	3d012b5f2ef6c69d
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	775139c36a1c6688
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
 docs	docs/reference/DOMINIUM X IMPERIUM Especificacoes_requisicoes.txt				﻿================================================================================	0888eec3d49a2ab5
