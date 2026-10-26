@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T04:02:05+00:00",
+  "generated_at": "2026-10-26T11:35:14+00:00",
   "schema": 2,
-  "source_fingerprint": "c47419613a7006a585d682ba90802c3c5723d5c812ae3c884add2cd018a54daa",
+  "source_fingerprint": "9e48378177b4905b1928ef4904f46a6f0050c33061b6dd8a6591e51e5d6b6e5b",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1173,6 +1173,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md",
+      "category": "docs",
+      "bytes": 4706,
+      "sha256": "063649f8edcd11ab8c81482a59174c33bcbde9786f0a2ec040b5a500dd5fbc43",
+      "summary": "Atlas: verificação real de sessão no watchdog",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
       "bytes": 5965,
@@ -2158,6 +2171,29 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 17
+    },
+    {
+      "path": "integrations/serial_consult/atlas_query_health.py",
+      "category": "shared",
+      "bytes": 3651,
+      "sha256": "399c8f6ddfe3558ad6debc452ca7c07617f99148df037f619665b118fb431fde",
+      "summary": "Read-only Atlas session proof through an already confirmed NetTask ID.",
+      "imports": [
+        "__future__",
+        "atlas_query_pipeline",
+        "atlas_query_report",
+        "datetime",
+        "json",
+        "os",
+        "pathlib",
+        "sqlite3",
+        "uuid"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 3
     },
     {
       "path": "integrations/serial_consult/atlas_query_http.py",
@@ -3747,6 +3783,22 @@
       "symbol_count": 3
     },
     {
+      "path": "scripts/install_atlas_session_watchdog.ps1",
+      "category": "tooling-deploy",
+      "bytes": 3696,
+      "sha256": "7b17ecaf06189449ccc028457397ee6eaa5209fb0129768a0412be6da25977d7",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "Text.RegularExpressions",
+        "Text.UTF8Encoding"
+      ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "scripts/install_confront_relay.py",
       "category": "tooling-deploy",
       "bytes": 5241,
@@ -4408,6 +4460,19 @@
       "symbol_count": 0
     },
     {
+      "path": "tests/atlas_session_watchdog_install.ps1",
+      "category": "tests",
+      "bytes": 3135,
+      "sha256": "79cd0abe3bdb1cce97b4b47394aff448ff784bb0e9039e8cb605b072eb815776",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "tests/qa_disconnection_browser.js",
       "category": "tests",
       "bytes": 8251,
@@ -4596,6 +4661,28 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 6
+    },
+    {
+      "path": "tests/test_atlas_query_health.py",
+      "category": "tests",
+      "bytes": 5595,
+      "sha256": "7962f15659401e641e1a69ca2dbab473367f79dd25bd76facbb74d1d72724d25",
+      "summary": "Session health must depend on a fresh queue response, not an open tab.",
+      "imports": [
+        "atlas_query_report",
+        "importlib",
+        "json",
+        "pathlib",
+        "sqlite3",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 15
     },
     {
       "path": "tests/test_atlas_query_http.py",
@@ -7301,6 +7388,7 @@
     "Tabela_codigo_baixa0711.catalog",
     "Tabela_codigo_baixa0711.pdf",
     "Tecnico.pdf",
+    "Text.RegularExpressions",
     "Text.UTF8Encoding",
     "Time.get"
   ]
