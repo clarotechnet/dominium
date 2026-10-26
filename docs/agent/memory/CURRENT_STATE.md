@@ -1,3 +1,24 @@
+# Estado vigente — QUERY publicada em26/10/2026,13:58 America/Sao_Paulo
+
+Principal+reserva45s e antecipação porFALHOU publicados/instalados no commit
+2475433; Actions40363394318success. Código idêntico àárvore local testadaf0b42e8;
+gate945Python/21skip,JS,Ruff,build aprovados. Backup préinstalação íntegro,
+25jobs183194linhas preservadas; hashesruntime eJavaScriptprodução conferidos.
+Chrome preservado. Detalhes:../ATLAS_QUERY_PAIR45_EXECUTION_20261026.md.
+
+Novo teste pelaUI:principal276935365/reserva276935412; confirmação principal
+13:56:11, reserva solicitada13:56:57,46s. Reload retomoumesmosIDs. UI13:58
+mostra família aguardandoanexo404,CSV/XLSXbloqueados. Geração automáticaNatal
+AINDA NÃO integralmente validada; não declarar metaquatrocidades concluída.
+Não gerar novasfilas no acompanhamento; preservar opar e osdados anteriores.
+
+DesktopCommander atingiu cotamensal DEPOIS deinstalar e confirmar hashes/smokes.
+Não repetir/reconectar para contornar. Inspeção diretaSQLite/arquivoNovo pendente;
+UIautenticada doCloudBrowser ainda disponível. Relatório manual2051ready20145
+continua resultado distinto e não comprova sucesso desse novo teste.
+
+## Histórico anterior — checkpoints abaixo foram superados
+
 # Checkpoint — reserva45s implementada localmente; publicação aguardando autorização
 
 Commits locais de9e7d8/2a92de3 implementam principal+reserva45s, confirmação
