@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import html
 import logging
 import tempfile
 import shutil
@@ -17,7 +18,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from websocket import WebSocketTimeoutException
 
-from atlas_query_report import ChromeAtlas, connect_db, read_job, DB
+from atlas_query_report import AtlasAuthRequired, ChromeAtlas, connect_db, read_job, DB
 
 # Reuse the official NetHome -> Administração de Processos -> Filas -> Consulta por Id
 # SSO entry point. Opening /nettask/filas/filas.do directly can report
@@ -51,7 +52,9 @@ def upgrade_db(db_path=DB):
             "download_path":"TEXT NOT NULL DEFAULT ''",
             "fallback_of":"TEXT NOT NULL DEFAULT ''",
             "retry_of":"TEXT NOT NULL DEFAULT ''",
-            "fallback_enabled":"INTEGER NOT NULL DEFAULT 0"
+            "fallback_enabled":"INTEGER NOT NULL DEFAULT 0",
+            "fallback_delay_seconds":"INTEGER NOT NULL DEFAULT 0",
+            "fallback_due_at":"REAL NOT NULL DEFAULT 0"
         }.items():
             if name not in existing:
                 db.execute(f"ALTER TABLE query_jobs ADD COLUMN {name} {definition}")
@@ -75,6 +78,49 @@ def update_job(job_id, db_path=DB, **fields):
         count=db.execute("UPDATE query_jobs SET "+",".join(name+"=?" for name in values)+
                   " WHERE id=?",(*[fields[name] for name in values],job_id)).rowcount
         if count!=1:raise ValueError("Unknown report")
+
+
+def read_process_state(chrome, remote_id):
+    """Read the official yellow/green process view without opening a popup.
+
+    Require an identified equipment task and one unambiguous state. Never
+    retain or log the private HTML response, and never submit a report.
+    """
+    if not isinstance(remote_id, str) or not VALID_QUEUE.fullmatch(remote_id):
+        raise ValueError("Queue ID invalid")
+    frame=chrome.call(chrome.tab,"Page.getFrameTree",{})
+    resource=chrome.call(chrome.tab,"Network.loadNetworkResource",{
+        "frameId":frame["frameTree"]["frame"]["id"],
+        "url":"https://atlas.netservicos.com.br/nettask/filas/processos.do?idFila="+remote_id,
+        "options":{"disableCache":True,"includeCredentials":True}},timeout=20).get("resource") or {}
+    stream=resource.get("stream")
+    try:
+        if resource.get("httpStatusCode")==401:
+            raise AtlasAuthRequired("Sessao de processos Atlas precisa de login")
+        if resource.get("httpStatusCode")!=200 or not stream:return "unknown"
+        raw=bytearray()
+        while True:
+            chunk=chrome.call(chrome.tab,"IO.read",{"handle":stream,"size":65536})
+            raw.extend(base64.b64decode(chunk.get("data") or "")
+                if chunk.get("base64Encoded") else (chunk.get("data") or "").encode("utf-8"))
+            if len(raw)>512_000:return "unknown"
+            if chunk.get("eof"):break
+        text=raw.decode("utf-8",errors="replace")
+        if re.search(r"<input\b[^>]*\btype\s*=\s*['\"]?password\b",text,re.I):
+            raise AtlasAuthRequired("Sessao de processos Atlas precisa de login")
+        text=re.sub(r"<(script|style)\b.*?</\1\s*>","",text,flags=re.I|re.S)
+        text=html.unescape(re.sub(r"<[^>]+>"," ",text))
+        if (not re.search(r"(?<!\d)"+re.escape(remote_id)+r"(?!\d)",text)
+                or "RELATORIO_EQUIPAMENTOS" not in text.upper()):return "unknown"
+        states=set(re.findall(r"\bstatus\.fila\.([a-z_]+)\b",text.casefold()))
+        if len(states)!=1:return "unknown"
+        state=states.pop()
+        if state=="completo":return "complete"
+        if state in ("falhou","falha","erro","cancelado","cancelada"):return "failed"
+        if state in ("nova","novo","processando","aguardando","agendada"):return "processing"
+        return "unknown"
+    finally:
+        if stream:chrome.call(chrome.tab,"IO.close",{"handle":stream})
 
 
 def evaluate_query(chrome, remote_id):
@@ -120,7 +166,12 @@ def evaluate_query(chrome, remote_id):
                 break
         if info:break
     if not info: return {"state":"not_found"}
-    if info["state"]!="complete":return {"state":info["state"]}
+    if info["state"]=="failed":return {"state":"failed"}
+    process=read_process_state(chrome,remote_id)
+    if process=="failed":return {"state":"failed"}
+    if process!="complete":
+        return {"state":"processing",**({"error_code":"process_status_unconfirmed"}
+                if process=="unknown" else {})}
     action=info["detail_link"]
     if ("abreDetalhesFila(" not in action or remote_id not in action):
         raise RuntimeError("Queue detail action not verified")
@@ -174,7 +225,9 @@ def poll_report(job_id,db_path=DB,browser_factory=ChromeAtlas,clock=time.time):
     elif state=="failed":
         update_job(job_id,db_path,state="failed",error_code="remote_queue_failed")
     else:
-        update_job(job_id,db_path,state="processing" if state=="processing" else "queued",error_code="")
+        update_job(job_id,db_path,state="processing" if state=="processing" else "queued",
+                   error_code="process_status_unconfirmed"
+                   if found.get("error_code")=="process_status_unconfirmed" else "")
     row=read_job(job_id,db_path)
     return public_status(row)
 
@@ -183,7 +236,7 @@ def public_status(job):
     return {key:job[key] for key in (
         "id","city","location","state","remote_queue_id",
         "attachment_failures","created_at","updated_at","error_code",
-        "fallback_of","fallback_enabled","retry_of") if key in job}
+        "fallback_of","fallback_enabled","retry_of","fallback_delay_seconds","fallback_due_at") if key in job}
 
 
 
@@ -275,6 +328,14 @@ def fetch_file(job_id,db_path=DB,chrome_factory=ChromeAtlas,clock=time.time):
         if failures>=3:
             # Recheck only the same confirmed queue: the link may change later.
             refreshed=evaluate_query(chrome,job["remote_queue_id"])
+            if refreshed.get("state")=="failed":
+                update_job(job_id,db_path,state="failed",error_code="remote_queue_failed")
+                return {"state":"failed","error_code":"remote_queue_failed"}
+            if refreshed.get("state")!="complete":
+                error="process_status_unconfirmed" if refreshed.get("error_code")=="process_status_unconfirmed" else ""
+                update_job(job_id,db_path,state="processing",completed_at=0,
+                           next_attachment_check=0,attachment_url="",error_code=error)
+                return {"state":"processing","error_code":error}
             candidate=(refreshed.get("attachment_url") or "") if refreshed.get("state")=="complete" else ""
             if valid_report_url(candidate) and candidate!=attachment_url:
                 update_job(job_id,db_path,attachment_url=candidate,

@@ -53,10 +53,14 @@ class AtlasQueryService:
         # before confirming the Atlas queue ID. Never reissue that POST.
         self._mark_stale_unconfirmed()
         self._thread=None
+        self._reserve_thread=None
         if start_worker:
             self._thread=threading.Thread(target=self._run,daemon=True,
                                           name="dominium-query-atlas")
             self._thread.start()
+            self._reserve_thread=threading.Thread(target=self._run_reserves,daemon=True,
+                name="dominium-query-reserve")
+            self._reserve_thread.start()
 
     def _mark_stale_unconfirmed(self):
         cutoff=self.clock()-150
@@ -71,6 +75,7 @@ class AtlasQueryService:
     def close(self):
         self._stop.set();self._wake.set()
         if self._thread:self._thread.join(timeout=3)
+        if self._reserve_thread:self._reserve_thread.join(timeout=3)
 
     def _owned(self,job_id,actor):
         if not JOB_RE.fullmatch(job_id):return False
@@ -78,7 +83,7 @@ class AtlasQueryService:
         return bool(row and row["created_by"]==actor)
 
     def _ensure_fallback(self,parent_id):
-        """Persist exactly one reserve job for a confirmed first-file HTTP 404.
+        """Persist one reserve at its deadline (or legacy confirmed HTTP 404).
 
         A unique index and immediate SQLite transaction prevent duplicate IDs
         after crashes or concurrent worker instances. Never resubmit uncertain
@@ -88,14 +93,19 @@ class AtlasQueryService:
             db.execute("BEGIN IMMEDIATE")
             primary=db.execute("""SELECT id,city,location,created_by,state,
                 remote_queue_id,attachment_failures,error_code,fallback_enabled,
-                fallback_of FROM query_jobs WHERE id=?""",(parent_id,)).fetchone()
+                fallback_of,fallback_delay_seconds,fallback_due_at FROM query_jobs WHERE id=?""",(parent_id,)).fetchone()
             if not primary or not (
                 primary["fallback_enabled"]==1
                 and not primary["fallback_of"]
-                and primary["state"]=="attachment_wait"
-                and primary["remote_queue_id"]
-                and primary["attachment_failures"]>=1
-                and primary["error_code"]=="attachment_http_404"
+                and re.fullmatch(r"\d{5,15}",primary["remote_queue_id"] or "")
+                and primary["state"]!="submission_uncertain"
+                and ((primary["fallback_delay_seconds"]==45
+                      and (0<primary["fallback_due_at"]<=self.clock()
+                           or (primary["state"]=="failed" and primary["error_code"]=="remote_queue_failed")))
+                     or (primary["fallback_delay_seconds"]==0
+                         and primary["state"]=="attachment_wait"
+                         and primary["attachment_failures"]>=1
+                         and primary["error_code"]=="attachment_http_404"))
                 and ACTOR_RE.fullmatch(primary["created_by"])
                 and primary["city"] in CITY
                 and primary["location"] in LOCATION
@@ -116,7 +126,8 @@ class AtlasQueryService:
 
     def _retry_family(self,actor,body):
         """Explicit recovery only: preserve old IDs and deduplicate across restarts."""
-        parent_id=body.get('retry_job_id')
+        refreshing='refresh_job_id' in body
+        parent_id=body.get('refresh_job_id' if refreshing else 'retry_job_id')
         if not isinstance(parent_id,str) or not JOB_RE.fullmatch(parent_id):
             return 400,{'ok':False,'error':'Solicitação inválida'},None
         created=False
@@ -142,22 +153,34 @@ class AtlasQueryService:
                         AND city=? AND location=? AND state='submission_uncertain'
                         AND remote_queue_id IS NULL LIMIT 1''',
                         (actor,parent['city'],parent['location'])).fetchone()
-                    other=db.execute('''SELECT id FROM query_jobs WHERE city=? AND location=?
+                    other=db.execute('''SELECT id FROM query_jobs p WHERE city=? AND location=?
                         AND created_by!=? AND created_by!='' AND created_at>? AND state IN
-                        ('submitting','submission_uncertain','queued','processing','attachment_wait') LIMIT 1''',
-                        (parent['city'],parent['location'],actor,self.clock()-3600)).fetchone()
-                    if (not latest or latest['id']!=parent_id or uncertain or other or len(family)!=2
-                        or not all(row['state']=='attachment_wait'
-                            and re.fullmatch(r'\d{5,15}',row['remote_queue_id'] or '')
-                            and row['error_code']=='attachment_http_404'
-                            and row['attachment_failures']>=2
-                            and row['created_at']<=self.clock()-120 for row in family)):
-                        return 409,{'ok':False,'error':'Aguarde duas falhas 404 nos dois IDs e dois minutos; envios incertos devem ser reconciliados.'},None
+                        ('submitting','submission_uncertain','queued','processing','attachment_wait') OR
+                        (city=? AND location=? AND created_by!=? AND created_by!='' AND created_at>?
+                         AND fallback_delay_seconds=45 AND fallback_of=''
+                         AND NOT EXISTS(SELECT 1 FROM query_jobs c WHERE c.fallback_of=p.id)) LIMIT 1''',
+                        (parent['city'],parent['location'],actor,self.clock()-3600,
+                         parent['city'],parent['location'],actor,self.clock()-3600)).fetchone()
+                    confirmed=lambda row: bool(re.fullmatch(r'\d{5,15}',row['remote_queue_id'] or ''))
+                    exhausted=lambda row: confirmed(row) and (
+                        (row['state']=='failed' and row['error_code']=='remote_queue_failed') or
+                        (row['state']=='attachment_wait' and row['error_code']=='attachment_http_404'
+                         and row['attachment_failures']>=2 and row['created_at']<=self.clock()-120))
+                    if refreshing:
+                        eligible=any(row['state']=='ready' and confirmed(row) and db.execute(
+                            'SELECT 1 FROM query_rows WHERE job_id=? LIMIT 1',(row['id'],)).fetchone()
+                            for row in family) and all(
+                                (row['state']=='ready' and confirmed(row)) or exhausted(row) for row in family)
+                        if parent['fallback_delay_seconds']==45 and len(family)!=2:eligible=False
+                    else:
+                        eligible=len(family)==2 and all(exhausted(row) for row in family)
+                    if (not latest or latest['id']!=parent_id or uncertain or other or not eligible):
+                        return 409,{'ok':False,'error':'Aguarde a conclusão dos dois IDs; envios incertos devem ser reconciliados.'},None
                     job_id=uuid.uuid4().hex
                     now=self.clock()
                     db.execute('''INSERT INTO query_jobs
-                        (id,city,location,created_by,state,created_at,updated_at,retry_of,fallback_enabled)
-                        VALUES(?,?,?,?,'submission_uncertain',?,?,?,1)''',
+                        (id,city,location,created_by,state,created_at,updated_at,retry_of,fallback_enabled,fallback_delay_seconds)
+                        VALUES(?,?,?,?,'submission_uncertain',?,?,?,1,45)''',
                         (job_id,parent['city'],parent['location'],actor,now,now,parent_id))
                     created=True
             if created:
@@ -207,9 +230,36 @@ class AtlasQueryService:
                            error_code="atlas_auth_required")
                 return
             remote=chrome.submit_once(row["city"],row["location"])
-            save_queue(job_id,remote,self.db_path)
+            save_queue(job_id,remote,self.db_path,
+                reserve_after=row.get("fallback_delay_seconds",0),timestamp=self.clock())
         finally:
             chrome.close()
+
+    def _schedule_reserves(self):
+        # Independent of polling/downloads: a slow existing attachment must not
+        # hold the authorized 45-second reserve behind a batch of older jobs.
+        with connect_db(self.db_path) as db:
+            parents=db.execute("""SELECT id FROM query_jobs p
+                WHERE fallback_delay_seconds=45 AND fallback_due_at>0
+                AND (fallback_due_at<=? OR (state='failed' AND error_code='remote_queue_failed'))
+                AND fallback_of='' AND fallback_enabled=1
+                AND NOT EXISTS(SELECT 1 FROM query_jobs c WHERE c.fallback_of=p.id)
+                ORDER BY fallback_due_at LIMIT 30""",(self.clock(),)).fetchall()
+        for parent in parents:
+            if self._stop.is_set():break
+            reserve=self._ensure_fallback(parent["id"])
+            if not reserve:continue
+            try:self._submit_existing(reserve)
+            except Exception as exc:
+                logging.warning("Atlas QUERY reserve submit inconclusive: %s",type(exc).__name__)
+                update_job(reserve,self.db_path,error_code="atlas_submit_unconfirmed")
+
+    def _run_reserves(self):
+        while not self._stop.is_set():
+            try:self._schedule_reserves()
+            except Exception as exc:
+                logging.warning("Atlas QUERY reserve scheduler: %s",type(exc).__name__)
+            self._stop.wait(1)
 
     def _run(self):
         last_scanned={}
@@ -302,26 +352,37 @@ class AtlasQueryService:
                 with connect_db(self.db_path) as db:
                     rows=db.execute("""SELECT id,city,location,state,remote_queue_id,
                       created_at,updated_at,error_code,fallback_of,fallback_enabled,
-                      attachment_failures,retry_of
+                      attachment_failures,retry_of,fallback_delay_seconds,fallback_due_at
                       FROM query_jobs
                       WHERE created_by=? ORDER BY created_at DESC LIMIT 20""",(actor,)).fetchall()
                 return 200,{"ok":True,"jobs":[dict(row) for row in rows]},None
             if action=="create":
                 if isinstance(body,dict) and set(body)=={"reconcile_job_id","atlas_checked_no_queue"}:
                     return self._reconcile_unconfirmed(actor,body)
-                if not isinstance(body,dict) or set(body) not in ({"city","location"},{"city","location","retry_job_id"}):
+                if not isinstance(body,dict) or set(body) not in ({"city","location"},{"city","location","retry_job_id"},{"city","location","refresh_job_id"}):
                     return 400,{"ok":False,"error":"Informe praça e localização"},None
                 city,location=body["city"],body["location"]
                 if city not in CITY or location not in LOCATION:
                     return 400,{"ok":False,"error":"Seleção inválida"},None
-                if 'retry_job_id' in body:return self._retry_family(actor,body)
+                if 'retry_job_id' in body or 'refresh_job_id' in body:return self._retry_family(actor,body)
                 with self._lock:
-                    job_id,created=claim_job(city,location,self.db_path,created_by=actor)
+                    with connect_db(self.db_path) as db:
+                        latest=db.execute("""SELECT id,fallback_delay_seconds,state,error_code,remote_queue_id FROM query_jobs
+                            WHERE city=? AND location=? AND created_by=? AND fallback_of=''
+                            ORDER BY created_at DESC LIMIT 1""",(city,location,actor)).fetchone()
+                    # Timed pairs advance only through explicit linked recovery/refresh.
+                    # A failed primary is still waiting for its authorized reserve.
+                    if (latest and latest['fallback_delay_seconds']==45 and not (
+                        not latest['remote_queue_id'] and latest['error_code'] in
+                        ('manually_closed_unconfirmed','atlas_auth_required'))):
+                        job_id,created=latest['id'],False
+                    else:
+                        job_id,created=claim_job(city,location,self.db_path,created_by=actor)
                     if created:
                         # Only NEW submissions adopt the dual-ID policy. Existing
                         # historical 404s cannot silently create extra queues.
                         with connect_db(self.db_path) as db:
-                            db.execute("UPDATE query_jobs SET fallback_enabled=1 WHERE id=?",
+                            db.execute("UPDATE query_jobs SET fallback_enabled=1,fallback_delay_seconds=45 WHERE id=?",
                                        (job_id,))
                         self._new_jobs.append(job_id)
                         self._wake.set()

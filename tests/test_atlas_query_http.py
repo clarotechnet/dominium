@@ -42,12 +42,19 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.svc.handle('GET','/api/atlas-query/jobs/'+job_id,'user-2')[0],404)
         self.assertEqual(self.svc.handle('POST','/api/atlas-query/jobs','viewer',body)[0],403)
 
+    def _legacy_confirm(self,primary,remote,db_path):
+        # Existing durable workflows keep the old 404 policy after migration.
+        from atlas_query_report import connect_db,save_queue
+        with connect_db(db_path) as db:
+            db.execute('UPDATE query_jobs SET fallback_delay_seconds=0 WHERE id=?',(primary,))
+        save_queue(primary,remote,db_path)
+
     def _failed_family(self):
         import time
         from atlas_query_report import save_queue,connect_db
         primary=self.svc.handle('POST','/api/atlas-query/jobs','user-1',
             {'city':'natal','location':'empreiteira'})[1]['job']['id']
-        save_queue(primary,'276907780',self.svc.db_path)
+        self._legacy_confirm(primary,'276907780',self.svc.db_path)
         update_job(primary,self.svc.db_path,state='attachment_wait',
             error_code='attachment_http_404',attachment_failures=2)
         reserve=self.svc._ensure_fallback(primary)
@@ -139,7 +146,7 @@ class Tests(unittest.TestCase):
                 primary=created[1]['job']['id']
                 self.assertEqual(read_job(primary,self.svc.db_path)['fallback_enabled'],1)
                 self.assertIsNone(self.svc._ensure_fallback(primary))
-                save_queue(primary,'276855582',self.svc.db_path)
+                self._legacy_confirm(primary,'276855582',self.svc.db_path)
                 self.assertIsNone(self.svc._ensure_fallback(primary))
                 update_job(primary,self.svc.db_path,state='attachment_wait',
                     attachment_failures=1,error_code='attachment_http_404')
@@ -165,7 +172,7 @@ class Tests(unittest.TestCase):
     def test_historical_404_does_not_automatically_generate_backup(self):
         from atlas_query_report import claim_job,save_queue,read_job
         primary,_=claim_job('recife','empreiteira',self.svc.db_path,created_by='user-78')
-        save_queue(primary,'276855585',self.svc.db_path)
+        self._legacy_confirm(primary,'276855585',self.svc.db_path)
         update_job(primary,self.svc.db_path,state='attachment_wait',attachment_failures=11,
                    error_code='attachment_http_404')
         self.assertEqual(read_job(primary,self.svc.db_path)['fallback_enabled'],0)
@@ -177,7 +184,7 @@ class Tests(unittest.TestCase):
             {'city':'mossoro','location':'empreiteira'})[1]['job']['id']
         update_job(primary,self.svc.db_path,error_code='atlas_submit_unconfirmed')
         self.assertIsNone(self.svc._ensure_fallback(primary))
-        save_queue(primary,'276855586',self.svc.db_path)
+        self._legacy_confirm(primary,'276855586',self.svc.db_path)
         update_job(primary,self.svc.db_path,state='ready',error_code='')
         self.assertIsNone(self.svc._ensure_fallback(primary))
 
@@ -186,7 +193,7 @@ class Tests(unittest.TestCase):
         from atlas_query_report import save_queue,connect_db
         primary=self.svc.handle('POST','/api/atlas-query/jobs','user-83',
             {'city':'fortaleza','location':'empreiteira'})[1]['job']['id']
-        save_queue(primary,'276855587',self.svc.db_path)
+        self._legacy_confirm(primary,'276855587',self.svc.db_path)
         update_job(primary,self.svc.db_path,state='attachment_wait',
                    attachment_failures=4,error_code='attachment_http_404')
         with ThreadPoolExecutor(max_workers=5) as pool:
@@ -202,7 +209,7 @@ class Tests(unittest.TestCase):
         from atlas_query_report import save_queue,read_job,connect_db
         primary=self.svc.handle('POST','/api/atlas-query/jobs','user-84',
             {'city':'recife','location':'empreiteira'})[1]['job']['id']
-        save_queue(primary,'276855598',self.svc.db_path)
+        self._legacy_confirm(primary,'276855598',self.svc.db_path)
         update_job(primary,self.svc.db_path,state='attachment_wait',
             error_code='attachment_http_404',attachment_failures=1,
             next_attachment_check=time.time()+1000)
@@ -230,7 +237,7 @@ class Tests(unittest.TestCase):
         from atlas_query_report import save_queue,read_job,connect_db
         primary=self.svc.handle('POST','/api/atlas-query/jobs','user-85',
             {'city':'natal','location':'empreiteira'})[1]['job']['id']
-        save_queue(primary,'276855599',self.svc.db_path)
+        self._legacy_confirm(primary,'276855599',self.svc.db_path)
         update_job(primary,self.svc.db_path,state='attachment_wait',
                    error_code='attachment_http_404',attachment_failures=1)
         child=self.svc._ensure_fallback(primary)

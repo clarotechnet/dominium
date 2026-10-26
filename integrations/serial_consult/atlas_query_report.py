@@ -69,10 +69,13 @@ def claim_job(city,location,db_path=DB,*,timestamp=None,created_by=""):
             ORDER BY created_at DESC LIMIT 1""",
             (city,location,created_by,now-8*3600)).fetchone()
         if previous:return previous["id"],False
-        other=db.execute("""SELECT id FROM query_jobs WHERE city=? AND location=?
-           AND created_by!=? AND created_by!='' AND created_at>? AND state IN
-           ('submitting','submission_uncertain','queued','processing','attachment_wait')
-           LIMIT 1""",(city,location,created_by,now-3600)).fetchone()
+        columns={r['name'] for r in db.execute('PRAGMA table_info(query_jobs)')}
+        timed_pending=""" OR (fallback_delay_seconds=45 AND fallback_of=''
+            AND NOT EXISTS(SELECT 1 FROM query_jobs c WHERE c.fallback_of=p.id))""" if 'fallback_delay_seconds' in columns else ''
+        other=db.execute("""SELECT id FROM query_jobs p WHERE city=? AND location=?
+           AND created_by!=? AND created_by!='' AND created_at>? AND (state IN
+           ('submitting','submission_uncertain','queued','processing','attachment_wait')"""+
+           timed_pending+") LIMIT 1",(city,location,created_by,now-3600)).fetchone()
         if other:raise ValueError("A mesma QUERY ja esta em andamento")
         job_id=uuid.uuid4().hex
         db.execute("""INSERT INTO query_jobs
@@ -82,13 +85,17 @@ def claim_job(city,location,db_path=DB,*,timestamp=None,created_by=""):
         return job_id,True
 
 
-def save_queue(job_id,queue_id,db_path=DB):
+def save_queue(job_id,queue_id,db_path=DB,*,reserve_after=0,timestamp=None):
     if not re.fullmatch(r"\d{5,15}",str(queue_id)):
         raise ValueError("ID de fila nao confirmado")
     with connect_db(db_path) as db:
+        now=time.time() if timestamp is None else timestamp
+        due_sql=",fallback_due_at=?" if reserve_after else ""
+        # Queue confirmation and reserve deadline are committed together.
+        params=(str(queue_id),now,*((now+reserve_after,) if reserve_after else ()),job_id)
         count=db.execute("""UPDATE query_jobs SET remote_queue_id=?,state='queued',
-          updated_at=?,error_code='' WHERE id=? AND state='submission_uncertain'""",
-          (str(queue_id),time.time(),job_id)).rowcount
+          updated_at=?,error_code=''"""+due_sql+" WHERE id=? AND state='submission_uncertain'",
+          params).rowcount
         if count!=1:raise ValueError("Estado de fila inconsistente")
 
 

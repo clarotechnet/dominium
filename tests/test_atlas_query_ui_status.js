@@ -55,7 +55,7 @@ test('dashboard includes visible permanent activity log',()=>{
   assert.match(html,/Histórico desta sessão/);
   assert.match(html,/id="atlasQueryTimestamps"/);
   assert.match(html,/id="atlasQueryReconcile"/);
-  assert.match(html,/atlas-query-ui\.js\?v=20261026-1/);
+  assert.match(html,/atlas-query-ui\.js\?v=20261026-3/);
 });
 
 test('old completed family permits one explicit generation without automatic POST',async()=>{
@@ -407,4 +407,79 @@ test('BatAtlas transport timeout shows recoverable warning without second submis
   assert.match(element('atlasQueryId').textContent,/276861849/);
   assert.ok(operations.some(x=>x.label==='Servidor de arquivos demorando'));
   assert.equal(calls.filter(x=>x.method==='POST').length,0);
+});
+
+test('timer reserve stays observable and a failed principal cannot unlock another pair',async()=>{
+  const primary={id:'a'.repeat(32),city:'natal',state:'failed',error_code:'remote_queue_failed',
+    remote_queue_id:'276930001',fallback_of:'',fallback_enabled:1,
+    fallback_delay_seconds:45,fallback_due_at:Date.now()/1000+30};
+  const reserve={...primary,id:'b'.repeat(32),state:'processing',error_code:'',
+    remote_queue_id:'276930002',fallback_of:primary.id,fallback_delay_seconds:0};
+  let jobs=[primary];
+  const {element,state,interval,calls}=setup(async url=>
+    url.endsWith(primary.id)?{job:primary}:url.endsWith(reserve.id)?{job:reserve}:{jobs});
+  state.profile='natal';state.activeModule='confront';interval();
+  await new Promise(r=>setImmediate(r));
+  assert.equal(element('atlasQueryStart').disabled,true);
+  assert.match(element('atlasQueryProgress').textContent,/reserva|45/i);
+  jobs=[reserve,primary];interval();await new Promise(r=>setImmediate(r));
+  assert.match(element('atlasQueryId').textContent,/276930002/);
+  assert.equal(calls.filter(c=>c.method==='POST').length,0);
+});
+
+test('ready report explicitly requests a new linked cycle instead of reusing old ready',async()=>{
+  const primary={id:'a'.repeat(32),city:'natal',state:'ready',remote_queue_id:'276930001',fallback_of:''};
+  const {state,interval,listeners,calls}=setup(async(url,opts)=>
+    opts?.method==='POST'?{job:{...primary,id:'b'.repeat(32),state:'submission_uncertain'}}:
+    url.includes('/rows/')?{rows:[],columns:[],total:1}:
+    url.endsWith(primary.id)?{job:primary}:{jobs:[primary]});
+  state.profile='natal';state.activeModule='confront';interval();
+  await new Promise(r=>setImmediate(r));
+  listeners.get('atlasQueryStart:click')();await new Promise(r=>setImmediate(r));
+  const post=calls.find(c=>c.method==='POST');
+  assert.equal(JSON.parse(post.body).refresh_job_id,primary.id);
+});
+
+test('failed reserve does not stop observation of a processing principal',async()=>{
+  const primary={id:'a'.repeat(32),city:'natal',state:'processing',remote_queue_id:'276930001',fallback_of:''};
+  const reserve={...primary,id:'b'.repeat(32),state:'failed',error_code:'remote_queue_failed',
+    remote_queue_id:'276930002',fallback_of:primary.id};
+  const {state,interval,calls,element}=setup(async url=>
+    url.endsWith(primary.id)?{job:primary}:url.endsWith(reserve.id)?{job:reserve}:{jobs:[reserve,primary]});
+  state.profile='natal';state.activeModule='confront';interval();
+  await new Promise(r=>setImmediate(r));
+  const before=calls.length;
+  interval();await new Promise(r=>setImmediate(r));
+  assert.ok(calls.length>before);
+  assert.equal(element('atlasQueryStart').disabled,true);
+});
+
+test('ready principal keeps polling and blocks a new cycle while reserve is pending',async()=>{
+  const primary={id:'a'.repeat(32),city:'natal',state:'ready',remote_queue_id:'276930001',fallback_of:'',
+    fallback_enabled:1,fallback_delay_seconds:45,fallback_due_at:Date.now()/1000-5};
+  const reserve={...primary,id:'b'.repeat(32),state:'submission_uncertain',remote_queue_id:null,
+    fallback_of:primary.id,fallback_delay_seconds:0};
+  const {state,interval,calls,element}=setup(async url=>url.includes('/rows/')?{rows:[],columns:[],total:1}:
+    url.endsWith(primary.id)?{job:primary}:{jobs:[reserve,primary]});
+  state.profile='natal';state.activeModule='confront';interval();
+  await new Promise(r=>setImmediate(r));
+  const before=calls.length;interval();await new Promise(r=>setImmediate(r));
+  assert.ok(calls.length>before);
+  assert.equal(element('atlasQueryStart').disabled,true);
+});
+
+for(const [label,primary,reserve,enabled] of [
+  ['reconciled no-ID timed primary', {state:'failed',error_code:'manually_closed_unconfirmed',remote_queue_id:null},null,true],
+  ['ready primary with exhausted 404 reserve',{state:'ready'},
+    {state:'attachment_wait',error_code:'attachment_http_404',attachment_failures:2,created_at:Date.now()/1000-300},true],
+])test(label+' allows explicit replacement without automatic POST',async()=>{
+  const root={id:'a'.repeat(32),city:'natal',remote_queue_id:'276930001',fallback_of:'',
+    fallback_enabled:1,fallback_delay_seconds:45,...primary};
+  const child=reserve?{...root,id:'b'.repeat(32),fallback_of:root.id,fallback_delay_seconds:0,remote_queue_id:'276930002',...reserve}:null;
+  const {state,interval,element,calls}=setup(async url=>url.includes('/rows/')?{rows:[],columns:[],total:1}:
+    url.endsWith(root.id)?{job:root}:{jobs:child?[child,root]:[root]});
+  state.profile='natal';state.activeModule='confront';interval();
+  await new Promise(r=>setImmediate(r));
+  assert.equal(element('atlasQueryStart').disabled,!enabled);
+  assert.equal(calls.filter(c=>c.method==='POST').length,0);
 });

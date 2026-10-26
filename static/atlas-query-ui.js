@@ -122,7 +122,7 @@
     // Never display a reserve 'queued' in place of a READY principal.
     return root.state==='ready'?root:
       reserve?.state==='ready'?reserve:
-      reserve||root;
+      reserve&&!['failed','format_review','atlas_auth_required'].includes(reserve.state)?reserve:root;
   }
   const safeError=(error)=>String(error?.message||'Falha ao acessar a QUERY');
   const jobStatus=job=>job?.error_code==='manually_closed_unconfirmed'
@@ -130,19 +130,35 @@
     : statusLabels[job?.state]||job?.state||'';
   // An unconfirmed Atlas submission is not a confirmed failure or a retryable job.
   // Stop background polling and keep manual reconciliation available.
-  const pollingComplete=job=>Boolean(job && (
+  const reservePending=()=>relatedJobs.some(job=>!job.fallback_of &&
+    job.fallback_delay_seconds===45 && job.fallback_enabled===1 &&
+    (job.remote_queue_id || !job.error_code) &&
+    !relatedJobs.some(child=>child.fallback_of===job.id));
+  const familyPending=()=>reservePending() || relatedJobs.some(job=>
+    (!['atlas_auth_required','atlas_submit_unconfirmed'].includes(job.error_code) &&
+     ['submitting','queued','processing','attachment_missing','attachment_wait','download_ready'].includes(job.state)) ||
+    (job.state==='submission_uncertain' && !job.error_code));
+  const pollingComplete=job=>!familyPending() && Boolean(job && (
     ['ready','failed','format_review','atlas_auth_required'].includes(job.state)||
     job.error_code==='atlas_submit_unconfirmed'||job.error_code==='atlas_auth_required'));
   function retryFamilyId(){
     const primary=relatedJobs.find(job=>!job.fallback_of);
     if(!primary || relatedJobs.length!==2)return '';
-    return relatedJobs.every(job=>job.state==='attachment_wait' &&
+    return relatedJobs.every(job=>(job.state==='failed' && job.error_code==='remote_queue_failed' &&
+      /^\d{5,15}$/.test(String(job.remote_queue_id||''))) || (job.state==='attachment_wait' &&
       /^\d{5,15}$/.test(String(job.remote_queue_id||'')) &&
       job.error_code==='attachment_http_404' && job.attachment_failures>=2 &&
       typeof job.created_at==='number' && Number.isFinite(job.created_at) &&
-      Date.now()-job.created_at*1000>=120000) ? primary.id : '';
+      Date.now()-job.created_at*1000>=120000)) ? primary.id : '';
   }
   function canCreateQuery(){
+    if(reservePending())return false;
+    if(active?.state==='atlas_auth_required' && !active.remote_queue_id)return true;
+    if(active?.state==='ready' && relatedJobs.some(job=>job.id!==active.id &&
+       !(['ready','failed','format_review'].includes(job.state) ||
+         (job.state==='attachment_wait' && job.error_code==='attachment_http_404' &&
+          job.attachment_failures>=2 && /^\d{5,15}$/.test(String(job.remote_queue_id||'')) &&
+          Number.isFinite(job.created_at) && Date.now()-job.created_at*1000>=120000))))return false;
     if(!active || ['ready','failed','format_review'].includes(active.state))return true;
     if(retryFamilyId())return true;
     // Match the backend's eight-hour reuse window. Recovery is an explicit
@@ -168,7 +184,8 @@
     ui.id.textContent=primary&&reserve
       ? 'Principal: '+(primary.remote_queue_id||'aguardando ID')+
         ' • Reserva: '+(reserve.remote_queue_id||'aguardando ID')
-      : active?.remote_queue_id?'Fila Atlas: '+active.remote_queue_id:
+      : active?.remote_queue_id?'Fila Atlas: '+active.remote_queue_id+
+        (reservePending()?' • Reserva programada após 45s':''):
         active?'Solicitação '+active.id.slice(0,8):'Nenhuma fila criada';
     ui.times.textContent=active
       ? 'Principal solicitada: '+formatMoment(primary?.created_at||active.created_at)+
@@ -176,7 +193,9 @@
         ' • Última atualização: '+formatMoment(active.updated_at)+
         (checkedAt?' • Consultada: '+formatMoment(checkedAt):'')
       : 'Sem consulta registrada para esta praça.';
-    ui.progress.textContent=active?.error_code==='attachment_transport_timeout'
+    ui.progress.textContent=reservePending() && active?.state!=='ready'
+      ? jobStatus(active)+'. Reserva automática: após 45s ou assim que o Atlas confirmar FALHOU.'
+      : active?.error_code==='attachment_transport_timeout'
       ? 'A consulta do anexo expirou. A fila foi preservada; nova tentativa automática programada.'
       : active?.error_code==='atlas_submit_unconfirmed'
       ? 'Confirmação do Atlas não obtida. Verifique a fila antes de qualquer novo envio.'
@@ -197,6 +216,10 @@
             : 'A sessão Atlas requer autenticação. Nenhuma geração de relatório foi confirmada.')
         : serverError==='atlas_submit_unconfirmed'
         ? 'O Atlas não confirmou a geração. Não repita o clique sem verificar a fila.'
+        : serverError==='process_status_unconfirmed'
+        ? 'Aguardando confirmação do processo Atlas antes de abrir os anexos.'
+        : serverError==='remote_queue_failed'
+        ? 'O processo Atlas falhou. Acompanhando o outro ID, quando disponível.'
         : serverError==='report_parse_not_confirmed'
         ? 'Arquivo obtido, mas o formato precisa de revisão. Nenhuma linha foi descartada.'
         : serverError==='manually_closed_unconfirmed'
@@ -271,7 +294,7 @@
     }
     try{
       // Re-read the listing every cycle: a reserve ID is created by the
-      // server after a confirmed 404, not by another browser POST.
+      // server at the 45-second deadline, not by another browser POST.
       const data=await request('/api/atlas-query/jobs',{timeoutMs:18000});
       if(targetProfile!==state.profile){refreshPending=true;return;}
       const jobs=(data.jobs||[]).filter(job=>job.city===targetProfile);
@@ -315,6 +338,7 @@
   async function create(){
     if(busy||fetching||!allowed()||!canCreateQuery())return;
     const retryId=retryFamilyId();
+    const refreshId=active?.state==='ready' ? relatedJobs.find(job=>!job.fallback_of)?.id : '';
     busy=true;renderStatus();
     writeNotice('Pedido recebido no navegador. Enviando ao servidor...');
     queryHud('searching','Gerando QUERY no Atlas',
@@ -324,7 +348,7 @@
         method:'POST',
         headers:{'content-type':'application/json'},
         body:JSON.stringify({city:state.profile,location:ui.location.value,
-          ...(retryId?{retry_job_id:retryId}:{})}),
+          ...(retryId?{retry_job_id:retryId}:refreshId?{refresh_job_id:refreshId}:{})}),
         timeoutMs:25000
       });
       active=data.job;relatedJobs=active?[active]:[];

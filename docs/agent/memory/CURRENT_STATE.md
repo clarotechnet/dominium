@@ -1,3 +1,12 @@
+# Checkpoint — reserva45s implementada localmente; publicação aguardando autorização
+
+Commits locais de9e7d8/2a92de3 implementam principal+reserva45s, confirmação
+realprocesso, retomada eguardas. Gate939/21skip e33UI aprovados; revisão
+corrigida comregressões. Pushmain foi rejeitado por aprovaçãoautomática;
+nenhum runtime/deploy/IDnovo alterado. Pedir autorização explícita parapublicar
+namain clarotechnet/dominium e instalarrelay combackup. Não contornar rejeição.
+Detalhes: ../ATLAS_QUERY_PAIR45_EXECUTION_20261026.md.
+
 # DOMINIUM — handoff operacional verificado
 
 ## Estado vigente — 26/10/2026, 09:53, America/Sao_Paulo

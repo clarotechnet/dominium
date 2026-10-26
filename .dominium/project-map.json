@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T12:54:41+00:00",
+  "generated_at": "2026-10-26T16:43:17+00:00",
   "schema": 2,
-  "source_fingerprint": "9fa50df629abfd8ac52f44041ca0674bd0e29268c04e377a26428c946f95a073",
+  "source_fingerprint": "ffa32a8935fe1661d8757c58ba6cbc2f7c9b27efde7f5307822819eec04f049f",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1121,6 +1121,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/ATLAS_PROCESS_FLOW_PLAN_20261026.md",
+      "category": "docs",
+      "bytes": 6690,
+      "sha256": "76042774529336871fe3addb562c00b4511378c04b6569063ace23d381514c82",
+      "summary": "Fluxo Atlas: conclusão do processo, reserva e nova geração explícita",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/ATLAS_QUERY_AUTOMATION.md",
       "category": "docs",
       "bytes": 25537,
@@ -1165,6 +1178,19 @@
       "bytes": 4285,
       "sha256": "e16f3fc8edf799018617e0202f347a90aff4ff250bcd0b76c133fcdc7d2cedc1",
       "summary": "Natal — comparação de geração manual e reconhecimento de FALHOU",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/ATLAS_QUERY_PAIR45_EXECUTION_20261026.md",
+      "category": "docs",
+      "bytes": 2494,
+      "sha256": "a35b7f6bf3d66597f527e6fcef196189f50b8a913b5d3b8dcbad78acaf4be353",
+      "summary": "QUERY Atlas — principal e reserva após45s",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1279,9 +1305,9 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 54283,
-      "sha256": "aa99a9b601779c6d932ac680d70af3d3e52a83b7069230845190b40455d48fc1",
-      "summary": "DOMINIUM — handoff operacional verificado",
+      "bytes": 54827,
+      "sha256": "33173665eecef59c87358bd8778592fa58eaa838549ebaca64ac1a22d00fa3a2",
+      "summary": "Checkpoint — reserva45s implementada localmente; publicação aguardando autorização",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -2263,8 +2289,8 @@
     {
       "path": "integrations/serial_consult/atlas_query_http.py",
       "category": "shared",
-      "bytes": 20581,
-      "sha256": "792813ca9b7ba2b5c11ceb0db1845a8ee1612555fa0db5455d7b601a526d9d21",
+      "bytes": 24962,
+      "sha256": "26a03f23d7083585252c6a19570c7e4046fdd17021eb6f62ec6321e408c4123f",
       "summary": "Authenticated DOMINIUM QUERY Atlas service, isolated by operator.",
       "imports": [
         "__future__",
@@ -2287,19 +2313,20 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 12
+      "symbol_count": 14
     },
     {
       "path": "integrations/serial_consult/atlas_query_pipeline.py",
       "category": "shared",
-      "bytes": 17300,
-      "sha256": "6b0fd4dd8831d116ada242ec8fbd85cd7368db4ad7bb77b7194d8df6e673c7e5",
+      "bytes": 20881,
+      "sha256": "99fd8c794634cc5d25bebe20bf55cada819c1fff15365bd2ec2922e769673bd3",
       "summary": "Private Atlas QUERY queue/attachment orchestrator (CLI foundation).",
       "imports": [
         "__future__",
         "argparse",
         "atlas_query_report",
         "base64",
+        "html",
         "json",
         "logging",
         "pathlib",
@@ -2314,13 +2341,13 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 9
+      "symbol_count": 10
     },
     {
       "path": "integrations/serial_consult/atlas_query_report.py",
       "category": "shared",
-      "bytes": 15619,
-      "sha256": "1009a0d3eaf843c5d52a91e3d38463aeb3b0d6b0d0cf70bd560d179cbf17957f",
+      "bytes": 16231,
+      "sha256": "3cf7a75c9d2f14406da6d28263ac91a2c44753e0667aaddfa4cb74ad591a4e92",
       "summary": "Atlas read-only equipment report generator in a dedicated managed Chrome tab.",
       "imports": [
         "__future__",
@@ -4098,8 +4125,8 @@
     {
       "path": "static/atlas-query-ui.js",
       "category": "frontend",
-      "bytes": 20408,
-      "sha256": "501bdfb4b49a4958bd894ef41b5918546b8453522e320a7f149a5cd9b64c7066",
+      "bytes": 22387,
+      "sha256": "e8bdb080bf9190b2a316ea104d3a5a0bc231759e47029dab9bd7e2ea19804972",
       "summary": "DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */",
       "imports": [],
       "endpoints": [
@@ -4109,7 +4136,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 21
+      "symbol_count": 23
     },
     {
       "path": "static/confront.js",
@@ -4195,7 +4222,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 126321,
-      "sha256": "c1aca3c7b70d74e1d9e7a0bcd37e7f10ccafedbdaea91c1ac8f81c8782e874dd",
+      "sha256": "2d6742552abc55eae0491f5db9577e448aa42b0db9cb3d2f04f33acf803e0a03",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4752,8 +4779,8 @@
     {
       "path": "tests/test_atlas_query_http.py",
       "category": "tests",
-      "bytes": 21241,
-      "sha256": "d9124764aa01e7bbfb548d550749790a17c3d8cfe9b338e689c38fffc147a816",
+      "bytes": 21683,
+      "sha256": "bdf1944566951258c5c8e09b140cc8d90a10b08b760f927bf1a9fb2e4996163b",
       "summary": "QUERY Atlas authenticated API contract without contacting real Atlas.",
       "imports": [
         "atlas_query_data",
@@ -4775,7 +4802,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 21
+      "symbol_count": 22
     },
     {
       "path": "tests/test_atlas_query_pipeline.py",
@@ -4819,6 +4846,28 @@
       "symbol_count": 2
     },
     {
+      "path": "tests/test_atlas_query_process_flow.py",
+      "category": "tests",
+      "bytes": 7153,
+      "sha256": "24d0c31dc44f28fb0bf9fd4f893f0a39df218b7fcb7abc0e60c2c41e02bb78bb",
+      "summary": "Use the official process state before trusting an advertised attachment.",
+      "imports": [
+        "atlas_query_pipeline",
+        "atlas_query_report",
+        "base64",
+        "pathlib",
+        "sqlite3",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 17
+    },
+    {
       "path": "tests/test_atlas_query_proxy_json.js",
       "category": "tests",
       "bytes": 2066,
@@ -4854,10 +4903,35 @@
       "symbol_count": 13
     },
     {
+      "path": "tests/test_atlas_query_reserve_delay.py",
+      "category": "tests",
+      "bytes": 8354,
+      "sha256": "b76749bf70c93139e27feacd9f9f239052ffac0eded0050bd4946cc0ef5ee7d4",
+      "summary": "The user's two-ID policy is durable and never depends on an open browser UI.",
+      "imports": [
+        "atlas_query_data",
+        "atlas_query_http",
+        "atlas_query_pipeline",
+        "atlas_query_report",
+        "concurrent",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/atlas-query/jobs"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 22
+    },
+    {
       "path": "tests/test_atlas_query_ui_status.js",
       "category": "tests",
-      "bytes": 21309,
-      "sha256": "c64bb120d696b1d11f665c35f79b9e884faba9116c90299a89ef50b42de967d2",
+      "bytes": 26049,
+      "sha256": "bbbfa08b72907fc4509baf9fedfb2337b81868e7e691c9d33d30c3d20fd87466",
       "summary": "",
       "imports": [],
       "endpoints": [
