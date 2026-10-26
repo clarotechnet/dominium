@@ -112,6 +112,13 @@ class ProcessTests(unittest.TestCase):
             self.assertEqual(result['state'], expected)
             self.assertEqual(chrome.attachment_opened, expected == 'complete')
 
+    def test_complete_process_retains_official_app4_attachment(self):
+        report4=REPORT.replace('/app-3//','/app-4//')
+        chrome=ProcessChrome(process_page('completo'))
+        with patch.object(pipeline.time,'sleep'), patch(__name__+'.REPORT',report4):
+            result=pipeline.evaluate_query(chrome,QUEUE)
+        self.assertEqual(result,{'state':'complete','attachment_url':report4})
+
     def test_unknown_process_has_explicit_wait_reason(self):
         chrome = ProcessChrome('<html>not confirmed</html>')
         with patch.object(pipeline.time, 'sleep'):

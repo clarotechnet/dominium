@@ -124,7 +124,7 @@ shared	integrations/serial_consult/atlas_bridge_client.py	10			Read-only Atlas s
 shared	integrations/serial_consult/atlas_query_data.py	17			Parse Atlas analytic equipment report and export read-only CSV/XLSX.	090ecd08db961ee5
 shared	integrations/serial_consult/atlas_query_health.py	3			Read-only Atlas session proof through an already confirmed NetTask ID.	399c8f6ddfe3558a
 shared	integrations/serial_consult/atlas_query_http.py	14	2		Authenticated DOMINIUM QUERY Atlas service, isolated by operator.	26a03f23d7083585
-shared	integrations/serial_consult/atlas_query_pipeline.py	10			Private Atlas QUERY queue/attachment orchestrator (CLI foundation).	99fd8c794634cc5d
+shared	integrations/serial_consult/atlas_query_pipeline.py	10			Private Atlas QUERY queue/attachment orchestrator (CLI foundation).	6f12cce2e5711945
 shared	integrations/serial_consult/atlas_query_report.py	16			Atlas read-only equipment report generator in a dedicated managed Chrome tab.	3cf7a75c9d2f1440
 shared	integrations/serial_consult/confront_engine.py	7			Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.	c8a5eece9b26cd06
 shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-only Atlas x Imperium confrontation results.	70854357c13c117e
@@ -259,9 +259,9 @@ tests	tests/test_atlas_bridge_client.py	14			Tests for the real BotDMV Atlas HTT
 tests	tests/test_atlas_query_data.py	6			QUERY Atlas table transformations and text-preserving exports.	0748addddb6b990d
 tests	tests/test_atlas_query_health.py	15			Session health must depend on a fresh queue response, not an open tab.	7962f15659401e64
 tests	tests/test_atlas_query_http.py	22	3		QUERY Atlas authenticated API contract without contacting real Atlas.	bdf1944566951258
-tests	tests/test_atlas_query_pipeline.py	22			NetTask 404 handling: no duplicate report generation or insecure URLs.	200df66bf76e287a
+tests	tests/test_atlas_query_pipeline.py	23			NetTask 404 handling: no duplicate report generation or insecure URLs.	6dcc5d70a7dbdf6d
 tests	tests/test_atlas_query_policy.js	2	4			350c51201727bacf
-tests	tests/test_atlas_query_process_flow.py	17			Use the official process state before trusting an advertised attachment.	24d0c31dc44f28fb
+tests	tests/test_atlas_query_process_flow.py	18			Use the official process state before trusting an advertised attachment.	e91c22b950e5858a
 tests	tests/test_atlas_query_proxy_json.js	1	3			4e8277a7c89ce12f
 tests	tests/test_atlas_query_report.py	13			Safe report generator: no duplicate Atlas task after uncertainty.	9a490f5df2a54a18
 tests	tests/test_atlas_query_reserve_delay.py	22	1		The user's two-ID policy is durable and never depends on an open browser UI.	b76749bf70c93139

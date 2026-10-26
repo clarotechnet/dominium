@@ -28,7 +28,7 @@ QUEUE_URL = ("https://atlas.netservicos.com.br:443/nettask/singleSignOn.do?"
              "j_url=filas/filas.do?acao=prepareSearch&tipoConsulta=consultaId&menu=yes")
 DATA = Path(r"C:\DominiumRuntime\AtlasQueryData\attachments")
 VALID_QUEUE = re.compile(r"\d{5,15}\Z")
-FILE_URL = re.compile(r"/app-[123]//RELATORIOS/\d{6}/[A-Za-z0-9_-]+\.xls\Z", re.I)
+FILE_URL = re.compile(r"/app-[1234]//RELATORIOS/\d{6}/[A-Za-z0-9_-]+\.xls\Z", re.I)
 
 
 def valid_report_url(value):

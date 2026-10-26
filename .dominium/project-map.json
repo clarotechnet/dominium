@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T16:59:09+00:00",
+  "generated_at": "2026-10-26T17:25:25+00:00",
   "schema": 2,
-  "source_fingerprint": "5db27b4131c3c0e4f0fbc00dd6b2718a6df343d406dae33626ac79aafd0b13b4",
+  "source_fingerprint": "e5516f6cf450fe3503a37d075a3f86d9d85b92e7ec7798121bb7d284e4363c7c",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -2318,8 +2318,8 @@
     {
       "path": "integrations/serial_consult/atlas_query_pipeline.py",
       "category": "shared",
-      "bytes": 20881,
-      "sha256": "99fd8c794634cc5d25bebe20bf55cada819c1fff15365bd2ec2922e769673bd3",
+      "bytes": 20882,
+      "sha256": "6f12cce2e571194558f69e233647adaa7ca1cfd8ce18da595b21e528d1c5a98a",
       "summary": "Private Atlas QUERY queue/attachment orchestrator (CLI foundation).",
       "imports": [
         "__future__",
@@ -4807,8 +4807,8 @@
     {
       "path": "tests/test_atlas_query_pipeline.py",
       "category": "tests",
-      "bytes": 14505,
-      "sha256": "200df66bf76e287af6003e616dbacc1aa2bbe09b210e704d38262ec945bb89d6",
+      "bytes": 15037,
+      "sha256": "6dcc5d70a7dbdf6d19e4bac3e8cccc0ea9eb85581add8f939c3715d3e7601c8e",
       "summary": "NetTask 404 handling: no duplicate report generation or insecure URLs.",
       "imports": [
         "atlas_query_pipeline",
@@ -4825,7 +4825,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 22
+      "symbol_count": 23
     },
     {
       "path": "tests/test_atlas_query_policy.js",
@@ -4848,8 +4848,8 @@
     {
       "path": "tests/test_atlas_query_process_flow.py",
       "category": "tests",
-      "bytes": 7153,
-      "sha256": "24d0c31dc44f28fb0bf9fd4f893f0a39df218b7fcb7abc0e60c2c41e02bb78bb",
+      "bytes": 7554,
+      "sha256": "e91c22b950e5858adf08d8daae88cc6f49de762c45518729484755a04705893e",
       "summary": "Use the official process state before trusting an advertised attachment.",
       "imports": [
         "atlas_query_pipeline",
@@ -4865,7 +4865,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 17
+      "symbol_count": 18
     },
     {
       "path": "tests/test_atlas_query_proxy_json.js",

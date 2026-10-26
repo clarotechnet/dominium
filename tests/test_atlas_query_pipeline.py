@@ -87,7 +87,7 @@ class Tests(unittest.TestCase):
         app3=good.replace('/app-1//','/app-3//')
         self.assertTrue(pipeline.valid_report_url(app3))
         for malicious in (
-            good.replace('/app-1//','/app-4//'),
+            good.replace('/app-1//','/app-5//'),
             good.replace('/app-1//','/app-30//'),
             good.replace('/app-1//','/app-20//'),
             good.replace('/app-1//','/app-2/'),
@@ -99,6 +99,14 @@ class Tests(unittest.TestCase):
             "https://x@batatlas.netservicos.com.br/app-1//RELATORIOS/261023/file.xls",
         ):
             self.assertFalse(pipeline.valid_report_url(malicious),malicious)
+
+    def test_report_from_observed_fourth_batch_node_is_accepted(self):
+        url='https://batatlas.netservicos.com.br/app-4//RELATORIOS/261026/Relatorio_Equipamentos_Analitico_demo.xls'
+        self.assertTrue(pipeline.valid_report_url(url))
+        for invalid in [url.replace('/app-4//','/app-40//'),
+                        url.replace('/app-4//','/app-4/'),
+                        url+'?redirect=1',url.replace('batatlas.netservicos.com.br','evil.example')]:
+            self.assertFalse(pipeline.valid_report_url(invalid))
 
     def test_404_schedules_retry_for_same_queue_without_new_atlas_report(self):
         self.ready()
