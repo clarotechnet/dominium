@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T03:10:40+00:00",
+  "generated_at": "2026-10-26T03:33:08+00:00",
   "schema": 2,
-  "source_fingerprint": "6baed82b5ee706427086f9ad7b046dfe290f8e181c98f0376d099feaa574313a",
+  "source_fingerprint": "82e6240f10333249edfe6e381e660dfce0d79d319fea0770aced38f93afba7c4",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1110,8 +1110,8 @@
     {
       "path": "docs/agent/ATLAS_QUERY_AUTOMATION.md",
       "category": "docs",
-      "bytes": 24892,
-      "sha256": "64027bb69d0bb4ad06bde162b67276dc3781d3bb862f8992b325b6f37d58d0df",
+      "bytes": 25537,
+      "sha256": "23dcdc7a07105c8c6b2cf50f779b7e403f6b939c7790c4aeb42f04fc881e20de",
       "summary": "QUERY Atlas — relatório analítico por localização",
       "imports": [],
       "endpoints": [],
@@ -1136,9 +1136,22 @@
     {
       "path": "docs/agent/ATLAS_QUERY_RECOVERY_PLAN_20261025.md",
       "category": "docs",
-      "bytes": 4790,
-      "sha256": "788a153aaec4117d507784061d4da25e1efb9c652876a6a4b96dc7b78c1f8e4f",
+      "bytes": 5119,
+      "sha256": "4580311a6d99a46aca13a3f49f591bf3a1884721ab86ec8bf83b02aa9ceb8f42",
       "summary": "Recuperação QUERY Atlas — design e execução",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/ATLAS_QUERY_VERIFICATION_20261026.md",
+      "category": "docs",
+      "bytes": 8945,
+      "sha256": "0faa7b9152d32d7ac6572e366985d59f9ee316d57757d1599579e2c7e615f57c",
+      "summary": "QUERY Atlas — execução prática de 25/10 a 26/10/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1175,8 +1188,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 46248,
-      "sha256": "bcbebcd08752b1eeb37a595c9a8f8930c412a637acf1ef388fdc8855fcd06872",
+      "bytes": 48005,
+      "sha256": "f3732b3d20906d7b09d9944569bf9b7f64361f5aa6a7a63a55151993f06ec265",
       "summary": "DOMINIUM — handoff operacional verificado",
       "imports": [],
       "endpoints": [],
@@ -1201,8 +1214,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 3087,
-      "sha256": "775139c36a1c66886aca63c400a2c11c9433d567da389d3e387613a828da0fbf",
+      "bytes": 3953,
+      "sha256": "cee6541f72581936dc38d102195cee58941b4ad9781682afd879a5fe7cae9efb",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],

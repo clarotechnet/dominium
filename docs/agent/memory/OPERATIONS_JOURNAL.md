@@ -57,3 +57,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 38 Python e 20 JavaScript passaram; Fortaleza persiste apos recarga; fontes e banco iguais em tres cidades; CSV/XLSX equivalentes e integros; backup SQLite ok
 
 **Próximo passo/pendência:** Operador renovar login Atlas no Chrome gerenciado do servidor; depois nova geracao Fortaleza e validacao atual nas quatro cidades
+
+## 2026-10-26 03:31 UTC — QUERY Atlas: tres cidades novas validadas; Natal bloqueada na origem; recuperacao publicada
+
+**Motivo:** Retomar apos login renovado e validar geracao atual sem reutilizar relatorio antigo
+
+**Alterado:** a8917e4 e c94984b publicados: botao apos janela de reutilizacao e recuperacao vinculada idempotente; relay migrado com backup sem reiniciar Chrome; dez IDs novos rastreados
+
+**Verificação:** 42 Python QUERY e33 JS; quality gate904 Python21skip aprovado; fonte banco e CSV/XLSX de Fortaleza29529 Recife55749 Mossoro892 identicos; UI recarga e seis downloads integros; smokes200; SQLite18jobs163049rows ok
+
+**Próximo passo/pendência:** Atlas/BatAtlas disponibilizar anexos Natal276907890 e276907939, completos no NetTask mas XLS HTML ZIP404 inclusive navegacao Chrome; depois validar Natal atual e so entao concluir quatro cidades

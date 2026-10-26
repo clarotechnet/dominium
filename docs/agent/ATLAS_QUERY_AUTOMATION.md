@@ -1,12 +1,23 @@
 # QUERY Atlas — relatório analítico por localização
 
+## Estado vigente — 26/10/2026, 00:29
+
+Ver [validação atual](ATLAS_QUERY_VERIFICATION_20261026.md). Fortaleza, Recife
+e Mossoró tiveram relatórios novos com fonte/banco/UI/exportações/recarga
+aprovados. Natal teve seis IDs novos;276907890 e276907939 COMPLETO, porém os
+anexos XLS/HTML/ZIP retornam 404 inclusive no Chrome autenticado. Meta quatro
+cidades não concluída. Correções de recuperação publicadas em c94984b, relay
+e web verificados. A ação externa necessária é disponibilizar o anexo atual
+Natal na origem Atlas/BatAtlas. Novas QUERYs necessárias seguem autorizadas.
+Seções abaixo são checkpoints históricos.
+
 ## Checkpoint vigente — 25/10/2026, 23:38
 
 Ver [execução atual](ATLAS_QUERY_EXECUTION_20261025.md). O usuário autoriza novas
 QUERYs para investigar e validar as quatro cidades; a proibição histórica de
 terceira fila de Fortaleza está substituída. O bloqueio atual é login Atlas no
 Chrome gerenciado do servidor: formulário de geração retorna AtlasAuthRequired,
-NetTask não disponibiliza FilasForm e os dois links antigos ainda retornam404.
+NetTask não disponibiliza FilasForm e os dois links antigos ainda retornam 404.
 DOMINIUM autenticado, IDs e aviso de sessão persistem após recarga. Nenhuma nova
 fila, patch de runtime ou deploy operacional nesta execução. Meta não concluída.
 Os registros abaixo são históricos e não substituem essa autorização atual.

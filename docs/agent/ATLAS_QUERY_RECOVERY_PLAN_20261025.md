@@ -27,7 +27,7 @@ bloqueados. O backend continua como autoridade para criar/reutilizar.
 - [x] Corrigir static/atlas-query-ui.js com uma função de elegibilidade usando
   relatedJobs e Date.now; alinhar guarda create e disabled. Atualizar versão
   do asset em static/index.html e expectativa do teste de carregamento.
-- [ ] Verificar testes QUERY, gate completo e revisão independente; publicar
+- [x] Verificar testes QUERY, gate completo e revisão independente; publicar
   pelo GitHub/deploy. Conferir bytes da versão publicada.
 - [ ] Validar criação real, ID, fila, fonte, banco, tabela, CSV/XLSX e recarga
   nas quatro cidades. Registrar IDs e bloqueios externos sem clientes/segredos.
@@ -72,3 +72,7 @@ Revisão encontrou bypass dessa proteção na primeira versão; teste reproduziu
 O keepalive em execução foi observado em logs CDP: sucessos a cerca de80s
 após o login; existe lacuna extensa anterior. Isso comprova funcionamento
 atual da consulta, não renovação automática de SSO nem causa exata da expiração.
+
+## Encerramento desta execução
+
+Código publicado e runtime verificado em c94984b. Validação atual de Fortaleza, Recife e Mossoró aprovada. Natal permanece bloqueada por anexos 404 na origem; meta das quatro cidades não concluída. Evidências, backups, IDs e ação do fornecedor em ATLAS_QUERY_VERIFICATION_20261026.md.

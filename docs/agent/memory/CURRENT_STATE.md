@@ -1,5 +1,31 @@
 # DOMINIUM — handoff operacional verificado
 
+## Estado vigente — 26/10/2026, 00:29, America/Sao_Paulo
+
+**Meta não concluída: Natal atual segue sem anexo na origem.** Evidências e
+continuidade em `../ATLAS_QUERY_VERIFICATION_20261026.md`.
+
+- Novas QUERYs aprovadas: Fortaleza 276907771/29.529 linhas,
+  Recife 276907778/55.749, Mossoró 276907784/892. Fontes, banco, tabela, seis
+  downloads CSV/XLSX pelo navegador e retomada após recarga conferidos.
+- Natal teve seis IDs novos:276907780/276907783,276907851/276907855,
+  276907890/276907939. Os últimos estão COMPLETO em atlasBatch02/app-2 e
+  atlasBatch01/app-1, mas XLS/HTML/ZIP retornam 404; navegação normal do Chrome
+  autenticado também 404. Necessário Atlas/BatAtlas disponibilizar os anexos.
+  Não contar o Natal histórico ready como aprovação de geração atual.
+- Implementado/testado/publicado: recuperação explícita e idempotente pela UI,
+  mantendo IDs antigos, bloqueio de envio incerto e isolamento entre operadores.
+  Commit operacional c94984b, web Actions 40262970942 success, hashes iguais ao
+  servidor e produção. Migration/restart só do relay, Chrome preservado.
+- 42 Python QUERY + 33 JavaScript passaram; quality gate 904 testes Python,
+  21 ignorados, JS/Ruff/build/auditoria aprovados. Banco final íntegro:
+  18 trabalhos,163.049 linhas; smokes QUERY/confront/reports autenticados200.
+- Watchdog Browser apenas monitora abas. Keepalive 80s apresentou sucessos após
+  novo login; isso não garante renovação SSO. Validar por serviço/geração real.
+- Nenhuma tarefa contínua ChatGPT criada/verificada. Não confundir worker com
+  automação do ChatGPT. Não repetir gerações em laço sem evidência nova; novas
+  QUERYs necessárias continuam autorizadas, sem TOA/baixas/estoque/contrato/OS.
+
 ## Retomada vigente — 25/10/2026, 23:59, America/Sao_Paulo
 
 Sessão Atlas renovada pelo operador; conector confirmou controles das quatro
@@ -64,7 +90,7 @@ Meta do usuário: só concluir com fluxo da QUERY testado e funcional nas quatro
 
 - As duas filas de Fortaleza terminaram no NetTask, servidor atlasBatch01,
   às 16:58:19 e 16:59:44. XLS/HTML/ZIP anunciados em app-1 retornam 404.
-  XLS com o mesmo caminho em app-2/app-3 também404. Navegação Chrome normal
+  XLS com o mesmo caminho em app-2/app-3 também 404. Navegação Chrome normal
   e leitura CDP confirmam os dois 404. Falta evidência interna do fornecedor
   para explicar a ausência dos arquivos; não inventar causa de armazenamento.
 - Não gerar terceira fila, não reenviar geração, não alterar estoque/O.S. e
@@ -145,7 +171,7 @@ esses fluxos não foram retestados nesta sessão.
   idênticos célula por célula; 893/55.807/20.179 linhas. Banco operacional intacto.
 - NetTask/Chrome autenticado: os seis anexos anunciados XLS/HTML/ZIP das duas
   filas de Fortaleza continuam404; os dois XLS equivalentes em app-2/app-3
-  também404. Não foi encontrado defeito de código novo.
+  também 404. Não foi encontrado defeito de código novo.
 - Cloud Browser, Fortaleza: principal 276868465 e reserva 276868467, mensagem
   "Fila concluída; aguardando a disponibilidade do anexo", CSV/XLSX desabilitados.
   Ainda sem relatório validado; não encerrar meta nem criar terceira fila.
