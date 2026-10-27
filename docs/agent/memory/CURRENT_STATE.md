@@ -1,3 +1,12 @@
+# Baixa oficial — publicada em27/10/2026 apos autorizacao
+
+PR21 integrado main858dc6a; Hostinger Actions40548766963success com smokes.
+Worker45b3f101 permanece validado por canario seguro400. Arvore publicada igual
+a testada; site e API de sessao200. Nenhuma baixa real reenviada.
+Validacao do clique autenticado bloqueada por login no navegador de teste.
+Baixa produtiva de adesao nao deve ser declarada validada.
+Ver ../ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md. Bloqueio de push abaixo superado.
+
 # Baixa oficial — transporte privado, publicacao do site pendente
 
 Worker45b3f101 publicado e canario sem efeito validado400. Middleware Hostinger

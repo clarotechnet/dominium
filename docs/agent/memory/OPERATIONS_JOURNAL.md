@@ -127,3 +127,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 949 Python/22skip, JS/Ruff/build;25focados e3release; canario sem efeito backend400,anonimo401,viewer403,DataSnap400,cidade duplicada404; nenhuma baixa real
 
 **Próximo passo/pendência:** Obter autorizacao reconhecida para main/deploy do PR; depois validar interface e estado Imperium antes de repetir candidata
+
+## 2026-10-27 17:18 UTC — PR21 publicado com autorizacao explicita
+
+**Motivo:** Usuario autorizou integrar PR21 na main e deploy Hostinger
+
+**Alterado:** Merge858dc6a; Actions40548766963success, smokes de producao e HTTP200; Worker45b3f101 preservado; nenhuma baixa real reenviada
+
+**Verificação:** 25testes focados reconferidos; arvore publicada igual a testada; CI/build/smokes success; canario backend400;anonimo401/viewer403
+
+**Próximo passo/pendência:** Entrar no navegador de teste se necessario e validar clique autenticado; conferir estado Imperium e dados de tecnico/equipamentos/materiais antes da baixa produtiva

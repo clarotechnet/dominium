@@ -1,3 +1,15 @@
+# Estado atualizado apos autorizacao explicita
+
+PR21 integrado em main858dc6a2b0a9ca5fa1146780bba653bdb4d7c477.
+Usuario autorizou a integracao e o deploy neste chat. Actions40548766963
+concluiu success, incluindo build Hostinger e smoke tests de producao.
+Arvore publicada9bb247bac3569bbd49d81458b1af194608c8f7c7 igual a testada.
+Pagina inicial e API de sessao retornaram HTTP200 apos deploy; baixa anonima401.
+Worker45b3f101 reconferido: canario sem efeito backend400; anonimo401,viewer403,
+DataSnap400 e cidade duplicada404. Nenhuma baixa real reenviada.
+Navegador de validacao exige login DOMINIUM: clique autenticado e baixa produtiva
+ainda nao validados. Bloqueio de publicacao nas secoes abaixo e historico superado.
+
 # Baixa via ponte privada — 27/10/2026
 
 ## Causa

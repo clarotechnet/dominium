@@ -18,9 +18,11 @@
 - [x] Add regression tests for middleware authentication/CSRF, city and transport validation, successful/pending/rejected replies and uncertain single-call failures; run RED.
 - [x] Implement order-close-proxy.js, exact route policy, Worker routing and release inclusion; run GREEN.
 - [x] Run full quality gate and release checks. Review the complete diff.
-- [ ] Back up Worker, deploy, publish to main without overwriting concurrent changes and verify production safely.
-- [ ] Record actual results and distinguish transport verification from successful productive close.
+- [x] Back up Worker, deploy, publish to main without overwriting concurrent changes and verify production safely.
+- [x] Record actual results and distinguish transport verification from successful productive close.
 
 Worker deployed45b3f101; safe canary reached backend400, anonymous401/viewer403.
 Main push blocked by approval auto-review. Prepare draft PR; no equivalent merge
 or direct Hostinger deploy attempted. See docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md.
+
+Authorized publication complete: PR21 merged858dc6a; Actions40548766963success, production smokes passed. UI requires login, productive close unverified.

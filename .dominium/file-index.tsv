@@ -68,11 +68,11 @@ docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor d
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	fd1d547435c69739
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md			1	Baixa oficial — transporte privado, publicacao do site pendente	0b20a6bfc70872a9
+docs	docs/agent/memory/CURRENT_STATE.md			1	Baixa oficial — publicada em27/10/2026 apos autorizacao	b7ff483e0c156deb
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	e80e8130c935930c
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	fd5ae39b052543fb
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
-docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Baixa via ponte privada — 27/10/2026	2e3cffcd185900d0
+docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
 docs	docs/agent/TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md				Buscar no TOA — correção do transporte em 27/10/2026	96edd6356856440e
 docs	docs/reference/DOMINIUM X IMPERIUM Especificacoes_requisicoes.txt				﻿================================================================================	0888eec3d49a2ab5
@@ -82,7 +82,7 @@ docs	docs/reference/TOA_CONNECTOR_API.md				DOMINIUM TOA Connector	a1c7cfee4cf9e
 docs	docs/superpowers/plans/2026-10-10-dominium-desc-progress.md				Progresso e evidências	eb0079f794820147
 docs	docs/superpowers/plans/2026-10-10-dominium-desc.md				Dominium e DESCONEXÃO Implementation Plan	5d89722ce6d50003
 docs	docs/superpowers/plans/2026-10-15-site-import-bridge.md				Site import bridge implementation plan	2b3bedbb63595ebd
-docs	docs/superpowers/plans/2026-10-27-order-close-private-bridge.md				Order close private bridge implementation plan	f97559ca1c576c78
+docs	docs/superpowers/plans/2026-10-27-order-close-private-bridge.md				Order close private bridge implementation plan	c023379809773103
 docs	docs/superpowers/plans/2026-10-27-toa-lookup-private-bridge.md				TOA lookup private bridge implementation plan	0b79c243a4e7cd92
 docs	docs/superpowers/specs/2026-10-10-dominium-desc-design.md				Dominium: novo visual e DESCONEXÃO	8fb2f29706ba9060
 shared	edge_voice.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	32f7dbf35b7da5a8
