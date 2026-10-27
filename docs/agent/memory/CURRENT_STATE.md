@@ -1,3 +1,12 @@
+# Baixa oficial — transporte privado, publicacao do site pendente
+
+Worker45b3f101 publicado e canario sem efeito validado400. Middleware Hostinger
+pronto no commit2b15c02, mas pushmain rejeitado por revisao automatica.
+Main permanece217cc928; preparar PR e aguardar autorizacao reconhecida, sem
+contornar via merge/API/deploy direto. Nenhuma baixa real enviada.
+949Python/22skip,JS/Ruff/build,25focados e3release passaram.
+Detalhes: ../ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md.
+
 # Buscar no TOA — transporte corrigido em 27/10/2026
 
 TOA autenticado confirmado; erro era POST de lookup no quick tunnel antigo sem DNS.

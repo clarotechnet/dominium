@@ -5,6 +5,33 @@ try {worker=(await import('./worker.mjs')).default;} catch(e) {if(e.code!=='ERR_
 const secret='x'.repeat(43);
 const headers={Authorization:'Bearer '+secret,'X-Dominium-Actor':'Operador','X-Dominium-Role':'controller','content-type':'application/json'};
 
+test('official order close uses only the fixed private panel once and preserves the validated payload',async()=>{
+ let seen,calls=0;
+ const body=JSON.stringify({transport:'official_http',num_os:'999999',code:'409',materials:[],approved_state_hash:'scope'});
+ const env={IMPORT_TOKEN:secret,IMPORT_SERVICE:{fetch:async req=>{calls++;seen=req;return Response.json({ok:true,pending_confirmation:true});}},DESC_SERVICE:{fetch:async()=>{throw Error('wrong service');}}};
+ const res=await worker.fetch(new Request('https://bridge.test/api/orders/123/close?profile=natal',{method:'POST',headers:{...headers,Cookie:'private','X-CSRF-Token':'private'},body}),env);
+ assert.equal(res.status,200);assert.equal(calls,1);
+ assert.equal(seen.url,'http://127.0.0.1:8765/api/orders/123/close?profile=natal');
+ assert.equal(await seen.text(),body);
+ for(const name of ['cookie','x-csrf-token','authorization'])assert.equal(seen.headers.get(name),null);
+});
+test('official close refuses unsafe inputs before reaching the panel and marks lost replies uncertain',async()=>{
+ let calls=0;
+ const env={IMPORT_TOKEN:secret,IMPORT_SERVICE:{fetch:async()=>{calls++;throw Error('lost');}}};
+ const target='https://bridge.test/api/orders/123/close?profile=natal';
+ for(const [url,extra,body,status] of [
+  [target,{'X-Dominium-Role':'viewer'},'{"transport":"official_http"}',403],
+  [target+'&profile=recife',{},'{"transport":"official_http"}',404],
+  [target,{},'{"transport":"datasnap"}',400],
+  [target,{},'{}',400],[target,{},'[]',400],[target,{},'{',400],
+  [target,{'content-type':'text/plain'},'{"transport":"official_http"}',415],
+  [target,{},'x'.repeat(65537),413],
+ ]){const res=await worker.fetch(new Request(url,{method:'POST',headers:{...headers,...extra},body}),env);assert.equal(res.status,status,url);}
+ assert.equal(calls,0);
+ const res=await worker.fetch(new Request(target,{method:'POST',headers,body:'{"transport":"official_http"}'}),env);
+ assert.equal(res.status,502);const result=await res.json();assert.equal(result.uncertain,true);assert.equal(result.safe_to_retry,false);assert.equal(calls,1);
+});
+
 test('TOA lookup POST reaches the existing private panel without browser credentials',async()=>{
  let seen,calls=0;
  const body=JSON.stringify({query:'4321295',expected_profile_key:'natal'});

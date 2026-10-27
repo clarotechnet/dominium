@@ -2,7 +2,7 @@
 
 // Read-only paths that may pass from the authenticated Hostinger app
 // through the private Workers VPC connector to the local Windows backend.
-// Never accept arbitrary paths or operational writes on this relay.
+// Mutations have a separate exact policy below; never accept arbitrary paths.
 const ROUTES = new Set([
   '/api/orders',
   '/api/toa-contracts',
@@ -46,4 +46,16 @@ function allowedToaLookup(method, requestTarget) {
   return method === 'POST' && typeof requestTarget === 'string' &&
     /^\/api\/toa-live\/lookup\?profile=(?:natal|fortaleza|mossoro|recife)$/.test(requestTarget);
 }
-module.exports = { allowedOperationalRead, allowedToaLookup };
+function allowedOrderClose(method, requestTarget) {
+  return method === 'POST' && typeof requestTarget === 'string' &&
+    /^\/api\/orders\/[1-9][0-9]{0,9}\/close\?profile=(?:natal|fortaleza|mossoro|recife)$/.test(requestTarget);
+}
+function validOfficialCloseBody(body) {
+  return Boolean(body && typeof body === 'object' && !Array.isArray(body) &&
+    body.transport === 'official_http');
+}
+function closeTransportFailure() {
+  return {ok:false,uncertain:true,safe_to_retry:false,error:'A resposta da baixa nao foi confirmada. Confira o relatorio e o estado da OS no Imperium antes de repetir.'};
+}
+module.exports = { allowedOperationalRead, allowedToaLookup, allowedOrderClose,
+  validOfficialCloseBody, closeTransportFailure };

@@ -117,3 +117,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** OriginalDBtodosdadosiguais;servicoCSV-XLSX200integros;browserCSV-XLSX20145x11todascelulasiguais;reloadID2051;DB25jobs183194linhasok;video51s eGETprocessosverde tambem em081404;parametros2051e081iguais
 
 **Próximo passo/pendência:** Validar geracao automatica atual Natal sem depender de recuperacao manual. Nao gerar novas filas na observacao e nao declarar quatro cidades prontas
+
+## 2026-10-27 17:10 UTC — Baixa oficial: ponte verificada, site aguardando publicacao
+
+**Motivo:** POST de baixa ainda usava quick tunnel sem DNS apesar da busca TOA corrigida
+
+**Alterado:** Middleware dedicado de baixa, Worker e release preparados; Worker 45b3f101 publicado com rollback. Main permanece217cc928 apos rejeicao de aprovacao automatica; preparar PR sem contornar.
+
+**Verificação:** 949 Python/22skip, JS/Ruff/build;25focados e3release; canario sem efeito backend400,anonimo401,viewer403,DataSnap400,cidade duplicada404; nenhuma baixa real
+
+**Próximo passo/pendência:** Obter autorizacao reconhecida para main/deploy do PR; depois validar interface e estado Imperium antes de repetir candidata
