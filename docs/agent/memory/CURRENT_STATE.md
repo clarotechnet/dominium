@@ -1,3 +1,17 @@
+# Baixa com materiais — snapshot corrigido e publicado27/10/2026
+
+PR22/mainb8bf3e6 corrige mistura de autorizacoes antiga/nova na preparacao TOA.
+Busca sincroniza linhas exatas completas; resposta atrasada nao sobrescreve
+lista atualizada. Editor preserva equipamentos e9materiais nos testes.
+Workerf5170254 restaura GETinstaller:2231965/200. Backend mantem suas guardas.
+949Python/22skip,34JSfocados,JS/Ruff/build e3release aprovados. Revisao corrigida.
+Actions40553080599 tentativa1 buildcompleto/restart500; tentativa2success com
+restart e smokes de producao. Assetpublico20261027-productive-snapshot-1/hash
+igual ao testado. Sem reinicio Windows/Chrome nem repeticao de baixa real.
+OS2662320829 confirmada409;2662320818 antes bloqueada por stale_snapshot.
+Baixa produtiva com materiais/equipamento ainda requer teste operacional.
+Ver ../PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md.
+
 # Baixa oficial — publicada em27/10/2026 apos autorizacao
 
 PR21 integrado main858dc6a; Hostinger Actions40548766963success com smokes.

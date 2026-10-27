@@ -147,3 +147,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 34JSfocados,949Python/22skip,JS/Ruff/build,3release; revisao independente e corrida corrigida RED/GREEN; materiais9+equipamento preservados no prepare/submit real simulado
 
 **Próximo passo/pendência:** Concluir Worker e publicacao site; validar leitura instalador e pedir novo teste operacional sem repetir baixa automaticamente
+
+## 2026-10-27 17:49 UTC — PR22 publicado e validado tecnicamente
+
+**Motivo:** Corrigir stale_snapshot e404 de validacao tecnico mantendo guardas de baixa
+
+**Alterado:** PR22/mainb8bf3e6; Workerf5170254; Actions40553080599 tentativa2success apos restart500na1; assetnovo+hashconfere; GETinstaller200
+
+**Verificação:** 949Python/22skip,34JSfocados,JS/Ruff/build,3release; revisao e guardadecorrida corrigidas; CI+smokes de producao success; nenhuma baixa real repetida
+
+**Próximo passo/pendência:** CtrlF5, nova busca do contrato e revisao da OS2662320818 antes de confirmar; validar resultado no Imperium, nao declarar materiais reais baixados ainda

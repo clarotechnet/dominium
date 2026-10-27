@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-27T17:41:08+00:00",
+  "generated_at": "2026-10-27T17:49:32+00:00",
   "schema": 2,
-  "source_fingerprint": "d1a4e53771cbe1a96dac3f0d9c6625664a5fb495cc5733d63e99958162dfcf9d",
+  "source_fingerprint": "00d2e9ffb900faffcb3dc8cf185ce8bfd1f444284e2298d6684f6d253c5c73c8",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1347,9 +1347,9 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 60391,
-      "sha256": "b7ff483e0c156deb658f1b352c7d8f6a38efa07dc5d2abd3d61a220d880906e6",
-      "summary": "Baixa oficial — publicada em27/10/2026 apos autorizacao",
+      "bytes": 61275,
+      "sha256": "c94231b9bcb9bf1bd5cd8249da274cc28b3d100649d7261bd0827766ae1f5fef",
+      "summary": "Baixa com materiais — snapshot corrigido e publicado27/10/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1375,8 +1375,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 9762,
-      "sha256": "ffa8d8e365404dd7b4c79145b65a9a034e1785423b0c3ab81dcb4414f9891a38",
+      "bytes": 10418,
+      "sha256": "a1fcd7c9020a82f7ea7be8ebcb03f6f1ae385f0f48febc0e625cd2c54f5d3e7c",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -1414,9 +1414,9 @@
     {
       "path": "docs/agent/PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md",
       "category": "docs",
-      "bytes": 1669,
-      "sha256": "a8ec23bae921fa0519202bf99ca5ecb8fd490f52fa10cc3cc996c0e14abbc727",
-      "summary": "Baixa produtiva — snapshot e consulta de tecnico",
+      "bytes": 2794,
+      "sha256": "f35e5f30231dba31a583d13cb731f530ad55dba74091e8a3af7ad4c7b59a26f1",
+      "summary": "Publicacao concluida apos repeticao unica",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1557,8 +1557,8 @@
     {
       "path": "docs/superpowers/plans/2026-10-27-productive-close-snapshot.md",
       "category": "docs",
-      "bytes": 1845,
-      "sha256": "3310eb16b6527d61e3d5826e47a6b2854adc20c20241d1b73d65cb6e325f3899",
+      "bytes": 2073,
+      "sha256": "d1546f5ba7c6b7fd28bad417542b127995b4151ca31123a5ef0088d7cf645ef9",
       "summary": "Productive close snapshot repair",
       "imports": [],
       "endpoints": [],

@@ -1,3 +1,24 @@
+# Publicacao concluida apos repeticao unica
+
+Actions40553080599 tentativa2 concluiu success, incluindo restart e smokes de
+producao. Falha Hosting9999/500 da tentativa1 abaixo foi superada.
+PR22/mainb8bf3e6, Workerf5170254. Site entregou JS testado com hash conferido.
+GETinstaller2231965 pela ponte200, com ID/nome. Nenhuma baixa real executada.
+Falta somente validar operacionalmente a baixa com equipamentos/miscelaneas.
+
+# Checkpoint de publicacao
+
+PR22 integrado mainb8bf3e667d784f33eabecac0c7a72d641b5ea0f9.
+Workerf5170254-47a0-46aa-8a90-e21d2dc66a00 publicado com recuperacao45b3f101.
+GETinstaller2231965 mudou de404 para200 na ponte; ID/nome presentes, sem expor
+dados no teste. Nenhum POST de baixa real executado.
+
+Site entregou HTML200/JS200 com referencia20261027-productive-snapshot-1 e hash
+04434c1f10fb72aa36e0f405b683de93583d5f79cbf9461298b9815e1dff3451, igual ao testado.
+Actions40553080599 primeira tentativa concluiu build, mas falhou no restart da
+Hostinger com HTTP500(Hosting9999). Smokes finais foram pulados. Uma repeticao
+do job foi solicitada; conferir resultado antes de declarar deploy aprovado.
+
 # Baixa produtiva — snapshot e consulta de tecnico
 
 Contrato3139094, OS2662320818/IdOS2231965: runtime14:28:06 confirmou
