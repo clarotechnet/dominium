@@ -50,7 +50,7 @@ jobs:
           set -euo pipefail
           node --check deploy/hostinger-web/server.js
           node --test tests/test_order_dataset_hostinger.js tests/test_operational_relay.js tests/test_disconnection_hostinger.js tests/test_confront_frontend.js tests/test_query_import.js tests/test_atlas_query_policy.js tests/test_atlas_query_ui_status.js tests/test_atlas_query_proxy_json.js
-          node --test tests/test_order_close_proxy.js tests/test_import_hostinger.js integrations/import_bridge/worker.test.mjs
+          node --test tests/test_productive_snapshot_frontend.js tests/test_order_close_proxy.js tests/test_import_hostinger.js integrations/import_bridge/worker.test.mjs
           npm ci --prefix deploy/hostinger-web --ignore-scripts --no-audit --no-fund
           npm run build --prefix deploy/hostinger-web
           python -m unittest tests.test_build_hostinger_node_release tests.test_hostinger_runtime_dependencies -v

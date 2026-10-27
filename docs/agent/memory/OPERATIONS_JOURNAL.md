@@ -137,3 +137,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 25testes focados reconferidos; arvore publicada igual a testada; CI/build/smokes success; canario backend400;anonimo401/viewer403
 
 **Próximo passo/pendência:** Entrar no navegador de teste se necessario e validar clique autenticado; conferir estado Imperium e dados de tecnico/equipamentos/materiais antes da baixa produtiva
+
+## 2026-10-27 17:40 UTC — Snapshot produtivo e consulta de tecnico corrigidos para publicacao
+
+**Motivo:** OS2662320818 bloqueada por hash antigo antes de qualquer escrita; GETinstaller404
+
+**Alterado:** Busca atualiza linhas exatas completas; editor usa autorizacao coerente; resposta atrasada nao sobrescreve lista nova; GETinstaller autorizado; guardas backend preservadas
+
+**Verificação:** 34JSfocados,949Python/22skip,JS/Ruff/build,3release; revisao independente e corrida corrigida RED/GREEN; materiais9+equipamento preservados no prepare/submit real simulado
+
+**Próximo passo/pendência:** Concluir Worker e publicacao site; validar leitura instalador e pedir novo teste operacional sem repetir baixa automaticamente
