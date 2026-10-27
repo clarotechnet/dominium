@@ -49,7 +49,7 @@ tooling-deploy	deploy/windows-server/README.md				DOMINIUM no servidor Windows	b
 tooling-deploy	deploy/windows-server/start-dominium.ps1					07dbc429acea36ce
 shared	desc_order_verifier.py	7			Fail-closed, read-only Imperium order/installer checks for the DESC relay.	17c0924ca8229612
 shared	desc_review_proxy.py	10	1		Authenticated Dominium boundary to the Bot's existing DESC review service.	af5c440b35d2eb65
-shared	desc_review_relay.py	6			Authenticated relay for DESC review and private read-only Imperium checks.	79346c1e1b556a5d
+shared	desc_review_relay.py	6	1		Authenticated relay for DESC review and private read-only Imperium checks.	7552a8d13211729f
 orchestration	disconnect_automation.py	26			DOMINIUM | MAPA DE RESPONSABILIDADE	b4aaf01ad3a34fad
 docs	docs/agent/ATLAS_APP4_VIDEO_COMPARISON_20261026.md				Atlas — quarto nó de anexos identificado nos vídeos	d45d66712a40645b
 docs	docs/agent/ATLAS_BATATLAS_NATAL_ESCALATION_20261026.md				Natal: anexos de relatório indisponíveis no Atlas/BatAtlas	508ab44f8caddc5a

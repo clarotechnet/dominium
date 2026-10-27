@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-27T17:54:28+00:00",
+  "generated_at": "2026-10-27T18:00:22+00:00",
   "schema": 2,
-  "source_fingerprint": "eae3ae1f7d5ab2c19744c723f27fea25f60f9f3c0fda32578abfff67b69912f3",
+  "source_fingerprint": "0ba0a28ce3b2fbb61b6d05cc166a7a206ccd060359322424144338174d7ba0be",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1079,8 +1079,8 @@
     {
       "path": "desc_review_relay.py",
       "category": "shared",
-      "bytes": 5112,
-      "sha256": "79346c1e1b556a5d7aed15fd9e57f4e9f255c3b7f614877d949692fb553cb634",
+      "bytes": 6271,
+      "sha256": "7552a8d13211729f091b2cc418ed81d1f1f55ad6b83af5568e065a5164b85711",
       "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
       "imports": [
         "__future__",
@@ -1089,6 +1089,7 @@
         "desc_review_proxy",
         "hmac",
         "http",
+        "integrations",
         "json",
         "logging",
         "os",
@@ -1097,7 +1098,9 @@
         "sys",
         "urllib"
       ],
-      "endpoints": [],
+      "endpoints": [
+        "/api/stock/quality-control"
+      ],
       "env_vars": [
         "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
       ],

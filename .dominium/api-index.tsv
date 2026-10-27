@@ -148,6 +148,7 @@ endpoint	path
 /api/toa-live/lookup	deploy/hostinger-web/server.js
 /api/toa-live/status	deploy/hostinger-web/server.js
 /api/disconnection/	desc_review_proxy.py
+/api/stock/quality-control	desc_review_relay.py
 /api/analyze	flow_reader/server.py
 /api/health	flow_reader/server.py
 /api/analyze	flow_reader/static/app.js

@@ -160,6 +160,7 @@ desc_order_verifier	desc_review_relay.py
 desc_review_proxy	desc_review_relay.py
 hmac	desc_review_relay.py
 http	desc_review_relay.py
+integrations	desc_review_relay.py
 json	desc_review_relay.py
 logging	desc_review_relay.py
 os	desc_review_relay.py

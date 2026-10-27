@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-27T17:54:28+00:00
-- Source fingerprint: `eae3ae1f7d5ab2c1`
+- Generated: 2026-10-27T18:00:22+00:00
+- Source fingerprint: `0ba0a28ce3b2fbb6`
 - Indexed files: 405
 - Indexed symbols: 3589
-- API path references: 341
+- API path references: 342
 
 ## Navigation rule
 
@@ -124,7 +124,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `datasnap_client.py` (23 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `desc_order_verifier.py` (7 symbols) - Fail-closed, read-only Imperium order/installer checks for the DESC relay.
 - `desc_review_proxy.py` (10 symbols, 1 API paths) - Authenticated Dominium boundary to the Bot's existing DESC review service.
-- `desc_review_relay.py` (6 symbols) - Authenticated relay for DESC review and private read-only Imperium checks.
+- `desc_review_relay.py` (6 symbols, 1 API paths) - Authenticated relay for DESC review and private read-only Imperium checks.
 - `edge_voice.py` (8 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `flow_reader/__init__.py` - Read-only Imperium/DataSnap capture analyzer.
 - `flow_reader/analyzer.py` (28 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE

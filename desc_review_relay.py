@@ -23,6 +23,7 @@ if _runtime_root.is_dir():
 
 from desc_order_verifier import DEFAULT_RUNTIME_ROOT, DescOrderVerifier, OrderCheckError
 from desc_review_proxy import DescReviewProxy, ProxyError
+from integrations.import_bridge.quality_control_relay import QualityControlService, QualityControlError
 
 
 class DescRelayHandler(BaseHTTPRequestHandler):
@@ -48,6 +49,24 @@ class DescRelayHandler(BaseHTTPRequestHandler):
         actor = unquote(self.headers.get('X-Dominium-Actor', ''))[:100]
         if not actor:
             self._json(400, {'ok': False, 'error': 'Operador não identificado'})
+            return
+        if self.path == '/api/stock/quality-control' and self.command in ('GET', 'POST'):
+            role = str(self.headers.get('X-Dominium-Role', ''))
+            allowed_roles = {'admin', 'controller'} if self.command == 'POST' else {'admin', 'controller', 'viewer'}
+            if role not in allowed_roles:
+                self._json(403, {'ok': False, 'error': 'Perfil sem permissao para controle de qualidade'})
+                return
+            try:
+                service = QualityControlService()
+                if self.command == 'POST':
+                    self._json(200, service.save_item(self._read_json(), actor))
+                else:
+                    self._json(200, service.list_items())
+            except QualityControlError as error:
+                self._json(error.status, {'ok': False, 'error': str(error)})
+            except Exception:
+                logging.exception('Controle de qualidade indisponivel')
+                self._json(502, {'ok': False, 'error': 'Controle de qualidade indisponivel'})
             return
         try:
             order_check = self.command == 'POST' and self.path == '/internal/order-check'
