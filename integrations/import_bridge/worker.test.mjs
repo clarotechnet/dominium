@@ -5,6 +5,16 @@ try {worker=(await import('./worker.mjs')).default;} catch(e) {if(e.code!=='ERR_
 const secret='x'.repeat(43);
 const headers={Authorization:'Bearer '+secret,'X-Dominium-Actor':'Operador','X-Dominium-Role':'controller','content-type':'application/json'};
 
+test('installer validation GET uses the private panel without allowing installer mutation',async()=>{
+ let seen,calls=0;
+ const env={IMPORT_TOKEN:secret,IMPORT_SERVICE:{fetch:async req=>{seen=req;calls++;return Response.json({ok:true,installer_id:5,installer_name:'Fixture'});}}};
+ const target='https://bridge.test/api/orders/123/installer?profile=natal';
+ const res=await worker.fetch(new Request(target,{headers}),env);
+ assert.equal(res.status,200);assert.equal(seen.url,'http://127.0.0.1:8765/api/orders/123/installer?profile=natal');
+ const blocked=await worker.fetch(new Request(target,{method:'POST',headers,body:'{}'}),env);
+ assert.equal(blocked.status,404);assert.equal(calls,1);
+});
+
 test('official order close uses only the fixed private panel once and preserves the validated payload',async()=>{
  let seen,calls=0;
  const body=JSON.stringify({transport:'official_http',num_os:'999999',code:'409',materials:[],approved_state_hash:'scope'});

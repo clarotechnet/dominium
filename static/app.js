@@ -8399,6 +8399,55 @@ function toaLiveImperiumMatch(capture, task) {
   return null;
 }
 
+function validToaCloseSnapshot(order, capture) {
+  if (!order || order.read_only || !order.approved_state_hash
+    || (order.operation_blockers || []).length
+    || String(order.contract) !== String(capture?.contract)
+    || !/^(EM CAMPO|ABERTO|OPEN|PENDENTE)$/i.test(String(order.status || ""))) return false;
+  if (order.operation_source === "toa_import") {
+    return order.operation_identity?.profile_key === state.profile
+      && String(order.operation_identity?.contract) === String(capture.contract)
+      && String(order.operation_identity?.activity_id || "") === String(capture.aid || "")
+      && Boolean(capture.aid && order.import_scope?.source_hash)
+      && order.import_scope.expected_profile_key === state.profile;
+  }
+  if (["imperium_cache", "imperium_history"].includes(order.operation_source)) {
+    return order.manual_scope?.profile_key === state.profile
+      && order.manual_scope?.state_hash === order.approved_state_hash;
+  }
+  return false;
+}
+
+function syncToaLiveOrderSnapshots(payload, requestedOrders) {
+  if (payload?.profile !== state.profile || requestedOrders !== state.orders) return false;
+  // Lookup refreshes server approvals. Replace complete matching rows; never
+  // pair a hash from the old list with the lookup's identity/import scope.
+  for (const capture of payload.results || []) {
+    for (const fresh of capture.imperium_matches || []) {
+      if (!validToaCloseSnapshot(fresh, capture)) continue;
+      if (!(capture.tasks || []).some((task) => String(task.os_number) === String(fresh.num_os))) continue;
+      state.orders = state.orders.map((old) => (
+        Number(old.id_os) === Number(fresh.id_os)
+        && String(old.num_os) === String(fresh.num_os)
+        && String(old.contract) === String(fresh.contract)
+      ) ? { ...fresh } : old);
+    }
+  }
+  return true;
+}
+
+function toaLiveCloseOrder(capture, task) {
+  const match = toaLiveImperiumMatch(capture, task);
+  if (!validToaCloseSnapshot(match, capture)) return null;
+  const displayed = state.orders.find((item) => (
+    Number(item.id_os) === Number(match.id_os)
+    && String(item.num_os) === String(match.num_os)
+    && String(item.contract) === String(match.contract)
+  ));
+  const selected = displayed || match;
+  return validToaCloseSnapshot(selected, capture) ? { ...selected } : null;
+}
+
 function toaLiveAnyImperiumMatch(capture, task) {
   const matches = capture?.imperium_all_orders || [];
   return matches.find((order) => String(order.num_os) === String(task?.os_number)) || null;
@@ -8487,36 +8536,14 @@ function prepareToaLiveClose(
     showToast(capture.operation_blockers.join(" | "), "error");
     return false;
   }
-  const match = toaLiveImperiumMatch(capture, task);
-  const displayedOrder = match && state.orders.find((item) =>
-    Number(item.id_os) === Number(match.id_os)
-    && String(item.num_os) === String(match.num_os)
-    && String(item.contract) === String(match.contract)
-  );
-  const currentOrder = displayedOrder && !displayedOrder.read_only
-    ? displayedOrder
-    : match;
-  const importedIdentityMatches = Boolean(
-    match?.operation_source === "toa_import"
-    && match?.operation_identity?.activity_id
-    && String(match.operation_identity.activity_id) === String(capture.aid || "")
-    && match?.import_scope?.source_hash
-  );
-  const order = currentOrder && {
-    ...currentOrder,
-    operation_source: importedIdentityMatches ? "toa_import" : (currentOrder.operation_source || "imperium_cache"),
-    operation_identity: importedIdentityMatches ? match.operation_identity : currentOrder.operation_identity,
-    approved_state_hash: currentOrder.approved_state_hash || match.approved_state_hash,
-    import_scope: importedIdentityMatches ? match.import_scope : currentOrder.import_scope,
-    manual_scope: importedIdentityMatches ? undefined : (currentOrder.manual_scope || match.manual_scope),
-  };
+  const order = toaLiveCloseOrder(capture, task);
   const code = String(task.close_code || "").trim();
   const technicianObservation = String(
     capture.technician_observation || capture.observation || "",
   ).trim();
   const definition = state.closeCodes.find((item) => item.code === code);
   if (!order) {
-    showToast("A OS correspondente nao esta na lista atual do Imperium. Atualize as ordens.", "error");
+    showToast("Os dados da OS precisam ser atualizados. Consulte o TOA novamente antes de preparar a baixa.", "error");
     return false;
   }
   if (!definition) {
@@ -10296,10 +10323,10 @@ async function executeDirectAutoClose(candidate, materials = []) {
 
   const service = normalize(currentOrder.service || match.service || "");
   const operationSource = currentOrder.operation_source || match.operation_source || "imperium_cache";
-  const identity = currentOrder.operation_identity || match.operation_identity;
-  const importScope = currentOrder.import_scope || match.import_scope;
-  const manualScope = currentOrder.manual_scope || match.manual_scope;
-  const approvedStateHash = currentOrder.approved_state_hash || match.approved_state_hash;
+  const identity = currentOrder.operation_identity;
+  const importScope = currentOrder.import_scope;
+  const manualScope = currentOrder.manual_scope;
+  const approvedStateHash = currentOrder.approved_state_hash;
   const approvedSourceHash = importScope?.source_hash || manualScope?.source_hash;
   const hasMaterials = Array.isArray(materials) && materials.length > 0;
 
@@ -10965,6 +10992,7 @@ async function lookupToaLiveContract() {
   state.toaLiveLoading = true;
   const requestedProfile = state.profile;
   const requestedEpoch = state.profileEpoch;
+  const requestedOrders = state.orders;
   state.toaLiveResult = null;
   const lookupStartedAt = Date.now();
   const updateLookupProgress = () => {
@@ -11002,6 +11030,9 @@ async function lookupToaLiveContract() {
       || payload.profile !== requestedProfile
     ) {
       throw new Error("shared_state_contamination");
+    }
+    if (!syncToaLiveOrderSnapshots(payload, requestedOrders)) {
+      throw new Error("A lista de OS mudou durante a consulta. Faca uma nova busca para preparar a baixa.");
     }
     state.toaLiveResult = payload;
     state.toaLiveStatus = payload.session || state.toaLiveStatus;

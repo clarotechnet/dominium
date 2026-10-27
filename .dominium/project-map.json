@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-27T17:18:09+00:00",
+  "generated_at": "2026-10-27T17:41:08+00:00",
   "schema": 2,
-  "source_fingerprint": "0160befa9b81edbda0eced0678311559e264ce80aa7ead4301128e6330d28813",
+  "source_fingerprint": "d1a4e53771cbe1a96dac3f0d9c6625664a5fb495cc5733d63e99958162dfcf9d",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -783,8 +783,8 @@
     {
       "path": "deploy/hostinger-web/operational-policy.js",
       "category": "tooling-deploy",
-      "bytes": 2698,
-      "sha256": "b041eb598b7c32ae7fe8ed7eb9fb13c04d135ee9968d4c6741d3bcf7b4a93247",
+      "bytes": 2708,
+      "sha256": "4e8fcb1479f144c2131ddb9074e7b5adafce24537734d62bef7836a9ac8d0a61",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1375,8 +1375,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 9032,
-      "sha256": "fd5ae39b052543fb81f640fc8c21372f685758ae04aa1f93318988deffe38f13",
+      "bytes": 9762,
+      "sha256": "ffa8d8e365404dd7b4c79145b65a9a034e1785423b0c3ab81dcb4414f9891a38",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -1404,6 +1404,19 @@
       "bytes": 3084,
       "sha256": "d61e5235d69a0aede45a844061285bd0ec56e1c5cce1633612e5d95483f213af",
       "summary": "Estado atualizado apos autorizacao explicita",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md",
+      "category": "docs",
+      "bytes": 1669,
+      "sha256": "a8ec23bae921fa0519202bf99ca5ecb8fd490f52fa10cc3cc996c0e14abbc727",
+      "summary": "Baixa produtiva — snapshot e consulta de tecnico",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1534,6 +1547,19 @@
       "bytes": 2363,
       "sha256": "c02337980977310387feaed01b4043eac9d6cb680bb2e33c8f15318ab6337219",
       "summary": "Order close private bridge implementation plan",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-27-productive-close-snapshot.md",
+      "category": "docs",
+      "bytes": 1845,
+      "sha256": "3310eb16b6527d61e3d5826e47a6b2854adc20c20241d1b73d65cb6e325f3899",
+      "summary": "Productive close snapshot repair",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -2190,8 +2216,8 @@
     {
       "path": "integrations/import_bridge/worker.test.mjs",
       "category": "shared",
-      "bytes": 16474,
-      "sha256": "d294ea7104f1c88634dfb18954c780edc0600461895832c5f89a52c0ce1eb146",
+      "bytes": 17170,
+      "sha256": "353aec806644496bd7ff98f31cff2c4b55334f1a3fbdaf08e019fc2a2a085625",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4029,8 +4055,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 6323,
-      "sha256": "6e1bd299b701869c3893194bbea52357aceacab0165e129a65f78e7c4b428efe",
+      "bytes": 6384,
+      "sha256": "bc1173935bd2af5fe7e32ffb5eb23d074abb8e8f06fd645dc3f8430702ae293a",
       "summary": "",
       "imports": [
         "__future__",
@@ -4317,8 +4343,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 126347,
-      "sha256": "41dde13b7a1f4ea7d71a5d7f097c4202cae1ae347d4494586fd7f8638c94b547",
+      "bytes": 126360,
+      "sha256": "62ad273a395993ab7cc1a8ba73fba79d3db49986cf317d2775d6cc88c5cc2798",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6146,8 +6172,8 @@
     {
       "path": "tests/test_operational_relay.js",
       "category": "tests",
-      "bytes": 6273,
-      "sha256": "c5c174d64ad97fe4dfd5cbcbef85c7c609d3a44db903b3b9dc927cb9a9d6c387",
+      "bytes": 6320,
+      "sha256": "ddee632805f288f03f36c6199b2bf02f916afc4cc2b8626b7e8bb14766649beb",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6168,6 +6194,7 @@
         "/api/monitor/snapshot",
         "/api/operational/contracts/evil",
         "/api/orders",
+        "/api/orders/123/installer?profile=natal",
         "/api/orders?date=2026-10-21&profile=natal",
         "/api/serials/consult",
         "/api/serials/consult?serials=SERIAL000000&mode=analitico",
@@ -6278,6 +6305,19 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 4
+    },
+    {
+      "path": "tests/test_productive_snapshot_frontend.js",
+      "category": "tests",
+      "bytes": 7376,
+      "sha256": "40c79179779f670282f2c26f07d0f833f1f72c2851d0c6f9e29b119f5bda979b",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 18
     },
     {
       "path": "tests/test_query_import.js",

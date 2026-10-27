@@ -33,7 +33,7 @@ tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			b000d7e6a37d15
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
-tooling-deploy	deploy/hostinger-web/operational-policy.js	5	22			b041eb598b7c32ae
+tooling-deploy	deploy/hostinger-web/operational-policy.js	5	22			4e8fcb1479f144c2
 tooling-deploy	deploy/hostinger-web/operational-relay.js	3				6739bf2e034987c2
 tooling-deploy	deploy/hostinger-web/order-close-proxy.js	2				78fc563fd7b62d77
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
@@ -70,9 +70,10 @@ docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alt
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
 docs	docs/agent/memory/CURRENT_STATE.md			1	Baixa oficial — publicada em27/10/2026 apos autorizacao	b7ff483e0c156deb
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	fd5ae39b052543fb
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	ffa8d8e365404dd7
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
+docs	docs/agent/PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md				Baixa produtiva — snapshot e consulta de tecnico	a8ec23bae921fa05
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
 docs	docs/agent/TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md				Buscar no TOA — correção do transporte em 27/10/2026	96edd6356856440e
 docs	docs/reference/DOMINIUM X IMPERIUM Especificacoes_requisicoes.txt				﻿================================================================================	0888eec3d49a2ab5
@@ -83,6 +84,7 @@ docs	docs/superpowers/plans/2026-10-10-dominium-desc-progress.md				Progresso e 
 docs	docs/superpowers/plans/2026-10-10-dominium-desc.md				Dominium e DESCONEXÃO Implementation Plan	5d89722ce6d50003
 docs	docs/superpowers/plans/2026-10-15-site-import-bridge.md				Site import bridge implementation plan	2b3bedbb63595ebd
 docs	docs/superpowers/plans/2026-10-27-order-close-private-bridge.md				Order close private bridge implementation plan	c023379809773103
+docs	docs/superpowers/plans/2026-10-27-productive-close-snapshot.md				Productive close snapshot repair	3310eb16b6527d61
 docs	docs/superpowers/plans/2026-10-27-toa-lookup-private-bridge.md				TOA lookup private bridge implementation plan	0b79c243a4e7cd92
 docs	docs/superpowers/specs/2026-10-10-dominium-desc-design.md				Dominium: novo visual e DESCONEXÃO	8fb2f29706ba9060
 shared	edge_voice.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	32f7dbf35b7da5a8
@@ -120,7 +122,7 @@ shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na 
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
 shared	integrations/import_bridge/worker.mjs	3	2			b78bf6a96357c87c
-shared	integrations/import_bridge/worker.test.mjs		4			d294ea7104f1c886
+shared	integrations/import_bridge/worker.test.mjs		4			353aec806644496b
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
 shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
@@ -217,7 +219,7 @@ tooling-deploy	scripts/install_agent_context_hooks.py	3			Install durable-memory
 tooling-deploy	scripts/install_atlas_session_watchdog.ps1			2		7b17ecaf06189449
 tooling-deploy	scripts/install_confront_relay.py	3	1		Minimal, backup-first insertion of the confront read-only API into live DESC relay.	4ae20a35e3eeb9d3
 tooling-deploy	scripts/probe_atlas_synthetic.py				Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.	865b81e754d5a762
-tooling-deploy	scripts/quality_gate.py	5				6e1bd299b701869c
+tooling-deploy	scripts/quality_gate.py	5				bc1173935bd2af5f
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 tooling-deploy	scripts/restart_confront_relay.ps1					de8c58415028c25c
 tooling-deploy	scripts/smoke_confront_cloudflare.mjs		3		Verify private Worker route with the same Node fetch transport used by Hostinger. */	5d9320441c44eea2
@@ -233,7 +235,7 @@ frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			41dde13b7a1f4ea7
+frontend	static/index.html		1			62ad273a395993ab
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
@@ -327,12 +329,13 @@ tests	tests/test_official_stock_relay.py	6	11		Read-only official inventory brid
 tests	tests/test_official_stock_remediation_plan.py	22		1		a64ed28f5256d2d9
 tests	tests/test_offline_candidate_and_resolver.py	12			Comprehensive test suite for frontend block, candidate locator, and material resolver.	2c65244509db2c6a
 tests	tests/test_operation_scope.py	42				f804afda128c9e71
-tests	tests/test_operational_relay.js	2	36			c5c174d64ad97fe4
+tests	tests/test_operational_relay.js	2	37			ddee632805f288f0
 tests	tests/test_operational_store.py	5				ec3aeac75e1dfebb
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_order_close_proxy.js	2	4			8b35993fda8b9e57
 tests	tests/test_order_dataset_hostinger.js	4	1			bca127bdd7f87bcf
+tests	tests/test_productive_snapshot_frontend.js	18				40c79179779f6702
 tests	tests/test_query_import.js	2				7af4ea366de3aed9
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
 tests	tests/test_semiauto_frontend.js	19				44a6652d8752bfc1

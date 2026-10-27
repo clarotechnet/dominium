@@ -43,6 +43,7 @@ test('only explicit, safe GET routes may access the internal Windows API', () =>
     '/api/orders?date=2026-10-21&profile=natal',
     '/api/toa-contracts?profile=natal&date=2026-10-21',
     '/api/toa-live/status',
+    '/api/orders/123/installer?profile=natal',
     '/api/toa-automation',
     '/api/auto-improductive-close',
     '/api/monitor/snapshot',
