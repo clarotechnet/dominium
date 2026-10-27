@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-27T18:12:13+00:00",
+  "generated_at": "2026-10-27T18:29:10+00:00",
   "schema": 2,
-  "source_fingerprint": "c3fc577fd6d3f5b150b98c91f183dd17d1858891c83bbdc9df6b5c46bc6ede29",
+  "source_fingerprint": "b36d2c04f5d08702a3178e350ed34116aba49a2509ba15ca17b6d5441e68a0f6",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1354,14 +1354,15 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 62300,
-      "sha256": "8b85b696ec1222328561121e83a6ae36c4a1c9884090283fdd3aa8fa7b43ecfe",
-      "summary": "Baixa real e trabalho compartilhado —27/10/2026",
+      "bytes": 63062,
+      "sha256": "37d2e3c0238a9928459ec151ecad1651d10eafeffcda2e81fb85677aa544345d",
+      "summary": "Consulta4321376 corrigida no runtime —27/10/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [
-        "TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md"
+        "TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md",
+        "TOA_PROVIDER_TREE_REPAIR_20261027.md"
       ],
       "entrypoint": false,
       "symbol_count": 0
@@ -1382,13 +1383,15 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 11177,
-      "sha256": "d3b539ef8dfcc72536196301775d6e6d8536d57bb777dadab80e9d62826d9969",
+      "bytes": 11894,
+      "sha256": "6bf1350f375c0960d3b03ced118740e51f49b24ed23e0419ba3af9f5bd34d28e",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
-      "datasnap_methods": [],
+      "datasnap_methods": [
+        "Time.get"
+      ],
       "entrypoint": false,
       "symbol_count": 0
     },
@@ -1454,6 +1457,21 @@
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/TOA_PROVIDER_TREE_REPAIR_20261027.md",
+      "category": "docs",
+      "bytes": 3617,
+      "sha256": "3ba617d42bf357ed350612d63bbd198b1f55a5fc0f3082a9d0188ab1dacd9c12",
+      "summary": "Consulta TOA: nome do recurso na árvore — 27/10/2026",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "Time.get"
+      ],
       "entrypoint": false,
       "symbol_count": 0
     },
@@ -2780,8 +2798,8 @@
     {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/content-main.js",
       "category": "shared",
-      "bytes": 111603,
-      "sha256": "fb07d74b0c91bc835f7755e667f1edf4e9526e686a2b699bdde870c032a404b1",
+      "bytes": 111786,
+      "sha256": "50d32eab3b4048f3e7356e622df0358844b27ef9e0d527ab3f5a29a013773f54",
       "summary": "content-main.js - Roda no world: MAIN",
       "imports": [],
       "endpoints": [],
@@ -2939,8 +2957,8 @@
     {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/test-toa-route-tree.cjs",
       "category": "toa",
-      "bytes": 1312,
-      "sha256": "4427aa457afc0962ab8e7ae42cbfb46bbe2b7de4a42becf193e70559b9f531ed",
+      "bytes": 3344,
+      "sha256": "65ea098fd0fbf0788956bc0bb7e5e276b678654e9c8169333f9753472bd3c6ad",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -2949,13 +2967,13 @@
         "Time.get"
       ],
       "entrypoint": false,
-      "symbol_count": 1
+      "symbol_count": 2
     },
     {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/toa-auto-export.js",
       "category": "toa",
-      "bytes": 12492,
-      "sha256": "35b7506d2144a8193a10b521a1ceea14fa9b67d8d3898b46008c868f3f289a95",
+      "bytes": 13082,
+      "sha256": "44738e0bf1ada3c98edaaeced4e0372c687d5e63f155678e1236b61ee0d34e98",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -2964,7 +2982,7 @@
         "Time.get"
       ],
       "entrypoint": false,
-      "symbol_count": 22
+      "symbol_count": 23
     },
     {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/toa-inventory-core.js",
@@ -4108,8 +4126,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 6384,
-      "sha256": "bc1173935bd2af5fe7e32ffb5eb23d074abb8e8f06fd645dc3f8430702ae293a",
+      "bytes": 6488,
+      "sha256": "bcef95bd680e464268f3c0a32d98b1a3d1f9bf5fca71f5814577c18f930168a8",
       "summary": "",
       "imports": [
         "__future__",
@@ -7817,6 +7835,7 @@
     "TOA_LOCAL_COLLECTOR.start",
     "TOA_LOCAL_COLLECTOR.stop",
     "TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md",
+    "TOA_PROVIDER_TREE_REPAIR_20261027.md",
     "TOA_REPLAY_HEADER_NAMES.has",
     "Tabela_codigo_baixa0711.catalog",
     "Tabela_codigo_baixa0711.pdf",

@@ -93,6 +93,18 @@
     }
   }
 
+  // A search result identifies the current resource by both PID and login.
+  // Never substitute an ancestor bucket or a resource with another login.
+  function providerById(providerId, expectedExternalId) {
+    const id = compact(providerId);
+    const externalId = compact(expectedExternalId).toUpperCase();
+    if (!/^\d+$/.test(id) || !externalId) return null;
+    const node = observedTreeNodes.get(id);
+    if (!node || !node.name || isDMVBucket(node.name)
+        || compact(node.externalId).toUpperCase() !== externalId) return null;
+    return { ...node };
+  }
+
   function routeForProvider(providerId) {
     let currentId = compact(providerId);
     const visited = new Set();
@@ -322,6 +334,7 @@
     discoverBuckets,
     exportRoute,
     routeForProvider,
+    providerById,
     treeStatus,
     cancelAll,
     // Read-only ingestion hook used by the silent lookup. Detail/sync

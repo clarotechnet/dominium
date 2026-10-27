@@ -950,6 +950,10 @@
     const providerName = sanitizeTechnicianName(firstText(direct?.pname, cached?.name));
     if (providerName) return providerName;
 
+    const treeProvider = window.TNTOAAutoExport?.providerById?.(pid, externalId);
+    const treeName = sanitizeTechnicianName(treeProvider?.name);
+    if (treeName) return treeName;
+
     // Este campo pode conservar o técnico de um roteamento anterior. Só é seguro
     // quando o PID informado pela atividade coincide com o PID da linha pesquisada.
     const routedPid = String(activity?.auto_routed_to_provider_id ?? '').trim();
