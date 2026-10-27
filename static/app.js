@@ -3523,6 +3523,30 @@ function resetProfileOperationalState() {
   ].forEach(closeDialogIfOpen);
 }
 
+async function loadDescAnalyticsFrame() {
+  const frame = document.getElementById("descAnalyticsFrame");
+  if (!frame || frame.dataset.loaded === "yes" || frame.dataset.loaded === "loading") return;
+  const error = document.getElementById("descAnalyticsError");
+  frame.dataset.loaded = "loading";
+  try {
+    // O servidor envia X-Frame-Options: DENY; srcdoc preserva a politica
+    // global sem precisar alterar os headers nem criar outra rota autenticada.
+    const response = await fetch(frame.dataset.src, { credentials: "same-origin" });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    const html = await response.text();
+    if (!html.includes("Desconexão — Visão Claro")) throw new Error("Painel invalido");
+    frame.srcdoc = html;
+    frame.dataset.loaded = "yes";
+    error?.classList.add("hidden");
+  } catch (_error) {
+    frame.dataset.loaded = "error";
+    if (error) {
+      error.textContent = "Não foi possível carregar os indicadores. Abra o painel em tela inteira ou tente novamente.";
+      error.classList.remove("hidden");
+    }
+  }
+}
+
 function setModule(module) {
   if (module === "monitor") module = "close";
   if (
@@ -3546,10 +3570,7 @@ function setModule(module) {
   updateAddress();
   render();
   document.dispatchEvent(new CustomEvent("dominium:module-change", { detail: { module } }));
-  if (module === "descAnalytics") {
-    const frame = document.getElementById("descAnalyticsFrame");
-    if (frame && !frame.getAttribute("src")) frame.setAttribute("src", frame.dataset.src);
-  }
+  if (module === "descAnalytics") void loadDescAnalyticsFrame();
   window.scrollTo({ top: 0, left: 0 });
   document.querySelector("main").scrollTo({ top: 0, left: 0 });
   if (["stock", "bulk"].includes(module) && !state.stockTechnicians.length) {
@@ -7116,12 +7137,7 @@ function render() {
   elements.historyWorkspace.classList.toggle("hidden", state.activeModule !== "history");
   document.getElementById("disconnectionWorkspace").classList.toggle("hidden", state.activeModule !== "disconnection");
   document.getElementById("descAnalyticsWorkspace").classList.toggle("hidden", state.activeModule !== "descAnalytics");
-  if (state.activeModule === "descAnalytics") {
-    const analyticsFrame = document.getElementById("descAnalyticsFrame");
-    if (analyticsFrame && !analyticsFrame.getAttribute("src")) {
-      analyticsFrame.setAttribute("src", analyticsFrame.dataset.src);
-    }
-  }
+  if (state.activeModule === "descAnalytics") void loadDescAnalyticsFrame();
   elements.dashboardModule.classList.toggle("active", state.activeModule === "dashboard");
   elements.monitorModule?.classList.toggle("active", state.activeModule === "monitor");
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
