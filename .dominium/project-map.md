@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-27T18:12:13+00:00
-- Source fingerprint: `c3fc577fd6d3f5b1`
-- Indexed files: 408
-- Indexed symbols: 3607
+- Generated: 2026-10-27T18:29:10+00:00
+- Source fingerprint: `b36d2c04f5d08702`
+- Indexed files: 409
+- Indexed symbols: 3609
 - API path references: 343
 
 ## Navigation rule
@@ -31,8 +31,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `configure_toa_cloud_bridge.py` (1 symbols) - Grava a credencial primaria da ponte com protecao DPAPI do Windows.
 - `integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json`
 - `integrations/toa_cloud_bridge/extension-central-2.6.3/test-toa-inventory-core.js` (1 symbols)
-- `integrations/toa_cloud_bridge/extension-central-2.6.3/test-toa-route-tree.cjs` (1 symbols, 1 DataSnap methods)
-- `integrations/toa_cloud_bridge/extension-central-2.6.3/toa-auto-export.js` (22 symbols, 1 DataSnap methods)
+- `integrations/toa_cloud_bridge/extension-central-2.6.3/test-toa-route-tree.cjs` (2 symbols, 1 DataSnap methods)
+- `integrations/toa_cloud_bridge/extension-central-2.6.3/toa-auto-export.js` (23 symbols, 1 DataSnap methods)
 - `integrations/toa_cloud_bridge/extension-central-2.6.3/toa-inventory-core.js` (16 symbols, 1 DataSnap methods)
 - `official_close_toa_dry_run.py` (29 symbols, 3 DataSnap methods) - Read-only bridge from a TECHCAP capture to the official close dry-run.
 - `patch_remote_toa.py` (2 API paths, 5 DataSnap methods)
@@ -172,7 +172,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 - shared: 132 files
 - tooling-deploy: 47 files
-- docs: 36 files
+- docs: 37 files
 - tests: 114 files
 
 ## Search indexes

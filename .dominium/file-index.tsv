@@ -68,14 +68,15 @@ docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor d
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	fd1d547435c69739
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md			1	Baixa real e trabalho compartilhado —27/10/2026	8b85b696ec122232
+docs	docs/agent/memory/CURRENT_STATE.md			2	Consulta4321376 corrigida no runtime —27/10/2026	37d2e3c0238a9928
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	d3b539ef8dfcc725
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	6bf1350f375c0960
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md				Caso real confirmado e ponte compartilhada preservada	281b6cb6cc46851e
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
 docs	docs/agent/TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md				Buscar no TOA — correção do transporte em 27/10/2026	96edd6356856440e
+docs	docs/agent/TOA_PROVIDER_TREE_REPAIR_20261027.md			1	Consulta TOA: nome do recurso na árvore — 27/10/2026	3ba617d42bf357ed
 docs	docs/reference/DOMINIUM X IMPERIUM Especificacoes_requisicoes.txt				﻿================================================================================	0888eec3d49a2ab5
 docs	docs/reference/GUIA_API_OFICIAL_TOA_E_IMPERIUM.txt				GUIA OPERACIONAL - APIs OFICIAIS DO TOA E DO IMPERIUM	f786a457b0065170
 docs	docs/reference/LEIA-ME-LOCAL.txt				PAINEL DIRETO DE BAIXA DE OS - IMPERIUM	0be0563222de776d
@@ -149,7 +150,7 @@ shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only ser
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76				b8274ffc7dfb2fbb
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-isolated.js	1			content-isolated.js - Roda no world: ISOLATED	3aa2ece3a08e2b62
-shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-main.js	107		2	content-main.js - Roda no world: MAIN	fb07d74b0c91bc83
+shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-main.js	107		2	content-main.js - Roda no world: MAIN	50d32eab3b4048f3
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/disconnect-inventory.js	4				8eb127a43fa75b41
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/manifest.json					f9aa3c97637b20df
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/offscreen-worker.js	1				e1d01dab03adfe17
@@ -161,8 +162,8 @@ shared	integrations/toa_cloud_bridge/extension-central-2.6.3/options.js	1				3ee
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/README.md				TOA TechNet Bridge 2.6.3	b598f317299f1f6b
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/test-disconnect-inventory.js					a8cc2171048d0355
 toa	integrations/toa_cloud_bridge/extension-central-2.6.3/test-toa-inventory-core.js	1				0d65a6c33ed68bad
-toa	integrations/toa_cloud_bridge/extension-central-2.6.3/test-toa-route-tree.cjs	1		1		4427aa457afc0962
-toa	integrations/toa_cloud_bridge/extension-central-2.6.3/toa-auto-export.js	22		1		35b7506d2144a819
+toa	integrations/toa_cloud_bridge/extension-central-2.6.3/test-toa-route-tree.cjs	2		1		65ea098fd0fbf078
+toa	integrations/toa_cloud_bridge/extension-central-2.6.3/toa-auto-export.js	23		1		44738e0bf1ada3c9
 toa	integrations/toa_cloud_bridge/extension-central-2.6.3/toa-inventory-core.js	16		1		047a8550b3cbb118
 shared	integrations/toa_cloud_bridge/migrations/0001_lookup_jobs.sql					e412883d6d2c34e4
 shared	integrations/toa_cloud_bridge/package-lock.json					7228bf6a88726221
@@ -221,7 +222,7 @@ tooling-deploy	scripts/install_agent_context_hooks.py	3			Install durable-memory
 tooling-deploy	scripts/install_atlas_session_watchdog.ps1			2		7b17ecaf06189449
 tooling-deploy	scripts/install_confront_relay.py	3	1		Minimal, backup-first insertion of the confront read-only API into live DESC relay.	4ae20a35e3eeb9d3
 tooling-deploy	scripts/probe_atlas_synthetic.py				Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.	865b81e754d5a762
-tooling-deploy	scripts/quality_gate.py	5				bc1173935bd2af5f
+tooling-deploy	scripts/quality_gate.py	5				bcef95bd680e4642
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 tooling-deploy	scripts/restart_confront_relay.ps1					de8c58415028c25c
 tooling-deploy	scripts/smoke_confront_cloudflare.mjs		3		Verify private Worker route with the same Node fetch transport used by Hostinger. */	5d9320441c44eea2

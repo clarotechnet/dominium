@@ -1,3 +1,15 @@
+# Consulta4321376 corrigida no runtime —27/10/2026
+
+Fallback exato PID66627+loginZ657615 na árvoreTime.get, sem ignorar guardas.
+Gateway e Worker privadoHTTP200, aid203706151,2tarefas,sem blockers/validation.
+Backup+patch cirúrgico somente2JS; extensão/página recarregadas,Chrome preservado.
+Matheus/Estoque/QC/Worker/Hostinger intactos. Nenhuma baixa nova.
+Gate955Python/22skip,JS/Ruff/build aprovados; auxiliar antigo inventory-core
+falha preexistente5vs4. Runtime mantém responsável histórico Rodrigo id72142;
+recurso/formulário atualBilly pid66627. Não alterar atribuições por inferência.
+Após reload esperar árvore carregar: primeiroteste16nós falhou fechado;
+371nós e consultas seguintes200. Ver ../TOA_PROVIDER_TREE_REPAIR_20261027.md.
+
 # Baixa real e trabalho compartilhado —27/10/2026
 
 OS2662320818 confirmed409/HTTP200,1equipinstalado,1removido,9miscelaneas;

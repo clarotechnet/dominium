@@ -167,3 +167,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Confirmacao409/HTTP200,1instalado1removido9materiais;21JSWorkerQC e30JSmainintegrada;QC200,installeragoraatingebackend400porOSforaCache;POLICYhashconfereWorkerCRLFnormalizado
 
 **Próximo passo/pendência:** Investigar somente identificacao tecnico da busca4321376/TOA_provider_nao_encontrado; nao repetir baixa confirmada; conferir ultima versao compartilhada antes de deploy
+
+## 2026-10-27 18:29 UTC — TOA resource tree fallback restores contract4321376 lookup
+
+**Motivo:** Search/details omitted Provider name although Time.get identifies exact PID66627/loginZ657615
+
+**Alterado:** Added validated tree lookup and regression; surgical runtime patches with hash guards/backups preserve Matheus extras; extension/page reloaded without restarting Chrome
+
+**Verificação:** 955Python22skip JS Ruff build pass; gateway and Worker200 exact aid203706151 two tasks no blockers; unrelated inventory-core auxiliary test remains5vs4
+
+**Próximo passo/pendência:** Publish skip deploy; preserve historical assigned technician vs current route distinction and do not repeat confirmed close2662320818
