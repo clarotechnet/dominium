@@ -307,6 +307,7 @@ endpoint	path
 /api/monitor/snapshot	tests/test_operational_relay.js
 /api/operational/contracts/evil	tests/test_operational_relay.js
 /api/orders	tests/test_operational_relay.js
+/api/orders/123/installer?profile=natal	tests/test_operational_relay.js
 /api/orders?date=2026-10-21&profile=natal	tests/test_operational_relay.js
 /api/serials/consult	tests/test_operational_relay.js
 /api/serials/consult?serials=SERIAL000000&mode=analitico	tests/test_operational_relay.js
