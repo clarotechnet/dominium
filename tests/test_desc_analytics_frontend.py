@@ -1,6 +1,7 @@
 """Contratos de frontend da Visão Claro incorporada ao DOMINIUM."""
 
 import unittest
+import hashlib
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -53,14 +54,15 @@ class DescAnalyticsFrontendTests(unittest.TestCase):
         self.assertIn('setModule("descAnalytics")', self.app)
         self.assertIn('window.location.hash === "#desconexao-indicadores"', self.app)
 
-    def test_dashboard_assets_are_local_and_present(self):
-        scripts = self.dashboard_html.scripts
-        self.assertIn("/desc-analytics-xlsx.js", scripts)
-        self.assertIn("/desc-analytics-html2canvas.js", scripts)
-        for url in scripts:
-            self.assertTrue((STATIC / url.lstrip("/")).is_file(), url)
-        self.assertIn("html2canvas", (STATIC / "desc-analytics-html2canvas.js").read_text(encoding="utf-8")[:1000])
-        self.assertIn("xlsx.js", (STATIC / "desc-analytics-xlsx.js").read_text(encoding="utf-8")[:1000])
+    def test_dashboard_is_byte_identical_and_self_contained(self):
+        # SHA-256 do HTML original enviado pelo operador, sem bibliotecas reserializadas.
+        raw = (STATIC / "desc-analytics.html").read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         "05e997e1a6396f687ffcd73bebfed825f495dbd12a1be60f3ef77d72683024ee")
+        self.assertEqual(self.dashboard.count("<script>"), 3)
+        self.assertFalse(self.dashboard_html.scripts)
+        self.assertIn("xlsx.js (C)", self.dashboard)
+        self.assertIn("html2canvas 1.4.1", self.dashboard)
 
     def test_frame_does_not_change_global_clickjacking_header(self):
         self.assertIn("frame.srcdoc = html", self.app)
