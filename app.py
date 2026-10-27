@@ -100,6 +100,7 @@ from operations_intelligence import (
     render_daily_pdf,
 )
 from operational_store import OperationalStore
+from quality_control import get_quality_control_store
 from serialized_transfer import SerializedTransferUncertainError
 from stock_pdf import build_stock_pdf, safe_pdf_filename
 from technician_directory import TechnicianDirectory, normalize as normalize_technician
@@ -5505,6 +5506,17 @@ class PanelHandler(BaseHTTPRequestHandler):
                 pending = [u for u in AUTH_STORE.list_users() if u.get("status") == "pending"]
                 self._json(HTTPStatus.OK, {"ok": True, "pending_count": len(pending)})
                 return
+            if parsed.path == "/api/stock/quality-control":
+                try:
+                    rows = get_quality_control_store().list_items()
+                    self._json(HTTPStatus.OK, {"ok": True, "items": rows, "count": len(rows)})
+                except Exception:
+                    LOGGER.exception("Falha ao consultar controle de qualidade Supabase")
+                    self._json(
+                        HTTPStatus.BAD_GATEWAY,
+                        {"ok": False, "error": "Controle de qualidade indisponivel; verifique tabela e conexao Supabase"},
+                    )
+                return
             if parsed.path == "/api/profiles":
                 self._json(
                     HTTPStatus.OK,
@@ -6464,6 +6476,27 @@ class PanelHandler(BaseHTTPRequestHandler):
                     request_id=getattr(self, "_request_id", ""),
                 )
                 self._json(HTTPStatus.UNAUTHORIZED, {"ok": False, "error": str(exc)})
+            return
+        if parsed.path == "/api/stock/quality-control":
+            try:
+                body = self._body(max_length=16 * 1024)
+                current = self._current_user() or {}
+                actor = str(current.get("username") or current.get("id") or "operador")
+                saved = get_quality_control_store().save_item(body, user=actor)
+                self._auth_audit(
+                    "stock.quality_control.save", "success",
+                    target=str(saved.get("material") or ""),
+                    metadata={"record_id": saved.get("id")},
+                )
+                self._json(HTTPStatus.OK, {"ok": True, "item": saved})
+            except ValueError as exc:
+                self._json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+            except Exception:
+                LOGGER.exception("Falha ao salvar controle de qualidade Supabase")
+                self._json(
+                    HTTPStatus.BAD_GATEWAY,
+                    {"ok": False, "error": "Nao foi possivel salvar; verifique conexao Supabase e codigo duplicado"},
+                )
             return
         if parsed.path == "/api/auth/logout":
             user = self._current_user()

@@ -41,6 +41,7 @@ operational_store	app.py
 operations_intelligence	app.py
 os	app.py
 pathlib	app.py
+quality_control	app.py
 re	app.py
 secrets	app.py
 serialized_transfer	app.py
@@ -620,6 +621,11 @@ toa_capture	operations_intelligence.py
 typing	operations_intelligence.py
 unicodedata	operations_intelligence.py
 pathlib	patch_remote_toa.py
+__future__	quality_control.py
+datetime	quality_control.py
+functools	quality_control.py
+os	quality_control.py
+supabase	quality_control.py
 __future__	scripts/agent_memory.py
 argparse	scripts/agent_memory.py
 datetime	scripts/agent_memory.py
@@ -1174,6 +1180,8 @@ pathlib	tests/test_operations_intelligence.py
 tempfile	tests/test_operations_intelligence.py
 types	tests/test_operations_intelligence.py
 unittest	tests/test_operations_intelligence.py
+quality_control	tests/test_quality_control.py
+unittest	tests/test_quality_control.py
 atexit	tests/test_registration_flow.py
 auth_store	tests/test_registration_flow.py
 os	tests/test_registration_flow.py

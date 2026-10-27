@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-26T18:22:11+00:00",
+  "generated_at": "2026-10-27T16:31:48+00:00",
   "schema": 2,
-  "source_fingerprint": "7ed0ed34db537ee9260affbfbf1bba84f7f21f23ee075e18298986d0dc28cf9c",
+  "source_fingerprint": "7b4dd9fb777d6d8b3ee2d3d3689464d0200e926a4244f63367f0b7c4454f7e63",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -144,8 +144,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 358722,
-      "sha256": "5adce45b98dcb74308f34ac042f1152d46376f4577b0438afb2094b56f0367fa",
+      "bytes": 360511,
+      "sha256": "227ade0c245b77edd829b6ebe072eec88f7eef133572c9953fcd4e35d7f4e466",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -181,6 +181,7 @@
         "operations_intelligence",
         "os",
         "pathlib",
+        "quality_control",
         "re",
         "secrets",
         "serialized_transfer",
@@ -262,6 +263,7 @@
         "/api/stock",
         "/api/stock/batch",
         "/api/stock/pdf/batch",
+        "/api/stock/quality-control",
         "/api/stock/serial-owner",
         "/api/stock/technicians",
         "/api/stock/writeoff",
@@ -783,8 +785,8 @@
     {
       "path": "deploy/hostinger-web/operational-policy.js",
       "category": "tooling-deploy",
-      "bytes": 1633,
-      "sha256": "bbf57769219b32664c2a73cd86f17a2cd89626e3fdb80f4fcfb99e47a115a366",
+      "bytes": 2020,
+      "sha256": "77b846194d45a2b7dfe6d60789b92b9e9544c7b7ce01bb024519ff67364ccf26",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -814,13 +816,13 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 1
+      "symbol_count": 2
     },
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 2492,
-      "sha256": "6fefcf87d61be4a5ec11de03aec2c067b178515555b53373fb9bf7153ca88694",
+      "bytes": 2645,
+      "sha256": "6739bf2e034987c26e3dad3c0d5bd8a48d763552e0934f38306ed91f2a2f2687",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -873,8 +875,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 43005,
-      "sha256": "4a07d91d7556742bbedcf381d4fe11a003b0ffa2b96fd11f65d36dd2ac9a7896",
+      "bytes": 43279,
+      "sha256": "a3db2d61209bebedac5caca5c0ca7b38266f7d81f72bb84b5bc3728567372f5c",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -902,6 +904,7 @@
         "/api/technicians",
         "/api/toa-agenda/import",
         "/api/toa-automation",
+        "/api/toa-live/lookup",
         "/api/toa-live/status"
       ],
       "env_vars": [
@@ -1331,13 +1334,15 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 58564,
-      "sha256": "638321d73710b61fb2653c1f58f09844f694024355ab4467d84c5cc17bf3ba24",
-      "summary": "Estado vigente — espera visível e aba Atlas recuperada26/10/2026,14:48",
+      "bytes": 59413,
+      "sha256": "bfeb00da44ee01b9f6829cd860892e441490e045b2bf84b7e9c91c082b9fc014",
+      "summary": "Buscar no TOA — transporte corrigido em 27/10/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
-      "datasnap_methods": [],
+      "datasnap_methods": [
+        "TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md"
+      ],
       "entrypoint": false,
       "symbol_count": 0
     },
@@ -1386,6 +1391,19 @@
       "bytes": 4445,
       "sha256": "ea4171c7459d3f29e0a73d25a7778869cdd7e78111c40dd311e830d69d391e6c",
       "summary": "DOMINIUM task router",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md",
+      "category": "docs",
+      "bytes": 2644,
+      "sha256": "96edd6356856440ecfbf3a7ba33847cbb5d863dc7397873aa06d62b1d94f0b3f",
+      "summary": "Buscar no TOA — correção do transporte em 27/10/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1477,6 +1495,19 @@
       "bytes": 1667,
       "sha256": "2b3bedbb63595ebd3a96c8b0d50c189234fd3950e0ac9bef246ca8445458272e",
       "summary": "Site import bridge implementation plan",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-27-toa-lookup-private-bridge.md",
+      "category": "docs",
+      "bytes": 2426,
+      "sha256": "0b79c243a4e7cd92d4b24f828e89d0d904386fe3e2d7c411187bc289c97a6c7d",
+      "summary": "TOA lookup private bridge implementation plan",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -2104,8 +2135,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 4224,
-      "sha256": "17aa0813d05ba14b99d689f6aabf8bbe2b5e63cb177b510783e31196432c9bdb",
+      "bytes": 4359,
+      "sha256": "c7e0d7d413269eb427f42e1e397ad294fc41e9ecdba522c666be13cf8e20e3eb",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2120,8 +2151,8 @@
     {
       "path": "integrations/import_bridge/worker.test.mjs",
       "category": "shared",
-      "bytes": 11891,
-      "sha256": "261fdec6b802631c797a10fe29b9e91bbe41f23c2a98e832a9dbaa503506154b",
+      "bytes": 14375,
+      "sha256": "01935c6dff17f8eba3640250d93f9bfe4e4468f2106aa17bed3aacf448ebc1ec",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3492,6 +3523,29 @@
       "symbol_count": 0
     },
     {
+      "path": "quality_control.py",
+      "category": "shared",
+      "bytes": 3736,
+      "sha256": "bc0380aafb00d2a6254fff7e666566e23e0004e76aafca21a5633b8a69bf249c",
+      "summary": "Regras de controle de qualidade, independentes do saldo do Imperium.",
+      "imports": [
+        "__future__",
+        "datetime",
+        "functools",
+        "os",
+        "supabase"
+      ],
+      "endpoints": [],
+      "env_vars": [
+        "SUPABASE_SECRET_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 6
+    },
+    {
       "path": "README.md",
       "category": "shared",
       "bytes": 3343,
@@ -4247,8 +4301,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 126347,
-      "sha256": "41dde13b7a1f4ea7d71a5d7f097c4202cae1ae347d4494586fd7f8638c94b547",
+      "bytes": 129469,
+      "sha256": "0d7568a0373c811bff8c4970be74186b51a611da6e6ed9fa5443e37316bac515",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4312,6 +4366,21 @@
       "symbol_count": 34
     },
     {
+      "path": "static/quality-control.js",
+      "category": "frontend",
+      "bytes": 6009,
+      "sha256": "047c4a005d37a9dfbd2ea1a9b18d03901ad0a26ebf8cdae73faf1b4322040129",
+      "summary": "Controle de qualidade: aba independente do estoque do tecnico. */",
+      "imports": [],
+      "endpoints": [
+        "/api/stock/quality-control"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 9
+    },
+    {
       "path": "static/query-import-ui.js",
       "category": "frontend",
       "bytes": 5617,
@@ -4340,8 +4409,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 208804,
-      "sha256": "f825f3d2d982014f533881756275348fd6b68efa7b57f63d82e4ba47a7c3fc45",
+      "bytes": 211139,
+      "sha256": "ffb00ea72dab94864d7beaaf3add4cf6d32cf8ba189df176c2445f59cad6dcb9",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6076,8 +6145,8 @@
     {
       "path": "tests/test_operational_relay.js",
       "category": "tests",
-      "bytes": 4335,
-      "sha256": "08e51c80d47020001655d7519d08117c6395fe734c5700d00f5507764a4b67c3",
+      "bytes": 6273,
+      "sha256": "c5c174d64ad97fe4dfd5cbcbef85c7c609d3a44db903b3b9dc927cb9a9d6c387",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6107,6 +6176,15 @@
         "/api/toa-contracts",
         "/api/toa-contracts?profile=natal",
         "/api/toa-contracts?profile=natal&date=2026-10-21",
+        "/api/toa-live/",
+        "/api/toa-live/../toa-live/lookup?profile=natal",
+        "/api/toa-live/connect?profile=natal",
+        "/api/toa-live/lookup",
+        "/api/toa-live/lookup?profile=",
+        "/api/toa-live/lookup?profile=natal",
+        "/api/toa-live/lookup?profile=natal&profile=recife",
+        "/api/toa-live/lookup?profile=natal&url=evil",
+        "/api/toa-live/lookup?profile=unknown",
         "/api/toa-live/status"
       ],
       "env_vars": [],
@@ -6180,6 +6258,22 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
+      "path": "tests/test_quality_control.py",
+      "category": "tests",
+      "bytes": 1823,
+      "sha256": "4a628243ef04afb5938caa9af9a5f85f0402dc0b69ade425e216c9b2bb1c94c5",
+      "summary": "",
+      "imports": [
+        "quality_control",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
       "symbol_count": 4
     },
     {
@@ -7549,6 +7643,7 @@
     "TOA_LOCAL_COLLECTOR.public_state",
     "TOA_LOCAL_COLLECTOR.start",
     "TOA_LOCAL_COLLECTOR.stop",
+    "TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md",
     "TOA_REPLAY_HEADER_NAMES.has",
     "Tabela_codigo_baixa0711.catalog",
     "Tabela_codigo_baixa0711.pdf",

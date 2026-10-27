@@ -8,7 +8,7 @@ shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	151	80	44	DOMINIUM | MAPA DE RESPONSABILIDADE	5adce45b98dcb743
+orchestration	app.py	151	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	227ade0c245b77ed
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -33,12 +33,12 @@ tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			b000d7e6a37d15
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
-tooling-deploy	deploy/hostinger-web/operational-policy.js	1	22			bbf57769219b3266
-tooling-deploy	deploy/hostinger-web/operational-relay.js	3				6fefcf87d61be4a5
+tooling-deploy	deploy/hostinger-web/operational-policy.js	2	22			77b846194d45a2b7
+tooling-deploy	deploy/hostinger-web/operational-relay.js	3				6739bf2e034987c2
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	25	1		4a07d91d7556742b
+tooling-deploy	deploy/hostinger-web/server.js	41	26	1		a3db2d61209bebed
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -67,11 +67,12 @@ docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor d
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	fd1d547435c69739
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md				Estado vigente — espera visível e aba Atlas recuperada26/10/2026,14:48	638321d73710b61f
+docs	docs/agent/memory/CURRENT_STATE.md			1	Buscar no TOA — transporte corrigido em 27/10/2026	bfeb00da44ee01b9
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
 docs	docs/agent/memory/OPERATIONS_JOURNAL.md				DOMINIUM — diário de decisões e entregas dos agentes	c6413e5ddbd0476f
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
+docs	docs/agent/TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md				Buscar no TOA — correção do transporte em 27/10/2026	96edd6356856440e
 docs	docs/reference/DOMINIUM X IMPERIUM Especificacoes_requisicoes.txt				﻿================================================================================	0888eec3d49a2ab5
 docs	docs/reference/GUIA_API_OFICIAL_TOA_E_IMPERIUM.txt				GUIA OPERACIONAL - APIs OFICIAIS DO TOA E DO IMPERIUM	f786a457b0065170
 docs	docs/reference/LEIA-ME-LOCAL.txt				PAINEL DIRETO DE BAIXA DE OS - IMPERIUM	0be0563222de776d
@@ -79,6 +80,7 @@ docs	docs/reference/TOA_CONNECTOR_API.md				DOMINIUM TOA Connector	a1c7cfee4cf9e
 docs	docs/superpowers/plans/2026-10-10-dominium-desc-progress.md				Progresso e evidências	eb0079f794820147
 docs	docs/superpowers/plans/2026-10-10-dominium-desc.md				Dominium e DESCONEXÃO Implementation Plan	5d89722ce6d50003
 docs	docs/superpowers/plans/2026-10-15-site-import-bridge.md				Site import bridge implementation plan	2b3bedbb63595ebd
+docs	docs/superpowers/plans/2026-10-27-toa-lookup-private-bridge.md				TOA lookup private bridge implementation plan	0b79c243a4e7cd92
 docs	docs/superpowers/specs/2026-10-10-dominium-desc-design.md				Dominium: novo visual e DESCONEXÃO	8fb2f29706ba9060
 shared	edge_voice.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	32f7dbf35b7da5a8
 shared	flow_reader/__init__.py				Read-only Imperium/DataSnap capture analyzer.	fd76c045b68cdb47
@@ -114,8 +116,8 @@ shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
 shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
-shared	integrations/import_bridge/worker.mjs	3	2			17aa0813d05ba14b
-shared	integrations/import_bridge/worker.test.mjs		4			261fdec6b802631c
+shared	integrations/import_bridge/worker.mjs	3	2			c7e0d7d413269eb4
+shared	integrations/import_bridge/worker.test.mjs		4			01935c6dff17f8eb
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
 shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
@@ -188,6 +190,7 @@ orchestration	operations_intelligence.py	13			DOMINIUM | MAPA DE RESPONSABILIDAD
 toa	patch_remote_toa.py		2	5		cb6eb87e50eeb356
 shared	productive_protocol_templates.json			3		c04b19e6f576ff97
 shared	protocol_templates.json					dea41cc769da2970
+shared	quality_control.py	6			Regras de controle de qualidade, independentes do saldo do Imperium.	bc0380aafb00d2a6
 shared	README.md				DOMINIUM	5e261ad16d56a5c6
 shared	requirements-atlas-query.txt				Optional read-only .xls parser used by integrations/serial_consult/atlas_query_data.py	911ebaeee10c6351
 shared	requirements-dev.txt				-r requirements-web.txt	04613c3898d0f090
@@ -228,14 +231,15 @@ frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			41dde13b7a1f4ea7
+frontend	static/index.html		1			0d7568a0373c811b
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
+frontend	static/quality-control.js	9	1		Controle de qualidade: aba independente do estoque do tecnico. */	047c4a005d37a9df
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
-frontend	static/styles.css					f825f3d2d982014f
+frontend	static/styles.css					ffb00ea72dab9486
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
@@ -322,11 +326,12 @@ tests	tests/test_official_stock_relay.py	6	11		Read-only official inventory brid
 tests	tests/test_official_stock_remediation_plan.py	22		1		a64ed28f5256d2d9
 tests	tests/test_offline_candidate_and_resolver.py	12			Comprehensive test suite for frontend block, candidate locator, and material resolver.	2c65244509db2c6a
 tests	tests/test_operation_scope.py	42				f804afda128c9e71
-tests	tests/test_operational_relay.js	2	27			08e51c80d4702000
+tests	tests/test_operational_relay.js	2	36			c5c174d64ad97fe4
 tests	tests/test_operational_store.py	5				ec3aeac75e1dfebb
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_order_dataset_hostinger.js	4	1			bca127bdd7f87bcf
+tests	tests/test_quality_control.py	4				4a628243ef04afb5
 tests	tests/test_query_import.js	2				7af4ea366de3aed9
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
 tests	tests/test_semiauto_frontend.js	19				44a6652d8752bfc1

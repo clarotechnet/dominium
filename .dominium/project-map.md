@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-26T18:22:11+00:00
-- Source fingerprint: `7ed0ed34db537ee9`
-- Indexed files: 392
-- Indexed symbols: 3546
-- API path references: 321
+- Generated: 2026-10-27T16:31:48+00:00
+- Source fingerprint: `7b4dd9fb777d6d8b`
+- Indexed files: 397
+- Indexed symbols: 3566
+- API path references: 333
 
 ## Navigation rule
 
@@ -16,7 +16,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (151 symbols, 80 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (151 symbols, 81 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operational_store.py` (25 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -97,6 +97,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/lucide.min.js` (1 symbols)
 - `static/motion-ui.js` (12 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `static/operations-monitor.js` (34 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `static/quality-control.js` (9 symbols, 1 API paths) - Controle de qualidade: aba independente do estoque do tecnico. */
 - `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
 - `static/styles.css`
@@ -153,6 +154,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `official_stock_remediation_plan.py` (25 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `productive_protocol_templates.json` (3 DataSnap methods)
 - `protocol_templates.json`
+- `quality_control.py` (6 symbols) - Regras de controle de qualidade, independentes do saldo do Imperium.
 - `README.md` - DOMINIUM
 - `requirements-atlas-query.txt` - Optional read-only .xls parser used by integrations/serial_consult/atlas_query_data.py
 - `requirements-dev.txt` - -r requirements-web.txt
@@ -167,10 +169,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 130 files
+- shared: 131 files
 - tooling-deploy: 46 files
-- docs: 30 files
-- tests: 109 files
+- docs: 32 files
+- tests: 110 files
 
 ## Search indexes
 
