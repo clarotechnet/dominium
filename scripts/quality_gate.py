@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 JS_TESTS = (
+    ROOT / "tests" / "test_order_close_proxy.js",
     ROOT / "tests" / "test_import_hostinger.js",
     ROOT / "integrations" / "import_bridge" / "worker.test.mjs",
     ROOT / "integrations" / "desc_review_bot" / "src" / "descReview" / "tests" / "manual-serial.test.js",

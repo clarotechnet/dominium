@@ -969,9 +969,11 @@ const OPERATIONAL_PROXY_HEADER_ALLOWLIST = [
 const { createDisconnectionMiddleware } = require('./disconnection-proxy');
 app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }));
 const { createImportMiddleware } = require('./import-proxy');
+const { createOrderCloseMiddleware } = require('./order-close-proxy');
 const { resolveOperationalRead, restorePrivateJsonContentType } = require('./operational-relay');
 const { allowedOperationalRead, allowedToaLookup } = require('./operational-policy');
 app.use(['/api/import-targets', '/api/import-history', '/api/imports'], createImportMiddleware());
+app.post(/^\/api\/orders\/[^/]+\/close$/, createOrderCloseMiddleware());
 
 async function proxyOperationalRequest(req, res, next) {
   const controller = new AbortController();
