@@ -1,3 +1,17 @@
+# Buscar no TOA — transporte corrigido em 27/10/2026
+
+TOA autenticado confirmado; erro era POST de lookup no quick tunnel antigo sem DNS.
+Publicado main07e87954, Worker c1913378; Hostinger Actions40512508841success.
+Busca agora usa ponte privada existente, somente POST de leitura com perfil explicito,
+admin/controller e CSRF na Hostinger; nenhum endpoint de baixa/connect ampliado.
+Real4321295/Natal retornou uma atividade, duas tarefas e nove materiais; sem baixa.
+960Python/22skip,23JSfocados,Ruff/build,3release aprovados;anon401/viewer403 reais.
+Chrome/serviços Python preservados; rollback Worker df06c864 registrado no servidor.
+Clique na UI autenticada ainda não validado: navegador de teste exige login DOMINIUM.
+Detalhes e limites: ../TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md.
+
+## Histórico anterior — não revalidado nesta mudança
+
 # Estado vigente — espera visível e aba Atlas recuperada26/10/2026,14:48
 
 UIpublicada56581179: fasewaiting,painelAGUARDANDO RESPOSTA semanimação contínua,

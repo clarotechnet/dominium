@@ -17,7 +17,9 @@
 - [x] Add failing tests in tests/test_operational_relay.js and integrations/import_bridge/worker.test.mjs for routing, JSON, roles, profile checks, body size and upstream errors.
 - [x] Add allowedToaLookup to deploy/hostinger-web/operational-policy.js; use it in operational-relay.js and worker.mjs. Keep the existing backend unchanged.
 - [x] Run focused tests, full quality gate and Hostinger release build. Review the final diff against the constraints.
-- [ ] Back up and deploy Worker source; publish tested source to GitHub main using the existing Hostinger workflow.
-- [ ] Verify authenticated lookup of contract 4321295 and the live UI when its login is available. Record actual tests and remaining blockers.
+- [x] Back up and deploy Worker source; publish tested source to GitHub main using the existing Hostinger workflow.
+- [x] Verify authenticated lookup of contract 4321295 and the live UI when its login is available. Record actual tests and remaining blockers.
 
 Verification: 4 new tests failed before implementation; 23 focused tests passed afterward. Full gate: 960 Python tests, 22 skipped; JavaScript, Ruff and build passed. Hostinger release: 3 dependency/build tests passed. Fresh reviewer found no blocking issues. Legacy loopback POST lookup returned one Natal activity in 11.49 seconds; no backend session/CSRF regression.
+
+Published: GitHub main 07e87954; Worker c1913378; Hostinger Actions 40512508841 succeeded including production smoke. Real authorized Worker lookup returned4321295, one activity/two tasks/nine materials; anonymous401/viewer403. UI click remains unverified because cloud DOMINIUM requires login. No OS closed.
