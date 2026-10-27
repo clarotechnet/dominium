@@ -6,7 +6,7 @@
   <title>DOMINIUM</title>
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="/styles.css?v=20261026-5">
+  <link rel="stylesheet" href="/styles.css?v=20261027-quality-modal-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
 </head>
@@ -874,25 +874,41 @@
             <h2>Controle de qualidade</h2>
             <p class="workspace-description">Regras independentes do saldo do Imperium. Altere codigo, descricao ou regra conforme a necessidade.</p>
           </div>
-          <button class="button secondary" id="qualityRefresh" type="button"><i data-lucide="refresh-cw"></i> Atualizar</button>
+          <div class="quality-heading-actions">
+            <button class="button primary" id="qualityAdd" type="button">
+              <i data-lucide="plus" aria-hidden="true"></i> Adicionar material
+            </button>
+            <button class="button secondary" id="qualityRefresh" type="button"><i data-lucide="refresh-cw" aria-hidden="true"></i> Atualizar</button>
+          </div>
         </header>
         <div class="quality-toolbar">
           <label class="field quality-search"><span>Buscar material</span><input type="search" id="qualitySearch" placeholder="Codigo ou descricao"></label>
           <strong id="qualityCount" aria-live="polite">0 materiais</strong>
         </div>
-        <div class="quality-form-wrap" id="qualityFormWrap">
-          <h3 id="qualityFormTitle">Adicionar material</h3>
+        <dialog class="quality-dialog" id="qualityFormWrap" aria-labelledby="qualityFormTitle" aria-describedby="qualityFormHint">
+          <div class="quality-dialog-head">
+            <div>
+              <p class="section-label">CONTROLE DE QUALIDADE</p>
+              <h3 id="qualityFormTitle">Adicionar material</h3>
+              <p id="qualityFormHint">Preencha as informacoes que serao salvas no Supabase.</p>
+            </div>
+            <button class="quality-dialog-close" id="qualityDialogClose" type="button" aria-label="Fechar janela" title="Fechar">
+              <i data-lucide="x" aria-hidden="true"></i>
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
           <form id="qualityForm" class="quality-form">
-            <label class="field"><span>Material</span><input id="qualityMaterial" maxlength="32" required placeholder="Codigo"></label>
-            <label class="field quality-description"><span>Descr. Material</span><input id="qualityDescription" maxlength="500" required placeholder="Descricao do material"></label>
+            <label class="field"><span>Material</span><input id="qualityMaterial" maxlength="32" required placeholder="Codigo" autocomplete="off"></label>
+            <label class="field"><span>Descr. Material</span><input id="qualityDescription" maxlength="500" required placeholder="Descricao do material"></label>
             <label class="field"><span>Qtd - Controle Qualidade</span><input id="qualityRule" maxlength="64" required placeholder="Ex.: 2, menor que 4, variavel" list="qualityRuleOptions"></label>
             <datalist id="qualityRuleOptions"><option value="0"></option><option value="1"></option><option value="2"></option><option value="menor que 4"></option><option value="variável"></option></datalist>
+            <p id="qualityFormNotice" class="quality-form-notice" role="alert" aria-live="polite"></p>
             <div class="quality-form-actions">
-              <button class="button primary" type="submit" id="qualitySave">Salvar</button>
               <button class="button secondary" type="button" id="qualityCancel">Cancelar</button>
+              <button class="button primary" type="submit" id="qualitySave">Adicionar</button>
             </div>
           </form>
-        </div>
+        </dialog>
         <p id="qualityNotice" class="quality-notice" role="status" aria-live="polite">Selecione a aba para carregar os materiais.</p>
         <div class="table-section quality-table-section">
           <div class="table-scroll">
@@ -2301,8 +2317,8 @@
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
   <script src="/app.js?v=20261027-stock-hub-1"></script>
-  <script src="/quality-control.js?v=20261027-3"></script>
-  <script src="/stock-nav.js?v=20261027-3"></script>
+  <script src="/quality-control.js?v=20261027-modal-1"></script>
+  <script src="/stock-nav.js?v=20261027-arrow-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>
   <script src="/query-import.js?v=20261023-1"></script>
   <script src="/confront.js?v=20261022-3"></script>

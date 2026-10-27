@@ -1,4 +1,4 @@
-/* Controle de qualidade: aba independente do estoque do tecnico. */
+/* Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */
 (() => {
   const byId = (id) => document.getElementById(id);
   const inventoryTab = byId("stockInventoryTab");
@@ -6,17 +6,22 @@
   const inventoryPane = byId("stockInventoryPane");
   const qualityPane = byId("stockQualityPane");
   const body = byId("qualityBody");
+  const dialog = byId("qualityFormWrap");
   const form = byId("qualityForm");
   const notice = byId("qualityNotice");
-  const formWrap = byId("qualityFormWrap");
+  const formNotice = byId("qualityFormNotice");
   const formTitle = byId("qualityFormTitle");
   const search = byId("qualitySearch");
   const count = byId("qualityCount");
+  const add = byId("qualityAdd");
   const save = byId("qualitySave");
+  const cancel = byId("qualityCancel");
+  const closeButton = byId("qualityDialogClose");
+  const refresh = byId("qualityRefresh");
   const material = byId("qualityMaterial");
   const description = byId("qualityDescription");
   const rule = byId("qualityRule");
-  if (!qualityTab || !form || !body) return;
+  if (!qualityTab || !form || !body || !dialog || !add || !dialog.showModal) return;
 
   let items = [];
   let editId = null;
@@ -24,12 +29,48 @@
   let loading = false;
   let saving = false;
   let loaded = false;
-  const canEdit = () => ["admin", "controller"].includes(state.authUser?.role);
+  let returnFocus = null;
 
+  const canEdit = () => ["admin", "controller"].includes(state.authUser?.role);
   const displayMessage = (message, failure = false) => {
     notice.textContent = message;
     notice.classList.toggle("quality-error", Boolean(failure));
   };
+  const showFormError = (message) => {
+    formNotice.textContent = message;
+    formNotice.hidden = !message;
+  };
+
+  function resetForm() {
+    form.reset();
+    editId = null;
+    editVersion = "";
+    formTitle.textContent = "Adicionar material";
+    save.textContent = "Adicionar";
+    showFormError("");
+  }
+
+  function closeDialog() {
+    if (saving || !dialog.open) return;
+    dialog.close();
+  }
+
+  function openDialog(item = null, trigger = null) {
+    if (saving || !canEdit()) return;
+    resetForm();
+    returnFocus = trigger || document.activeElement;
+    if (item) {
+      editId = item.id;
+      editVersion = item.atualizado_em || "";
+      material.value = item.material;
+      description.value = item.descricao_material;
+      rule.value = item.qtd_controle_qualidade;
+      formTitle.textContent = "Editar material";
+      save.textContent = "Salvar alterações";
+    }
+    if (!dialog.open) dialog.showModal();
+    material.focus();
+  }
 
   function updateTabs(isQuality) {
     inventoryTab.classList.toggle("active", !isQuality);
@@ -38,30 +79,12 @@
     qualityTab.setAttribute("aria-selected", String(isQuality));
     inventoryPane.classList.toggle("hidden", isQuality);
     qualityPane.classList.toggle("hidden", !isQuality);
-    if (isQuality) {
-      formWrap.classList.toggle("hidden", !canEdit());
-      if (!loaded && !loading) void loadQuality();
+    if (!isQuality) {
+      if (dialog.open) closeDialog();
+      return;
     }
-  }
-
-  function resetForm() {
-    form.reset();
-    editId = null;
-    editVersion = "";
-    formTitle.textContent = "Adicionar material";
-    save.textContent = "Adicionar";
-  }
-
-  function editItem(item) {
-    editId = item.id;
-    editVersion = item.atualizado_em || "";
-    material.value = item.material;
-    description.value = item.descricao_material;
-    rule.value = item.qtd_controle_qualidade;
-    formTitle.textContent = "Editar material " + item.material;
-    save.textContent = "Salvar alteracoes";
-    formWrap.scrollIntoView({ behavior: "smooth", block: "center" });
-    material.focus();
+    add.hidden = !canEdit();
+    if (!loaded && !loading) void loadQuality();
   }
 
   function cell(row, value, className = "") {
@@ -73,11 +96,11 @@
   }
 
   function renderQuality() {
+    add.hidden = !canEdit();
     const term = normalize(search.value.trim());
     const filtered = items.filter((item) =>
       !term || normalize(item.material + " " + item.descricao_material + " " + item.qtd_controle_qualidade).includes(term)
     );
-    body.replaceChildren();
     const frag = document.createDocumentFragment();
     filtered.forEach((item) => {
       const tr = document.createElement("tr");
@@ -92,45 +115,47 @@
         button.className = "button secondary quality-edit";
         button.textContent = "Editar";
         button.disabled = saving;
-        button.addEventListener("click", () => editItem(item));
+        button.addEventListener("click", () => openDialog(item, button));
         action.appendChild(button);
       } else {
         action.textContent = "Somente leitura";
       }
       frag.appendChild(tr);
     });
-    body.appendChild(frag);
+    body.replaceChildren(frag);
     count.textContent = filtered.length + " de " + items.length + " materiais";
     if (loaded && !loading && !filtered.length) {
-      displayMessage(items.length ? "Nenhum material corresponde a pesquisa." : "Nenhum material cadastrado.");
+      displayMessage(items.length ? "Nenhum material corresponde à pesquisa." : "Nenhum material cadastrado.");
     }
   }
 
   async function loadQuality() {
     if (loading) return;
     loading = true;
+    refresh.disabled = true;
     displayMessage("Carregando materiais do Supabase...");
-    byId("qualityRefresh").disabled = true;
     try {
       const payload = await request("/api/stock/quality-control", { timeoutMs: 20000 });
       items = Array.isArray(payload.items) ? payload.items : [];
       loaded = true;
-      displayMessage(items.length + " materiais carregados. As alteracoes sao salvas no Supabase.");
+      displayMessage(items.length + " materiais carregados. As alterações são salvas no Supabase.");
     } catch (error) {
       displayMessage(error.message || "Erro ao consultar o Supabase.", true);
     } finally {
       loading = false;
-      byId("qualityRefresh").disabled = false;
+      refresh.disabled = false;
       renderQuality();
     }
   }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (saving || !canEdit()) return;
+    if (saving || !dialog.open || !canEdit()) return;
     saving = true;
     save.disabled = true;
-    displayMessage("Salvando no Supabase...");
+    cancel.disabled = true;
+    closeButton.disabled = true;
+    showFormError("");
     try {
       const payload = {
         material: material.value.trim(),
@@ -142,22 +167,37 @@
         payload.atualizado_em = editVersion;
       }
       await request("/api/stock/quality-control", { method: "POST", body: JSON.stringify(payload), timeoutMs: 20000 });
-      resetForm();
+      saving = false;
+      dialog.close();
       loaded = false;
       await loadQuality();
       showToast("Controle de qualidade salvo", "success");
     } catch (error) {
-      displayMessage(error.message || "Falha ao salvar o material.", true);
-      showToast(error.message || "Falha ao salvar", "error");
+      const message = error.message || "Não foi possível salvar o material.";
+      showFormError(message);
+      showToast(message, "error");
     } finally {
       saving = false;
       save.disabled = false;
+      cancel.disabled = false;
+      closeButton.disabled = false;
     }
+  });
+
+  add.addEventListener("click", () => openDialog(null, add));
+  cancel.addEventListener("click", closeDialog);
+  closeButton.addEventListener("click", closeDialog);
+  dialog.addEventListener("cancel", (event) => {
+    if (saving) event.preventDefault();
+  });
+  dialog.addEventListener("close", () => {
+    resetForm();
+    if (returnFocus?.isConnected && !returnFocus.disabled) returnFocus.focus();
+    returnFocus = null;
   });
   inventoryTab.addEventListener("click", () => updateTabs(false));
   qualityTab.addEventListener("click", () => updateTabs(true));
-  byId("qualityRefresh").addEventListener("click", loadQuality);
-  byId("qualityCancel").addEventListener("click", resetForm);
+  refresh.addEventListener("click", loadQuality);
   search.addEventListener("input", renderQuality);
   resetForm();
   updateTabs(false);

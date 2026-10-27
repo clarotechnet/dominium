@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-27T18:29:10+00:00
-- Source fingerprint: `b36d2c04f5d08702`
-- Indexed files: 409
-- Indexed symbols: 3609
+- Generated: 2026-10-27T19:44:11+00:00
+- Source fingerprint: `e623d568ef45dc57`
+- Indexed files: 410
+- Indexed symbols: 3616
 - API path references: 343
 
 ## Navigation rule
@@ -97,7 +97,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/lucide.min.js` (1 symbols)
 - `static/motion-ui.js` (12 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `static/operations-monitor.js` (34 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
-- `static/quality-control.js` (9 symbols, 1 API paths) - Controle de qualidade: aba independente do estoque do tecnico. */
+- `static/quality-control.js` (11 symbols, 1 API paths) - Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */
 - `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
 - `static/stock-nav.js` (4 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
@@ -173,7 +173,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - shared: 132 files
 - tooling-deploy: 47 files
 - docs: 37 files
-- tests: 114 files
+- tests: 115 files
 
 ## Search indexes
 

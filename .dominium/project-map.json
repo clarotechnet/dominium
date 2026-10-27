@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-27T18:29:10+00:00",
+  "generated_at": "2026-10-27T19:44:11+00:00",
   "schema": 2,
-  "source_fingerprint": "b36d2c04f5d08702a3178e350ed34116aba49a2509ba15ca17b6d5441e68a0f6",
+  "source_fingerprint": "e623d568ef45dc57c88a0871c39c4fbc616363d95ec2d99cae8899e162a62ef6",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -4414,8 +4414,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 130376,
-      "sha256": "13c1b23d9ffe59f73ad1ebfd841eb4de73811feb7572d277314ba20fe0c4e895",
+      "bytes": 131362,
+      "sha256": "a724d2a3ef4473fa6695e04d21db0ade2ff28597b7a4f9e3ec831573b93e8bc7",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4481,9 +4481,9 @@
     {
       "path": "static/quality-control.js",
       "category": "frontend",
-      "bytes": 6009,
-      "sha256": "047c4a005d37a9dfbd2ea1a9b18d03901ad0a26ebf8cdae73faf1b4322040129",
-      "summary": "Controle de qualidade: aba independente do estoque do tecnico. */",
+      "bytes": 7170,
+      "sha256": "49ee0ad0272ee0cde626c202d9de20765d66a4ae38bdcadfc89ae3cadbd9c565",
+      "summary": "Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */",
       "imports": [],
       "endpoints": [
         "/api/stock/quality-control"
@@ -4491,7 +4491,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 9
+      "symbol_count": 11
     },
     {
       "path": "static/query-import-ui.js",
@@ -4535,8 +4535,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 212065,
-      "sha256": "ca6d07a3d8dc95f6dab6500c68ea44a1841684dbcdbf45989a5286948a972cad",
+      "bytes": 215360,
+      "sha256": "25c47961d66832a5286d338db6c6aefedd948b499ee7b7d40856a69e4d23dc1c",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6449,6 +6449,19 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 4
+    },
+    {
+      "path": "tests/test_quality_modal_frontend.cjs",
+      "category": "tests",
+      "bytes": 6933,
+      "sha256": "45f35031074f4aa834d21f61b9349b36661164456f04615d652d5186bae18a0f",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
     },
     {
       "path": "tests/test_query_import.js",
