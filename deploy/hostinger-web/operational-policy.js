@@ -2,7 +2,7 @@
 
 // Read-only paths that may pass from the authenticated Hostinger app
 // through the private Workers VPC connector to the local Windows backend.
-// Never accept arbitrary paths or write methods on this relay.
+// Never accept arbitrary paths or operational writes on this relay.
 const ROUTES = new Set([
   '/api/orders',
   '/api/toa-contracts',
@@ -40,4 +40,10 @@ function allowedOperationalRead(method, requestTarget) {
       url.pathname.includes('%') || url.pathname.includes('//')) return false;
   return ROUTES.has(url.pathname) || DETAIL_ROUTE.test(url.pathname);
 }
-module.exports = { allowedOperationalRead };
+// The live lookup is a read action transported as POST. Keep it separate
+// from GET permissions and never allow connect/close routes through it.
+function allowedToaLookup(method, requestTarget) {
+  return method === 'POST' && typeof requestTarget === 'string' &&
+    /^\/api\/toa-live\/lookup\?profile=(?:natal|fortaleza|mossoro|recife)$/.test(requestTarget);
+}
+module.exports = { allowedOperationalRead, allowedToaLookup };

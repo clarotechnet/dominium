@@ -3,10 +3,39 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { allowedOperationalRead } = require('../deploy/hostinger-web/operational-policy');
 const { resolveOperationalRead } = require('../deploy/hostinger-web/operational-relay');
+const { allowedToaLookup } = require('../deploy/hostinger-web/operational-policy');
+const { restorePrivateJsonContentType } = require('../deploy/hostinger-web/operational-relay');
 const privateConnection = () => ({token:'x'.repeat(43)});
 const req = (method, originalUrl, role = 'viewer') => ({
   method, originalUrl, dominiumSession:{id:'fixture'},
   dominiumUser:{id:5, username:'viewer.test', role},
+});
+
+test('TOA lookup uses the private bridge only for the exact scoped read action', () => {
+  for (const profile of ['natal','fortaleza','mossoro','recife']) {
+    const target='/api/toa-live/lookup?profile='+profile;
+    assert.equal(allowedToaLookup('POST',target),true);
+    for (const role of ['admin','controller']) {
+      const request=req('POST',target,role);
+      request.headers={'content-type':'application/json',cookie:'private','x-csrf-token':'private'};
+      const result=resolveOperationalRead(request,privateConnection);
+      assert.equal(result.url,'https://dominium-import-bridge.jogador743.workers.dev'+target);
+      restorePrivateJsonContentType(request,result.headers,'{"query":"4321295"}');
+      assert.equal(result.headers['content-type'],'application/json');
+      assert.equal(result.headers.cookie,undefined);
+      assert.equal(result.headers['x-csrf-token'],undefined);
+    }
+    assert.throws(()=>resolveOperationalRead(req('POST',target,'viewer'),privateConnection),/operational_session_required/);
+    assert.throws(()=>resolveOperationalRead({...req('POST',target,'admin'),dominiumSession:null},privateConnection),/operational_session_required/);
+  }
+  for (const target of ['/api/toa-live/connect?profile=natal','/api/toa-live/lookup',
+    '/api/toa-live/lookup?profile=unknown','/api/toa-live/lookup?profile=natal&profile=recife',
+    '/api/toa-live/lookup?profile=natal&url=evil','/api/toa-live/%6cookup?profile=natal',
+    '/api/toa-live/../toa-live/lookup?profile=natal','/api/toa-live/lookup?profile=natal#x',
+    '//evil/api/toa-live/lookup?profile=natal']) {
+    assert.equal(allowedToaLookup('POST',target),false,target);
+  }
+  assert.equal(allowedToaLookup('GET','/api/toa-live/lookup?profile=natal'),false);
 });
 
 test('only explicit, safe GET routes may access the internal Windows API', () => {

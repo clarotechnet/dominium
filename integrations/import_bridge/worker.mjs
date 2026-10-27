@@ -4,7 +4,7 @@ import operationalPolicy from '../../deploy/hostinger-web/operational-policy.js'
 import confrontPolicy from '../../deploy/hostinger-web/confront-policy.js';
 import atlasPolicy from '../../deploy/hostinger-web/atlas-query-policy.js';
 const {allowedImportRoute, MAX_IMPORT_BYTES} = policy;
-const {allowedOperationalRead} = operationalPolicy;
+const {allowedOperationalRead,allowedToaLookup} = operationalPolicy;
 const {allowedConfrontRoute} = confrontPolicy;
 const {allowedAtlasQueryRoute} = atlasPolicy;
 function json(status, error) {
@@ -26,11 +26,12 @@ export default {
     const confrontation=allowedConfrontRoute(request.method,url.pathname+url.search);
     const query=allowedAtlasQueryRoute(request.method,url.pathname+url.search);
     const operational=allowedOperationalRead(request.method,url.pathname+url.search);
+    const toaLookup=allowedToaLookup(request.method,url.pathname+url.search);
     const role=request.headers.get('x-dominium-role');
-    if (!((operational && !officialStock && !serialConsult && !confrontation && !query) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
+    if (!((operational && !officialStock && !serialConsult && !confrontation && !query && !toaLookup) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
         !request.headers.get('x-dominium-actor')) return json(403,'Operador não identificado');
     let route;
-    try {route=(operational || confrontation || query) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
+    try {route=(operational || confrontation || query || toaLookup) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
     catch {return json(404,'Rota não permitida');}
     const headers=new Headers({Accept:'application/json','X-Dominium-Actor':request.headers.get('x-dominium-actor')});
     if(desc || officialStock || serialConsult || confrontation || query)headers.set('Authorization',request.headers.get('authorization'));
@@ -38,7 +39,7 @@ export default {
     let body;
     if (request.method==='POST') {
       if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return json(415,'Envie JSON');
-      const maxBytes=(desc || confrontation || query) ? 64*1024 : MAX_IMPORT_BYTES;
+      const maxBytes=(desc || confrontation || query || toaLookup) ? 64*1024 : MAX_IMPORT_BYTES;
       if (Number(request.headers.get('content-length')||0)>maxBytes) return json(413,'Arquivo acima do limite');
       body=await request.arrayBuffer();
       if(body.byteLength>maxBytes)return json(413,'Arquivo acima do limite');

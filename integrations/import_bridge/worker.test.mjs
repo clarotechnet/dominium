@@ -4,6 +4,49 @@ let worker;
 try {worker=(await import('./worker.mjs')).default;} catch(e) {if(e.code!=='ERR_MODULE_NOT_FOUND')throw e;}
 const secret='x'.repeat(43);
 const headers={Authorization:'Bearer '+secret,'X-Dominium-Actor':'Operador','X-Dominium-Role':'controller','content-type':'application/json'};
+
+test('TOA lookup POST reaches the existing private panel without browser credentials',async()=>{
+ let seen,calls=0;
+ const body=JSON.stringify({query:'4321295',expected_profile_key:'natal'});
+ const env={IMPORT_TOKEN:secret,IMPORT_SERVICE:{fetch:async(req)=>{calls++;seen=req;return Response.json({ok:true,profile:'natal',results:[{contract:'4321295'}]});}},DESC_SERVICE:{fetch:async()=>{throw Error('wrong service');}}};
+ const response=await worker.fetch(new Request('https://bridge.test/api/toa-live/lookup?profile=natal',{
+   method:'POST',headers:{...headers,Cookie:'private','X-CSRF-Token':'private'},body}),env);
+ assert.equal(response.status,200);
+ assert.equal(seen.url,'http://127.0.0.1:8765/api/toa-live/lookup?profile=natal');
+ assert.equal(await seen.text(),body);
+ assert.equal(seen.headers.get('content-type'),'application/json');
+ for(const name of ['cookie','x-csrf-token','authorization'])assert.equal(seen.headers.get(name),null);
+ assert.equal((await response.json()).results[0].contract,'4321295');
+ assert.equal(calls,1);
+});
+
+test('TOA lookup rejects invalid scope, role, JSON media type and oversized body before forwarding',async()=>{
+ let calls=0;
+ const env={IMPORT_TOKEN:secret,IMPORT_SERVICE:{fetch:async()=>{calls++;return Response.json({ok:true});}}};
+ const target='https://bridge.test/api/toa-live/lookup?profile=natal';
+ for(const [url,extra,body,status] of [
+   [target,{'X-Dominium-Role':'viewer'},'{}',403],
+   [target.replace('natal','unknown'),{},'{}',404],
+   [target+'&url=evil',{},'{}',404],
+   [target,{'content-type':'text/plain'},'{}',415],
+   [target,{'content-length':String(65537)},'{}',413],
+   [target,{},'x'.repeat(65537),413],
+ ]){
+   const response=await worker.fetch(new Request(url,{method:'POST',headers:{...headers,...extra},body}),env);
+   assert.equal(response.status,status,url);
+ }
+ assert.equal(calls,0);
+});
+
+test('TOA lookup propagates backend errors once and never retries or hides them',async()=>{
+ let calls=0;
+ const env={IMPORT_TOKEN:secret,IMPORT_SERVICE:{fetch:async()=>{calls++;return Response.json({ok:false,error:'toa_contrato_nao_encontrado'},{status:404});}}};
+ const response=await worker.fetch(new Request('https://bridge.test/api/toa-live/lookup?profile=natal',{
+   method:'POST',headers,body:JSON.stringify({query:'4321295',expected_profile_key:'natal'})}),env);
+ assert.equal(response.status,404);
+ assert.equal((await response.json()).error,'toa_contrato_nao_encontrado');
+ assert.equal(calls,1);
+});
 test('bridge refuses missing or invalid credentials and unrelated operations',async()=>{
  assert.ok(worker);let calls=0;const env={IMPORT_TOKEN:secret,IMPORT_SERVICE:{fetch:async()=>{calls++;return new Response('{}');}}};
  for(const authorization of ['', 'Bearer wrong']){

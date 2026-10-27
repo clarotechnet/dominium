@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
-const { allowedOperationalRead } = require('./operational-policy');
+const { allowedOperationalRead, allowedToaLookup } = require('./operational-policy');
 const { allowedConfrontRoute } = require('./confront-policy');
 const {allowedAtlasQueryRoute}=require('./atlas-query-policy');
 
@@ -15,8 +15,9 @@ function readPrivateConnection() {
 function resolveOperationalRead(req, connection = readPrivateConnection) {
   const confrontation = allowedConfrontRoute(req.method, req.originalUrl) ||
     allowedAtlasQueryRoute(req.method, req.originalUrl);
-  if (!confrontation && !allowedOperationalRead(req.method, req.originalUrl)) return null;
-  if (!req.dominiumSession || (confrontation
+  const toaLookup = allowedToaLookup(req.method, req.originalUrl);
+  if (!confrontation && !toaLookup && !allowedOperationalRead(req.method, req.originalUrl)) return null;
+  if (!req.dominiumSession || ((confrontation || toaLookup)
     ? !['admin','controller'].includes(req.dominiumUser?.role)
     : !['admin','controller','viewer'].includes(req.dominiumUser?.role))) {
     throw new Error('operational_session_required');
@@ -43,7 +44,8 @@ function resolveOperationalRead(req, connection = readPrivateConnection) {
 function restorePrivateJsonContentType(req, headers, body) {
   if (!headers || !req || req.method !== 'POST' || body === undefined) return;
   const url=String(req.originalUrl||'');
-  if (!allowedConfrontRoute('POST',url) && !allowedAtlasQueryRoute('POST',url)) return;
+  if (!allowedConfrontRoute('POST',url) && !allowedAtlasQueryRoute('POST',url) &&
+      !allowedToaLookup('POST',url)) return;
   const original=String(req.headers?.['content-type']||'').toLowerCase();
   if (!original.startsWith('application/json')) return;
   headers['content-type']='application/json';
