@@ -1603,6 +1603,8 @@ renderHistory	function	static/confront.js	142	-
 refresh	function	static/confront.js	160	-
 create	function	static/confront.js	190	-
 exportCsv	function	static/confront.js	226	-
+expand	function	static/desc-analytics-nav.js	9	-
+updateHighlight	function	static/desc-analytics-nav.js	13	-
 norm	function	static/disconnection.js	3	-
 escape	function	static/disconnection.js	4	-
 stateLabel	function	static/disconnection.js	5	-
@@ -2148,6 +2150,17 @@ test_concurrent_retries_create_one_job	method	tests/test_confront_job_runner.py	
 test_legacy_job_database_is_migrated_without_losing_jobs	method	tests/test_confront_job_runner.py	139	ConfrontDurableJobTests
 test_invalid_job_parameters	method	tests/test_confront_job_runner.py	153	ConfrontDurableJobTests
 test_provider_failure_remains_inconclusive	method	tests/test_confront_job_runner.py	159	ConfrontDurableJobTests
+Elements	class	tests/test_desc_analytics_frontend.py	12	-
+__init__	method	tests/test_desc_analytics_frontend.py	13	Elements
+handle_starttag	method	tests/test_desc_analytics_frontend.py	19	Elements
+DescAnalyticsFrontendTests	class	tests/test_desc_analytics_frontend.py	27	-
+setUpClass	method	tests/test_desc_analytics_frontend.py	29	DescAnalyticsFrontendTests
+test_navigation_keeps_existing_desc_reviewer	method	tests/test_desc_analytics_frontend.py	39	DescAnalyticsFrontendTests
+test_analytics_module_is_separate_and_lazy	method	tests/test_desc_analytics_frontend.py	47	DescAnalyticsFrontendTests
+test_dashboard_is_byte_identical_and_self_contained	method	tests/test_desc_analytics_frontend.py	57	DescAnalyticsFrontendTests
+test_frame_does_not_change_global_clickjacking_header	method	tests/test_desc_analytics_frontend.py	67	DescAnalyticsFrontendTests
+test_stock_tabs_have_rounded_corners	method	tests/test_desc_analytics_frontend.py	71	DescAnalyticsFrontendTests
+test_dashboard_original_feature_hooks_remain	method	tests/test_desc_analytics_frontend.py	75	DescAnalyticsFrontendTests
 ReportsTest	class	tests/test_desc_operator_reports.py	11	-
 test_durable_report_and_redacted_secrets	method	tests/test_desc_operator_reports.py	12	ReportsTest
 test_validation_cannot_write_untrusted_paths_or_payloads	method	tests/test_desc_operator_reports.py	29	ReportsTest

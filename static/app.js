@@ -47,7 +47,9 @@ const state = {
     { code: "0", description: "CANCELAMENTO", productive: false },
   ],
   failures: [],
-  activeModule: window.location.hash === "#pendente"
+  activeModule: window.location.hash === "#desconexao-indicadores"
+    ? "descAnalytics"
+    : window.location.hash === "#pendente"
     ? "confront"
     : window.location.hash === "#consultar-seriais"
     ? "serials"
@@ -871,7 +873,9 @@ function apiUrlForProfile(path, profile) {
 function updateAddress() {
   const url = new URL(window.location.href);
   url.searchParams.set("profile", state.profile);
-  url.hash = state.activeModule === "confront"
+  url.hash = state.activeModule === "descAnalytics"
+    ? "desconexao-indicadores"
+    : state.activeModule === "confront"
     ? "pendente"
     : state.activeModule === "serials"
     ? "consultar-seriais"
@@ -3519,6 +3523,30 @@ function resetProfileOperationalState() {
   ].forEach(closeDialogIfOpen);
 }
 
+async function loadDescAnalyticsFrame() {
+  const frame = document.getElementById("descAnalyticsFrame");
+  if (!frame || frame.dataset.loaded === "yes" || frame.dataset.loaded === "loading") return;
+  const error = document.getElementById("descAnalyticsError");
+  frame.dataset.loaded = "loading";
+  try {
+    // O servidor envia X-Frame-Options: DENY; srcdoc preserva a politica
+    // global sem precisar alterar os headers nem criar outra rota autenticada.
+    const response = await fetch(frame.dataset.src, { credentials: "same-origin" });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    const html = await response.text();
+    if (!html.includes("Desconexão — Visão Claro")) throw new Error("Painel invalido");
+    frame.srcdoc = html;
+    frame.dataset.loaded = "yes";
+    error?.classList.add("hidden");
+  } catch (_error) {
+    frame.dataset.loaded = "error";
+    if (error) {
+      error.textContent = "Não foi possível carregar os indicadores. Abra o painel em tela inteira ou tente novamente.";
+      error.classList.remove("hidden");
+    }
+  }
+}
+
 function setModule(module) {
   if (module === "monitor") module = "close";
   if (
@@ -3526,7 +3554,7 @@ function setModule(module) {
     || state.stockWriteoffLoading
     || ![
       "dashboard", "monitor", "orders", "stock", "serials", "confront", "technicians", "bulk", "imports",
-      "automation-test", "close", "report", "history", "intelligence", "database", "disconnection",
+      "automation-test", "close", "report", "history", "intelligence", "database", "disconnection", "descAnalytics",
     ].includes(module)
   ) return;
   if (module !== "stock" && state.stockSource === "official") {
@@ -3542,6 +3570,7 @@ function setModule(module) {
   updateAddress();
   render();
   document.dispatchEvent(new CustomEvent("dominium:module-change", { detail: { module } }));
+  if (module === "descAnalytics") void loadDescAnalyticsFrame();
   window.scrollTo({ top: 0, left: 0 });
   document.querySelector("main").scrollTo({ top: 0, left: 0 });
   if (["stock", "bulk"].includes(module) && !state.stockTechnicians.length) {
@@ -7107,6 +7136,8 @@ function render() {
   elements.databaseWorkspace.classList.toggle("hidden", state.activeModule !== "database");
   elements.historyWorkspace.classList.toggle("hidden", state.activeModule !== "history");
   document.getElementById("disconnectionWorkspace").classList.toggle("hidden", state.activeModule !== "disconnection");
+  document.getElementById("descAnalyticsWorkspace").classList.toggle("hidden", state.activeModule !== "descAnalytics");
+  if (state.activeModule === "descAnalytics") void loadDescAnalyticsFrame();
   elements.dashboardModule.classList.toggle("active", state.activeModule === "dashboard");
   elements.monitorModule?.classList.toggle("active", state.activeModule === "monitor");
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
@@ -7125,6 +7156,7 @@ function render() {
   elements.databaseModule.classList.toggle("active", state.activeModule === "database");
   elements.historyModule.classList.toggle("active", state.activeModule === "history");
   document.getElementById("disconnectionModule").classList.toggle("active", state.activeModule === "disconnection");
+  document.getElementById("descAnalyticsModule").classList.toggle("active", state.activeModule === "descAnalytics");
   renderDashboard();
   renderOperationsMonitor();
   renderImportPreview();
@@ -12392,6 +12424,7 @@ elements.refresh.addEventListener("click", () => loadOrders());
 elements.sidebarToggle.addEventListener("click", toggleSidebar);
 elements.dashboardModule.addEventListener("click", () => setModule("dashboard"));
 document.getElementById("disconnectionModule").addEventListener("click", () => setModule("disconnection"));
+document.getElementById("descAnalyticsModule").addEventListener("click", () => setModule("descAnalytics"));
 elements.monitorModule?.addEventListener("click", () => setModule("monitor"));
 elements.ordersModule.addEventListener("click", () => setModule("orders"));
 elements.stockModule.addEventListener("click", () => setModule("stock"));

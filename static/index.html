@@ -113,10 +113,21 @@
         <span><strong>Ordens de servico</strong><small>Consulta</small></span>
       </button>
       <p class="side-nav-label side-nav-section">Producao</p>
-      <button class="side-nav-item" id="disconnectionModule" type="button">
+      <button class="side-nav-item stock-group-toggle desc-group-toggle" id="disconnectionGroupToggle" type="button" aria-expanded="false" aria-controls="disconnectionNavChildren">
         <i data-lucide="unplug" aria-hidden="true"></i>
-        <span><strong>DESCONEXÃO</strong><small>WhatsApp · Atlas</small></span>
+        <span><strong>DESCONEXÃO</strong><small>Operação e indicadores</small></span>
+        <i data-lucide="chevron-down" class="stock-group-chevron" aria-hidden="true"></i>
       </button>
+      <div class="stock-nav-children desc-nav-children" id="disconnectionNavChildren" aria-label="Opções de desconexão" hidden>
+        <button class="side-nav-item stock-nav-child" id="disconnectionModule" type="button">
+          <i data-lucide="message-circle" aria-hidden="true"></i>
+          <span><strong>WhatsApp · Atlas</strong><small>Revisão de contratos</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="descAnalyticsModule" type="button">
+          <i data-lucide="chart-column-increasing" aria-hidden="true"></i>
+          <span><strong>Visão Claro</strong><small>Produtividade e %QUEBRA</small></span>
+        </button>
+      </div>
       <button class="side-nav-item" id="importsModule" type="button">
         <i data-lucide="upload" aria-hidden="true"></i>
         <span><strong>Importar CSV</strong><small>TOA</small></span>
@@ -199,6 +210,21 @@
     </aside>
 
   <main>
+    <section class="desc-analytics-workspace hidden" id="descAnalyticsWorkspace" aria-label="Visão Claro — indicadores de desconexão">
+      <header class="workspace-heading desc-analytics-heading">
+        <div>
+          <p class="section-label">TOA · VISÃO CLARO · SOMENTE LEITURA</p>
+          <h2>Indicadores de desconexão</h2>
+          <p class="workspace-description">Importe exportações do TOA, acompanhe produtividade, quebra, agenda e desempenho das empreiteiras.</p>
+        </div>
+        <a class="button secondary" href="/desc-analytics.html" target="_blank" rel="noopener noreferrer">
+          <i data-lucide="external-link" aria-hidden="true"></i> Abrir em tela inteira
+        </a>
+      </header>
+      <p class="desc-analytics-note">Os arquivos TOA são processados no navegador. Este painel analítico não executa baixas de O.S. nem consulta dados operacionais em tempo real.</p>
+      <p class="desc-analytics-error hidden" id="descAnalyticsError" role="alert"></p>
+      <iframe id="descAnalyticsFrame" class="desc-analytics-frame" title="Desconexão — Visão Claro" data-src="/desc-analytics.html" loading="lazy"></iframe>
+    </section>
     <section class="disconnection-workspace hidden" id="disconnectionWorkspace" aria-label="Desconexão pelo WhatsApp">
       <header class="workspace-heading desc-heading">
         <div><p class="section-label">WHATSAPP · TOA · ATLAS</p><h2>Desconexão</h2><p class="workspace-description">Da mensagem do técnico à conferência da baixa.</p></div>
@@ -2316,9 +2342,10 @@
   <script src="/lucide.min.js"></script>
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
-  <script src="/app.js?v=20261027-stock-hub-1"></script>
+  <script src="/app.js?v=20261027-desc-analytics-1"></script>
   <script src="/quality-control.js?v=20261027-modal-1"></script>
   <script src="/stock-nav.js?v=20261027-arrow-1"></script>
+  <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>
   <script src="/query-import.js?v=20261023-1"></script>
   <script src="/confront.js?v=20261022-3"></script>

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-27T19:44:11+00:00",
+  "generated_at": "2026-10-27T20:32:22+00:00",
   "schema": 2,
-  "source_fingerprint": "e623d568ef45dc57c88a0871c39c4fbc616363d95ec2d99cae8899e162a62ef6",
+  "source_fingerprint": "38a3e2e4182a829bc4018636936aab539b0da5c27e80b1fd3bb4b55d00a23b60",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -4349,6 +4349,19 @@
       "symbol_count": 8
     },
     {
+      "path": "static/desc-analytics-nav.js",
+      "category": "frontend",
+      "bytes": 1161,
+      "sha256": "de2c537e32ac7a0a9459a67da9bde65d15b520fc6ed02a68a3793733f0b019e2",
+      "summary": "Submenu de desconexao, independente dos fluxos de baixa existentes. */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
       "path": "static/disconnection.js",
       "category": "frontend",
       "bytes": 37515,
@@ -4414,8 +4427,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 131362,
-      "sha256": "a724d2a3ef4473fa6695e04d21db0ade2ff28597b7a4f9e3ec831573b93e8bc7",
+      "bytes": 133501,
+      "sha256": "0b5b9212a8f9880bddf9bd1e464fab80e95c342393709aae60eb8ed3553ce4fd",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4535,8 +4548,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 215360,
-      "sha256": "25c47961d66832a5286d338db6c6aefedd948b499ee7b7d40856a69e4d23dc1c",
+      "bytes": 216167,
+      "sha256": "f4d415c6ddbc9f0820380b042d92602fe7448f4c2932ccf571efb92fc4ad1b32",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -5400,6 +5413,24 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 19
+    },
+    {
+      "path": "tests/test_desc_analytics_frontend.py",
+      "category": "tests",
+      "bytes": 3416,
+      "sha256": "02c968e46e1d010530ad0a3eafdd277fd1a368daa6c77a524e7f98f7458c7229",
+      "summary": "Contratos de frontend da Visão Claro incorporada ao DOMINIUM.",
+      "imports": [
+        "hashlib",
+        "html",
+        "pathlib",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 11
     },
     {
       "path": "tests/test_desc_operator_reports.py",

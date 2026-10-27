@@ -7546,3 +7546,32 @@ body.sidebar-collapsed .stock-group-chevron { display:none; }
   .quality-dialog .quality-form { padding: 18px 17px 21px; }
   .quality-heading-actions { width: 100%; }
 }
+
+
+/* Visao Claro — integracao isolada de indicadores de desconexao. */
+.stock-workspace > .quality-tabs {
+  border-radius: 14px;
+  overflow: hidden;
+}
+.desc-analytics-workspace { padding-bottom: 20px; min-width: 0; }
+.desc-analytics-heading { align-items: center; gap: 16px; }
+.desc-analytics-heading .button { white-space: nowrap; }
+.desc-analytics-note {
+  color: var(--muted, #a5a2ad);
+  font-size: .85rem;
+  line-height: 1.55;
+  margin: 10px 0 14px;
+}
+.desc-analytics-frame {
+  display: block;
+  width: 100%;
+  min-height: 640px;
+  height: max(640px, calc(100vh - 300px));
+  background: #f4f4f4;
+  border: 1px solid var(--line, #36343a);
+  border-radius: 14px;
+}
+@media (max-width: 760px) {
+  .desc-analytics-heading { flex-wrap: wrap; }
+  .desc-analytics-frame { min-height: 540px; height: 75vh; }
+}

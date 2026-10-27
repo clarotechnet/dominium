@@ -234,11 +234,12 @@ shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
 frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	0b07900bcc977ee8
+frontend	static/desc-analytics-nav.js	2			Submenu de desconexao, independente dos fluxos de baixa existentes. */	de2c537e32ac7a0a
 frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			a724d2a3ef4473fa
+frontend	static/index.html		1			0b5b9212a8f9880b
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
@@ -247,7 +248,7 @@ frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no pain
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
 frontend	static/stock-nav.js	4			Navegacao consolidada de Estoque (mantem os modulos existentes). */	a6463b30ffa6d39e
-frontend	static/styles.css					25c47961d66832a5
+frontend	static/styles.css					f4d415c6ddbc9f08
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
@@ -292,6 +293,7 @@ tests	tests/test_configure_imperium_credentials.py	4				931f61ff4157fbfa
 tests	tests/test_confront_frontend.js	4	3			7d19b6c801d8072b
 tests	tests/test_confront_http.py	15	8		Authorization, actor isolation and passive confrontation API regression tests.	2e7e3e3b64652874
 tests	tests/test_confront_job_runner.py	19			Durability, idempotency and recovery tests; synthetic providers only.	324d0850c76d1131
+tests	tests/test_desc_analytics_frontend.py	11			Contratos de frontend da Visão Claro incorporada ao DOMINIUM.	02c968e46e1d0105
 tests	tests/test_desc_operator_reports.py	3			Private report store regression: never involve live log or production actions.	c6da3055162c4d3b
 tests	tests/test_desc_order_verifier.py	24				1a425dadf4202442
 tests	tests/test_desc_review_proxy.py	16	8			2ce6f2b762e68847
