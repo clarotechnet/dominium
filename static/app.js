@@ -7116,6 +7116,12 @@ function render() {
   elements.historyWorkspace.classList.toggle("hidden", state.activeModule !== "history");
   document.getElementById("disconnectionWorkspace").classList.toggle("hidden", state.activeModule !== "disconnection");
   document.getElementById("descAnalyticsWorkspace").classList.toggle("hidden", state.activeModule !== "descAnalytics");
+  if (state.activeModule === "descAnalytics") {
+    const analyticsFrame = document.getElementById("descAnalyticsFrame");
+    if (analyticsFrame && !analyticsFrame.getAttribute("src")) {
+      analyticsFrame.setAttribute("src", analyticsFrame.dataset.src);
+    }
+  }
   elements.dashboardModule.classList.toggle("active", state.activeModule === "dashboard");
   elements.monitorModule?.classList.toggle("active", state.activeModule === "monitor");
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
