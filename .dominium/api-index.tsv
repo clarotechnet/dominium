@@ -60,6 +60,7 @@ endpoint	path
 /api/stock	app.py
 /api/stock/batch	app.py
 /api/stock/pdf/batch	app.py
+/api/stock/quality-control	app.py
 /api/stock/serial-owner	app.py
 /api/stock/technicians	app.py
 /api/stock/writeoff	app.py
@@ -111,6 +112,7 @@ endpoint	path
 /api/serials/consult	deploy/hostinger-web/operational-policy.js
 /api/status	deploy/hostinger-web/operational-policy.js
 /api/stock	deploy/hostinger-web/operational-policy.js
+/api/stock/quality-control	deploy/hostinger-web/operational-policy.js
 /api/stock/serial-owner	deploy/hostinger-web/operational-policy.js
 /api/stock/technicians	deploy/hostinger-web/operational-policy.js
 /api/technicians	deploy/hostinger-web/operational-policy.js
@@ -139,6 +141,7 @@ endpoint	path
 /api/orders	deploy/hostinger-web/server.js
 /api/profiles	deploy/hostinger-web/server.js
 /api/status	deploy/hostinger-web/server.js
+/api/stock/quality-control	deploy/hostinger-web/server.js
 /api/technicians	deploy/hostinger-web/server.js
 /api/toa-agenda/import	deploy/hostinger-web/server.js
 /api/toa-automation	deploy/hostinger-web/server.js
@@ -192,6 +195,7 @@ endpoint	path
 /api/disconnection/state	static/disconnection.js
 /api/disconnection/technician	static/disconnection.js
 /api/operational/export.json	static/index.html
+/api/stock/quality-control	static/quality-control.js
 /api/auth/session	tests/qa_disconnection_browser.js
 /api/disconnection/decision	tests/qa_disconnection_browser.js
 /api/disconnection/photo/	tests/qa_disconnection_browser.js
@@ -329,6 +333,8 @@ endpoint	path
 /api/serials/consult?serials=SERIAL000000	tests/test_serial_datasnap_history.py
 /api/serials/consult?serials=SERIAL000000&mode=analitico&profile=natal	tests/test_serial_datasnap_history.py
 /api/serials/consult?serials=SERIAL000000&profile=natal&profile=recife	tests/test_serial_datasnap_history.py
+/api/orders/1/close	tests/test_stock_quality_bridge.mjs
+/api/stock/quality-control	tests/test_stock_quality_bridge.mjs
 /api/auth/login	tests/test_ui_runtime_regression.py
 /api/auth/register	tests/test_ui_runtime_regression.py
 /api/auth/bootstrap	tests/test_web_auth_config.py

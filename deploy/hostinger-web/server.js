@@ -971,7 +971,7 @@ app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }
 const { createImportMiddleware } = require('./import-proxy');
 const { createOrderCloseMiddleware } = require('./order-close-proxy');
 const { resolveOperationalRead, restorePrivateJsonContentType } = require('./operational-relay');
-const { allowedOperationalRead, allowedToaLookup } = require('./operational-policy');
+const { allowedOperationalRead, allowedToaLookup, allowedQualityControl } = require('./operational-policy');
 app.use(['/api/import-targets', '/api/import-history', '/api/imports'], createImportMiddleware());
 app.post(/^\/api\/orders\/[^/]+\/close$/, createOrderCloseMiddleware());
 
@@ -1007,7 +1007,7 @@ async function proxyOperationalRequest(req, res, next) {
     if (req.path === '/api/toa-live/lookup' && !relay) {
       return res.status(400).json({ok:false,error:'Consulta TOA exige uma cidade valida'});
     }
-    if ((req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/')) && !relay) {
+    if ((req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/') || req.path === '/api/stock/quality-control') && !relay) {
       return res.status(404).json({ok:false,error:"Rota de confronto nao autorizada"});
     }
     if (relay) {
@@ -1046,7 +1046,7 @@ async function proxyOperationalRequest(req, res, next) {
       method: req.method,
       error: error instanceof Error ? error.message : "bridge_error",
     });
-    if (toaLookup || allowedOperationalRead(req.method, req.originalUrl) || req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/')) {
+    if (toaLookup || allowedQualityControl(req.method, req.originalUrl) || allowedOperationalRead(req.method, req.originalUrl) || req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/')) {
       return res.status(502).json({ ok: false, error: 'Consulta operacional indisponivel; dados nao confirmados' });
     }
     if (safeGetFallback) return next();

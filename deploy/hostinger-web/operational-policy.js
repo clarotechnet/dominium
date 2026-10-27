@@ -57,5 +57,10 @@ function validOfficialCloseBody(body) {
 function closeTransportFailure() {
   return {ok:false,uncertain:true,safe_to_retry:false,error:'A resposta da baixa nao foi confirmada. Confira o relatorio e o estado da OS no Imperium antes de repetir.'};
 }
+// Somente GET/POST nesta rota; nenhuma outra gravacao operacional.
+function allowedQualityControl(method, requestTarget) {
+  return (method === 'GET' || method === 'POST') &&
+    requestTarget === '/api/stock/quality-control';
+}
 module.exports = { allowedOperationalRead, allowedToaLookup, allowedOrderClose,
-  validOfficialCloseBody, closeTransportFailure };
+  allowedQualityControl, validOfficialCloseBody, closeTransportFailure };

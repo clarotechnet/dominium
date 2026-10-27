@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-27T17:18:09+00:00",
+  "generated_at": "2026-10-27T17:54:28+00:00",
   "schema": 2,
-  "source_fingerprint": "0160befa9b81edbda0eced0678311559e264ce80aa7ead4301128e6330d28813",
+  "source_fingerprint": "eae3ae1f7d5ab2c19744c723f27fea25f60f9f3c0fda32578abfff67b69912f3",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -144,8 +144,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 358722,
-      "sha256": "5adce45b98dcb74308f34ac042f1152d46376f4577b0438afb2094b56f0367fa",
+      "bytes": 360511,
+      "sha256": "227ade0c245b77edd829b6ebe072eec88f7eef133572c9953fcd4e35d7f4e466",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -181,6 +181,7 @@
         "operations_intelligence",
         "os",
         "pathlib",
+        "quality_control",
         "re",
         "secrets",
         "serialized_transfer",
@@ -262,6 +263,7 @@
         "/api/stock",
         "/api/stock/batch",
         "/api/stock/pdf/batch",
+        "/api/stock/quality-control",
         "/api/stock/serial-owner",
         "/api/stock/technicians",
         "/api/stock/writeoff",
@@ -783,8 +785,8 @@
     {
       "path": "deploy/hostinger-web/operational-policy.js",
       "category": "tooling-deploy",
-      "bytes": 2698,
-      "sha256": "b041eb598b7c32ae7fe8ed7eb9fb13c04d135ee9968d4c6741d3bcf7b4a93247",
+      "bytes": 2951,
+      "sha256": "3d31d233627930895bd5f9e64271cc1241a2bc19901ca315ec5bdfecdcc67da9",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -803,6 +805,7 @@
         "/api/serials/consult",
         "/api/status",
         "/api/stock",
+        "/api/stock/quality-control",
         "/api/stock/serial-owner",
         "/api/stock/technicians",
         "/api/technicians",
@@ -814,13 +817,13 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 5
+      "symbol_count": 6
     },
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 2645,
-      "sha256": "6739bf2e034987c26e3dad3c0d5bd8a48d763552e0934f38306ed91f2a2f2687",
+      "bytes": 2826,
+      "sha256": "3591a82d02893e23c47d43ef7c3624123e54495e86144a4d3e9a9918a8e58492",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -888,8 +891,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 43423,
-      "sha256": "bdffb73e4934a9fc8bc14ede22d5577af7b9cb647101393a2ea126ac55a66e6b",
+      "bytes": 43545,
+      "sha256": "7343b562020ed2483f58846155283089a7223cdb12ded6e2c83243cbf05a8495",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -914,6 +917,7 @@
         "/api/orders",
         "/api/profiles",
         "/api/status",
+        "/api/stock/quality-control",
         "/api/technicians",
         "/api/toa-agenda/import",
         "/api/toa-automation",
@@ -2159,6 +2163,29 @@
       "symbol_count": 0
     },
     {
+      "path": "integrations/import_bridge/quality_control_relay.py",
+      "category": "shared",
+      "bytes": 5497,
+      "sha256": "6e21d816d7b3a9fd2e3dffaed886ce900d3ef072de6c56a37874c96d1dcc2c76",
+      "summary": "Private, authenticated Quality Control Supabase bridge (no Imperium writes).",
+      "imports": [
+        "__future__",
+        "datetime",
+        "json",
+        "os",
+        "pathlib",
+        "re",
+        "urllib"
+      ],
+      "endpoints": [],
+      "env_vars": [
+        "DOMINIUM_QUALITY_ENV_FILE"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
+    },
+    {
       "path": "integrations/import_bridge/README.md",
       "category": "shared",
       "bytes": 2103,
@@ -2174,8 +2201,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 5072,
-      "sha256": "b78bf6a96357c87c97d52b1b380e961a419b646eebd8ca3366ce97b7264999be",
+      "bytes": 5282,
+      "sha256": "03647e152d20475fc5ce628b62fd13eae7d91d3a7bacf05fad0a33d0935e649f",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3562,6 +3589,29 @@
       "symbol_count": 0
     },
     {
+      "path": "quality_control.py",
+      "category": "shared",
+      "bytes": 3736,
+      "sha256": "bc0380aafb00d2a6254fff7e666566e23e0004e76aafca21a5633b8a69bf249c",
+      "summary": "Regras de controle de qualidade, independentes do saldo do Imperium.",
+      "imports": [
+        "__future__",
+        "datetime",
+        "functools",
+        "os",
+        "supabase"
+      ],
+      "endpoints": [],
+      "env_vars": [
+        "SUPABASE_SECRET_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 6
+    },
+    {
       "path": "README.md",
       "category": "shared",
       "bytes": 3343,
@@ -4317,8 +4367,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 126347,
-      "sha256": "41dde13b7a1f4ea7d71a5d7f097c4202cae1ae347d4494586fd7f8638c94b547",
+      "bytes": 130373,
+      "sha256": "4082ed3e69032796ac56a11a2282f08033175543be52c386401f1bfdf887de88",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4382,6 +4432,21 @@
       "symbol_count": 34
     },
     {
+      "path": "static/quality-control.js",
+      "category": "frontend",
+      "bytes": 6009,
+      "sha256": "047c4a005d37a9dfbd2ea1a9b18d03901ad0a26ebf8cdae73faf1b4322040129",
+      "summary": "Controle de qualidade: aba independente do estoque do tecnico. */",
+      "imports": [],
+      "endpoints": [
+        "/api/stock/quality-control"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 9
+    },
+    {
       "path": "static/query-import-ui.js",
       "category": "frontend",
       "bytes": 5617,
@@ -4408,10 +4473,23 @@
       "symbol_count": 16
     },
     {
+      "path": "static/stock-nav.js",
+      "category": "frontend",
+      "bytes": 2585,
+      "sha256": "a6463b30ffa6d39e696c9cfb617b938f47f7029a521eca237eeef0938edc19f8",
+      "summary": "Navegacao consolidada de Estoque (mantem os modulos existentes). */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 208804,
-      "sha256": "f825f3d2d982014f533881756275348fd6b68efa7b57f63d82e4ba47a7c3fc45",
+      "bytes": 212065,
+      "sha256": "ca6d07a3d8dc95f6dab6500c68ea44a1841684dbcdbf45989a5286948a972cad",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6280,6 +6358,38 @@
       "symbol_count": 4
     },
     {
+      "path": "tests/test_quality_control.py",
+      "category": "tests",
+      "bytes": 1823,
+      "sha256": "4a628243ef04afb5938caa9af9a5f85f0402dc0b69ade425e216c9b2bb1c94c5",
+      "summary": "",
+      "imports": [
+        "quality_control",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 4
+    },
+    {
+      "path": "tests/test_quality_control_relay.py",
+      "category": "tests",
+      "bytes": 1802,
+      "sha256": "7718202ccd427ed54f709c3fedab40e0708bb01bf45b8fe9e2f3a5da13ecc155",
+      "summary": "",
+      "imports": [
+        "integrations",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 4
+    },
+    {
       "path": "tests/test_query_import.js",
       "category": "tests",
       "bytes": 3219,
@@ -6447,6 +6557,22 @@
       ],
       "entrypoint": true,
       "symbol_count": 5
+    },
+    {
+      "path": "tests/test_stock_quality_bridge.mjs",
+      "category": "tests",
+      "bytes": 3439,
+      "sha256": "3022814e71dead90cec607f7255026ed24dfd923ca504931790b322f28dd67cd",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/orders/1/close",
+        "/api/stock/quality-control"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "tests/test_supabase_sdk_compat.py",
@@ -7544,6 +7670,7 @@
     "DOMINIUM_PUBLIC_ORIGIN",
     "DOMINIUM_QA_ARTIFACT_DIR",
     "DOMINIUM_QA_BASE_SHA",
+    "DOMINIUM_QUALITY_ENV_FILE",
     "DOMINIUM_SUPABASE_BRIDGE_TOKEN",
     "DOMINIUM_TOA_AUTOMATION_REMOTE",
     "DOMINIUM_TOA_BRIDGE_LOOKUP_TIMEOUT",

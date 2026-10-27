@@ -7398,3 +7398,42 @@ dialog {
 .atlas-query-activity-error{color:var(--red,#ed6262);}
 .atlas-query-activity-warning{color:var(--yellow,#ffcc66);}
 #atlasQueryStatus{font-weight:600;line-height:1.4;overflow-wrap:anywhere;}
+
+/* Controle de qualidade / Estoque (isolado das tabelas Imperium) */
+.quality-tabs { display:flex; gap:8px; padding:14px clamp(16px,3vw,36px); border-bottom:1px solid var(--line); flex-wrap:wrap; background:var(--surface,#fff); }
+.quality-tabs button { appearance:none; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:9px; padding:10px 17px; font-weight:700; }
+.quality-tabs button.active { background:var(--blue-soft,#e8f1fe); border-color:var(--blue,#2563eb); color:var(--blue,#2563eb); }
+.quality-tabs button:focus-visible { outline:3px solid var(--blue,#2563eb); outline-offset:2px; }
+.quality-pane { padding-bottom:24px; }
+.quality-toolbar { display:flex; align-items:end; justify-content:space-between; flex-wrap:wrap; gap:15px; padding:14px clamp(16px,3vw,36px); }
+.quality-search { flex:1; min-width:220px; max-width:600px; }
+#qualityCount { color:var(--muted); font-size:.86rem; }
+.quality-form-wrap { margin:10px clamp(16px,3vw,36px); border:1px solid var(--line); border-radius:12px; background:var(--surface,#fff); padding:18px; }
+.quality-form-wrap h3 { font-size:1rem; margin:0 0 14px; }
+.quality-form { display:grid; grid-template-columns:minmax(125px,.5fr) minmax(260px,2fr) minmax(175px,1fr); gap:12px; align-items:end; }
+.quality-form-actions { display:flex; gap:8px; align-items:center; grid-column:1/-1; }
+.quality-notice { color:var(--muted); font-size:.87rem; margin:12px clamp(16px,3vw,36px); }
+.quality-notice.quality-error { color:#b42318; }
+.quality-table-section { margin:12px clamp(16px,3vw,36px); }
+.quality-table { border-collapse:collapse; width:100%; min-width:850px; font-size:.86rem; }
+.quality-table th, .quality-table td { border-bottom:1px solid var(--line); text-align:left; padding:11px 12px; vertical-align:middle; }
+.quality-table thead th { background:var(--surface,#fff); font-weight:750; }
+.quality-table tr:hover td { background:rgba(128,142,166,.05); }
+.quality-table .quality-code { font-family:Consolas,monospace; font-weight:700; white-space:nowrap; }
+.quality-table .quality-rule { font-weight:700; white-space:nowrap; }
+.quality-edit { padding:7px 12px; min-height:32px; }
+@media(max-width:760px) { .quality-form { grid-template-columns:1fr; } .quality-form-actions { grid-column:auto; } .quality-form-wrap { padding:13px; } }
+
+/* Navegacao agrupada: Recursos > Estoque */
+.stock-group-toggle { width:100%; }
+.stock-group-toggle .stock-group-chevron { width:14px; height:14px; margin-left:auto; transition:transform .15s ease; flex-shrink:0; }
+.stock-group-toggle[aria-expanded="false"] .stock-group-chevron { transform:rotate(-90deg); }
+.stock-nav-children { display:grid; gap:2px; border-left:1px solid rgba(255,255,255,.16); margin:1px 4px 10px 17px; padding:3px 0 3px 8px; }
+.stock-nav-children[hidden] { display:none; }
+.stock-nav-child { width:100%; min-height:42px; padding:8px 7px; }
+.stock-nav-child > svg { width:16px; height:16px; flex-basis:16px; }
+.stock-nav-child strong { font-size:.7rem; }
+.stock-nav-child small { font-size:.55rem; }
+body.sidebar-collapsed .stock-nav-children { margin:0; border-left:0; padding:0; }
+body.sidebar-collapsed .stock-nav-child { padding:8px; }
+body.sidebar-collapsed .stock-group-chevron { display:none; }

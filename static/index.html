@@ -134,14 +134,26 @@
         <span><strong>Baixar OS</strong><small id="closeQueueBadge">0 aguardando</small></span>
       </button>
       <p class="side-nav-label side-nav-section">Recursos</p>
-      <button class="side-nav-item" id="stockModule" type="button">
+      <button class="side-nav-item stock-group-toggle" id="stockGroupToggle" type="button"
+        aria-expanded="true" aria-controls="stockNavChildren">
         <i data-lucide="boxes" aria-hidden="true"></i>
-        <span><strong>Estoque</strong><small>Por tecnico</small></span>
+        <span><strong>Estoque</strong><small>Materiais e consultas</small></span>
+        <i data-lucide="chevron-down" class="stock-group-chevron" aria-hidden="true"></i>
       </button>
-      <button class="side-nav-item" id="serialsModule" type="button">
-        <i data-lucide="scan-barcode" aria-hidden="true"></i>
-        <span><strong>Consultar Seriais</strong><small>Busca em lote</small></span>
-      </button>
+      <div class="stock-nav-children" id="stockNavChildren" aria-label="Opcoes de estoque">
+        <button class="side-nav-item stock-nav-child" id="stockModule" type="button">
+          <i data-lucide="package-search" aria-hidden="true"></i>
+          <span><strong>Estoque por tecnico</strong><small>Saldo e baixas</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="serialsModule" type="button">
+          <i data-lucide="scan-barcode" aria-hidden="true"></i>
+          <span><strong>Consultar Seriais</strong><small>Busca em lote</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="stockQualityModule" type="button">
+          <i data-lucide="clipboard-list" aria-hidden="true"></i>
+          <span><strong>Controle de Qualidade</strong><small>Materiais e quantidades</small></span>
+        </button>
+      </div>
       <button class="side-nav-item" id="confrontModule" type="button">
         <i data-lucide="git-compare-arrows" aria-hidden="true"></i>
         <span><strong>Pendente</strong><small>Atlas × IMPERIUM</small></span>
@@ -754,7 +766,12 @@
       </div>
     </section>
 
-    <section class="stock-workspace hidden" id="stockWorkspace" aria-label="Estoque do tecnico">
+    <section class="stock-workspace hidden" id="stockWorkspace" aria-label="Estoque e controle de qualidade">
+      <div class="quality-tabs" role="tablist" aria-label="Abas de estoque">
+        <button id="stockInventoryTab" type="button" role="tab" aria-selected="true" class="active">Estoque por tecnico</button>
+        <button id="stockQualityTab" type="button" role="tab" aria-selected="false">Controle de qualidade</button>
+      </div>
+      <div id="stockInventoryPane" role="tabpanel" aria-labelledby="stockInventoryTab">
       <header class="workspace-heading">
         <div>
           <p class="section-label">CONSULTA E MOVIMENTACAO</p>
@@ -849,6 +866,43 @@
         <div class="empty-state" id="stockEmpty">Selecione um tecnico e consulte o estoque.</div>
         <div class="loading-state hidden" id="stockLoading">Consultando estoque no Imperium...</div>
       </section>
+      </div>
+      <div class="quality-pane hidden" id="stockQualityPane" role="tabpanel" aria-labelledby="stockQualityTab">
+        <header class="workspace-heading">
+          <div>
+            <p class="section-label">MATERIAIS E REGRAS DE CONFERENCIA</p>
+            <h2>Controle de qualidade</h2>
+            <p class="workspace-description">Regras independentes do saldo do Imperium. Altere codigo, descricao ou regra conforme a necessidade.</p>
+          </div>
+          <button class="button secondary" id="qualityRefresh" type="button"><i data-lucide="refresh-cw"></i> Atualizar</button>
+        </header>
+        <div class="quality-toolbar">
+          <label class="field quality-search"><span>Buscar material</span><input type="search" id="qualitySearch" placeholder="Codigo ou descricao"></label>
+          <strong id="qualityCount" aria-live="polite">0 materiais</strong>
+        </div>
+        <div class="quality-form-wrap" id="qualityFormWrap">
+          <h3 id="qualityFormTitle">Adicionar material</h3>
+          <form id="qualityForm" class="quality-form">
+            <label class="field"><span>Material</span><input id="qualityMaterial" maxlength="32" required placeholder="Codigo"></label>
+            <label class="field quality-description"><span>Descr. Material</span><input id="qualityDescription" maxlength="500" required placeholder="Descricao do material"></label>
+            <label class="field"><span>Qtd - Controle Qualidade</span><input id="qualityRule" maxlength="64" required placeholder="Ex.: 2, menor que 4, variavel" list="qualityRuleOptions"></label>
+            <datalist id="qualityRuleOptions"><option value="0"></option><option value="1"></option><option value="2"></option><option value="menor que 4"></option><option value="variável"></option></datalist>
+            <div class="quality-form-actions">
+              <button class="button primary" type="submit" id="qualitySave">Salvar</button>
+              <button class="button secondary" type="button" id="qualityCancel">Cancelar</button>
+            </div>
+          </form>
+        </div>
+        <p id="qualityNotice" class="quality-notice" role="status" aria-live="polite">Selecione a aba para carregar os materiais.</p>
+        <div class="table-section quality-table-section">
+          <div class="table-scroll">
+            <table class="quality-table">
+              <thead><tr><th>Material</th><th>Descr. Material</th><th>Qtd - Controle Qualidade</th><th>Ultima alteracao</th><th>Acao</th></tr></thead>
+              <tbody id="qualityBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="technicians-workspace hidden" id="techniciansWorkspace" aria-label="Cadastro de tecnicos">
@@ -2247,6 +2301,8 @@
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
   <script src="/app.js?v=20261022-confront"></script>
+  <script src="/quality-control.js?v=20261027-3"></script>
+  <script src="/stock-nav.js?v=20261027-3"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>
   <script src="/query-import.js?v=20261023-1"></script>
   <script src="/confront.js?v=20261022-3"></script>
