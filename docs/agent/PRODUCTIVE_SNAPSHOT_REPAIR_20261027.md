@@ -1,3 +1,28 @@
+# Caso real confirmado e ponte compartilhada preservada
+
+OS2662320818: registroconfirmed409, official_http_status200, accepted14:59:12
+e confirmed14:59:18-03:00 em27/10/2026. Counts1instalado/1removido/9miscelaneas.
+Attributionunverified no observador legado: nao atribuir origem apenas pelo status
+fechado. Usuario confirmou a baixa e mostrou os materiais no Imperium. Nenhum
+POST real foi repetido nesta investigacao.
+
+Toast era consulta auxiliar GETinstaller. Worker6afba094 publicado14:56:59
+pela alteracao de estoque nao tinha essa rota. A partir da baseStockQuality
+d522317 foi criada copia isolada InstallerRouteMerge-20261027; adicionada apenas
+a rotaGETinstaller, preservando controle de qualidade e demais alteracoes.
+21testesWorker/QC passaram; guarda conferiu versao antes de publicar7590af22.
+SmokeQC200/items_arraytrue. Installer deixou404 e atingiu backend400/Atualize
+a lista porque esta OS ja saiu do cache de abertas. Main96b5abc posteriormente
+integrou ambos os recursos; politica confere emSHA256 eWorker confere ao
+normalizarCRLF.30testesJS da base integrada passaram. Pasta do Matheus intacta.
+
+Nova busca4321376 tem falha distinta: TOA_live -> extensao
+parseDirectActivityResponse -> toa_provider_nao_encontrado. Resolver nao obteve
+nome de tecnico a partir do Provider/caches/PID validado. Nao afirmar que nao
+ha tecnico no cadastro nem que login expirou. Consulta cache-only retornou
+toa_cache_not_ready. Identificacao tecnica dessa atividade continua pendente;
+nenhuma alteracao de extensao, atribuicao de tecnico ou baixa foi feita.
+
 # Publicacao concluida apos repeticao unica
 
 Actions40553080599 tentativa2 concluiu success, incluindo restart e smokes de

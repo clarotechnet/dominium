@@ -1,3 +1,21 @@
+# Baixa real e trabalho compartilhado —27/10/2026
+
+OS2662320818 confirmed409/HTTP200,1equipinstalado,1removido,9miscelaneas;
+confirmada14:59:18. Usuario mostrou conclusao e materiais no Imperium.
+Observador legado attributionunverified; sem POST real repetido por este agente.
+
+Matheus trabalha simultaneamente em Estoque/QC: preservar. Worker6afba094
+14:56 havia perdido GETinstaller; mergeisolado d522317+somenteGETinstaller
+publicado7590af22,21JSWorker/QC aprovados. QC200; installeragoraalcancabackend
+400porOSjafechada/foradocache. PastaMatheusintacta. Main96b5abcintegrouambos;
+30JSda baseintegradaaprovados, politicaSHAconfere/WorkerigualaposnormalizarCRLF.
+Antes de novo deployWorker ler versao atual e preservar alteracoes concorrentes.
+
+Nova busca4321376 falha em identificacao do tecnico na extensao:
+toa_provider_nao_encontrado. Falha distinta de transporte/login; dados exatos
+desse recurso ainda pendentes. Nenhuma atribuicao, reload de extensao ou baixa.
+Detalhes ../PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md.
+
 # Baixa com materiais — snapshot corrigido e publicado27/10/2026
 
 PR22/mainb8bf3e6 corrige mistura de autorizacoes antiga/nova na preparacao TOA.

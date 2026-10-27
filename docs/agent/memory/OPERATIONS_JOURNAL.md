@@ -157,3 +157,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 949Python/22skip,34JSfocados,JS/Ruff/build,3release; revisao e guardadecorrida corrigidas; CI+smokes de producao success; nenhuma baixa real repetida
 
 **Próximo passo/pendência:** CtrlF5, nova busca do contrato e revisao da OS2662320818 antes de confirmar; validar resultado no Imperium, nao declarar materiais reais baixados ainda
+
+## 2026-10-27 18:12 UTC — Baixa real confirmada; ponte mesclada preservando Matheus
+
+**Motivo:** Aviso de tecnico404 separado de baixa concluida; publicacao concorrente de Estoque/QC perdeu rota
+
+**Alterado:** Restaurada apenasGETinstaller em copia isolada da base de Matheus; Worker7590af22 comQC preservado; pastaMatheusintacta; main96b5abc ja integra ambos
+
+**Verificação:** Confirmacao409/HTTP200,1instalado1removido9materiais;21JSWorkerQC e30JSmainintegrada;QC200,installeragoraatingebackend400porOSforaCache;POLICYhashconfereWorkerCRLFnormalizado
+
+**Próximo passo/pendência:** Investigar somente identificacao tecnico da busca4321376/TOA_provider_nao_encontrado; nao repetir baixa confirmada; conferir ultima versao compartilhada antes de deploy
