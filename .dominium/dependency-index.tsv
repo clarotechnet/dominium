@@ -959,6 +959,10 @@ sqlite3	tests/test_confront_job_runner.py
 sys	tests/test_confront_job_runner.py
 tempfile	tests/test_confront_job_runner.py
 unittest	tests/test_confront_job_runner.py
+hashlib	tests/test_desc_analytics_frontend.py
+html	tests/test_desc_analytics_frontend.py
+pathlib	tests/test_desc_analytics_frontend.py
+unittest	tests/test_desc_analytics_frontend.py
 __future__	tests/test_desc_operator_reports.py
 integrations	tests/test_desc_operator_reports.py
 pathlib	tests/test_desc_operator_reports.py
