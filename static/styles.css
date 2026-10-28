@@ -558,7 +558,7 @@ h1 {
 .profile-tabs {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 6px;
   justify-self: center;
 }
@@ -7574,4 +7574,52 @@ body.sidebar-collapsed .stock-group-chevron { display:none; }
 @media (max-width: 760px) {
   .desc-analytics-heading { flex-wrap: wrap; }
   .desc-analytics-frame { min-height: 540px; height: 75vh; }
+}
+
+/* Consolidado multibase sem impacto nos modulos com escrita. */
+.profile-tab-all { display:inline-flex!important; gap:7px; align-items:center; justify-content:center; }
+.all-ops-icon { font-size:1.12rem; line-height:1; font-weight:750; }
+.all-ops-workspace { padding: 24px clamp(16px, 2.5vw, 32px) 45px; }
+.all-ops-workspace .workspace-heading { padding:0 0 18px; margin-bottom:16px; }
+.all-ops-controls { display:grid; grid-template-columns: minmax(160px,240px) minmax(250px,1fr); gap:12px; margin:10px 0 14px; }
+.all-ops-controls label { display:flex; flex-direction:column; gap:7px; font-size:.74rem; color:var(--muted); font-weight:600; }
+.all-ops-controls input { width:100%; padding:12px; border:1px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink); }
+.all-ops-status { color:var(--muted); font-size:.79rem; margin:10px 0; line-height:1.5; }
+.all-ops-metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:17px 0; }
+.all-ops-metric { border:1px solid var(--line); background:var(--surface); border-radius:13px; padding:17px 19px; display:grid; gap:8px; }
+.all-ops-metric span { color:var(--muted); font-size:.74rem; }
+.all-ops-metric strong { font-size:1.9rem; color:var(--ink); font-variant-numeric:tabular-nums; }
+.all-ops-metric small { color:var(--muted); font-size:.7rem; }
+.all-ops-cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:15px 0 22px; }
+.all-ops-card { display:flex; flex-direction:column; gap:12px; border:1px solid var(--line); border-radius:13px; background:var(--surface); padding:15px; min-width:0; }
+.all-ops-card-head { display:flex; justify-content:space-between; align-items:start; gap:8px; flex-wrap:wrap; }
+.all-ops-card h3 { font-size:.9rem; margin:4px 0; overflow-wrap:anywhere; }
+.all-ops-card-head button { font-size:.67rem; padding:7px 9px; min-height:32px; }
+.all-ops-source { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px; background:var(--soft); border-radius:9px; }
+.all-ops-source span { color:var(--muted); font-size:.68rem; }
+.all-ops-source strong { color:var(--ink); font-size:.83rem; text-align:right; }
+.all-ops-error { color:#e56b7b; font-size:.67rem; overflow-wrap:anywhere; line-height:1.4; }
+.all-ops-results { padding:18px; border:1px solid var(--line); border-radius:13px; background:var(--surface); }
+.all-ops-results h3 { margin:0 0 12px; }
+.all-ops-filter-tabs { display:flex; gap:7px; margin-bottom:12px; }
+.all-ops-filter-tabs button { border:1px solid var(--line); border-radius:8px; background:var(--soft); color:var(--ink); padding:9px 15px; cursor:pointer; }
+.all-ops-filter-tabs button.active { border-color:var(--accent,#e8284c); background:rgba(235,31,67,.14); }
+.all-ops-table { width:100%; border-collapse:collapse; min-width:880px; }
+.all-ops-table th,.all-ops-table td { border-bottom:1px solid var(--line); padding:11px; text-align:left; font-size:.74rem; }
+.all-ops-table th { color:var(--muted); font-size:.65rem; text-transform:uppercase; }
+.all-ops-table .button { font-size:.69rem; padding:6px 10px; }
+.all-ops-disclaimer { border-left:3px solid var(--line); margin-top:16px; padding:8px 12px; color:var(--muted); font-size:.75rem; line-height:1.6; }
+@media (max-width:1200px) { .all-ops-cards { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:660px) {
+  .all-ops-workspace { padding:16px; }
+  .all-ops-cards,.all-ops-metrics,.all-ops-controls { grid-template-columns:1fr; }
+  .all-ops-workspace .workspace-heading { flex-direction:column; align-items:stretch; }
+}
+
+/* Mantém Natal/Parnamirim legível mesmo com a nova opção Todos. */
+@media (min-width: 901px) {
+  .profile-tabs { grid-template-columns: 68px minmax(132px,1.6fr) repeat(3,minmax(82px,1fr)); }
+}
+@media (max-width: 900px) {
+  .profile-tabs { grid-template-columns: repeat(5,minmax(110px,1fr)); }
 }

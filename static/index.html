@@ -6,7 +6,7 @@
   <title>DOMINIUM</title>
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="/styles.css?v=20261027-quality-modal-1">
+  <link rel="stylesheet" href="/styles.css?v=20261028-all-ops-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
 </head>
@@ -296,6 +296,39 @@
       </dialog>
       <dialog class="desc-tech-dialog" id="descTechDialog" aria-labelledby="descTechTitle"><h3 id="descTechTitle">Vincular técnico</h3><p class="desc-muted">Vincule este ID do WhatsApp ao recurso do técnico no Imperium. A OS aberta será conferida com esse recurso.</p><form id="descTechForm"><label>Remetente WhatsApp<input name="sender" readonly required></label><label>Nome do técnico<input name="name" required maxlength="100"></label><label>Recurso Imperium<input name="imperium_id" required inputmode="numeric" pattern="[0-9]+"></label><label>Login TOA (opcional)<input name="toa_login" maxlength="80"></label><label class="desc-checkbox"><input type="checkbox" name="freelancer">Freelancer de entrega de chip</label><p class="desc-alert hidden" id="descTechError" role="alert"></p><div class="desc-detail-actions"><button class="button secondary" type="button" id="descTechCancel">Cancelar</button><button class="button primary" type="submit">Salvar vínculo</button></div></form></dialog>
     </section>
+    <section class="all-ops-workspace hidden" id="allOperationsWorkspace" aria-labelledby="allOperationsTitle">
+      <header class="workspace-heading">
+        <div>
+          <p class="section-label">IMPERIUM + TOA • CONSULTA MULTIPRACA</p>
+          <h2 id="allOperationsTitle">Todas as operações</h2>
+          <p class="workspace-description">Natal / Parnamirim, Fortaleza, Mossoró e Recife em uma visão de leitura. Para ações, abra a praça correspondente.</p>
+        </div>
+        <button class="button secondary" id="allOperationsRefresh" type="button"><i data-lucide="refresh-cw" aria-hidden="true"></i> Atualizar todas</button>
+      </header>
+      <div class="all-ops-controls">
+        <label>Data da consulta <input type="date" id="allOperationsDate"></label>
+        <label>Pesquisar OS, contrato, técnico ou cidade <input type="search" id="allOperationsSearch" placeholder="Pesquise nas quatro operações"></label>
+      </div>
+      <p id="allOperationsStatus" class="all-ops-status" role="status" aria-live="polite">Selecione Todos para carregar as praças.</p>
+      <div id="allOperationsMetrics" class="all-ops-metrics"></div>
+      <div id="allOperationsCards" class="all-ops-cards"></div>
+      <section class="all-ops-results" aria-labelledby="allOperationsResultsTitle">
+        <h3 id="allOperationsResultsTitle">Registros por operação</h3>
+        <div class="all-ops-filter-tabs" role="group" aria-label="Fonte de dados">
+          <button type="button" class="active" id="allOperationsFilterImperium">Imperium</button>
+          <button type="button" id="allOperationsFilterToa">TOA</button>
+        </div>
+        <div class="table-scroll">
+          <table class="all-ops-table">
+            <thead id="allOperationsTableHead"></thead>
+            <tbody id="allOperationsTableBody"></tbody>
+          </table>
+        </div>
+        <p id="allOperationsTableInfo" class="all-ops-status"></p>
+      </section>
+      <p class="all-ops-disclaimer">Os totais são exibidos somente para fontes confirmadas. Falhas ou fontes indisponíveis não são tratadas como zero. Os contratos TOA são os registros disponíveis na agenda do dia, não todas as atividades do TOA.</p>
+    </section>
+
     <section class="dashboard-workspace" id="dashboardWorkspace" aria-label="Visao geral">
       <header class="workspace-heading dashboard-heading">
         <div>
@@ -2342,7 +2375,8 @@
   <script src="/lucide.min.js"></script>
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
-  <script src="/app.js?v=20261027-desc-analytics-1"></script>
+  <script src="/all-operations.js?v=20261028-1"></script>
+  <script src="/app.js?v=20261028-all-ops-1"></script>
   <script src="/quality-control.js?v=20261027-modal-1"></script>
   <script src="/stock-nav.js?v=20261027-arrow-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-27T20:32:22+00:00",
+  "generated_at": "2026-10-28T16:25:32+00:00",
   "schema": 2,
-  "source_fingerprint": "38a3e2e4182a829bc4018636936aab539b0da5c27e80b1fd3bb4b55d00a23b60",
+  "source_fingerprint": "490c21df642130ca13d5a4050759d717fad71bec4a625d5703e50c2fad8f18b6",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -4316,6 +4316,22 @@
       "symbol_count": 1
     },
     {
+      "path": "static/all-operations.js",
+      "category": "frontend",
+      "bytes": 8197,
+      "sha256": "2bc9ea7f772fad0132b5f59088a6568d11c9a3ec3f38e7a8144ff03c4b956213",
+      "summary": "Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */",
+      "imports": [],
+      "endpoints": [
+        "/api/orders?status=field&service_type=all&date=",
+        "/api/toa-contracts?date="
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 14
+    },
+    {
       "path": "static/atlas-query-ui.js",
       "category": "frontend",
       "bytes": 22954,
@@ -4427,8 +4443,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 133501,
-      "sha256": "0b5b9212a8f9880bddf9bd1e464fab80e95c342393709aae60eb8ed3553ce4fd",
+      "bytes": 135775,
+      "sha256": "b8791bb6dfdb7fabaa41d45ec00ab532fe3107d31f52484b6e59cb49c5f542d0",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4548,8 +4564,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 216167,
-      "sha256": "f4d415c6ddbc9f0820380b042d92602fe7448f4c2932ccf571efb92fc4ad1b32",
+      "bytes": 220077,
+      "sha256": "7481e6651620cb9ead7f3a1a013523d932f32d051a0594c5233ee904a4ee4b23",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -4889,6 +4905,23 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 9
+    },
+    {
+      "path": "tests/test_all_operations_view.cjs",
+      "category": "tests",
+      "bytes": 4366,
+      "sha256": "7f88face26cb106a2e340edb887c81a363aa2f95bfbd7723ef27998c7cc360a7",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/mock?",
+        "/api/orders",
+        "/api/toa-contracts"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_api_security.py",

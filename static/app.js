@@ -47,7 +47,9 @@ const state = {
     { code: "0", description: "CANCELAMENTO", productive: false },
   ],
   failures: [],
-  activeModule: window.location.hash === "#desconexao-indicadores"
+  activeModule: window.location.hash === "#todos"
+    ? "all-operations"
+    : window.location.hash === "#desconexao-indicadores"
     ? "descAnalytics"
     : window.location.hash === "#pendente"
     ? "confront"
@@ -873,7 +875,9 @@ function apiUrlForProfile(path, profile) {
 function updateAddress() {
   const url = new URL(window.location.href);
   url.searchParams.set("profile", state.profile);
-  url.hash = state.activeModule === "descAnalytics"
+  url.hash = state.activeModule === "all-operations"
+    ? "todos"
+    : state.activeModule === "descAnalytics"
     ? "desconexao-indicadores"
     : state.activeModule === "confront"
     ? "pendente"
@@ -2421,7 +2425,35 @@ function exportCloseReportXlsx() {
   window.location.href = url;
 }
 
+function showAllOperations() {
+  if (!state.profiles.length || state.running || state.loading || state.profileSwitching
+    || state.bulkCreateLoading || state.stockBatchLoading || state.stockWriteoffLoading
+    || disconnectIsRunning()) return;
+  state.activeModule = "all-operations";
+  updateAddress();
+  render();
+  window.DominiumAllOperations?.activate({
+    profiles: state.profiles,
+    date: elements.date.value || localDate(),
+    request,
+    apiUrlForProfile,
+    onOpenProfile: (key) => { void switchProfile(key); },
+  });
+}
+
 function renderProfileTabs() {
+  const all = document.createElement("button");
+  all.className = "profile-tab profile-tab-all";
+  all.type = "button";
+  all.innerHTML = '<span class="all-ops-icon" aria-hidden="true">▦</span><span>Todos</span>';
+  all.title = "Visao consolidada em leitura de todas as operacoes";
+  const allSelected = state.activeModule === "all-operations";
+  all.classList.toggle("active", allSelected);
+  all.setAttribute("aria-pressed", String(allSelected));
+  all.disabled = state.running || state.loading || state.profileSwitching
+    || state.bulkCreateLoading || state.stockBatchLoading || state.stockWriteoffLoading
+    || disconnectIsRunning();
+  all.addEventListener("click", showAllOperations);
   const tabs = state.profiles.map((profile) => {
     const button = document.createElement("button");
     button.className = "profile-tab";
@@ -2430,8 +2462,8 @@ function renderProfileTabs() {
     button.title = profile.close_enabled
       ? profile.label
       : `${profile.label} - somente consulta`;
-    button.classList.toggle("active", profile.key === state.profile);
-    button.setAttribute("aria-pressed", String(profile.key === state.profile));
+    button.classList.toggle("active", !allSelected && profile.key === state.profile);
+    button.setAttribute("aria-pressed", String(!allSelected && profile.key === state.profile));
     button.disabled = state.running || state.loading || state.profileSwitching
       || state.bulkCreateLoading
       || state.stockBatchLoading || state.stockWriteoffLoading
@@ -2439,7 +2471,8 @@ function renderProfileTabs() {
     button.addEventListener("click", () => switchProfile(profile.key));
     return button;
   });
-  elements.profileTabs.replaceChildren(...tabs);
+  elements.profileTabs.replaceChildren(all, ...tabs);
+  // O simbolo do consolidado permanece legivel em todos os temas.
 }
 
 async function loadProfiles() {
@@ -2458,6 +2491,15 @@ async function loadProfiles() {
     ? profile.native_creation_services.map(String) : [];
   updateAddress();
   renderProfileTabs();
+  if (state.activeModule === "all-operations") {
+    window.DominiumAllOperations?.activate({
+      profiles: state.profiles,
+      date: elements.date.value || localDate(),
+      request,
+      apiUrlForProfile,
+      onOpenProfile: (key) => { void switchProfile(key); },
+    });
+  }
 }
 
 async function loadImportTargets() {
@@ -3384,6 +3426,12 @@ async function loadProfile() {
 }
 
 async function switchProfile(profileKey) {
+  if (state.activeModule === "all-operations" && profileKey === state.profile) {
+    state.activeModule = "dashboard";
+    updateAddress();
+    render();
+    return;
+  }
   if (
     state.running || state.loading || state.profileSwitching
     || state.bulkCreateLoading || state.stockBatchLoading
@@ -3394,6 +3442,7 @@ async function switchProfile(profileKey) {
   ) return;
   const profile = state.profiles.find((item) => item.key === profileKey);
   if (!profile) return;
+  if (state.activeModule === "all-operations") state.activeModule = "dashboard";
   state.profileEpoch += 1;
   resetProfileOperationalState();
   state.profile = profileKey;
@@ -7118,6 +7167,7 @@ function render() {
   elements.failuresSection.classList.toggle("hidden", state.activeView !== "failures");
   elements.ordersTab.classList.toggle("active", state.activeView === "orders");
   elements.failuresTab.classList.toggle("active", state.activeView === "failures");
+  document.getElementById("allOperationsWorkspace")?.classList.toggle("hidden", state.activeModule !== "all-operations");
   elements.dashboardWorkspace.classList.toggle("hidden", state.activeModule !== "dashboard");
   elements.monitorWorkspace.classList.toggle("hidden", state.activeModule !== "monitor");
   elements.ordersWorkspace.classList.toggle("hidden", state.activeModule !== "orders");

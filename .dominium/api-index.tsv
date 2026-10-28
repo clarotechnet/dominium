@@ -180,6 +180,8 @@ endpoint	path
 /api/confront/jobs/	scripts/smoke_confront_private_relay.py
 /api/confront/status	scripts/smoke_confront_private_relay.py
 /api/disconnection/reports	scripts/smoke_confront_private_relay.py
+/api/orders?status=field&service_type=all&date=	static/all-operations.js
+/api/toa-contracts?date=	static/all-operations.js
 /api/atlas-query/jobs	static/atlas-query-ui.js
 /api/atlas-query/jobs/	static/atlas-query-ui.js
 /api/confront/jobs	static/confront.js
@@ -212,6 +214,9 @@ endpoint	path
 /api/auth/session	tests/qa_workspace_browser.js
 /api/health-check	tests/qa_workspace_browser.js
 /api/intelligence	tests/qa_workspace_browser.js
+/api/mock?	tests/test_all_operations_view.cjs
+/api/orders	tests/test_all_operations_view.cjs
+/api/toa-contracts	tests/test_all_operations_view.cjs
 /api/auth/login	tests/test_api_security.py
 /api/auth/register	tests/test_api_security.py
 /api/imperium-official/session?profile=natal	tests/test_app.py
