@@ -66,6 +66,11 @@ toa_secondary_session	app.py
 unicodedata	app.py
 urllib	app.py
 webbrowser	app.py
+pathlib	apply_private_tunnel_migration.py
+collections	audit_active_routes_20261028.py
+json	audit_active_routes_20261028.py
+pathlib	audit_active_routes_20261028.py
+re	audit_active_routes_20261028.py
 __future__	auth_store.py
 base64	auth_store.py
 contextlib	auth_store.py
@@ -183,6 +188,7 @@ edge_tts	edge_voice.py
 hashlib	edge_voice.py
 importlib	edge_voice.py
 threading	edge_voice.py
+pathlib	fix_scoped_routes_20261028.py
 analyzer	flow_reader/__init__.py
 __future__	flow_reader/analyzer.py
 base64	flow_reader/analyzer.py
@@ -634,6 +640,7 @@ time	operations_intelligence.py
 toa_capture	operations_intelligence.py
 typing	operations_intelligence.py
 unicodedata	operations_intelligence.py
+pathlib	patch_private_tunnel_followup.py
 pathlib	patch_remote_toa.py
 __future__	quality_control.py
 datetime	quality_control.py

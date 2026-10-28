@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-28T19:29:05+00:00
-- Source fingerprint: `20d511352aa614d1`
-- Indexed files: 420
-- Indexed symbols: 3685
-- API path references: 354
+- Generated: 2026-10-28T20:22:21+00:00
+- Source fingerprint: `4fa93885309f0862`
+- Indexed files: 430
+- Indexed symbols: 3712
+- API path references: 485
 
 ## Navigation rule
 
@@ -116,6 +116,9 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `Abrir Painel.cmd`
 - `AGENTS.md` (1 DataSnap methods) - DOMINIUM agent guide
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.
+- `apply_private_tunnel_migration.py` (1 symbols, 17 API paths)
+- `audit_active_routes_20261028.py`
+- `audit_worker_smoke.cjs` (4 API paths)
 - `auth_store.py` (28 symbols) - Autenticacao local do DOMINIUM.
 - `auth_store_postgres.py` (18 symbols) - Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.
 - `auto_improductive_close.py` (23 symbols)
@@ -130,6 +133,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `desc_review_proxy.py` (10 symbols, 1 API paths) - Authenticated Dominium boundary to the Bot's existing DESC review service.
 - `desc_review_relay.py` (6 symbols, 2 API paths) - Authenticated relay for DESC review and private read-only Imperium checks.
 - `edge_voice.py` (8 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `fix_scoped_routes_20261028.py` (5 API paths)
 - `flow_reader/__init__.py` - Read-only Imperium/DataSnap capture analyzer.
 - `flow_reader/analyzer.py` (28 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `flow_reader/LEIA-ME.txt` - DOMINIUM FLOWSCOPE 1.0 - LEITOR DE FLUXOS IMPERIUM
@@ -157,6 +161,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `official_stock_audit.py` (14 symbols, 2 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_stock_blocker_review.py` (15 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_stock_remediation_plan.py` (25 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `patch_private_tunnel_followup.py` (1 symbols, 4 API paths)
 - `productive_protocol_templates.json` (3 DataSnap methods)
 - `protocol_templates.json`
 - `quality_control.py` (6 symbols) - Regras de controle de qualidade, independentes do saldo do Imperium.
@@ -171,13 +176,14 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `supabase_auth_store.py` (28 symbols)
 - `supabase_schema.sql`
 - `technician_directory.py` (7 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `worker_version_before_migration.txt` - Worker dominium-import-bridge
 
 ## Indexed areas not expanded here
 
-- shared: 134 files
+- shared: 143 files
 - tooling-deploy: 47 files
 - docs: 37 files
-- tests: 119 files
+- tests: 120 files
 
 ## Search indexes
 

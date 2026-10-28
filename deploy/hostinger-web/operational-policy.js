@@ -26,6 +26,10 @@ const ROUTES = new Set([
   '/api/stock',
   '/api/stock/serial-owner',
   '/api/serials/consult',
+  '/api/disconnect-automation',
+  '/api/intelligence/report.pdf',
+  '/api/close-report/export.xlsx',
+  '/api/toa-datalake/feed',
 ]);
 
 const DETAIL_ROUTE = /^\/api\/(?:orders\/\d+\/(?:installer|material-inventory|installer-change-preview|serialized-transfer-preview)|operational\/contracts\/[0-9]+|imperium-official\/stocks(?:\/[1-9][0-9]{0,9}\/items)?)$/;
@@ -66,5 +70,50 @@ function allowedDailyStock(method, target) {
   return (method === 'POST' && target === '/api/stock/daily') ||
     (method === 'GET' && /^\/api\/stock\/daily(?:\?id=[a-fA-F0-9-]{36})?$/.test(target));
 }
+// Exact operational POST routes. Never proxy arbitrary URL paths to Windows.
+const OPERATIONAL_WRITES = new Set([
+  '/api/orders/bulk-create',
+  '/api/auto-improductive-close/toggle',
+  '/api/stock/batch',
+  '/api/stock/pdf/batch',
+  '/api/stock/writeoff',
+  '/api/toa-automation/run',
+  '/api/toa-capture/analyze',
+  '/api/toa-agenda/import',
+  '/api/toa-live/connect',
+  '/api/monitor/snapshot/clear',
+  '/api/voice/synthesize',
+]);
+const SCOPED_WRITES = /^\/api\/orders\/[1-9][0-9]{0,9}\/(?:material-paste|move-installer|transfer-serial)\?profile=(?:natal|fortaleza|mossoro|recife)$/;
+const DISCONNECT_WRITES = /^\/api\/disconnect-automation\/(?:start|pause|stop|claim|complete|fail|release|cancel|retry)$/;
+function allowedOperationalWrite(method,target) {
+  if(method!=='POST' || typeof target!=='string' || target.length>512 ||
+    !target.startsWith('/api/') || target.startsWith('//') ||
+    target.includes('#') || target.includes('\\')) return false;
+  let url;
+  try {url=new URL(target,'https://dominium.invalid');}catch{return false;}
+  if(url.origin!=='https://dominium.invalid'||url.pathname.includes('%')||
+    url.pathname.includes('//'))return false;
+  if(SCOPED_WRITES.test(target) || DISCONNECT_WRITES.test(target))return true;
+  // Only OS creation uses a city-scoped POST. All other routes reject query params.
+  if(url.pathname==='/api/orders/bulk-create')
+    return /^\/api\/orders\/bulk-create\?profile=(?:natal|fortaleza|mossoro|recife)$/.test(target);
+  if (!OPERATIONAL_WRITES.has(url.pathname)) return false;
+  // The UI uses apiUrl() to append exactly one selected city.
+  return url.search==='' || /^\?profile=(?:natal|fortaleza|mossoro|recife)$/.test(url.search);
+}
+function validBulkCreateBody(value) {
+  return Boolean(value && typeof value==='object' && !Array.isArray(value) &&
+    value.confirmed===true && /^[A-Za-z0-9_-]{12,100}$/.test(String(value.request_id||'')) &&
+    Number.isSafeInteger(value.technician_id) && value.technician_id>0 &&
+    typeof value.service==='string' && value.service.length>0 && value.service.length<=120 &&
+    (typeof value.contracts==='string' || Array.isArray(value.contracts)));
+}
+function operationTransportFailure() {
+  return {ok:false,uncertain:true,safe_to_retry:false,
+    error:'A resposta do Imperium nao foi confirmada. Confira a OS no sistema antes de repetir esta operacao.'};
+}
+
 module.exports = { allowedOperationalRead, allowedToaLookup, allowedOrderClose,
-  allowedQualityControl, allowedDailyStock, validOfficialCloseBody, closeTransportFailure };
+  allowedQualityControl, allowedDailyStock, allowedOperationalWrite, validBulkCreateBody,
+  operationTransportFailure, validOfficialCloseBody, closeTransportFailure };

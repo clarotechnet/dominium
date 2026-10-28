@@ -535,14 +535,6 @@ app.use((error, req, res, next) => {
 const SUPABASE_URL = "https://haqzzxpocwzntyudrbch.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_s__p_R64LRUZ_Vk4Cid5BQ_ajAJkSn7";
 const AUTH_EMAIL_DOMAIN = "auth.dominium.invalid";
-const LEGACY_OPERATION_ORIGIN = "https://count-success-prisoner-mandate.trycloudflare.com";
-const DIRECT_OPERATION_ORIGIN = "https://citizenship-energy-label-conflict.trycloudflare.com";
-const configuredOperationOrigin = String(process.env.DOMINIUM_OPERATION_ORIGIN || "").trim();
-const DOMINIUM_OPERATION_ORIGIN = String(
-  configuredOperationOrigin && configuredOperationOrigin !== LEGACY_OPERATION_ORIGIN
-    ? configuredOperationOrigin
-    : DIRECT_OPERATION_ORIGIN,
-).replace(/\/+$/, "");
 const DOMINIUM_AUTH_OPS_URL = SUPABASE_URL + "/functions/v1/dominium-auth-ops";
 const SESSION_IDLE_MS = 8 * 60 * 60 * 1000;
 const SESSION_ABSOLUTE_MS = 12 * 60 * 60 * 1000;
@@ -978,7 +970,13 @@ app.post(/^\/api\/orders\/[^/]+\/close$/, createOrderCloseMiddleware());
 async function proxyOperationalRequest(req, res, next) {
   const controller = new AbortController();
   const toaLookup = allowedToaLookup(req.method, req.originalUrl);
-  const timer = setTimeout(() => controller.abort(), toaLookup ? 285000 : 120000);
+  const timedWrite = req.method === 'POST' && (
+    req.path === '/api/orders/bulk-create' ||
+    req.path === '/api/stock/writeoff' ||
+    req.path === '/api/stock/batch' ||
+    req.path === '/api/toa-agenda/import'
+  );
+  const timer = setTimeout(() => controller.abort(), timedWrite ? 470000 : toaLookup ? 285000 : 120000);
   try {
     const headers = {};
     for (const name of OPERATIONAL_PROXY_HEADER_ALLOWLIST) {
@@ -1017,7 +1015,10 @@ async function proxyOperationalRequest(req, res, next) {
       Object.assign(headers, relay.headers);
       restorePrivateJsonContentType(req, headers, body);
     }
-    const upstream = await fetch(relay ? relay.url : DOMINIUM_OPERATION_ORIGIN + req.originalUrl, {
+    if (!relay) {
+      return res.status(503).json({ok:false,error:'Rota operacional ainda nao habilitada na ponte privada. Nenhuma operacao foi enviada.'});
+    }
+    const upstream = await fetch(relay.url, {
       method: req.method,
       headers,
       body,
@@ -1025,8 +1026,9 @@ async function proxyOperationalRequest(req, res, next) {
       signal: controller.signal,
     });
     if (relay && upstream.status >= 500) {
-      // Do not turn a backend outage into an apparently empty agenda or order list.
-      return res.status(502).json({ ok: false, error: 'Servidor operacional temporariamente indisponivel' });
+      return res.status(502).json(req.method === 'POST'
+        ? {ok:false,uncertain:true,safe_to_retry:false,error:'O Imperium pode ter processado a operacao. Confira antes de repetir.'}
+        : {ok:false,error:'Servidor operacional temporariamente indisponivel'});
     }
 
     res.status(upstream.status);
@@ -1040,7 +1042,6 @@ async function proxyOperationalRequest(req, res, next) {
     const payload = Buffer.from(await upstream.arrayBuffer());
     return res.send(payload);
   } catch (error) {
-    const safeGetFallback = req.method === "GET" || req.method === "HEAD";
     console.error("DOMINIUM operational bridge failed", {
       path: req.path,
       method: req.method,
@@ -1049,11 +1050,9 @@ async function proxyOperationalRequest(req, res, next) {
     if (toaLookup || allowedQualityControl(req.method, req.originalUrl) || allowedDailyStock(req.method, req.originalUrl) || allowedOperationalRead(req.method, req.originalUrl) || req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/')) {
       return res.status(502).json({ ok: false, error: 'Consulta operacional indisponivel; dados nao confirmados' });
     }
-    if (safeGetFallback) return next();
-    return res.status(502).json({
-      ok: false,
-      error: "Servidor operacional temporariamente indisponivel",
-    });
+    return res.status(502).json(req.method === 'POST'
+      ? {ok:false,uncertain:true,safe_to_retry:false,error:'Resposta operacional nao confirmada. Verifique o Imperium antes de repetir.'}
+      : {ok:false,error:'Servidor operacional temporariamente indisponivel'});
   } finally {
     clearTimeout(timer);
   }

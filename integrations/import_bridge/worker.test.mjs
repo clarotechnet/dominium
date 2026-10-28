@@ -141,7 +141,7 @@ test('private bridge blocks write, unauthorized and unrelated operational reques
   }}};
   for(const request of [
     new Request('https://bridge.test/api/orders',{method:'POST',headers,body:'{}'}),
-    new Request('https://bridge.test/api/auto-improductive-close/toggle',{method:'POST',headers,body:'{}'}),
+    new Request('https://bridge.test/api/auto-improductive-close/delete',{method:'POST',headers,body:'{}'}),
     new Request('https://bridge.test/api/auth/users',{headers}),
     new Request('https://bridge.test/api/orders',{headers:{...headers,Authorization:'Bearer invalid'}}),
   ]){

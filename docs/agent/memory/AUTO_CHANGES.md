@@ -173,3 +173,15 @@ Alterações preparadas para commit (7 arquivos). Para motivação e resultado c
 - `static/styles.css`
 - `tests/test_atlas_query_http.py`
 - `tests/test_atlas_query_ui_status.js`
+
+## 2026-10-28 | staged:02bc3d4e195bf11e
+
+Alterações preparadas para commit (7 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `deploy/hostinger-web/operational-policy.js`
+- `deploy/hostinger-web/operational-relay.js`
+- `deploy/hostinger-web/server.js`
+- `integrations/import_bridge/worker.mjs`
+- `integrations/import_bridge/worker.test.mjs`
+- `integrations/import_bridge/worker_create.test.mjs`
+- `tests/test_private_operational_migration.cjs`
