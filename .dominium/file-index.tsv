@@ -36,7 +36,7 @@ tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			b000d7e6a37d15
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
-tooling-deploy	deploy/hostinger-web/operational-policy.js	10	39			72463b560327f871
+tooling-deploy	deploy/hostinger-web/operational-policy.js	10	39			dc32d50351c96abf
 tooling-deploy	deploy/hostinger-web/operational-relay.js	3				5ee02889d709d15a
 tooling-deploy	deploy/hostinger-web/order-close-proxy.js	2				78fc563fd7b62d77
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
@@ -69,7 +69,7 @@ docs	docs/agent/ATLAS_QUERY_VIDEO_RECOVERY_20261026.md				Natal — vídeo, comp
 docs	docs/agent/ATLAS_QUERY_WAITING_HUD_20261026.md				QUERY — distinguir espera de processamento	cfd355576cf2880e
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor de sessão instalado em 26/10/2026	cd87d67d5054efb8
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	5d6cb40bd0fea2b9
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	1b82031eabb13320
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
 docs	docs/agent/memory/CURRENT_STATE.md			2	Consulta4321376 corrigida no runtime —27/10/2026	37d2e3c0238a9928
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
@@ -92,6 +92,7 @@ docs	docs/superpowers/plans/2026-10-27-productive-close-snapshot.md				Productiv
 docs	docs/superpowers/plans/2026-10-27-toa-lookup-private-bridge.md				TOA lookup private bridge implementation plan	0b79c243a4e7cd92
 docs	docs/superpowers/specs/2026-10-10-dominium-desc-design.md				Dominium: novo visual e DESCONEXÃO	8fb2f29706ba9060
 shared	edge_voice.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	32f7dbf35b7da5a8
+shared	fix_desc_automation_bridge.py		7			7f5bf3e21b3c6795
 shared	fix_scoped_routes_20261028.py		5			a6b8c099121b0827
 shared	flow_reader/__init__.py				Read-only Imperium/DataSnap capture analyzer.	fd76c045b68cdb47
 shared	flow_reader/analyzer.py	28			DOMINIUM | MAPA DE RESPONSABILIDADE	39c1790690d96093
@@ -356,7 +357,7 @@ tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_order_close_proxy.js	2	4			8b35993fda8b9e57
 tests	tests/test_order_dataset_hostinger.js	4	1			bca127bdd7f87bcf
-tests	tests/test_private_operational_migration.cjs	1	32			b9edeb99176be383
+tests	tests/test_private_operational_migration.cjs	1	37			525ad4a300a42cd1
 tests	tests/test_productive_snapshot_frontend.js	18				40c79179779f6702
 tests	tests/test_quality_control.py	4				4a628243ef04afb5
 tests	tests/test_quality_control_relay.py	4				7718202ccd427ed5

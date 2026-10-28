@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-28T20:22:21+00:00",
+  "generated_at": "2026-10-28T20:27:17+00:00",
   "schema": 2,
-  "source_fingerprint": "4fa93885309f08627d26cd6850fa3f1f9c0343c8541ac50ecaa90226b187c4f1",
+  "source_fingerprint": "73d25932146613d4356b0f9d68bbcaceeea51db549223404e80915b675875946",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -856,8 +856,8 @@
     {
       "path": "deploy/hostinger-web/operational-policy.js",
       "category": "tooling-deploy",
-      "bytes": 5752,
-      "sha256": "72463b560327f871d88f3e48577cc215eb0bc52f8a28bbfdffbe9733bb8a00ba",
+      "bytes": 5722,
+      "sha256": "dc32d50351c96abff91426197f571bdb46fcbde4f966b1e7ddb4f6be263110fa",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1419,8 +1419,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 6893,
-      "sha256": "5d6cb40bd0fea2b9affac986e9dfa5ba49fe782a4a2c81ce21cbae80a9d2a4ef",
+      "bytes": 7166,
+      "sha256": "1b82031eabb133209653b5e00b927b4e7b215574ce93e77215beddeac94e1a99",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1729,6 +1729,29 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 8
+    },
+    {
+      "path": "fix_desc_automation_bridge.py",
+      "category": "shared",
+      "bytes": 945,
+      "sha256": "7f5bf3e21b3c6795f9fe66a1f634988c856aaa00960dee23b31a652d2f13b496",
+      "summary": "",
+      "imports": [
+        "pathlib"
+      ],
+      "endpoints": [
+        "/api/disconnect-automation/action",
+        "/api/disconnect-automation/claim",
+        "/api/disconnect-automation/delete",
+        "/api/disconnect-automation/pause",
+        "/api/disconnect-automation/prepare",
+        "/api/disconnect-automation/start",
+        "/api/disconnect-automation/update"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "fix_scoped_routes_20261028.py",
@@ -6714,14 +6737,19 @@
     {
       "path": "tests/test_private_operational_migration.cjs",
       "category": "tests",
-      "bytes": 4238,
-      "sha256": "b9edeb99176be3836685d7360196a98313c57a61266780f4200e1b51583af9b2",
+      "bytes": 4432,
+      "sha256": "525ad4a300a42cd1b028a088bc080b265d06295fe4d00e7f85b03733bc3ef474",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/auto-improductive-close/toggle",
+        "/api/disconnect-automation/action",
         "/api/disconnect-automation/claim",
         "/api/disconnect-automation/delete",
+        "/api/disconnect-automation/pause",
+        "/api/disconnect-automation/prepare",
+        "/api/disconnect-automation/start",
+        "/api/disconnect-automation/update",
         "/api/monitor/snapshot/clear",
         "/api/orders/",
         "/api/orders/0/transfer-serial?profile=natal",

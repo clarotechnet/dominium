@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-28T20:22:21+00:00
-- Source fingerprint: `4fa93885309f0862`
-- Indexed files: 430
+- Generated: 2026-10-28T20:27:17+00:00
+- Source fingerprint: `73d25932146613d4`
+- Indexed files: 431
 - Indexed symbols: 3712
-- API path references: 485
+- API path references: 497
 
 ## Navigation rule
 
@@ -133,6 +133,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `desc_review_proxy.py` (10 symbols, 1 API paths) - Authenticated Dominium boundary to the Bot's existing DESC review service.
 - `desc_review_relay.py` (6 symbols, 2 API paths) - Authenticated relay for DESC review and private read-only Imperium checks.
 - `edge_voice.py` (8 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `fix_desc_automation_bridge.py` (7 API paths)
 - `fix_scoped_routes_20261028.py` (5 API paths)
 - `flow_reader/__init__.py` - Read-only Imperium/DataSnap capture analyzer.
 - `flow_reader/analyzer.py` (28 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -180,7 +181,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 143 files
+- shared: 144 files
 - tooling-deploy: 47 files
 - docs: 37 files
 - tests: 120 files

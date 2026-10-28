@@ -185,3 +185,10 @@ Alterações preparadas para commit (7 arquivos). Para motivação e resultado c
 - `integrations/import_bridge/worker.test.mjs`
 - `integrations/import_bridge/worker_create.test.mjs`
 - `tests/test_private_operational_migration.cjs`
+
+## 2026-10-28 | staged:650e83ff9c3218d8
+
+Alterações preparadas para commit (2 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `deploy/hostinger-web/operational-policy.js`
+- `tests/test_private_operational_migration.cjs`

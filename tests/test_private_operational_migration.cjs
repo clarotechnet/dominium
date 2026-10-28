@@ -28,7 +28,10 @@ test('explicit private write allowlist supports existing operational commands, b
   '/api/toa-live/connect',
   '/api/monitor/snapshot/clear',
   '/api/voice/synthesize',
+  '/api/disconnect-automation/prepare',
+  '/api/disconnect-automation/action',
   '/api/disconnect-automation/claim',
+  '/api/disconnect-automation/update',
   '/api/orders/123/material-paste?profile=natal',
   '/api/orders/123/move-installer?profile=recife',
   '/api/orders/123/transfer-serial?profile=mossoro',
@@ -49,6 +52,8 @@ test('explicit private write allowlist supports existing operational commands, b
   '//outside.example/api/stock/writeoff',
   'https://outside.example/api/stock/writeoff',
   '/api/disconnect-automation/delete',
+  '/api/disconnect-automation/start',
+  '/api/disconnect-automation/pause',
  ])assert.equal(allowedOperationalWrite('POST',url),false,url);
  assert.equal(allowedOperationalWrite('GET','/api/orders/bulk-create?profile=natal'),false);
 });

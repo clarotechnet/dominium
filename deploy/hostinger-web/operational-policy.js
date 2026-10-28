@@ -85,7 +85,7 @@ const OPERATIONAL_WRITES = new Set([
   '/api/voice/synthesize',
 ]);
 const SCOPED_WRITES = /^\/api\/orders\/[1-9][0-9]{0,9}\/(?:material-paste|move-installer|transfer-serial)\?profile=(?:natal|fortaleza|mossoro|recife)$/;
-const DISCONNECT_WRITES = /^\/api\/disconnect-automation\/(?:start|pause|stop|claim|complete|fail|release|cancel|retry)$/;
+const DISCONNECT_WRITES = /^\/api\/disconnect-automation\/(?:prepare|action|claim|update)$/;
 function allowedOperationalWrite(method,target) {
   if(method!=='POST' || typeof target!=='string' || target.length>512 ||
     !target.startsWith('/api/') || target.startsWith('//') ||

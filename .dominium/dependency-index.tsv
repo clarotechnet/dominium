@@ -188,6 +188,7 @@ edge_tts	edge_voice.py
 hashlib	edge_voice.py
 importlib	edge_voice.py
 threading	edge_voice.py
+pathlib	fix_desc_automation_bridge.py
 pathlib	fix_scoped_routes_20261028.py
 analyzer	flow_reader/__init__.py
 __future__	flow_reader/analyzer.py

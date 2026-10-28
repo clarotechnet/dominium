@@ -191,6 +191,13 @@ endpoint	path
 /api/disconnection/	desc_review_proxy.py
 /api/stock/daily	desc_review_relay.py
 /api/stock/quality-control	desc_review_relay.py
+/api/disconnect-automation/action	fix_desc_automation_bridge.py
+/api/disconnect-automation/claim	fix_desc_automation_bridge.py
+/api/disconnect-automation/delete	fix_desc_automation_bridge.py
+/api/disconnect-automation/pause	fix_desc_automation_bridge.py
+/api/disconnect-automation/prepare	fix_desc_automation_bridge.py
+/api/disconnect-automation/start	fix_desc_automation_bridge.py
+/api/disconnect-automation/update	fix_desc_automation_bridge.py
 /api/stock/batch	fix_scoped_routes_20261028.py
 /api/stock/batch?profile=natal	fix_scoped_routes_20261028.py
 /api/stock/writeoff	fix_scoped_routes_20261028.py
@@ -394,8 +401,13 @@ endpoint	path
 /api/orders/123/move-installer?profile=natal	tests/test_order_close_proxy.js
 /api/toa-agenda/import	tests/test_order_dataset_hostinger.js
 /api/auto-improductive-close/toggle	tests/test_private_operational_migration.cjs
+/api/disconnect-automation/action	tests/test_private_operational_migration.cjs
 /api/disconnect-automation/claim	tests/test_private_operational_migration.cjs
 /api/disconnect-automation/delete	tests/test_private_operational_migration.cjs
+/api/disconnect-automation/pause	tests/test_private_operational_migration.cjs
+/api/disconnect-automation/prepare	tests/test_private_operational_migration.cjs
+/api/disconnect-automation/start	tests/test_private_operational_migration.cjs
+/api/disconnect-automation/update	tests/test_private_operational_migration.cjs
 /api/monitor/snapshot/clear	tests/test_private_operational_migration.cjs
 /api/orders/	tests/test_private_operational_migration.cjs
 /api/orders/0/transfer-serial?profile=natal	tests/test_private_operational_migration.cjs
