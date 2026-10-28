@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-28T16:25:32+00:00
-- Source fingerprint: `490c21df642130ca`
-- Indexed files: 414
-- Indexed symbols: 3645
-- API path references: 348
+- Generated: 2026-10-28T18:28:12+00:00
+- Source fingerprint: `27d7dfe06c3f916b`
+- Indexed files: 420
+- Indexed symbols: 3681
+- API path references: 354
 
 ## Navigation rule
 
@@ -89,6 +89,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/all-operations.js` (14 symbols, 2 API paths) - Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */
 - `static/atlas-query-ui.js` (23 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
 - `static/confront.js` (8 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
+- `static/daily-stock-parser.js` (6 symbols) - Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */
+- `static/daily-stock.js` (11 symbols, 2 API paths) - Estoque diario independente do Imperium; importacao por arquivo e historico. */
 - `static/desc-analytics-nav.js` (2 symbols) - Submenu de desconexao, independente dos fluxos de baixa existentes. */
 - `static/disconnection.js` (37 symbols, 10 API paths)
 - `static/fflate.browser.min.js` (22 symbols)
@@ -126,7 +128,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `datasnap_client.py` (23 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `desc_order_verifier.py` (7 symbols) - Fail-closed, read-only Imperium order/installer checks for the DESC relay.
 - `desc_review_proxy.py` (10 symbols, 1 API paths) - Authenticated Dominium boundary to the Bot's existing DESC review service.
-- `desc_review_relay.py` (6 symbols, 1 API paths) - Authenticated relay for DESC review and private read-only Imperium checks.
+- `desc_review_relay.py` (6 symbols, 2 API paths) - Authenticated relay for DESC review and private read-only Imperium checks.
 - `edge_voice.py` (8 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `flow_reader/__init__.py` - Read-only Imperium/DataSnap capture analyzer.
 - `flow_reader/analyzer.py` (28 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -172,10 +174,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 132 files
+- shared: 134 files
 - tooling-deploy: 47 files
 - docs: 37 files
-- tests: 117 files
+- tests: 119 files
 
 ## Search indexes
 

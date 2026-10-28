@@ -112,6 +112,7 @@ endpoint	path
 /api/serials/consult	deploy/hostinger-web/operational-policy.js
 /api/status	deploy/hostinger-web/operational-policy.js
 /api/stock	deploy/hostinger-web/operational-policy.js
+/api/stock/daily	deploy/hostinger-web/operational-policy.js
 /api/stock/quality-control	deploy/hostinger-web/operational-policy.js
 /api/stock/serial-owner	deploy/hostinger-web/operational-policy.js
 /api/stock/technicians	deploy/hostinger-web/operational-policy.js
@@ -141,6 +142,7 @@ endpoint	path
 /api/orders	deploy/hostinger-web/server.js
 /api/profiles	deploy/hostinger-web/server.js
 /api/status	deploy/hostinger-web/server.js
+/api/stock/daily	deploy/hostinger-web/server.js
 /api/stock/quality-control	deploy/hostinger-web/server.js
 /api/technicians	deploy/hostinger-web/server.js
 /api/toa-agenda/import	deploy/hostinger-web/server.js
@@ -148,6 +150,7 @@ endpoint	path
 /api/toa-live/lookup	deploy/hostinger-web/server.js
 /api/toa-live/status	deploy/hostinger-web/server.js
 /api/disconnection/	desc_review_proxy.py
+/api/stock/daily	desc_review_relay.py
 /api/stock/quality-control	desc_review_relay.py
 /api/analyze	flow_reader/server.py
 /api/health	flow_reader/server.py
@@ -187,6 +190,8 @@ endpoint	path
 /api/confront/jobs	static/confront.js
 /api/confront/jobs/	static/confront.js
 /api/confront/status	static/confront.js
+/api/stock/daily	static/daily-stock.js
+/api/stock/daily?id=	static/daily-stock.js
 /api/disconnection/	static/disconnection.js
 /api/disconnection/history?date=	static/disconnection.js
 /api/disconnection/manual	static/disconnection.js
@@ -247,6 +252,7 @@ endpoint	path
 /api/confront/jobs?id=1	tests/test_confront_http.py
 /api/confront/status	tests/test_confront_http.py
 /api/orders	tests/test_confront_http.py
+/api/stock/daily	tests/test_daily_stock.cjs
 /api/disconnection/	tests/test_desc_review_proxy.py
 /api/disconnection/../session	tests/test_desc_review_proxy.py
 /api/disconnection/decision	tests/test_desc_review_proxy.py

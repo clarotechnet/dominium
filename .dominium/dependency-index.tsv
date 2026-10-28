@@ -304,6 +304,12 @@ re	integrations/desc_review_bot/install_manual_serial.py
 shutil	integrations/desc_review_bot/install_manual_serial.py
 subprocess	integrations/desc_review_bot/install_manual_serial.py
 tempfile	integrations/desc_review_bot/install_manual_serial.py
+__future__	integrations/import_bridge/daily_stock_service.py
+json	integrations/import_bridge/daily_stock_service.py
+os	integrations/import_bridge/daily_stock_service.py
+pathlib	integrations/import_bridge/daily_stock_service.py
+re	integrations/import_bridge/daily_stock_service.py
+urllib	integrations/import_bridge/daily_stock_service.py
 __future__	integrations/import_bridge/quality_control_relay.py
 datetime	integrations/import_bridge/quality_control_relay.py
 json	integrations/import_bridge/quality_control_relay.py
@@ -959,6 +965,8 @@ sqlite3	tests/test_confront_job_runner.py
 sys	tests/test_confront_job_runner.py
 tempfile	tests/test_confront_job_runner.py
 unittest	tests/test_confront_job_runner.py
+integrations	tests/test_daily_stock_service.py
+unittest	tests/test_daily_stock_service.py
 hashlib	tests/test_desc_analytics_frontend.py
 html	tests/test_desc_analytics_frontend.py
 pathlib	tests/test_desc_analytics_frontend.py

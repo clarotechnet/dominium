@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
-const { allowedOperationalRead, allowedToaLookup, allowedQualityControl } = require('./operational-policy');
+const { allowedOperationalRead, allowedToaLookup, allowedQualityControl, allowedDailyStock } = require('./operational-policy');
 const { allowedConfrontRoute } = require('./confront-policy');
 const {allowedAtlasQueryRoute}=require('./atlas-query-policy');
 
@@ -17,8 +17,9 @@ function resolveOperationalRead(req, connection = readPrivateConnection) {
     allowedAtlasQueryRoute(req.method, req.originalUrl);
   const toaLookup = allowedToaLookup(req.method, req.originalUrl);
   const quality = allowedQualityControl(req.method, req.originalUrl);
-  if (!confrontation && !toaLookup && !quality && !allowedOperationalRead(req.method, req.originalUrl)) return null;
-  if (!req.dominiumSession || ((confrontation || toaLookup || (quality && req.method === 'POST'))
+  const daily = allowedDailyStock(req.method, req.originalUrl);
+  if (!confrontation && !toaLookup && !quality && !daily && !allowedOperationalRead(req.method, req.originalUrl)) return null;
+  if (!req.dominiumSession || ((confrontation || toaLookup || ((quality || daily) && req.method === 'POST'))
     ? !['admin','controller'].includes(req.dominiumUser?.role)
     : !['admin','controller','viewer'].includes(req.dominiumUser?.role))) {
     throw new Error('operational_session_required');
@@ -46,7 +47,7 @@ function restorePrivateJsonContentType(req, headers, body) {
   if (!headers || !req || req.method !== 'POST' || body === undefined) return;
   const url=String(req.originalUrl||'');
   if (!allowedConfrontRoute('POST',url) && !allowedAtlasQueryRoute('POST',url) &&
-      !allowedToaLookup('POST',url) && !allowedQualityControl('POST',url)) return;
+      !allowedToaLookup('POST',url) && !allowedQualityControl('POST',url) && !allowedDailyStock('POST',url)) return;
   const original=String(req.headers?.['content-type']||'').toLowerCase();
   if (!original.startsWith('application/json')) return;
   headers['content-type']='application/json';

@@ -5,6 +5,8 @@
   const inventory = document.getElementById("stockModule");
   const serials = document.getElementById("serialsModule");
   const quality = document.getElementById("stockQualityModule");
+  const daily = document.getElementById("stockDailyModule");
+  const dailyTab = document.getElementById("stockDailyTab");
   const inventoryTab = document.getElementById("stockInventoryTab");
   const qualityTab = document.getElementById("stockQualityTab");
   if (!group || !children || !inventory || !serials || !quality || !inventoryTab || !qualityTab) return;
@@ -20,8 +22,10 @@
     const stockActive = state.activeModule === "stock";
     const serialActive = state.activeModule === "serials";
     const qcActive = isQuality();
+    const dailyActive = stockActive && dailyTab?.getAttribute("aria-selected") === "true";
     group.classList.toggle("active", stockActive || serialActive);
-    inventory.classList.toggle("active", stockActive && !qcActive);
+    inventory.classList.toggle("active", stockActive && !qcActive && !dailyActive);
+    daily?.classList.toggle("active", dailyActive);
     quality.classList.toggle("active", qcActive);
     serials.classList.toggle("active", serialActive);
     if (stockActive || serialActive) expand(true);
@@ -46,6 +50,12 @@
     updateHighlight();
   });
   serials.addEventListener("click", updateHighlight);
+  daily?.addEventListener("click", () => {
+    inventory.click();
+    dailyTab?.click();
+    updateHighlight();
+  });
+  dailyTab?.addEventListener("click", updateHighlight);
   inventoryTab.addEventListener("click", () => {
     setQualityAddress(false);
     updateHighlight();
@@ -57,8 +67,10 @@
   document.addEventListener("dominium:module-change", updateHighlight);
   window.addEventListener("hashchange", () => {
     if (window.location.hash === "#controle-qualidade") qualityTab.click();
+    if (window.location.hash === "#estoque-diario") dailyTab?.click();
     updateHighlight();
   });
   if (window.location.hash === "#controle-qualidade") qualityTab.click();
+  if (window.location.hash === "#estoque-diario") dailyTab?.click();
   updateHighlight();
 })();

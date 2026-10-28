@@ -14,7 +14,7 @@ import secrets
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit, parse_qs
 
 # The relay runs beside its private connection file, outside the Imperium checkout.
 _runtime_root = Path(os.environ.get('DOMINIUM_IMPERIUM_RUNTIME_ROOT', r'C:\DominiumRuntime\Imperium\FerramentaImperiumDireto-OLLAMA'))
@@ -24,6 +24,7 @@ if _runtime_root.is_dir():
 from desc_order_verifier import DEFAULT_RUNTIME_ROOT, DescOrderVerifier, OrderCheckError
 from desc_review_proxy import DescReviewProxy, ProxyError
 from integrations.import_bridge.quality_control_relay import QualityControlService, QualityControlError
+from integrations.import_bridge.daily_stock_service import DailyStockService, DailyStockError
 
 
 class DescRelayHandler(BaseHTTPRequestHandler):
@@ -49,6 +50,32 @@ class DescRelayHandler(BaseHTTPRequestHandler):
         actor = unquote(self.headers.get('X-Dominium-Actor', ''))[:100]
         if not actor:
             self._json(400, {'ok': False, 'error': 'Operador não identificado'})
+            return
+        route = urlsplit(self.path)
+        if route.path == '/api/stock/daily' and self.command in ('GET', 'POST'):
+            role = str(self.headers.get('X-Dominium-Role', ''))
+            allowed = {'admin','controller'} if self.command == 'POST' else {'admin','controller','viewer'}
+            if role not in allowed:
+                self._json(403, {'ok':False,'error':'Perfil sem permissao para estoque diario'})
+                return
+            try:
+                service = DailyStockService()
+                if self.command == 'POST':
+                    if route.query:
+                        raise DailyStockError(400,'Rota de importacao invalida')
+                    self._json(200,service.store(self._read_json(),actor))
+                else:
+                    params = parse_qs(route.query)
+                    if set(params) - {'id'} or len(params.get('id',[])) > 1:
+                        raise DailyStockError(400,'Parametro invalido')
+                    self._json(200,service.view(params.get('id',[None])[0]))
+            except DailyStockError as error:
+                self._json(error.status, {'ok':False,'error':str(error)})
+            except ValueError:
+                self._json(400,{'ok':False,'error':'Arquivo invalido'})
+            except Exception:
+                logging.exception('Falha do Estoque Diario')
+                self._json(502, {'ok':False,'error':'Estoque diario indisponivel'})
             return
         if self.path == '/api/stock/quality-control' and self.command in ('GET', 'POST'):
             role = str(self.headers.get('X-Dominium-Role', ''))

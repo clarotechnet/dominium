@@ -79,6 +79,11 @@
     qualityTab.setAttribute("aria-selected", String(isQuality));
     inventoryPane.classList.toggle("hidden", isQuality);
     qualityPane.classList.toggle("hidden", !isQuality);
+    const dailyTab = document.getElementById("stockDailyTab");
+    const dailyPane = document.getElementById("stockDailyPane");
+    dailyTab?.classList.remove("active");
+    dailyTab?.setAttribute("aria-selected", "false");
+    dailyPane?.classList.add("hidden");
     if (!isQuality) {
       if (dialog.open) closeDialog();
       return;

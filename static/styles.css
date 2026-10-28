@@ -7623,3 +7623,27 @@ body.sidebar-collapsed .stock-group-chevron { display:none; }
 @media (max-width: 900px) {
   .profile-tabs { grid-template-columns: repeat(5,minmax(110px,1fr)); }
 }
+
+/* Estoque da empresa: snapshots diarios independentes do Imperium e do CQ. */
+.daily-stock-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.daily-stock-actions button[hidden]{display:none!important}
+.daily-stock-status{margin:12px 2px;color:var(--muted,#9b9ba4);font-size:.82rem;line-height:1.55}
+.daily-stock-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:17px 0}
+.daily-stock-summary article{border:1px solid var(--line,#34343b);border-radius:12px;background:var(--surface,#1d1d23);padding:18px;display:flex;flex-direction:column;gap:9px}
+.daily-stock-summary span{color:var(--muted,#a2a2ad);font-size:.75rem;font-weight:650}
+.daily-stock-summary strong{font-size:1.4rem;color:var(--ink,#fff)}
+.daily-stock-summary small{color:var(--muted,#aaa);font-size:.72rem}
+.daily-stock-toolbar{display:grid;grid-template-columns:minmax(250px,1fr) minmax(180px,1fr);gap:12px;margin:18px 0}
+.daily-stock-toolbar label{min-width:0}
+.daily-stock-toolbar input,.daily-stock-toolbar select,.daily-stock-preview input{width:100%;min-width:0;border:1px solid var(--line,#444);border-radius:9px;background:var(--surface,#15151b);color:var(--ink,#fff);padding:12px;font-size:.8rem}
+.daily-stock-preview{border:1px solid rgba(244,37,76,.42);background:rgba(244,37,76,.07);border-radius:12px;padding:19px;margin:17px 0;display:grid;gap:12px}
+.daily-stock-preview.hidden{display:none}
+.daily-stock-preview h3{margin:0;font-size:1rem}
+.daily-stock-preview p{margin:0;color:var(--ink,#fff);font-size:.85rem;line-height:1.6}
+.daily-stock-preview label{display:grid;gap:7px;width:min(240px,100%)}
+.daily-stock-table{width:100%;border-collapse:collapse;min-width:620px}
+.daily-stock-table th,.daily-stock-table td{padding:12px;border-bottom:1px solid var(--line,#38383e);text-align:left;font-size:.79rem}
+.daily-stock-table th{color:var(--muted,#aaa);text-transform:uppercase;font-size:.7rem}
+.daily-stock-table td:first-child{font-variant-numeric:tabular-nums;font-weight:700}
+.daily-stock-table td:last-child{font-weight:700;font-variant-numeric:tabular-nums}
+@media(max-width:680px){.daily-stock-summary,.daily-stock-toolbar{grid-template-columns:1fr}}

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-28T16:25:32+00:00",
+  "generated_at": "2026-10-28T18:28:12+00:00",
   "schema": 2,
-  "source_fingerprint": "490c21df642130ca13d5a4050759d717fad71bec4a625d5703e50c2fad8f18b6",
+  "source_fingerprint": "27d7dfe06c3f916b533c14bc6e53f5f49280656900d828fc14a97c79fbcab1f8",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -785,8 +785,8 @@
     {
       "path": "deploy/hostinger-web/operational-policy.js",
       "category": "tooling-deploy",
-      "bytes": 2961,
-      "sha256": "71f6ef566c25ddcea5e0e5ebd2aed3e2a925b67e6ca1949f0731a7112095009f",
+      "bytes": 3182,
+      "sha256": "a45d871e7b24eaefeae1c1db18ac84d1e182138b44ef7bab27b0fd064ff430c3",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -805,6 +805,7 @@
         "/api/serials/consult",
         "/api/status",
         "/api/stock",
+        "/api/stock/daily",
         "/api/stock/quality-control",
         "/api/stock/serial-owner",
         "/api/stock/technicians",
@@ -817,13 +818,13 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 6
+      "symbol_count": 7
     },
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 2826,
-      "sha256": "3591a82d02893e23c47d43ef7c3624123e54495e86144a4d3e9a9918a8e58492",
+      "bytes": 2964,
+      "sha256": "7204447129f09a70bb679f976ba982f0c7065cbe4f247ab6c96e1a0cadfe4a6c",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -891,8 +892,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 43545,
-      "sha256": "7343b562020ed2483f58846155283089a7223cdb12ded6e2c83243cbf05a8495",
+      "bytes": 43651,
+      "sha256": "6fb1da00b537975b296f45d7300a25677d258070c016882727c87e9fb715bb11",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -917,6 +918,7 @@
         "/api/orders",
         "/api/profiles",
         "/api/status",
+        "/api/stock/daily",
         "/api/stock/quality-control",
         "/api/technicians",
         "/api/toa-agenda/import",
@@ -1079,8 +1081,8 @@
     {
       "path": "desc_review_relay.py",
       "category": "shared",
-      "bytes": 6271,
-      "sha256": "7552a8d13211729f091b2cc418ed81d1f1f55ad6b83af5568e065a5164b85711",
+      "bytes": 7843,
+      "sha256": "41b8faaf9e6fdd27e1c66f8a981652d55726e85442c72fd1d6fba49e7eec46e9",
       "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
       "imports": [
         "__future__",
@@ -1099,6 +1101,7 @@
         "urllib"
       ],
       "endpoints": [
+        "/api/stock/daily",
         "/api/stock/quality-control"
       ],
       "env_vars": [
@@ -2210,6 +2213,28 @@
       "symbol_count": 0
     },
     {
+      "path": "integrations/import_bridge/daily_stock_service.py",
+      "category": "shared",
+      "bytes": 5789,
+      "sha256": "4bfea8bad6b4d7925d0f5d0043f0f1922903a246e1dfa436ec7dce664f2c62fd",
+      "summary": "Leitura e snapshots de estoque diario no Supabase operacional do Dominium.",
+      "imports": [
+        "__future__",
+        "json",
+        "os",
+        "pathlib",
+        "re",
+        "urllib"
+      ],
+      "endpoints": [],
+      "env_vars": [
+        "DOMINIUM_QUALITY_ENV_FILE"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
+    },
+    {
       "path": "integrations/import_bridge/quality_control_relay.py",
       "category": "shared",
       "bytes": 5497,
@@ -2248,8 +2273,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 5282,
-      "sha256": "03647e152d20475fc5ce628b62fd13eae7d91d3a7bacf05fad0a33d0935e649f",
+      "bytes": 5440,
+      "sha256": "6571d54a1a8e926014864e012d4d9e6a4efd73ab84a8b8c833a7df6c11074951",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4365,6 +4390,35 @@
       "symbol_count": 8
     },
     {
+      "path": "static/daily-stock-parser.js",
+      "category": "frontend",
+      "bytes": 5449,
+      "sha256": "62266f55fa3c9f65437f8f41dd7fbda91fa79b72b3f13113de6f06aa37827658",
+      "summary": "Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 6
+    },
+    {
+      "path": "static/daily-stock.js",
+      "category": "frontend",
+      "bytes": 7085,
+      "sha256": "02e634072d97b1f39f2d32640aea31de8215adeff18e4560008e178e7599c3d3",
+      "summary": "Estoque diario independente do Imperium; importacao por arquivo e historico. */",
+      "imports": [],
+      "endpoints": [
+        "/api/stock/daily",
+        "/api/stock/daily?id="
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 11
+    },
+    {
       "path": "static/desc-analytics-nav.js",
       "category": "frontend",
       "bytes": 1161,
@@ -4443,8 +4497,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 135775,
-      "sha256": "b8791bb6dfdb7fabaa41d45ec00ab532fe3107d31f52484b6e59cb49c5f542d0",
+      "bytes": 139108,
+      "sha256": "04975f9cd7891e3b7774b749e8848922a76c377d9d9ee15ecea52fbc171de8eb",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4510,8 +4564,8 @@
     {
       "path": "static/quality-control.js",
       "category": "frontend",
-      "bytes": 7170,
-      "sha256": "49ee0ad0272ee0cde626c202d9de20765d66a4ae38bdcadfc89ae3cadbd9c565",
+      "bytes": 7434,
+      "sha256": "6e44e636d44278ab28713d7fe3034ce4524439024b15a75bbbea9aae1449558c",
       "summary": "Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */",
       "imports": [],
       "endpoints": [
@@ -4551,8 +4605,8 @@
     {
       "path": "static/stock-nav.js",
       "category": "frontend",
-      "bytes": 2585,
-      "sha256": "a6463b30ffa6d39e696c9cfb617b938f47f7029a521eca237eeef0938edc19f8",
+      "bytes": 3180,
+      "sha256": "e07dee986237feb393c848d584922f4f99ba44e383190b7f3cab6455f9e94dc8",
       "summary": "Navegacao consolidada de Estoque (mantem os modulos existentes). */",
       "imports": [],
       "endpoints": [],
@@ -4564,8 +4618,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 220077,
-      "sha256": "7481e6651620cb9ead7f3a1a013523d932f32d051a0594c5233ee904a4ee4b23",
+      "bytes": 222261,
+      "sha256": "1fe73e22361851bc0ed7ea2d76410105af4ca5b0649e140612881c3be125d836",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -4716,6 +4770,19 @@
       "category": "shared",
       "bytes": 1318,
       "sha256": "ccdcef1918ac45e122eba13ca4dfdd257d07aef20be3cf36d8152ce06ebdc5b4",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "supabase/migrations/20261028153000_estoque_diario.sql",
+      "category": "shared",
+      "bytes": 5664,
+      "sha256": "50e6265d0f2fc5d45aae0afe1bdd4d63b6e48aac2c123ad75634da7375f5c5ce",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -5446,6 +5513,37 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 19
+    },
+    {
+      "path": "tests/test_daily_stock.cjs",
+      "category": "tests",
+      "bytes": 3551,
+      "sha256": "3d0a0c1bef47dc995396f0657a3cb22b8e952fdad64011486ba1681ee94c4865",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/stock/daily"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
+      "path": "tests/test_daily_stock_service.py",
+      "category": "tests",
+      "bytes": 2276,
+      "sha256": "f3c6ece4693856418476dc943aad4953fdce7bcf6f6e8a15a552b1eaf375452e",
+      "summary": "Testes isolados sem gravação externa.",
+      "imports": [
+        "integrations",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 7
     },
     {
       "path": "tests/test_desc_analytics_frontend.py",

@@ -65,7 +65,7 @@ const state = {
           ? "imports"
           : window.location.hash === "#tecnicos"
             ? "technicians"
-            : window.location.hash === "#estoque" || window.location.hash === "#controle-qualidade"
+            : window.location.hash === "#estoque" || window.location.hash === "#controle-qualidade" || window.location.hash === "#estoque-diario"
               ? "stock"
               : window.location.hash === "#criar-os"
                 ? "bulk"

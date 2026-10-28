@@ -6,7 +6,7 @@
   <title>DOMINIUM</title>
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="/styles.css?v=20261028-all-ops-1">
+  <link rel="stylesheet" href="/styles.css?v=20261028-daily-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
 </head>
@@ -163,6 +163,10 @@
         <button class="side-nav-item stock-nav-child" id="stockQualityModule" type="button">
           <i data-lucide="clipboard-list" aria-hidden="true"></i>
           <span><strong>Controle de Qualidade</strong><small>Materiais e quantidades</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="stockDailyModule" type="button">
+          <i data-lucide="calendar-days" aria-hidden="true"></i>
+          <span><strong>Estoque Diário</strong><small>Saldo da empresa • Excel</small></span>
         </button>
       </div>
       <button class="side-nav-item" id="confrontModule" type="button">
@@ -829,6 +833,7 @@
       <div class="quality-tabs" role="tablist" aria-label="Abas de estoque">
         <button id="stockInventoryTab" type="button" role="tab" aria-selected="true" class="active">Estoque por tecnico</button>
         <button id="stockQualityTab" type="button" role="tab" aria-selected="false">Controle de qualidade</button>
+        <button id="stockDailyTab" type="button" role="tab" aria-selected="false">Estoque Diário</button>
       </div>
       <div id="stockInventoryPane" role="tabpanel" aria-labelledby="stockInventoryTab">
       <header class="workspace-heading">
@@ -976,6 +981,48 @@
               <tbody id="qualityBody"></tbody>
             </table>
           </div>
+        </div>
+      </div>
+      <div id="stockDailyPane" class="quality-pane hidden" role="tabpanel" aria-labelledby="stockDailyTab">
+        <header class="workspace-heading">
+          <div>
+            <p class="section-label">SALDO DA EMPRESA • UTILIZAÇÃO LIVRE</p>
+            <h2>Estoque Diário</h2>
+            <p class="workspace-description">Controle diário por Excel SAP. A importação considera apenas Material, Descr. Material e Qtd - Utilização Livre.</p>
+          </div>
+          <div class="daily-stock-actions">
+            <input id="dailyStockFile" type="file" accept=".xlsx" class="hidden" aria-label="Planilha de estoque diário">
+            <button class="button primary" id="dailyStockUpload" type="button"><i data-lucide="file-up" aria-hidden="true"></i> Importar Excel</button>
+            <button class="button secondary" id="dailyStockRefresh" type="button"><i data-lucide="refresh-cw" aria-hidden="true"></i> Atualizar</button>
+          </div>
+        </header>
+        <p class="daily-stock-status" role="status" id="dailyStockStatus">Carregue o estoque para visualizar o saldo.</p>
+        <div class="daily-stock-summary">
+          <article><span>Saldo da empresa</span><strong id="dailyStockFileCount">—</strong><small id="dailyStockDateLabel">Aguardando importação</small></article>
+          <article><span>Regras do arquivo</span><strong>3 colunas</strong><small>Códigos normalizados e quantidades somadas por material</small></article>
+        </div>
+        <div class="daily-stock-preview hidden" id="dailyStockPreview">
+          <h3>Conferência da nova planilha</h3>
+          <p id="dailyStockPreviewText"></p>
+          <label class="field">Data do saldo
+            <input type="date" id="dailyStockImportDate" required>
+          </label>
+          <div class="daily-stock-actions">
+            <button class="button primary" id="dailyStockConfirm" type="button" disabled>Confirmar importação</button>
+            <button class="button secondary" id="dailyStockCancel" type="button">Cancelar</button>
+          </div>
+        </div>
+        <div class="daily-stock-toolbar">
+          <label class="field"><span>Histórico de importações</span><select id="dailyStockHistory" aria-label="Selecionar data do estoque"></select></label>
+          <label class="field"><span>Pesquisar material</span><input id="dailyStockSearch" type="search" placeholder="Código ou descrição"></label>
+        </div>
+        <div class="table-section">
+          <div class="table-scroll">
+            <table class="daily-stock-table"><thead><tr>
+              <th>Material</th><th>Descr. Material</th><th>Qtd - Utilização Livre</th>
+            </tr></thead><tbody id="dailyStockBody"></tbody></table>
+          </div>
+          <p id="dailyStockRowsInfo" class="daily-stock-status"></p>
         </div>
       </div>
     </section>
@@ -2376,9 +2423,11 @@
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
-  <script src="/app.js?v=20261028-all-ops-1"></script>
+  <script src="/app.js?v=20261028-daily-1"></script>
   <script src="/quality-control.js?v=20261027-modal-1"></script>
-  <script src="/stock-nav.js?v=20261027-arrow-1"></script>
+  <script src="/daily-stock-parser.js?v=20261028-1"></script>
+  <script src="/daily-stock.js?v=20261028-1"></script>
+  <script src="/stock-nav.js?v=20261028-daily-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>
   <script src="/query-import.js?v=20261023-1"></script>

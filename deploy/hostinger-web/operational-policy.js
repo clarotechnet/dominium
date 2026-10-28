@@ -62,5 +62,9 @@ function allowedQualityControl(method, requestTarget) {
   return (method === 'GET' || method === 'POST') &&
     requestTarget === '/api/stock/quality-control';
 }
+function allowedDailyStock(method, target) {
+  return (method === 'POST' && target === '/api/stock/daily') ||
+    (method === 'GET' && /^\/api\/stock\/daily(?:\?id=[a-fA-F0-9-]{36})?$/.test(target));
+}
 module.exports = { allowedOperationalRead, allowedToaLookup, allowedOrderClose,
-  allowedQualityControl, validOfficialCloseBody, closeTransportFailure };
+  allowedQualityControl, allowedDailyStock, validOfficialCloseBody, closeTransportFailure };
