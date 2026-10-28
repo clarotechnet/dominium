@@ -7134,8 +7134,11 @@ function render() {
   );
   const productive = productiveClose();
   renderProfileTabs();
-  elements.body.replaceChildren(...visible.map(rowFor));
-  elements.failuresBody.replaceChildren(...state.failures.map(failureRowFor));
+  // Rebuild order DOM only when its own workspace is visible.
+  if (state.activeModule === "orders") {
+    elements.body.replaceChildren(...visible.map(rowFor));
+    elements.failuresBody.replaceChildren(...state.failures.map(failureRowFor));
+  }
   elements.pendingLabel.textContent = elements.status.value === "field"
     ? "Em campo"
     : "Resultados";
@@ -7191,7 +7194,9 @@ function render() {
   elements.dashboardModule.classList.toggle("active", state.activeModule === "dashboard");
   elements.monitorModule?.classList.toggle("active", state.activeModule === "monitor");
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
-  elements.stockModule.classList.toggle("active", state.activeModule === "stock");
+  elements.stockModule.classList.toggle("active",
+    state.activeModule === "stock"
+    && document.getElementById("stockInventoryTab")?.getAttribute("aria-selected") === "true");
   elements.serialsModule.classList.toggle("active", state.activeModule === "serials");
   document.getElementById("confrontModule").classList.toggle("active", state.activeModule === "confront");
   elements.techniciansModule.classList.toggle("active", state.activeModule === "technicians");
@@ -7207,13 +7212,16 @@ function render() {
   elements.historyModule.classList.toggle("active", state.activeModule === "history");
   document.getElementById("disconnectionModule").classList.toggle("active", state.activeModule === "disconnection");
   document.getElementById("descAnalyticsModule").classList.toggle("active", state.activeModule === "descAnalytics");
-  renderDashboard();
-  renderOperationsMonitor();
+  if (state.activeModule === "dashboard") renderDashboard();
+  if (state.activeModule === "monitor") renderOperationsMonitor();
   renderImportPreview();
   renderToaAutomation();
   renderAutomationTest();
-  renderStock();
-  renderSerialConsult();
+  if (state.activeModule === "stock"
+    && document.getElementById("stockInventoryTab")?.getAttribute("aria-selected") === "true") {
+    renderStock();
+  }
+  if (state.activeModule === "serials") renderSerialConsult();
   renderTechnicians();
   renderIntelligence();
   renderSerialAudit();
@@ -7225,6 +7233,7 @@ function render() {
   renderCloseReport();
   renderHistory();
   renderServerLogs();
+  window.DominiumStockNavigation?.sync();
 }
 
 async function loadOrders({ preserveSelection = false, quiet = false, visual = true } = {}) {

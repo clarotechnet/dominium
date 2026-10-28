@@ -84,6 +84,7 @@
     dailyTab?.classList.remove("active");
     dailyTab?.setAttribute("aria-selected", "false");
     dailyPane?.classList.add("hidden");
+    document.dispatchEvent(new Event("dominium:stock-tab-change"));
     if (!isQuality) {
       if (dialog.open) closeDialog();
       return;

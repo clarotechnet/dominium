@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-28T18:48:42+00:00
-- Source fingerprint: `27d7dfe06c3f916b`
+- Generated: 2026-10-28T19:29:05+00:00
+- Source fingerprint: `20d511352aa614d1`
 - Indexed files: 420
-- Indexed symbols: 3681
+- Indexed symbols: 3685
 - API path references: 354
 
 ## Navigation rule
@@ -104,7 +104,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/quality-control.js` (11 symbols, 1 API paths) - Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */
 - `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
-- `static/stock-nav.js` (4 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
+- `static/stock-nav.js` (6 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
 - `static/styles.css`
 - `static/theme-init.js`
 - `static/workspace.css` - Shared workspace: the original Technet image, floating glass and Dominium red. */

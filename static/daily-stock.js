@@ -4,7 +4,7 @@
  const $=id=>document.getElementById(id);
  const tab=$("stockDailyTab"),pane=$("stockDailyPane"),inventory=$("stockInventoryTab"),quality=$("stockQualityTab");
  if(!tab||!pane)return;
- let latest=null,history=[],items=[],preview=null,loading=false,saving=false;
+ let latest=null,history=[],items=[],preview=null,loading=false,saving=false,loaded=false;
  const editable=()=>["admin","controller"].includes(state.authUser?.role);
  const notice=(text,fail=false)=>{
    $("dailyStockStatus").textContent=text||"";
@@ -28,7 +28,7 @@
      window.history.replaceState(null,"",url.pathname+url.search+url.hash);
    }
    document.dispatchEvent(new Event("dominium:module-change"));
-   if(!loading&&!latest)void load();
+   if(!loading&&!loaded)void load();
  }
  function render(){
    $("dailyStockFileCount").textContent=latest
@@ -73,6 +73,7 @@
      const response=await request(path,{timeoutMs:30000});
      if(!Array.isArray(response.historico)||!Array.isArray(response.items))
        throw Error("Resposta inválida do estoque diário");
+     loaded=true;
      history=response.historico;
      latest=response.snapshot||null;items=response.items;
      notice(latest?"Estoque carregado. Os snapshots anteriores foram preservados.":"Ainda não há importações.");

@@ -237,21 +237,21 @@ frontend	static/all-operations.js	14	2		Visão de quatro operações, somente le
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
 frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	0b07900bcc977ee8
 frontend	static/daily-stock-parser.js	6			Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */	62266f55fa3c9f65
-frontend	static/daily-stock.js	11	2		Estoque diario independente do Imperium; importacao por arquivo e historico. */	02e634072d97b1f3
+frontend	static/daily-stock.js	11	2		Estoque diario independente do Imperium; importacao por arquivo e historico. */	eb5423b9b68a8445
 frontend	static/desc-analytics-nav.js	2			Submenu de desconexao, independente dos fluxos de baixa existentes. */	de2c537e32ac7a0a
 frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			04975f9cd7891e3b
+frontend	static/index.html		1			d10942cbea4a0102
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */	6e44e636d44278ab
+frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */	4448c2da5008899f
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
-frontend	static/stock-nav.js	4			Navegacao consolidada de Estoque (mantem os modulos existentes). */	e07dee986237feb3
+frontend	static/stock-nav.js	6			Navegacao consolidada de Estoque (mantem os modulos existentes). */	ea6bca0e6f34bed8
 frontend	static/styles.css					1fe73e22361851bc
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
@@ -353,7 +353,7 @@ tests	tests/test_order_dataset_hostinger.js	4	1			bca127bdd7f87bcf
 tests	tests/test_productive_snapshot_frontend.js	18				40c79179779f6702
 tests	tests/test_quality_control.py	4				4a628243ef04afb5
 tests	tests/test_quality_control_relay.py	4				7718202ccd427ed5
-tests	tests/test_quality_modal_frontend.cjs	5				45f35031074f4aa8
+tests	tests/test_quality_modal_frontend.cjs	7				446a30563afed3ff
 tests	tests/test_query_import.js	2				7af4ea366de3aed9
 tests	tests/test_registration_flow.py	43			test_registration_flow.py	ec15372b971922bb
 tests	tests/test_semiauto_frontend.js	19				44a6652d8752bfc1

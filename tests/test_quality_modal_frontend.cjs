@@ -24,7 +24,9 @@ class FakeElement {
         if(force===undefined) force=!classes.has(name);
         if(force) classes.add(name); else classes.delete(name);
       },
-      contains(name) {return classes.has(name);}
+      contains(name) {return classes.has(name);},
+      remove(name) {classes.delete(name);},
+      add(name) {classes.add(name);}
     };
   }
   addEventListener(name,fn) {(this.events[name] ||= []).push(fn);}
@@ -41,11 +43,11 @@ class FakeElement {
 }
 
 function makeDOM() {
- const ids=['stockInventoryTab','stockQualityTab','stockInventoryPane','stockQualityPane','qualityBody',
+ const ids=['stockInventoryTab','stockQualityTab','stockDailyTab','stockInventoryPane','stockQualityPane','stockDailyPane','qualityBody',
   'qualityFormWrap','qualityForm','qualityNotice','qualityFormNotice','qualityFormTitle','qualitySearch',
   'qualityCount','qualityAdd','qualitySave','qualityCancel','qualityDialogClose','qualityRefresh',
   'qualityMaterial','qualityDescription','qualityRule','stockGroupToggle','stockNavChildren',
-  'stockModule','serialsModule','stockQualityModule'];
+  'stockModule','serialsModule','stockQualityModule','stockDailyModule'];
  const nodes=Object.fromEntries(ids.map(id=>[id,new FakeElement(id)]));
  nodes.qualityForm.inputs=[nodes.qualityMaterial,nodes.qualityDescription,nodes.qualityRule];
  const docListeners={};
@@ -76,7 +78,7 @@ function startUI(role='admin') {
    return {items:[{id:7,material:'22026210',descricao_material:'Cabo HDMI',qtd_controle_qualidade:'2',atualizado_em:'2026-10-27T13:18:24+00:00'}]};
  };
  const context={document,state,request,normalize:x=>x.toLowerCase(),showToast:()=>{},window:{},
-   console,Date,Promise,setTimeout,clearTimeout};
+   console,Date,Promise,Event,setTimeout,clearTimeout};
  vm.runInNewContext(fs.readFileSync(path.join(ROOT,'static/quality-control.js'),'utf8'),context);
  return {nodes,state,api,setFail:v=>{failWrites=v;}};
 }
@@ -163,4 +165,55 @@ test('Estoque chevron and children switch state on every click',()=>{
  state.activeModule='serials';
  document.dispatchEvent({type:'dominium:module-change'});
  assert.equal(nodes.stockGroupToggle.getAttribute('aria-expanded'),'true');
+});
+
+test('only one stock tab and sidebar child remains highlighted across switches', () => {
+ const {nodes,document}=makeDOM();
+ const state={activeModule:'stock'};
+ const names=[
+   {tab:'stockInventoryTab',pane:'stockInventoryPane',nav:'stockModule'},
+   {tab:'stockQualityTab',pane:'stockQualityPane',nav:'stockQualityModule'},
+   {tab:'stockDailyTab',pane:'stockDailyPane',nav:'stockDailyModule'}
+ ];
+ function select(id) {
+   for (const item of names) {
+     const active=item.tab===id;
+     nodes[item.tab].classList.toggle('active',active);
+     nodes[item.tab].setAttribute('aria-selected',String(active));
+     nodes[item.pane].classList.toggle('hidden',!active);
+   }
+   document.dispatchEvent({type:'dominium:stock-tab-change'});
+ }
+ for (const item of names) nodes[item.tab].addEventListener('click',()=>select(item.tab));
+ select('stockInventoryTab');
+ nodes.stockGroupToggle.setAttribute('aria-expanded','true');
+ const window={
+   location:{hash:'#estoque',href:'https://dominium.clarotechnet.com.br/?profile=natal#estoque',pathname:'/',search:'?profile=natal'},
+   history:{replaceState(){}},addEventListener(){}
+ };
+ vm.runInNewContext(fs.readFileSync(path.join(ROOT,'static/stock-nav.js'),'utf8'),{
+   document,state,window,URL
+ });
+ for (const chosen of [
+   ['stockQualityModule','stockQualityTab','stockQualityModule'],
+   ['stockDailyModule','stockDailyTab','stockDailyModule'],
+   ['stockQualityModule','stockQualityTab','stockQualityModule'],
+   ['stockModule','stockInventoryTab','stockModule']
+ ]) {
+   nodes[chosen[0]].click();
+   // A stale class from the generic app renderer must be cleared.
+   if (chosen[0]!=='stockModule') nodes.stockModule.classList.add('active');
+   window.DominiumStockNavigation.sync();
+   assert.equal(names.filter(x=>nodes[x.tab].getAttribute('aria-selected')==='true').length,1);
+   assert.equal(names.filter(x=>nodes[x.pane].classList.contains('hidden')===false).length,1);
+   assert.deepEqual(names.filter(x=>nodes[x.nav].classList.contains('active')).map(x=>x.nav),[chosen[2]]);
+ }
+});
+
+test('hidden expensive pages do not rebuild orders and monitor data on unrelated stock renders',()=>{
+ const app=fs.readFileSync(path.join(ROOT,'static/app.js'),'utf8');
+ assert.match(app,/if \(state\.activeModule === "orders"\) \{\s*elements\.body\.replaceChildren/);
+ assert.match(app,/if \(state\.activeModule === "dashboard"\) renderDashboard\(\)/);
+ assert.match(app,/if \(state\.activeModule === "monitor"\) renderOperationsMonitor\(\)/);
+ assert.match(app,/if \(state\.activeModule === "serials"\) renderSerialConsult\(\)/);
 });

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-28T18:48:42+00:00",
+  "generated_at": "2026-10-28T19:29:05+00:00",
   "schema": 2,
-  "source_fingerprint": "27d7dfe06c3f916b533c14bc6e53f5f49280656900d828fc14a97c79fbcab1f8",
+  "source_fingerprint": "20d511352aa614d1bec2f0b2d222f293329bbd51470ff8a6b4190532d352a15e",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -4405,8 +4405,8 @@
     {
       "path": "static/daily-stock.js",
       "category": "frontend",
-      "bytes": 7085,
-      "sha256": "02e634072d97b1f39f2d32640aea31de8215adeff18e4560008e178e7599c3d3",
+      "bytes": 7116,
+      "sha256": "eb5423b9b68a84456104deef0fc47c4f0b5b040768f3cd890c18b0e9b9a99e54",
       "summary": "Estoque diario independente do Imperium; importacao por arquivo e historico. */",
       "imports": [],
       "endpoints": [
@@ -4497,8 +4497,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 139108,
-      "sha256": "04975f9cd7891e3b7774b749e8848922a76c377d9d9ee15ecea52fbc171de8eb",
+      "bytes": 139125,
+      "sha256": "d10942cbea4a0102f708b6be8cc9657e0fb62692ca24d2b8d6035db12d4e2b18",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4564,8 +4564,8 @@
     {
       "path": "static/quality-control.js",
       "category": "frontend",
-      "bytes": 7434,
-      "sha256": "6e44e636d44278ab28713d7fe3034ce4524439024b15a75bbbea9aae1449558c",
+      "bytes": 7502,
+      "sha256": "4448c2da5008899f2d54517cb6e0bf0ebb06bb98e66cbc8356ee4c7a99369555",
       "summary": "Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */",
       "imports": [],
       "endpoints": [
@@ -4605,15 +4605,15 @@
     {
       "path": "static/stock-nav.js",
       "category": "frontend",
-      "bytes": 3180,
-      "sha256": "e07dee986237feb393c848d584922f4f99ba44e383190b7f3cab6455f9e94dc8",
+      "bytes": 4426,
+      "sha256": "ea6bca0e6f34bed867de5853742285e39f5ef02bd4d70f9f9962155865542e5e",
       "summary": "Navegacao consolidada de Estoque (mantem os modulos existentes). */",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 4
+      "symbol_count": 6
     },
     {
       "path": "static/styles.css",
@@ -6615,15 +6615,15 @@
     {
       "path": "tests/test_quality_modal_frontend.cjs",
       "category": "tests",
-      "bytes": 6933,
-      "sha256": "45f35031074f4aa834d21f61b9349b36661164456f04615d652d5186bae18a0f",
+      "bytes": 9653,
+      "sha256": "446a30563afed3fffced755909878b39599a2072a2492928533f9d74519b9a9b",
       "summary": "",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 5
+      "symbol_count": 7
     },
     {
       "path": "tests/test_query_import.js",
