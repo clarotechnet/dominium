@@ -93,3 +93,16 @@ retirada 241800890005), ambos Recife. **Não reenviar essas baixas.**
 Isso não homologa o fechamento acompanhante de múltiplas O.S. nem a
 Adesão completa pela API oficial. Referência detalhada:
 `docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md`.
+
+## BotDMV e !parcial — manutenção de 29/10/2026
+
+- As mensagens espontâneas `Consulta TOA · desconexão` foram **silenciadas**
+  no `index.js` do BotDMV em produção; a captura/consulta interna permanece.
+- O `!parcial` voltou a executar o Python Windows após restauração do registro
+  `WSLInterop`. Unit de recuperação para próximos boots:
+  `integrations/desc_runtime/dominium-wsl-interop.service`.
+- Teste de 4 bases com renderização de 4 PNGs via socket simulado passou.
+- Uma O.S. **RETIRADA FORA TOA** manual de Natal foi fechada e relida com
+  exatamente um decoder e um smart retirados na mesma baixa 430. Não repetir.
+- Detalhes, evidências, limitação de testes e localização do recibo privado:
+  `docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md`.
