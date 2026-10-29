@@ -169,3 +169,73 @@ baixa, transferência ou envio de mensagem aos grupos.
 O resultado dessa consulta genérica não expôs bucket no resumo; não usá-la
 como prova de que todas as guardas do executor por grupos foram aprovadas.
 A validação de bucket no fluxo específico permanece obrigatória e fechada.
+
+## Retomada após limite de tokens — 29/10/2026, aproximadamente 16h38 (Brasília)
+
+A sessão anterior havia concluído duas baixas reais autorizadas em Recife,
+porém o leitor legado de equipamentos não interpretava os registros
+**persistidos** devolvidos por GetRecords. Foi proibido reenviar essas baixas
+para não duplicar movimentações. Nesta retomada, consultei o estado real do
+servidor DESKTOP-K7J3E1N, da main e do staging
+`C:\DominiumRuntime\Maintenance\DescRemovedReader-20261029`.
+
+**Conferências de O.S. registradas no staging `verified.json`:**
+
+- Contrato 410728574, IdOS 53688, O.S. 2603550706, 430:
+  retirada única C85D38D7FAED, sem instalação ou miscelâneas.
+- Contrato 412840525, IdOS 53698, O.S. 2614498305, 409:
+  instalado 241806484254; retirado 241800890005;
+  sem miscelâneas. São duas O.S. independentes, **não um teste de
+  fechamento DESC multiO.S.**
+- O registro de confirmação de ambas antecede esta retomada.
+  Não ocorreu nenhum novo POST/baixa/transferência nesta etapa.
+
+**Alteração técnica:** apenas quatro métodos leitores do
+`imperium_api.py` Windows:
+`_parse_installed_detail_row`, `_find_installed_detail_serial`,
+`_parse_removed_detail_row`, `read_detail_equipment_movements`.
+Preserva formato delta e adiciona marcadores/trailers gravados,
+vínculo de técnico, IdOS, serial, grupo e rejeição de duplicatas.
+Os módulos de envio e as guardas de estoque não foram alterados.
+A diferença semântica por AST, a idempotência do transformador
+e a igualdade exata com o candidato foram verificadas.
+
+**Testes:** 15 testes de movimentações passaram em Python 3.12 e 3.14.
+A mesma suíte de 15 foi executada com a fixture legada congelada,
+antes de adicionar o código novo, e passou após transformação.
+O teste ampliado do runtime antigo executou 121 testes e encontrou
+três falhas pré-existentes ligadas a expectativas de materiais
+parciais, incompatíveis com a regra de segurança vigente:
+`test_official_material_preparation_blocks_unknown_material`,
+`test_official_material_preparation_counts_unknown_code_as_one_missing_group`
+e `test_official_material_preparation_reduces_to_available_quantity`.
+Não declarar o gate legado completo verde; atualizar testes legados
+separadamente sem relaxar a trava de materiais incompletos.
+
+**Publicação e instalação:** commit inicial do transformador
+`7121f73c83cdd395bc43e4171c6a3a9679e45a2c`;
+testes com fixture fictícia versionados na main. Hash SHA-256 legado
+`a0f45197e42d872ea4f824ce4abf33d2800f8d9c753623f85880eb171aab3ccf`;
+instalado
+`61045717b6d7ccfd672088ee2c81fc0510ddedb79fa052ea3650501cd85cdf0e`.
+Backup antes da alteração:
+`C:\DominiumRuntime\Backup\DescRemovedReader-20261029-163756\imperium_api.py`.
+Instalador/rollback local no diretório do staging:
+`safe_install_reader.py`, manifesto `installed.json`.
+Ao normalizar CRLF para LF na comparação dos métodos, a validação
+reproduziu exatamente o candidato e confirmou que só quatro
+métodos mudaram. Binários reais foram preservados em backup.
+
+Serviço da porta 8765 reiniciado de PID 12064 para PID 12548.
+Health check após o reinício confirmou `/api/nightly-backlog`
+`enabled=true`, `server_scheduler_active=true`, 23h Brasília,
+código 106, e `/api/auto-improductive-close` `enabled=false`.
+O estado anterior de `/api/toa-automation` foi preservado,
+sem ativar novas rotinas. **Execução real do lote 106 não foi
+validada:** o horário ainda não havia chegado.
+
+**Continuam bloqueados:** baixa automática a partir de grupos DESC,
+fechamento sem itens das O.S. acompanhantes em multiO.S.,
+execução geral produtiva e Adesão completa via API oficial.
+Não inferir sucesso desses fluxos a partir das duas baixas
+individuais nem dos testes do leitor.
