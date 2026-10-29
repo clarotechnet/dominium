@@ -1,3 +1,31 @@
+## Atualização vigente — 29/10/2026: evidências da API oficial para ADESÃO
+
+Três conversas históricas (Jader/Imperium, Integração Imperium x Technet,
+Synia+Technet) e especificação PDF foram analisadas sem versionar dados privados.
+Memória curada: [ADESAO_IMPERIUM_EVIDENCIAS_20261029.md](ADESAO_IMPERIUM_EVIDENCIAS_20261029.md).
+Tarefa de implementação: https://github.com/clarotechnet/dominium/issues/28
+
+**Regras vigentes:** bucket NTL-DMV é ADESÃO; NTL-DMV_ADM/PWM-DMV_ADM são
+DESC. DESC/DataSnap só por grupo/técnico/bucket autorizado; sem miscelâneas;
+equipamentos concentrados em uma O.S. por código. ADESÃO/API oficial:
+equipamentos e miscelâneas reais; quando faltar material no técnico,
+consultar retorno e complementar somente com saldo/origem confirmados.
+INST GPON - INST CABO e ASSINATURA: código de baixa sem itens.
+
+**Evidências Jader:** POST /technet/ordemservico HTTP 200 confirma recebimento
+na fila, NÃO baixa concluída. Conferir callback e Imperium; número+data
+importada do TOA; código do material exato no estoque do instalador; erro
+SQL de subconsulta múltipla pode ocorrer por unidades de negócio duplicadas.
+PDF descreve endpoints *solicitados*, não entregas verificadas.
+
+**Produção/pendências:** executor geral que causou baixa indevida de ADESÃO
+permanece desativado, incluindo produtivo e lote 106. Regras DESC corrigidas
+em código local, mas ainda não validadas como fluxo end-to-end ativo.
+Falta baixa das outras O.S. sem repetir movimentações, complemento por retorno
+na API oficial e testes homologados. Não reativar robô geral.
+Antes de qualquer mudança, conferir estado real na implantação e registrar
+novas evidências usando AGENTS.md e scripts/agent_memory.py record.
+
 # Consulta4321376 corrigida no runtime —27/10/2026
 
 Fallback exato PID66627+loginZ657615 na árvoreTime.get, sem ignorar guardas.

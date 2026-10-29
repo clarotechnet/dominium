@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-29T18:12:40+00:00",
+  "generated_at": "2026-10-29T18:16:54+00:00",
   "schema": 2,
-  "source_fingerprint": "c79c325621f6fe3cf20bd6f30479a1c80d438dd77a3703fc412d98f2122b31e2",
+  "source_fingerprint": "533f8a7260fecfa6eb129203fca6b2acaa29b59fe11ca5f5682979d6e2a25496",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1362,6 +1362,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md",
+      "category": "docs",
+      "bytes": 8623,
+      "sha256": "e57ad5a3141093251345762dda56d88fed87a44cd7d6c2dbed4e890102f330c2",
+      "summary": "Integração ADESÃO × Imperium — regras e evidências (29/10/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
       "bytes": 7166,
@@ -1390,9 +1403,9 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 63062,
-      "sha256": "37d2e3c0238a9928459ec151ecad1651d10eafeffcda2e81fb85677aa544345d",
-      "summary": "Consulta4321376 corrigida no runtime —27/10/2026",
+      "bytes": 64817,
+      "sha256": "e99ec3c06cb94413f944d99b13cdfb3365496e7ffc82a69cc50bf17f02593e22",
+      "summary": "Atualização vigente — 29/10/2026: evidências da API oficial para ADESÃO",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1406,8 +1419,8 @@
     {
       "path": "docs/agent/memory/DECISIONS.md",
       "category": "docs",
-      "bytes": 1238,
-      "sha256": "b202002e0144cb5fcc459bf666621410bccfe3e90e74e6b4b0df69a8b6ffa546",
+      "bytes": 3143,
+      "sha256": "edf3bcbfb47255ca87c71e52a5b731f658d1b72b18c30263f8a21c6c1edb986e",
       "summary": "DOMINIUM — decisões arquiteturais permanentes",
       "imports": [],
       "endpoints": [],

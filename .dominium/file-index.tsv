@@ -67,10 +67,11 @@ docs	docs/agent/ATLAS_QUERY_VIDEO_RECOVERY_20261026.md				Natal — vídeo, comp
 docs	docs/agent/ATLAS_QUERY_WAITING_HUD_20261026.md				QUERY — distinguir espera de processamento	cfd355576cf2880e
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor de sessão instalado em 26/10/2026	cd87d67d5054efb8
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
+docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	1b82031eabb13320
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md			2	Consulta4321376 corrigida no runtime —27/10/2026	37d2e3c0238a9928
-docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
+docs	docs/agent/memory/CURRENT_STATE.md			2	Atualização vigente — 29/10/2026: evidências da API oficial para ADESÃO	e99ec3c06cb94413
+docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	edf3bcbfb47255ca
 docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	6bf1350f375c0960
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
