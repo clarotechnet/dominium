@@ -6,12 +6,10 @@ imperium	.imperium-project.json					a6c72b51e8822cc7
 shared	.mcp.json					488abc9205f55770
 shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
+shared	adm_allocation.py	3			Read-only allocation for DESC multi-OS activities.	a9434a5b2e81e0ca
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
 orchestration	app.py	151	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	227ade0c245b77ed
-shared	apply_private_tunnel_migration.py	1	17			696ebdae8640dbc6
-shared	audit_active_routes_20261028.py					f2c4b854eec5fefc
-shared	audit_worker_smoke.cjs		4			31c6eb96752d962a
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -69,11 +67,13 @@ docs	docs/agent/ATLAS_QUERY_VIDEO_RECOVERY_20261026.md				Natal — vídeo, comp
 docs	docs/agent/ATLAS_QUERY_WAITING_HUD_20261026.md				QUERY — distinguir espera de processamento	cfd355576cf2880e
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor de sessão instalado em 26/10/2026	cd87d67d5054efb8
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	1b82031eabb13320
+docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	2eb3f7cfc6336d0a
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md			2	Consulta4321376 corrigida no runtime —27/10/2026	37d2e3c0238a9928
-docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	b202002e0144cb5f
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	6bf1350f375c0960
+docs	docs/agent/memory/CURRENT_STATE.md			2	Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106	636484ccb87dfd28
+docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
+docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	991cd390b9645d6e
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	ea7e0a9b6f385483
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md				Caso real confirmado e ponte compartilhada preservada	281b6cb6cc46851e
@@ -90,10 +90,9 @@ docs	docs/superpowers/plans/2026-10-15-site-import-bridge.md				Site import brid
 docs	docs/superpowers/plans/2026-10-27-order-close-private-bridge.md				Order close private bridge implementation plan	c023379809773103
 docs	docs/superpowers/plans/2026-10-27-productive-close-snapshot.md				Productive close snapshot repair	d1546f5ba7c6b7fd
 docs	docs/superpowers/plans/2026-10-27-toa-lookup-private-bridge.md				TOA lookup private bridge implementation plan	0b79c243a4e7cd92
+docs	docs/superpowers/plans/2026-10-29-desc-adesao-safety.md				DESC e Adesão — correções de segurança e retomada	fff370053eeac242
 docs	docs/superpowers/specs/2026-10-10-dominium-desc-design.md				Dominium: novo visual e DESCONEXÃO	8fb2f29706ba9060
 shared	edge_voice.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	32f7dbf35b7da5a8
-shared	fix_desc_automation_bridge.py		7			7f5bf3e21b3c6795
-shared	fix_scoped_routes_20261028.py		5			a6b8c099121b0827
 shared	flow_reader/__init__.py				Read-only Imperium/DataSnap capture analyzer.	fd76c045b68cdb47
 shared	flow_reader/analyzer.py	28			DOMINIUM | MAPA DE RESPONSABILIDADE	39c1790690d96093
 shared	flow_reader/LEIA-ME.txt				DOMINIUM FLOWSCOPE 1.0 - LEITOR DE FLUXOS IMPERIUM	cc2d42ab8116c798
@@ -102,7 +101,7 @@ shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f3
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
 shared	GEMINI.md				DOMINIUM — instruções para Gemini	1b1a88b0e02ad6a0
-imperium	imperium_api.py	142		3	DOMINIUM | MAPA DE RESPONSABILIDADE	99ee2654bdee991d
+imperium	imperium_api.py	142		3	DOMINIUM | MAPA DE RESPONSABILIDADE	629d1d08c1765e73
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 shared	import_protocol_templates.json			1		9a6465634e73b3ec
@@ -126,6 +125,20 @@ shared	integrations/desc_review_bot/src/descReview/tests/order-evidence.test.js	
 shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
 shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
+shared	integrations/desc_runtime/bot/disconnectPilot.js	20				198dc0a3510591c8
+shared	integrations/desc_runtime/bot/disconnectPilotCoordinator.js	33				18b277d1cceb6ac0
+shared	integrations/desc_runtime/disconnect_local_runner.py	36		1	Executa um único job de desconexão recebido do BotDMV no PC local.	9a3c4f51a3d89409
+shared	integrations/desc_runtime/nightly_backlog_106.py	7	3		Operator-authorized 23h backlog batch. Default is read-only preview.	0c9ef41fc1d83645
+shared	integrations/desc_runtime/nightly_backlog_service.py	10			Daily backlog scheduling owned by the Dominium HTTP server, not by a browser.	0746da639cac79e4
+shared	integrations/desc_runtime/patch_runtime_safety.py	2			Small source transformations for the legacy server; no network or writes.	d94c48592bbd3994
+shared	integrations/desc_runtime/README.md				Runtime DESC do servidor TECHNET	96d1e2d20c8c3ec1
+tests	integrations/desc_runtime/test_desc_multi_owner_runtime.py	2		1		b7c145e05d4781d6
+tests	integrations/desc_runtime/test_desc_sector_scope.py	10			Read-only sector scope regression for BotDMV DESC -> DataSnap executor.	0fa5396e16d5d30f
+tests	integrations/desc_runtime/test_nightly_backlog_106.py	13	1			5fc4ff778ec23768
+tests	integrations/desc_runtime/test_nightly_backlog_service.py	9				98fcda56cb25d2d7
+tests	integrations/desc_runtime/test_runtime_official_materials.py	2				7f7709987deaf79c
+tests	integrations/desc_runtime/test_whatsapp_bridge_service.py	13				156846f081cd3a97
+shared	integrations/desc_runtime/whatsapp_bridge_service.py	22				931cf8de8b9ce09b
 shared	integrations/import_bridge/daily_stock_service.py	7			Leitura e snapshots de estoque diario no Supabase operacional do Dominium.	4bfea8bad6b4d792
 shared	integrations/import_bridge/quality_control_relay.py	7			Private, authenticated Quality Control Supabase bridge (no Imperium writes).	6e21d816d7b3a9fd
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
@@ -187,7 +200,7 @@ shared	material_protocol_templates.json			1		47be23329154990a
 shared	native_order_protocol_templates.json			2		367772f217ffe2f1
 imperium	native_orders.py	16			DOMINIUM | MAPA DE RESPONSABILIDADE	378bb09520e3c284
 shared	official_candidate_locator.py	4			Read-only offline candidate locator for official API closes.	f8b29bedd9fffdc7
-shared	official_close.py	4			DOMINIUM | MAPA DE RESPONSABILIDADE	e97697e7e06e29a5
+shared	official_close.py	5			DOMINIUM | MAPA DE RESPONSABILIDADE	a913e2229bd603cf
 shared	official_close_code_catalog.py	8		1	DOMINIUM | MAPA DE RESPONSABILIDADE	426e603d06d43f03
 shared	official_close_code_reconciliation.py	12			DOMINIUM | MAPA DE RESPONSABILIDADE	dc33a3fe162420af
 shared	official_close_dry_run.py	28			DOMINIUM | MAPA DE RESPONSABILIDADE	ab938e1051da15d0
@@ -201,7 +214,6 @@ shared	official_stock_remediation_plan.py	25		1	DOMINIUM | MAPA DE RESPONSABILID
 orchestration	operation_scope.py	55			DOMINIUM | MAPA DE RESPONSABILIDADE	3f9d748a18c158b6
 orchestration	operational_store.py	25			DOMINIUM | MAPA DE RESPONSABILIDADE	5676e4f9f3fdab38
 orchestration	operations_intelligence.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	96115509d8e34c26
-shared	patch_private_tunnel_followup.py	1	4			615809d62cc0aa17
 toa	patch_remote_toa.py		2	5		cb6eb87e50eeb356
 shared	productive_protocol_templates.json			3		c04b19e6f576ff97
 shared	protocol_templates.json					dea41cc769da2970
@@ -230,7 +242,7 @@ tooling-deploy	scripts/install_agent_context_hooks.py	3			Install durable-memory
 tooling-deploy	scripts/install_atlas_session_watchdog.ps1			2		7b17ecaf06189449
 tooling-deploy	scripts/install_confront_relay.py	3	1		Minimal, backup-first insertion of the confront read-only API into live DESC relay.	4ae20a35e3eeb9d3
 tooling-deploy	scripts/probe_atlas_synthetic.py				Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.	865b81e754d5a762
-tooling-deploy	scripts/quality_gate.py	5				bcef95bd680e4642
+tooling-deploy	scripts/quality_gate.py	5				b5910492ab2f7b89
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 tooling-deploy	scripts/restart_confront_relay.ps1					de8c58415028c25c
 tooling-deploy	scripts/smoke_confront_cloudflare.mjs		3		Verify private Worker route with the same Node fetch transport used by Hostinger. */	5d9320441c44eea2
@@ -279,6 +291,7 @@ tests	tests/atlas_session_watchdog_install.ps1					79cd0abe3bdb1cce
 tests	tests/qa_disconnection_browser.js	1	6			513566fce070a1c2
 tests	tests/qa_photo_assist_browser.js	4	6			462b748e72dda892
 tests	tests/qa_workspace_browser.js	1	3			9e5faa386308b743
+tests	tests/test_adm_allocation.py	9				75b86d318f82567e
 tests	tests/test_agent_memory.py	9			Portable agent memory regression tests; no network, secrets or production changes.	a00628018291348f
 tests	tests/test_all_operations_view.cjs	2	3			7f88face26cb106a
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
@@ -309,6 +322,7 @@ tests	tests/test_confront_job_runner.py	19			Durability, idempotency and recover
 tests	tests/test_daily_stock.cjs	4	1			3d0a0c1bef47dc99
 tests	tests/test_daily_stock_service.py	7			Testes isolados sem gravação externa.	f3c6ece469385641
 tests	tests/test_desc_analytics_frontend.py	11			Contratos de frontend da Visão Claro incorporada ao DOMINIUM.	02c968e46e1d0105
+tests	tests/test_desc_message_formats.cjs	1				132f8399d8998c6f
 tests	tests/test_desc_operator_reports.py	3			Private report store regression: never involve live log or production actions.	c6da3055162c4d3b
 tests	tests/test_desc_order_verifier.py	24				1a425dadf4202442
 tests	tests/test_desc_review_proxy.py	16	8			2ce6f2b762e68847
@@ -319,7 +333,7 @@ tests	tests/test_disconnection_access.py	6	5			cba855ef00508a97
 tests	tests/test_disconnection_frontend.js	1	1			65b81e61b3966421
 tests	tests/test_disconnection_hostinger.js	2	13			73827cfd80596bf7
 tests	tests/test_edge_voice.py	4				4e8791562f884964
-tests	tests/test_equipment_group_matching.py	24				46876ea91612d830
+tests	tests/test_equipment_group_matching.py	24				abb0031d8ae437aa
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38
 tests	tests/test_hostinger_dataset_regression.cjs	4	1			ec6b2b088eea6eb2
 tests	tests/test_hostinger_runtime_dependencies.py	2			Prevent Node startup failure due to missing relative require() files in release.	853302619ce6a698
@@ -337,7 +351,7 @@ tests	tests/test_manual_serial_installer.py	4				2ffbc70495e2cdcf
 tests	tests/test_material_matching.py	33				f7a01b4226d11747
 tests	tests/test_material_writeoff.py	16				4d6bdafc337eb87a
 tests	tests/test_native_orders.py	19		2		5c6e534e26a7d8de
-tests	tests/test_official_close.py	8				9d4b733270930e68
+tests	tests/test_official_close.py	10				571cb0bb570b4bb5
 tests	tests/test_official_close_code_catalog.py	9		1		dbabe02e00041d80
 tests	tests/test_official_close_code_reconciliation.py	13				5e245e74532a146f
 tests	tests/test_official_close_codes.py	12				c7b5728e1454e988
@@ -345,6 +359,7 @@ tests	tests/test_official_close_dry_run.py	26				d4aec02f82c7d3ac
 tests	tests/test_official_close_sender.py	29				7308fd219528d01d
 tests	tests/test_official_close_toa_dry_run.py	34				f3a1ea940debcd05
 tests	tests/test_official_material_catalog.py	24				08cd1715009af381
+tests	tests/test_official_material_completeness.py	3			A falta de um item bloqueia antes de qualquer movimentação de RETORNO.	ad9762e2031767f8
 tests	tests/test_official_stock_audit.py	19				5c870201eb1f0e37
 tests	tests/test_official_stock_blocker_review.py	21				2bb6e8566ad6e1e5
 tests	tests/test_official_stock_relay.py	6	11		Read-only official inventory bridge policy and response contracts.	12032c8dea0f41e4
@@ -374,6 +389,7 @@ tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
 tests	tests/test_stock_quality_bridge.mjs		2			3022814e71dead90
 tests	tests/test_supabase_sdk_compat.py	2				49269ce926869e84
 tests	tests/test_technician_directory.py	5				d78aba13b7ad30e2
+tests	tests/test_toa_adm_task_splitter.py	7				2f80c82bc6b434e2
 tests	tests/test_toa_agenda.py	4				169f9c78410dfd88
 tests	tests/test_toa_automation.py	18				6ce27533d3da1a4d
 tests	tests/test_toa_bridge_server.py					8984c15b56c098d9
@@ -406,6 +422,7 @@ toa	toa-discovery/README.md			1	TOA Discovery	2ac5a47fe62bd0a5
 toa	toa-discovery/service-worker.js	16			DOMINIUM | MAPA DE RESPONSABILIDADE	b1f5b23f77970862
 toa	toa-discovery/service-worker.test.js					0344a84018ff6265
 toa	toa-discovery/test.js					c5d100ed71c457c7
+toa	toa_adm_task_splitter.py	11			Split a completed TOA DMV_ADM CSV row into exact per-task evidence.	1d9894d7bdda59c6
 toa	toa_agenda.py	11			DOMINIUM | MAPA DE RESPONSABILIDADE	09c04d200370200e
 toa	toa_automation.py	32			DOMINIUM | MAPA DE RESPONSABILIDADE	1748c5ede16d0e56
 toa	toa_bridge_server.py	21		1	Bridge local escutando na porta 8787.	6db7265c92cf23fe
@@ -427,6 +444,3 @@ toa	toa_secondary_bucket_export.mjs	2		2		9f4a0fb9a6f478cc
 toa	toa_secondary_direct_lookup.mjs					c8ef3f34279460bf
 toa	toa_secondary_session.py	15				6cd2c12208d43c98
 toa	verify_toa_cloud_bridge.py	3			Teste online seguro da ponte Cloudflare/D1 sem expor as chaves.	99d1169ad8c2856a
-shared	worker_version_before_migration.txt				Worker dominium-import-bridge	d9eb327a63aba1c9
-shared	wrangler-preview/README.md				This folder contains the built output assets for the worker "dominium-import-bridge" generated at 2026-10-28T20:19:02.845Z.	b36c32a3ae8f4f45
-shared	wrangler-preview/worker.js	21	49			8ab9c3598cf9ea7f

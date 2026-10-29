@@ -1,3 +1,37 @@
+## Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106
+
+**Exceção autorizada pelo usuário: lote diário 106 às 23h de Brasília ATIVADO**
+nas quatro cidades, somente desconexão/retirada em campo no dia, DataSnap,
+sem itens. Agendador nativo ativo, configuração relida após reinício.
+Prévia real após recarga: Natal 67, Fortaleza 54, Mossoró 10, Recife 141,
+sem erros e zero baixas. Os totais serão relidos na janela noturna.
+Executor geral, produtivas gerais, WhatsApp automático e execução direta
+por grupos permanecem desligados. Não confundir o lote noturno com liberação geral.
+
+Reanalisados três ZIPs da API e quatro grupos DESC. Parser corrigido para
+contratos de 7–9 dígitos (inclui Recife), códigos explícitos e mensagens com
+agenda/endereço. Vários contratos ou compactos ambíguos bloqueiam; FR não
+inventa código. Alocação preserva equipamentos TOA+CSV em um único dono por
+código, sem perdas/duplicação; execução multiOS segue bloqueada até homologar
+fechamento sem itens das acompanhantes. Adesão oficial bloqueia falta de
+qualquer material antes de transferência e rejeita itens em assinatura/GPON.
+
+Instalados oito arquivos com backup e hashes conferidos; serviço 8765 e
+Bot PM2 recarregados. Chrome e árvore DominiumMain preservados. Nenhuma
+baixa real nem transferência de estoque neste trabalho. Staging: 76 Python
++9 Node aprovados; gate: 982 Python/22 ignorados +14 agendador +12 inbox,
+JavaScript, Ruff e build aprovados. A execução noturna ainda deve ser
+conferida após 23h; Adesão integral e DESC multiOS ainda não homologadas.
+
+Consultas reais de contratos dos grupos em Mossoró e Recife responderam
+HTTP 200 com atividade correta concluída; sem baixa. A leitura genérica não
+expôs bucket e não homologa o executor completo por grupos.
+
+Detalhes, caminhos, evidências e limites:
+[DESC_ADESAO_REVALIDACAO_20261029.md](DESC_ADESAO_REVALIDACAO_20261029.md).
+
+## Histórico abaixo — aplicar as decisões vigentes acima
+
 ## Atualização vigente — 29/10/2026: evidências da API oficial para ADESÃO
 
 Três conversas históricas (Jader/Imperium, Integração Imperium x Technet,

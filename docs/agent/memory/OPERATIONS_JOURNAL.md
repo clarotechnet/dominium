@@ -177,3 +177,23 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 955Python22skip JS Ruff build pass; gateway and Worker200 exact aid203706151 two tasks no blockers; unrelated inventory-core auxiliary test remains5vs4
 
 **Próximo passo/pendência:** Publish skip deploy; preserve historical assigned technician vs current route distinction and do not repeat confirmed close2662320818
+
+## 2026-10-29 18:23 UTC — DESC por contrato e correcao de alocacao entre OS
+
+**Motivo:** Mensagens reais dos quatro grupos incluem contratos de nove digitos e varios formatos; equipamento nao pode ser duplicado nem perdido
+
+**Alterado:** Parser regional conservador, caixa de mensagens com nove digitos, dono unico dos equipamentos por codigo, evidencia completa e bloqueio de multiOS sem protocolo homologado
+
+**Verificação:** Nove testes Node e setenta e seis testes Python no staging Windows; quality gate principal aprovado
+
+**Próximo passo/pendência:** Homologar baixa das OS acompanhantes sem movimentacao e validar o fluxo completo de grupos antes de habilitar execucao
+
+## 2026-10-29 18:23 UTC — Adesao com materiais completos e excecao diaria 106 das 23h
+
+**Motivo:** Operador exige todos os itens TOA na Adesao e autorizou manter somente o lote noturno 106 ativo
+
+**Alterado:** Assinatura e GPON somente codigo; qualquer material sem cobertura bloqueia antes de transferencia; lote 106 ativado nas quatro cidades e leituras ocupadas recebem retry limitado
+
+**Verificação:** Quality gate: 982 testes principais com 22 ignorados, mais 14 de agendador e 12 de caixa de mensagens, JavaScript, Ruff e build aprovados; status real do agendador conferido
+
+**Próximo passo/pendência:** Conferir execucao operacional apos 23h e validar transferencia oficial, retorno assincrono e Adesao completa sem reativar o varredor geral

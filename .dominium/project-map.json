@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-28T20:27:17+00:00",
+  "generated_at": "2026-10-29T18:31:08+00:00",
   "schema": 2,
-  "source_fingerprint": "73d25932146613d4356b0f9d68bbcaceeea51db549223404e80915b675875946",
+  "source_fingerprint": "843c6a24fc61e2f612590c53e83e0232bd358c690769d7759905ed28e0e53271",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -93,6 +93,24 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 0
+    },
+    {
+      "path": "adm_allocation.py",
+      "category": "shared",
+      "bytes": 3529,
+      "sha256": "a9434a5b2e81e0ca5313b8373abee495a376f3ee0c3dc37c478a186413fa2301",
+      "summary": "Read-only allocation for DESC multi-OS activities.",
+      "imports": [
+        "__future__",
+        "dataclasses",
+        "toa_adm_task_splitter",
+        "typing"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
     },
     {
       "path": "AGENTS.md",
@@ -350,77 +368,6 @@
       ],
       "entrypoint": true,
       "symbol_count": 151
-    },
-    {
-      "path": "apply_private_tunnel_migration.py",
-      "category": "shared",
-      "bytes": 8623,
-      "sha256": "696ebdae8640dbc637415d6d352032e24fc6e58cc77b1aca3f9c9cfce34029a9",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [
-        "/api/auto-improductive-close/toggle",
-        "/api/close-report/export.xlsx",
-        "/api/disconnect-automation",
-        "/api/intelligence/report.pdf",
-        "/api/monitor/snapshot/clear",
-        "/api/orders/bulk-create",
-        "/api/orders/bulk-create\\",
-        "/api/serials/consult",
-        "/api/stock/batch",
-        "/api/stock/pdf/batch",
-        "/api/stock/writeoff",
-        "/api/toa-agenda/import",
-        "/api/toa-automation/run",
-        "/api/toa-capture/analyze",
-        "/api/toa-datalake/feed",
-        "/api/toa-live/connect",
-        "/api/voice/synthesize"
-      ],
-      "env_vars": [
-        "DOMINIUM_OPERATION_ORIGIN"
-      ],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 1
-    },
-    {
-      "path": "audit_active_routes_20261028.py",
-      "category": "shared",
-      "bytes": 691,
-      "sha256": "f2c4b854eec5fefcd8c5f84a47cf584efa7f7308b0a507200310375d61e7d790",
-      "summary": "",
-      "imports": [
-        "collections",
-        "json",
-        "pathlib",
-        "re"
-      ],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
-      "path": "audit_worker_smoke.cjs",
-      "category": "shared",
-      "bytes": 1068,
-      "sha256": "31c6eb96752d962ad9323e95e2e95c747124cbebddc916e427d0d9721e2ce83d",
-      "summary": "",
-      "imports": [],
-      "endpoints": [
-        "/api/disconnection/state",
-        "/api/orders/bulk-create?profile=fortaleza",
-        "/api/stock/daily",
-        "/api/stock/quality-control"
-      ],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
     },
     {
       "path": "auth_store.py",
@@ -1417,10 +1364,23 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md",
+      "category": "docs",
+      "bytes": 8623,
+      "sha256": "e57ad5a3141093251345762dda56d88fed87a44cd7d6c2dbed4e890102f330c2",
+      "summary": "Integração ADESÃO × Imperium — regras e evidências (29/10/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 7166,
-      "sha256": "1b82031eabb133209653b5e00b927b4e7b215574ce93e77215beddeac94e1a99",
+      "bytes": 9251,
+      "sha256": "2eb3f7cfc6336d0a91709d6720a2687df50546e10d8bf40178d2ab62b76ef8bb",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1445,9 +1405,9 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 63062,
-      "sha256": "37d2e3c0238a9928459ec151ecad1651d10eafeffcda2e81fb85677aa544345d",
-      "summary": "Consulta4321376 corrigida no runtime —27/10/2026",
+      "bytes": 66836,
+      "sha256": "636484ccb87dfd28e4875bfc796eb96d3709bc5da6d4cc126c993acb835759a3",
+      "summary": "Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1461,9 +1421,22 @@
     {
       "path": "docs/agent/memory/DECISIONS.md",
       "category": "docs",
-      "bytes": 1238,
-      "sha256": "b202002e0144cb5fcc459bf666621410bccfe3e90e74e6b4b0df69a8b6ffa546",
+      "bytes": 4173,
+      "sha256": "a638ce63e51eab147e7e64355f6ff86b16a82290b6a36a664b0fd3d61b25485d",
       "summary": "DOMINIUM — decisões arquiteturais permanentes",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md",
+      "category": "docs",
+      "bytes": 6671,
+      "sha256": "991cd390b9645d6ea3312d767102a63ff0aa20bcb326e7be4956bbacaeac122d",
+      "summary": "DESC, Adesão e lote 106 — revalidação em 29/10/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1474,8 +1447,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 11894,
-      "sha256": "6bf1350f375c0960d3b03ced118740e51f49b24ed23e0419ba3af9f5bd34d28e",
+      "bytes": 13334,
+      "sha256": "ea7e0a9b6f3854834466a96621c18c04dd63b793e9cf9f6aa217ef8c1b65ea83",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -1697,6 +1670,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/superpowers/plans/2026-10-29-desc-adesao-safety.md",
+      "category": "docs",
+      "bytes": 4161,
+      "sha256": "fff370053eeac242ce7c68d6d71752f09a1a1fc942d65ab37a8fb882dba15924",
+      "summary": "DESC e Adesão — correções de segurança e retomada",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/superpowers/specs/2026-10-10-dominium-desc-design.md",
       "category": "docs",
       "bytes": 2616,
@@ -1729,50 +1715,6 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 8
-    },
-    {
-      "path": "fix_desc_automation_bridge.py",
-      "category": "shared",
-      "bytes": 945,
-      "sha256": "7f5bf3e21b3c6795f9fe66a1f634988c856aaa00960dee23b31a652d2f13b496",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [
-        "/api/disconnect-automation/action",
-        "/api/disconnect-automation/claim",
-        "/api/disconnect-automation/delete",
-        "/api/disconnect-automation/pause",
-        "/api/disconnect-automation/prepare",
-        "/api/disconnect-automation/start",
-        "/api/disconnect-automation/update"
-      ],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
-      "path": "fix_scoped_routes_20261028.py",
-      "category": "shared",
-      "bytes": 1633,
-      "sha256": "a6b8c099121b08272f4d549c891212849649b7dd83dda561ebd04ec09953c704",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [
-        "/api/stock/batch",
-        "/api/stock/batch?profile=natal",
-        "/api/stock/writeoff",
-        "/api/stock/writeoff?profile=fortaleza",
-        "/api/toa-agenda/import?profile=mossoro"
-      ],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
     },
     {
       "path": "flow_reader/__init__.py",
@@ -1918,8 +1860,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 264476,
-      "sha256": "99ee2654bdee991d5232c93aa865dcd7bcc1c58eb8c5a419ca1a45b463019d86",
+      "bytes": 263877,
+      "sha256": "629d1d08c1765e7362c6b1a3df8c9782cca9d05724f62960415b9d7cbcb2da52",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -2343,6 +2285,296 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "integrations/desc_runtime/bot/disconnectPilot.js",
+      "category": "shared",
+      "bytes": 19154,
+      "sha256": "198dc0a3510591c800053be23e85a3bff04b65ac382b6ca3ad2380a036e77bbb",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 20
+    },
+    {
+      "path": "integrations/desc_runtime/bot/disconnectPilotCoordinator.js",
+      "category": "shared",
+      "bytes": 29596,
+      "sha256": "18b277d1cceb6ac026d1bc38f120f9bc27a97988f4227cee4655405adf1f3057",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 33
+    },
+    {
+      "path": "integrations/desc_runtime/disconnect_local_runner.py",
+      "category": "shared",
+      "bytes": 56529,
+      "sha256": "9a3c4f51a3d89409cb9e8850d813401b292cc7af1c882fe56fa1e9559d05acca",
+      "summary": "Executa um único job de desconexão recebido do BotDMV no PC local.",
+      "imports": [
+        "__future__",
+        "adm_allocation",
+        "argparse",
+        "contextlib",
+        "datetime",
+        "desc_only_scope",
+        "disconnect_contracts",
+        "disconnect_pilot",
+        "dominium_disconnect_gateway",
+        "hashlib",
+        "imperium_api",
+        "json",
+        "operation_scope",
+        "os",
+        "pathlib",
+        "re",
+        "sys",
+        "toa_adm_task_splitter",
+        "toa_import",
+        "toa_live",
+        "traceback",
+        "typing",
+        "unicodedata",
+        "whatsapp_auto_close"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TOADisconnectSnapshot.create"
+      ],
+      "entrypoint": true,
+      "symbol_count": 36
+    },
+    {
+      "path": "integrations/desc_runtime/nightly_backlog_106.py",
+      "category": "shared",
+      "bytes": 9755,
+      "sha256": "0c9ef41fc1d83645bf298567de835a375441615220b603e9b962fe20315f3151",
+      "summary": "Operator-authorized 23h backlog batch. Default is read-only preview.",
+      "imports": [
+        "argparse",
+        "datetime",
+        "json",
+        "os",
+        "pathlib",
+        "time",
+        "unicodedata",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/orders/{int(row",
+        "/api/orders?",
+        "/api/profiles"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 7
+    },
+    {
+      "path": "integrations/desc_runtime/nightly_backlog_service.py",
+      "category": "shared",
+      "bytes": 6135,
+      "sha256": "0746da639cac79e4d1ab2903a27a9082f363afc3a08dbcae637c21dc7ea19ca0",
+      "summary": "Daily backlog scheduling owned by the Dominium HTTP server, not by a browser.",
+      "imports": [
+        "json",
+        "logging",
+        "nightly_backlog_106",
+        "os",
+        "pathlib",
+        "threading"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 10
+    },
+    {
+      "path": "integrations/desc_runtime/patch_runtime_safety.py",
+      "category": "shared",
+      "bytes": 2562,
+      "sha256": "d94c48592bbd39943cdf223861ed92b677d52d3c35976bf1637328b17f0db2ce",
+      "summary": "Small source transformations for the legacy server; no network or writes.",
+      "imports": [
+        "ast"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
+      "path": "integrations/desc_runtime/README.md",
+      "category": "shared",
+      "bytes": 3107,
+      "sha256": "96d1e2d20c8c3ec168b04c6348cd1c8a0d7c391e72c90f28fc3af8cffd3a94a9",
+      "summary": "Runtime DESC do servidor TECHNET",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/desc_runtime/test_desc_multi_owner_runtime.py",
+      "category": "tests",
+      "bytes": 2677,
+      "sha256": "b7c145e05d4781d663e7af43e84a88f46d99bc7daa80c86177d7fec69746298f",
+      "summary": "",
+      "imports": [
+        "dataclasses",
+        "disconnect_contracts",
+        "disconnect_local_runner",
+        "toa_adm_task_splitter",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TOADisconnectSnapshot.create"
+      ],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
+      "path": "integrations/desc_runtime/test_desc_sector_scope.py",
+      "category": "tests",
+      "bytes": 3793,
+      "sha256": "0fa5396e16d5d30f282bcc8d6568edd090c0b051a3481f87e28bbf51c8342580",
+      "summary": "Read-only sector scope regression for BotDMV DESC -> DataSnap executor.",
+      "imports": [
+        "disconnect_contracts",
+        "disconnect_local_runner",
+        "json",
+        "pathlib",
+        "tempfile",
+        "types",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 10
+    },
+    {
+      "path": "integrations/desc_runtime/test_nightly_backlog_106.py",
+      "category": "tests",
+      "bytes": 5143,
+      "sha256": "5fc4ff778ec237686d5d1834308a1500f272daf6e53540a89c09b4cd52c4c498",
+      "summary": "",
+      "imports": [
+        "contextlib",
+        "copy",
+        "datetime",
+        "io",
+        "nightly_backlog_106",
+        "tempfile",
+        "unittest",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/profiles"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 13
+    },
+    {
+      "path": "integrations/desc_runtime/test_nightly_backlog_service.py",
+      "category": "tests",
+      "bytes": 3708,
+      "sha256": "98fcda56cb25d2d7fb791625901d75a3cf464f762f1e69007eee3dfa31da3e2e",
+      "summary": "",
+      "imports": [
+        "datetime",
+        "json",
+        "nightly_backlog_106",
+        "nightly_backlog_service",
+        "pathlib",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 9
+    },
+    {
+      "path": "integrations/desc_runtime/test_runtime_official_materials.py",
+      "category": "tests",
+      "bytes": 2102,
+      "sha256": "7f7709987deaf79c9345dd56409de21a494d6e5328f4f8d53da01b2067ab0808",
+      "summary": "",
+      "imports": [
+        "imperium_api",
+        "threading",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
+      "path": "integrations/desc_runtime/test_whatsapp_bridge_service.py",
+      "category": "tests",
+      "bytes": 7648,
+      "sha256": "156846f081cd3a97403036824ef68ad9cab777d0d0813841f79b906c32444525",
+      "summary": "",
+      "imports": [
+        "pathlib",
+        "tempfile",
+        "unittest",
+        "whatsapp_bridge_service"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 13
+    },
+    {
+      "path": "integrations/desc_runtime/whatsapp_bridge_service.py",
+      "category": "shared",
+      "bytes": 11626,
+      "sha256": "931cf8de8b9ce09b0754b71bb34a24ae8d3663e88c8335042682161c1f79fb4a",
+      "summary": "",
+      "imports": [
+        "__future__",
+        "json",
+        "os",
+        "pathlib",
+        "shutil",
+        "subprocess",
+        "threading",
+        "time",
+        "typing",
+        "urllib"
+      ],
+      "endpoints": [],
+      "env_vars": [
+        "DOMINIUM_NODE",
+        "DOMINIUM_WHATSAPP_PORT",
+        "USERPROFILE"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 22
     },
     {
       "path": "integrations/import_bridge/daily_stock_service.py",
@@ -3413,8 +3645,8 @@
     {
       "path": "official_close.py",
       "category": "shared",
-      "bytes": 6545,
-      "sha256": "e97697e7e06e29a50c898dd1a71954b86102378595e75c05d1a0259259d6fa09",
+      "bytes": 7306,
+      "sha256": "a913e2229bd603cf82c9006ccd99000f33e3d3fcd88b3990402616f80da95813",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "datetime",
@@ -3423,13 +3655,14 @@
         "json",
         "material_matching",
         "re",
-        "typing"
+        "typing",
+        "unicodedata"
       ],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 4
+      "symbol_count": 5
     },
     {
       "path": "official_close_code_catalog.py",
@@ -3749,26 +3982,6 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 13
-    },
-    {
-      "path": "patch_private_tunnel_followup.py",
-      "category": "shared",
-      "bytes": 2452,
-      "sha256": "615809d62cc0aa171bcf84e399f9c99188b6cad5767e5c8210ef1e5d73c8b8b3",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [
-        "/api/orders/bulk-create",
-        "/api/stock/batch",
-        "/api/stock/writeoff",
-        "/api/toa-agenda/import"
-      ],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 1
     },
     {
       "path": "patch_remote_toa.py",
@@ -4318,8 +4531,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 6488,
-      "sha256": "bcef95bd680e464268f3c0a32d98b1a3d1f9bf5fca71f5814577c18f930168a8",
+      "bytes": 6818,
+      "sha256": "b5910492ab2f7b8932a52b7d64b354d65bb06b174173bc00fa6ae6f8616164ee",
       "summary": "",
       "imports": [
         "__future__",
@@ -5115,6 +5328,23 @@
       "symbol_count": 1
     },
     {
+      "path": "tests/test_adm_allocation.py",
+      "category": "tests",
+      "bytes": 3078,
+      "sha256": "75b86d318f82567e8408e44abe893eac17898a3e4079fe407d80c17e180a7c40",
+      "summary": "",
+      "imports": [
+        "adm_allocation",
+        "toa_adm_task_splitter",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 9
+    },
+    {
       "path": "tests/test_agent_memory.py",
       "category": "tests",
       "bytes": 6913,
@@ -5731,6 +5961,19 @@
       "symbol_count": 11
     },
     {
+      "path": "tests/test_desc_message_formats.cjs",
+      "category": "tests",
+      "bytes": 3034,
+      "sha256": "132f8399d8998c6f261ce34f2e7251ff1c5d397fe7bd2aa967669831b23431d4",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "tests/test_desc_operator_reports.py",
       "category": "tests",
       "bytes": 2117,
@@ -5945,8 +6188,8 @@
     {
       "path": "tests/test_equipment_group_matching.py",
       "category": "tests",
-      "bytes": 36106,
-      "sha256": "46876ea91612d830bcb16474d01beed18b8ea803b5428aaafb8917e63c0b00a8",
+      "bytes": 35976,
+      "sha256": "abb0031d8ae437aa7f272cf207263bc07d54c7f724b8b9f5b53a1f464be778de",
       "summary": "",
       "imports": [
         "decimal",
@@ -6299,8 +6542,8 @@
     {
       "path": "tests/test_official_close.py",
       "category": "tests",
-      "bytes": 4581,
-      "sha256": "9d4b733270930e68ffce777b6fd9802a26e57f9a40b3ce34d1bdeccf27942434",
+      "bytes": 6074,
+      "sha256": "571cb0bb570b4bb5cd6e77b7d1f78d39a86c34f0e7ff67939f0b350afc87cacb",
       "summary": "",
       "imports": [
         "datetime",
@@ -6312,7 +6555,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 8
+      "symbol_count": 10
     },
     {
       "path": "tests/test_official_close_code_catalog.py",
@@ -6466,6 +6709,23 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 24
+    },
+    {
+      "path": "tests/test_official_material_completeness.py",
+      "category": "tests",
+      "bytes": 3128,
+      "sha256": "ad9762e2031767f8700669f98088674dcbeb828018bac1b1a68095d452cfdfe6",
+      "summary": "A falta de um item bloqueia antes de qualquer movimentação de RETORNO.",
+      "imports": [
+        "decimal",
+        "imperium_api",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
     },
     {
       "path": "tests/test_official_stock_audit.py",
@@ -7069,6 +7329,26 @@
       "symbol_count": 5
     },
     {
+      "path": "tests/test_toa_adm_task_splitter.py",
+      "category": "tests",
+      "bytes": 7523,
+      "sha256": "2f80c82bc6b434e2a040fde8ff1bb67d82fa587f800e5e7f22407f5d1a1d0936",
+      "summary": "",
+      "imports": [
+        "__future__",
+        "datetime",
+        "pathlib",
+        "tempfile",
+        "toa_adm_task_splitter",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 7
+    },
+    {
       "path": "tests/test_toa_agenda.py",
       "category": "tests",
       "bytes": 2303,
@@ -7620,6 +7900,28 @@
       "symbol_count": 0
     },
     {
+      "path": "toa_adm_task_splitter.py",
+      "category": "toa",
+      "bytes": 8519,
+      "sha256": "1d9894d7bdda59c6598c98393bf92871fbd3e9e7c56a1f08268dbda6d5a0cdee",
+      "summary": "Split a completed TOA DMV_ADM CSV row into exact per-task evidence.",
+      "imports": [
+        "__future__",
+        "csv",
+        "dataclasses",
+        "datetime",
+        "pathlib",
+        "re",
+        "typing",
+        "unicodedata"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 11
+    },
+    {
       "path": "toa_agenda.py",
       "category": "toa",
       "bytes": 7820,
@@ -8103,95 +8405,6 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 3
-    },
-    {
-      "path": "worker_version_before_migration.txt",
-      "category": "shared",
-      "bytes": 280,
-      "sha256": "d9eb327a63aba1c981bf42dff036d358319f3f0d9cc39a086681ecdeac220d7b",
-      "summary": "Worker dominium-import-bridge",
-      "imports": [],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
-      "path": "wrangler-preview/README.md",
-      "category": "shared",
-      "bytes": 123,
-      "sha256": "b36c32a3ae8f4f4545a5aed603cfdba1d6ca9c30509abfe41831688486ba6a15",
-      "summary": "This folder contains the built output assets for the worker \"dominium-import-bridge\" generated at 2026-10-28T20:19:02.845Z.",
-      "imports": [],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
-      "path": "wrangler-preview/worker.js",
-      "category": "shared",
-      "bytes": 20085,
-      "sha256": "8ab9c3598cf9ea7f84b0ebe56c52398c2e086b34b22bc02b6bae74c69f39e3b4",
-      "summary": "",
-      "imports": [],
-      "endpoints": [
-        "/api/atlas-query/",
-        "/api/atlas-query/jobs",
-        "/api/auto-improductive-close",
-        "/api/auto-improductive-close/toggle",
-        "/api/close-report",
-        "/api/close-report/export.xlsx",
-        "/api/confront/",
-        "/api/confront/jobs",
-        "/api/confront/status",
-        "/api/disconnect-automation",
-        "/api/disconnection/",
-        "/api/failures",
-        "/api/health-check",
-        "/api/import-history",
-        "/api/import-targets",
-        "/api/imports/commit",
-        "/api/imports/preview",
-        "/api/intelligence",
-        "/api/intelligence/report",
-        "/api/intelligence/report.pdf",
-        "/api/intelligence/serial-audit",
-        "/api/logs",
-        "/api/monitor/snapshot",
-        "/api/monitor/snapshot/clear",
-        "/api/operational/contracts",
-        "/api/orders",
-        "/api/orders/bulk-create",
-        "/api/profiles",
-        "/api/serials/consult",
-        "/api/status",
-        "/api/stock",
-        "/api/stock/batch",
-        "/api/stock/daily",
-        "/api/stock/pdf/batch",
-        "/api/stock/quality-control",
-        "/api/stock/serial-owner",
-        "/api/stock/technicians",
-        "/api/stock/writeoff",
-        "/api/technicians",
-        "/api/toa-agenda/import",
-        "/api/toa-automation",
-        "/api/toa-automation/run",
-        "/api/toa-capture/analyze",
-        "/api/toa-capture/lots",
-        "/api/toa-contracts",
-        "/api/toa-datalake/feed",
-        "/api/toa-live/connect",
-        "/api/toa-live/status",
-        "/api/voice/synthesize"
-      ],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 21
     }
   ],
   "env_vars": [
@@ -8207,7 +8420,7 @@
     "DOMINIUM_IMPERIUM_RUNTIME_ROOT",
     "DOMINIUM_INGEST_TOKEN",
     "DOMINIUM_LOCAL_TOA_AUTOMATION",
-    "DOMINIUM_OPERATION_ORIGIN",
+    "DOMINIUM_NODE",
     "DOMINIUM_PROJECT_ROOT",
     "DOMINIUM_PROXY_TOKEN",
     "DOMINIUM_PUBLIC_ORIGIN",
@@ -8225,6 +8438,7 @@
     "DOMINIUM_TOA_PRIMARY_TOKEN",
     "DOMINIUM_TV_INGEST_URL",
     "DOMINIUM_WEB_MODE",
+    "DOMINIUM_WHATSAPP_PORT",
     "IMPERIUM_DATASNAP_PASSWORD",
     "IMPERIUM_DATASNAP_USERNAME",
     "PLAYWRIGHT_MODULE",
@@ -8235,7 +8449,8 @@
     "SUPABASE_PROJECT_REF",
     "SUPABASE_SECRET_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
-    "SUPABASE_URL"
+    "SUPABASE_URL",
+    "USERPROFILE"
   ],
   "datasnap_methods": [
     "TASK_LAYOUTS.map",
@@ -8269,6 +8484,7 @@
     "TOACaptureLot.from_path",
     "TOACloudClient.from_environment",
     "TOADatalakeStore.ingest",
+    "TOADisconnectSnapshot.create",
     "TOADiscoveryExporter.exportJson",
     "TOADiscoveryExporter.exportXlsx",
     "TOAImportProtocol.incomplete_result_length",

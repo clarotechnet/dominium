@@ -4222,11 +4222,7 @@ class ImperiumAPI:
                         )
 
                 shortfall_item_count = len(tolerated_shortfalls)
-                total_missing_quantity = sum(
-                    (Decimal(row["missing_quantity"]) for row in tolerated_shortfalls),
-                    Decimal("0"),
-                )
-                if shortfall_item_count >= MATERIAL_SHORTFALL_ITEM_HUMAN_REVIEW_THRESHOLD:
+                if shortfall_item_count > 0:
                     details = ", ".join(
                         f"{row['code']} ({row['group']}): {row['missing_quantity']}"
                         for row in tolerated_shortfalls
@@ -4234,15 +4230,8 @@ class ImperiumAPI:
                     raise ValueError(
                         "O estoque do tecnico + RETORNO nao cobre miscelaneas distintas; "
                         f"faltam {shortfall_item_count} miscelaneas sem cobertura "
-                        f"({details}). Limite para baixa automatica: ate 4 miscelaneas distintas sem saldo"
-                    )
-                if shortfall_item_count > 0:
-                    LOGGER.warning(
-                        "IdOS %s: baixa seguira com %s miscelanea(s) sem saldo; "
-                        "quantidade total faltante=%s (limite operacional: 4 miscelaneas)",
-                        order.id_os,
-                        shortfall_item_count,
-                        self._decimal_text(total_missing_quantity),
+                        f"({details}). Baixa bloqueada antes de qualquer transferencia; "
+                        "todos os itens exigidos precisam de saldo confirmado"
                     )
 
                 if transfer_materials:
