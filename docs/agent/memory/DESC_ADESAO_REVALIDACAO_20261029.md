@@ -239,3 +239,15 @@ fechamento sem itens das O.S. acompanhantes em multiO.S.,
 execução geral produtiva e Adesão completa via API oficial.
 Não inferir sucesso desses fluxos a partir das duas baixas
 individuais nem dos testes do leitor.
+
+### Verificação adicional da main (29/10/2026)
+
+Clone limpo de `clarotechnet/dominium` no servidor, HEAD `7eaf616`,
+recebeu as dependências locais do runtime legado no `PYTHONPATH`.
+Foram aprovados **30 testes** agrupando
+`test_desc_multi_owner_runtime`, `test_desc_sector_scope`,
+`test_nightly_backlog_106` e
+`test_persisted_removed_movements` (Python 3.12). Os testes de
+multiO.S. continuam restritos ao planejamento seguro, sem fechamento real
+de acompanhante. O GitHub não forneceu status de CI nem workflow associado
+ao commit consultado; os 30 testes aqui informados são **locais no servidor**.
