@@ -89,3 +89,50 @@ Verificação final em `127.0.0.1:8765`: lote 106 às 23h de Brasília
 gerais `enabled=false`. O teste individual manual 430 não homologou a
 baixa automática DESC com múltiplas O.S. nem a Adesão via API oficial.
 A execução real do lote 106 da noite requer conferência após o horário.
+
+## Revisão preventiva, 29/10/2026, após as 17h30
+
+O BotDMV foi inspecionado enquanto o operador estava fora do escritório.
+Após o fechamento manual validado, houve uma correção adicional, restrita
+à apresentação do comando `!parcial`:
+
+- Problema: se todas as bases DataSnap falhavam, eram enviadas quatro
+  mensagens de erro e um consolidado enganoso `0 O.S.`.
+- Corrigido diretamente no runtime WSL em
+  `src/handlers/parcialHandler.js`: quando nenhuma base tem retorno
+  `ok && complete`, enviar **um único aviso de indisponibilidade**,
+  nunca o falso total zero. Se alguma base funcionar, manter o fluxo
+  anterior, com relatório das cidades válidas e aviso de parcial incompleta.
+- Backup com sufixo `.backup-20261029-1732` no handler e respectivo teste.
+  Novo caso em `tests/parcialHandler.test.js`.
+- `node --check` aprovado. **23 testes Node** aprovados: handler, PNG,
+  escala 430 e respostas silenciosas do TOA.
+- PM2 `Bot` reiniciado, PID `246310`, `online`; manter o socket
+  `WSL_INTEROP=/run/WSL/2_interop`. Não houve disparo de mensagem para
+  grupos reais durante os testes.
+
+### Prévia segura do lote 106
+
+Executado `nightly_backlog_106.py` **sem `--execute`**, sem alterar
+O.S. ou estoque. Prévia de 29/10 (valores sujeitos a mudança até as 23h):
+
+| Cidade | Selecionadas | Sem correspondência no painel completo |
+| --- | ---: | ---: |
+| Natal | 53 | 0 |
+| Fortaleza | 47 | 0 |
+| Mossoró | 6 | 0 |
+| Recife | 133 | 13 |
+| **Total** | **239** | **13** |
+
+Nenhuma regional apresentou erro de execução da prévia. Investigação
+adicional: as 13 seleções de Recife não tinham origem de operação
+validada e tinham `operation_blockers`; foram corretamente
+ignoradas quando comparadas ao conjunto `all`, em vez de receber
+um `POST` sem validação. O total **não** representa 239 baixas
+concluídas nem assegura 226 baixas futuras; a janela das 23h
+revalida estado, identidade e filtros.
+
+Agendado acompanhamento **somente leitura** para as 23h25 do dia
+29/10/2026 para verificar execução real, recibos e possíveis erros,
+sem repetir requisições de fechamento. O lote geral automático
+não foi reativado.
