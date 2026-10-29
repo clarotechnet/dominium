@@ -84,6 +84,9 @@
     dailyTab?.classList.remove("active");
     dailyTab?.setAttribute("aria-selected", "false");
     dailyPane?.classList.add("hidden");
+    document.getElementById("stockReportsTab")?.classList.remove("active");
+    document.getElementById("stockReportsTab")?.setAttribute("aria-selected", "false");
+    document.getElementById("stockReportsPane")?.classList.add("hidden");
     document.dispatchEvent(new Event("dominium:stock-tab-change"));
     if (!isQuality) {
       if (dialog.open) closeDialog();

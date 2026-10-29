@@ -6,6 +6,9 @@
   const serials = document.getElementById("serialsModule");
   const quality = document.getElementById("stockQualityModule");
   const daily = document.getElementById("stockDailyModule");
+  const reports = document.getElementById("stockReportsModule");
+  const reportsTab = document.getElementById("stockReportsTab");
+  const reportsPane = document.getElementById("stockReportsPane");
   const dailyTab = document.getElementById("stockDailyTab");
   const inventoryTab = document.getElementById("stockInventoryTab");
   const qualityTab = document.getElementById("stockQualityTab");
@@ -26,6 +29,7 @@
       { name: "inventory", tab: inventoryTab, pane: inventoryPane },
       { name: "quality", tab: qualityTab, pane: qualityPane },
       { name: "daily", tab: dailyTab, pane: dailyPane },
+      { name: "reports", tab: reportsTab, pane: reportsPane },
     ].filter((view) => view.tab && view.pane);
     // Visible pane is authoritative; a stale .active class is not.
     const chosen = views.find((view) => !view.pane.classList.contains("hidden"))
@@ -45,9 +49,11 @@
     const serialActive = state.activeModule === "serials";
     const qcActive = stockActive && selected === "quality";
     const dailyActive = stockActive && selected === "daily";
+    const reportsActive = stockActive && selected === "reports";
     group.classList.toggle("active", stockActive || serialActive);
-    inventory.classList.toggle("active", stockActive && !qcActive && !dailyActive);
+    inventory.classList.toggle("active", stockActive && !qcActive && !dailyActive && !reportsActive);
     daily?.classList.toggle("active", dailyActive);
+    reports?.classList.toggle("active", reportsActive);
     quality.classList.toggle("active", qcActive);
     serials.classList.toggle("active", serialActive);
     if (stockActive || serialActive) expand(true);
@@ -78,6 +84,12 @@
     updateHighlight();
   });
   dailyTab?.addEventListener("click", updateHighlight);
+  reports?.addEventListener("click", () => {
+    if (state.activeModule !== "stock") inventory.click();
+    reportsTab?.click();
+    updateHighlight();
+  });
+  reportsTab?.addEventListener("click", updateHighlight);
   inventoryTab.addEventListener("click", () => {
     setQualityAddress(false);
     updateHighlight();
@@ -91,10 +103,12 @@
   window.DominiumStockNavigation = { sync: updateHighlight };
   window.addEventListener("hashchange", () => {
     if (window.location.hash === "#controle-qualidade") qualityTab.click();
-    if (window.location.hash === "#estoque-diario") dailyTab?.click();
+      if (window.location.hash === "#estoque-diario") dailyTab?.click();
+    if (window.location.hash === "#analises-estoque") reportsTab?.click();
     updateHighlight();
   });
   if (window.location.hash === "#controle-qualidade") qualityTab.click();
   if (window.location.hash === "#estoque-diario") dailyTab?.click();
+  if (window.location.hash === "#analises-estoque") reportsTab?.click();
   updateHighlight();
 })();

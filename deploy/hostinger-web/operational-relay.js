@@ -4,6 +4,7 @@ const path = require('node:path');
 const { allowedOperationalRead, allowedToaLookup, allowedQualityControl, allowedDailyStock, allowedOperationalWrite } = require('./operational-policy');
 const { allowedConfrontRoute } = require('./confront-policy');
 const {allowedAtlasQueryRoute}=require('./atlas-query-policy');
+const {allowedStockAnalysisRoute}=require('./stock-analysis-policy');
 
 const WORKER_ORIGIN = 'https://dominium-import-bridge.jogador743.workers.dev';
 function readPrivateConnection() {
@@ -14,7 +15,8 @@ function readPrivateConnection() {
 
 function resolveOperationalRead(req, connection = readPrivateConnection) {
   const confrontation = allowedConfrontRoute(req.method, req.originalUrl) ||
-    allowedAtlasQueryRoute(req.method, req.originalUrl);
+    allowedAtlasQueryRoute(req.method, req.originalUrl) ||
+    allowedStockAnalysisRoute(req.method, req.originalUrl);
   const toaLookup = allowedToaLookup(req.method, req.originalUrl);
   const quality = allowedQualityControl(req.method, req.originalUrl);
   const daily = allowedDailyStock(req.method, req.originalUrl);
@@ -47,7 +49,7 @@ function resolveOperationalRead(req, connection = readPrivateConnection) {
 function restorePrivateJsonContentType(req, headers, body) {
   if (!headers || !req || req.method !== 'POST' || body === undefined) return;
   const url=String(req.originalUrl||'');
-  if (!allowedConfrontRoute('POST',url) && !allowedAtlasQueryRoute('POST',url) &&
+  if (!allowedConfrontRoute('POST',url) && !allowedAtlasQueryRoute('POST',url) && !allowedStockAnalysisRoute('POST',url) &&
       !allowedToaLookup('POST',url) && !allowedQualityControl('POST',url) && !allowedDailyStock('POST',url) && !allowedOperationalWrite('POST',url)) return;
   const original=String(req.headers?.['content-type']||'').toLowerCase();
   if (!original.startsWith('application/json')) return;

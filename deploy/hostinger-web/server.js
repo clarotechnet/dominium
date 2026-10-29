@@ -1005,7 +1005,7 @@ async function proxyOperationalRequest(req, res, next) {
     if (req.path === '/api/toa-live/lookup' && !relay) {
       return res.status(400).json({ok:false,error:'Consulta TOA exige uma cidade valida'});
     }
-    if ((req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/') || (req.path === '/api/stock/quality-control' || req.path === '/api/stock/daily')) && !relay) {
+    if ((req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/') || req.path.startsWith('/api/stock/analyses/') || (req.path === '/api/stock/quality-control' || req.path === '/api/stock/daily')) && !relay) {
       return res.status(404).json({ok:false,error:"Rota de confronto nao autorizada"});
     }
     if (relay) {

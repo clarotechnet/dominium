@@ -6,7 +6,7 @@
   <title>DOMINIUM</title>
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="/styles.css?v=20261028-daily-1">
+  <link rel="stylesheet" href="/styles.css?v=20261029-analysis-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
 </head>
@@ -163,6 +163,10 @@
         <button class="side-nav-item stock-nav-child" id="stockQualityModule" type="button">
           <i data-lucide="clipboard-list" aria-hidden="true"></i>
           <span><strong>Controle de Qualidade</strong><small>Materiais e quantidades</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="stockReportsModule" type="button">
+          <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
+          <span><strong>Analises e Relatorios</strong><small>Atlas e Imperium</small></span>
         </button>
         <button class="side-nav-item stock-nav-child" id="stockDailyModule" type="button">
           <i data-lucide="calendar-days" aria-hidden="true"></i>
@@ -833,6 +837,7 @@
       <div class="quality-tabs" role="tablist" aria-label="Abas de estoque">
         <button id="stockInventoryTab" type="button" role="tab" aria-selected="true" class="active">Estoque por tecnico</button>
         <button id="stockQualityTab" type="button" role="tab" aria-selected="false">Controle de qualidade</button>
+        <button id="stockReportsTab" type="button" role="tab" aria-selected="false">Analises e Relatorios</button>
         <button id="stockDailyTab" type="button" role="tab" aria-selected="false">Estoque Diário</button>
       </div>
       <div id="stockInventoryPane" role="tabpanel" aria-labelledby="stockInventoryTab">
@@ -1025,6 +1030,31 @@
           <p id="dailyStockRowsInfo" class="daily-stock-status"></p>
         </div>
       </div>
+      <section id="stockReportsPane" class="quality-pane hidden" role="tabpanel" aria-labelledby="stockReportsTab">
+        <header class="workspace-heading">
+          <div><p class="section-label">ATLAS + IMPERIUM</p>
+            <h2>Analises e Relatorios do Estoque</h2>
+            <p class="workspace-description">Usa a ultima QUERY concluida e validada da operacao. Nao cria fila nova nem altera equipamentos.</p>
+          </div>
+          <button class="button secondary" id="stockReportsRefresh" type="button">Atualizar</button>
+        </header>
+        <p class="stock-analysis-source" id="stockReportsSource">Selecione esta aba para consultar a ultima QUERY valida.</p>
+        <div class="stock-analysis-cards">
+          <article><h3>1. QUERY tratada</h3><p>Materiais, seriais e codigo SAP sem zeros. Replica o tratamento do Excel.</p>
+            <button class="button primary" type="button" data-stock-report="query">Gerar QUERY tratada</button></article>
+          <article><h3>2. Analise de equipamentos</h3><p>Abas Atlas, Chips, Imperium, Assinantes e Nomes. A consulta Equipamentos Utilizados sera sinalizada como pendente ate sua integracao.</p>
+            <button class="button primary" type="button" data-stock-report="equipamentos">Gerar analise de equipamentos</button></article>
+          <article><h3>3. Analise de suspeitos</h3><p>Filtra SUSPEITO e ANALISE DE INVENTARIO; sem prova de rastreabilidade ou baixa, permanece pendente de conferencia.</p>
+            <button class="button primary" type="button" data-stock-report="suspeitos">Gerar analise de suspeitos</button></article>
+        </div>
+        <p class="stock-analysis-warning">Os relatorios 2 e 3 exibem fontes e pendencias. Historico de movimentacao nao comprova posse atual nem estoque fisico.</p>
+        <div class="daily-stock-toolbar">
+          <label class="field"><span>Execucoes anteriores</span><select id="stockReportsHistory"><option value="">Nenhum relatorio registrado</option></select></label>
+          <button class="button secondary" type="button" id="stockReportsDownload" hidden disabled>Baixar XLSX concluido</button>
+        </div>
+        <p id="stockReportsProgress" class="stock-analysis-status" role="status"></p>
+        <p id="stockReportsNotice" class="stock-analysis-status" role="status" aria-live="polite"></p>
+      </section>
     </section>
 
     <section class="technicians-workspace hidden" id="techniciansWorkspace" aria-label="Cadastro de tecnicos">
@@ -2423,11 +2453,12 @@
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
-  <script src="/app.js?v=20261028-perf-1"></script>
-  <script src="/quality-control.js?v=20261028-exclusive-1"></script>
+  <script src="/app.js?v=20261029-analysis-1"></script>
+  <script src="/quality-control.js?v=20261029-analysis-1"></script>
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
-  <script src="/daily-stock.js?v=20261028-no-repeat-1"></script>
-  <script src="/stock-nav.js?v=20261028-exclusive-1"></script>
+  <script src="/daily-stock.js?v=20261029-analysis-1"></script>
+  <script src="/stock-nav.js?v=20261029-analysis-1"></script>
+  <script src="/stock-analysis-ui.js?v=20261029-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>
   <script src="/query-import.js?v=20261023-1"></script>

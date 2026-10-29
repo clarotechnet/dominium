@@ -22,6 +22,7 @@ RUNTIME_FILES = (
     "order-close-proxy.js",
     "confront-policy.js",
     "atlas-query-policy.js",
+    "stock-analysis-policy.js",
     "disconnection-proxy.js",
     "disconnection-policy.js",
     "server.js",

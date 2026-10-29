@@ -31,6 +31,7 @@ from official_stock_bridge import OfficialStockBridge, parse_route
 from serial_service import parse_route as parse_serial_route, consult_serials
 from confront_http import ConfrontService, parse_confront_route
 from atlas_query_http import AtlasQueryService, parse_query_route
+from stock_analysis_http import StockAnalysisService, route_for as parse_stock_analysis_route
 
 
 class DescRelayHandler(BaseHTTPRequestHandler):
@@ -81,6 +82,25 @@ class DescRelayHandler(BaseHTTPRequestHandler):
         actor = unquote(self.headers.get('X-Dominium-Actor', ''))[:100]
         if not actor:
             self._json(400, {'ok': False, 'error': 'Operador não identificado'})
+            return
+        stock_analysis_route = parse_stock_analysis_route(self.command, self.path)
+        if stock_analysis_route is not None:
+            if self.headers.get('X-Dominium-Role') not in {'admin','controller'}:
+                self._json(403, {'ok':False,'error':'Perfil operacional necessario'})
+                return
+            service = getattr(self.server,'stock_analysis_service',None)
+            if service is None:
+                self._json(503, {'ok':False,'error':'Relatorios de estoque indisponiveis'})
+                return
+            try:
+                body = self._read_json() if self.command=='POST' else None
+                status,result,mime = service.handle(self.command,self.path,actor,body)
+                if mime and status == 200:
+                    self._binary(result,mime)
+                else:
+                    self._json(status,result)
+            except ValueError:
+                self._json(400, {'ok':False,'error':'Parametros de relatorio invalidos'})
             return
         query_route = parse_query_route(self.command, self.path)
         if query_route is not None:
@@ -217,11 +237,13 @@ def main():
     server.order_verifier = DescOrderVerifier(Path(os.environ.get('DOMINIUM_IMPERIUM_RUNTIME_ROOT', str(DEFAULT_RUNTIME_ROOT))))
     server.confront_service = ConfrontService()
     server.atlas_query_service = AtlasQueryService()
+    server.stock_analysis_service = StockAnalysisService()
     try:
         server.serve_forever()
     finally:
         server.confront_service.close()
         server.atlas_query_service.close()
+        server.stock_analysis_service.close()
 
 
 if __name__ == '__main__':

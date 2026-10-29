@@ -7647,3 +7647,15 @@ body.sidebar-collapsed .stock-group-chevron { display:none; }
 .daily-stock-table td:first-child{font-variant-numeric:tabular-nums;font-weight:700}
 .daily-stock-table td:last-child{font-weight:700;font-variant-numeric:tabular-nums}
 @media(max-width:680px){.daily-stock-summary,.daily-stock-toolbar{grid-template-columns:1fr}}
+
+/* New stock reports use existing workspace styles and preserve mobile usability. */
+.stock-analysis-cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:18px 0 16px; }
+.stock-analysis-cards article { display:flex; flex-direction:column; align-items:flex-start; gap:11px; min-width:0; padding:19px; border:1px solid var(--line, #3c3c43); background:var(--surface,#1c1d21); border-radius:13px; }
+.stock-analysis-cards h3 {font-size:.97rem;line-height:1.4;margin:0;color:var(--ink,#fff);}
+.stock-analysis-cards p {font-size:.77rem;line-height:1.6;color:var(--muted,#aaa);margin:0;flex:1}
+.stock-analysis-cards button { min-height:37px;white-space:normal;text-align:center; }
+.stock-analysis-source { padding:13px 16px;border:1px solid var(--line,#3b3b3b);border-radius:9px; background:rgba(9,9,12,.36);font-weight:650;font-size:.8rem;overflow-wrap:anywhere; }
+.stock-analysis-status {font-size:.79rem;line-height:1.6;color:var(--muted,#aaa); margin:12px 0;overflow-wrap:anywhere}
+.stock-analysis-warning {padding:14px; border-left:3px solid #ff5c6d; background:rgba(242,48,69,.08); font-size:.78rem; line-height:1.6; }
+#stockReportsDownload[hidden]{display:none !important}
+@media(max-width:1000px){.stock-analysis-cards{grid-template-columns:1fr}}

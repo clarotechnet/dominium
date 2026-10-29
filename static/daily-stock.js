@@ -22,6 +22,9 @@
    $("stockInventoryPane").classList.add("hidden");
    $("stockQualityPane").classList.add("hidden");
    pane.classList.remove("hidden");
+   $("stockReportsTab")?.classList.remove("active");
+   $("stockReportsTab")?.setAttribute("aria-selected","false");
+   $("stockReportsPane")?.classList.add("hidden");
    $("dailyStockUpload").hidden=!editable();
    if(state.activeModule==="stock"){
      const url=new URL(window.location.href);url.hash="estoque-diario";
