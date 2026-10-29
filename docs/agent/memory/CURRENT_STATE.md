@@ -1,5 +1,14 @@
 ## Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106
 
+Backup indicado pelo operador `F:\Dominium\Backups\DominiumBackups\KNOWN_GOOD_20261006_155652`
+auditado somente por leitura: 13 hashes válidos; contém núcleo DataSnap antigo,
+mas não BotDMV/runner de grupos. Métodos centrais de baixa são estruturalmente
+iguais aos instalados e ainda exigem equipamentos no 430; não resolvem a baixa
+sem itens das acompanhantes. O snapshot já guardava produtivas desligadas.
+Confirmado também `execution_enabled=false` no Bot, antes da consulta/fila do
+piloto; consultas TEL/ATLAS e `!idid` não comprovam baixa automática. Sem restore
+nem mudança de gates. Detalhes na investigação complementar do documento abaixo.
+
 **Exceção autorizada pelo usuário: lote diário 106 às 23h de Brasília ATIVADO**
 nas quatro cidades, somente desconexão/retirada em campo no dia, DataSnap,
 sem itens. Agendador nativo ativo, configuração relida após reinício.

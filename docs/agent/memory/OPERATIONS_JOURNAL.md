@@ -197,3 +197,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Quality gate: 982 testes principais com 22 ignorados, mais 14 de agendador e 12 de caixa de mensagens, JavaScript, Ruff e build aprovados; status real do agendador conferido
 
 **Próximo passo/pendência:** Conferir execucao operacional apos 23h e validar transferencia oficial, retorno assincrono e Adesao completa sem reativar o varredor geral
+
+## 2026-10-29 18:57 UTC — Auditoria do backup KNOWN_GOOD de 06/10 e gates DESC
+
+**Motivo:** Operador indicou snapshot antigo para recuperar funcionamento das baixas pelos grupos
+
+**Alterado:** Documentado inventario, integridade e comparacao AST; nenhuma alteracao de codigo ou runtime; Bot e runner continuam desarmados
+
+**Verificação:** 13 hashes SHA-256 conferidos; comparacao AST de cinco metodos centrais; parser reproduzido e consultas TOA/Imperium somente leitura
+
+**Próximo passo/pendência:** Homologar fechamento DESC sem itens das acompanhantes com equipamentos concentrados em uma OS; nao restaurar snapshot como correcao

@@ -70,10 +70,10 @@ docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação 
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	2eb3f7cfc6336d0a
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md			2	Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106	636484ccb87dfd28
+docs	docs/agent/memory/CURRENT_STATE.md			2	Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106	877aebfdd93ae9fe
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
-docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	991cd390b9645d6e
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	ea7e0a9b6f385483
+docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	b3516076f7672a74
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	4335ff06f67679d4
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md				Caso real confirmado e ponte compartilhada preservada	281b6cb6cc46851e

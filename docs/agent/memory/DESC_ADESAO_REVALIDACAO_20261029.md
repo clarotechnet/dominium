@@ -1,5 +1,54 @@
 # DESC, Adesão e lote 106 — revalidação em 29/10/2026
 
+## Investigação complementar: grupos e backup de 06/10
+
+O operador apontou `F:\Dominium\Backups\DominiumBackups\KNOWN_GOOD_20261006_155652`
+no servidor DESKTOP-K7J3E1N. Leitura em 29/10: 13 arquivos do manifesto SHA-256
+conferidos, sem restauração, importação de estado antigo ou execução de baixas.
+README identifica snapshot criado em 06/10 às 15:56:53, voltado à consulta TOA
+pela árvore de rotas e à correspondência TOA/Imperium. O nome KNOWN_GOOD não
+homologa todas as automações.
+
+Contém app, API DataSnap, varredor automático, frontend, extensões e caches;
+não contém o BotDMV, `disconnectPilotCoordinator.js`, `disconnect_local_runner.py`
+ou suas configurações. O estado antigo das produtivas estava `enabled=false`,
+`continuous=false`, `one_shot=true`, com uma última tentativa 409 registrada como
+confirmada em 03/10. É evidência histórica persistida, não uma nova validação no
+backend nem prova de baixa disparada pelo grupo.
+
+Comparação estrutural por AST com a API legada atualmente instalada: iguais
+`_build_productive_apply_blob`, `_close_order_with_builder`, `close_order`,
+`close_productive` e `read_detail_equipment_movements`. O pacote produtivo já
+aceitava vários equipamentos e rejeitava listas totalmente vazias; o 430 já
+exigia retirada. A exceção de fechamento simples era limitada a serviços de
+assinatura/GPON. Portanto restaurar esse snapshot não implementa o fechamento
+sem itens das O.S. acompanhantes DESC e remover essas guardas não é uma solução
+validada. Preservar os patches atuais de setor, materiais e alocação.
+
+Conferência adicional dos exemplos do operador, somente leitura: os dois LIDs
+informados existem no histórico do grupo CE; os contratos aparecem em logs de
+consultas/avisos, mas os três IDs exatos das mensagens não estão no estado do
+piloto. No BotDMV `execution_enabled=false`; no runner Windows
+`external_execution_enabled=false`. O `index.js` do Bot verifica o primeiro
+antes de chamar o coordenador; com essa configuração nem consulta TOA do piloto
+nem fila de baixa são iniciadas por novas mensagens. Consultas TEL/ATLAS e o
+comando `!idid` são outros caminhos e não comprovam baixa.
+
+Reprodução isolada do parser: contrato+430 é reconhecido; contrato+106 fica
+marcado como código não automático do piloto; `Certo` não contém contrato.
+Não confundir o 106 enviado no grupo com o lote diário autorizado às 23h.
+Leitura real dos dois exemplos: TOA de 29/10 concluído com 430/106; no Imperium
+uma O.S. aparece concluída e a outra em campo. Não há comprovante que atribua
+a conclusão à mensagem do grupo.
+
+Outro caso mostrado pelo operador tem duas tarefas TOA 430, quatro equipamentos
+retirados e duas O.S. Imperium concluídas. O operador informou dois decoders e
+dois smarts e que faria a correção manual. Regra reiterada: os quatro itens
+devem estar juntos em uma única O.S.; a acompanhante fecha sem repetir estoque.
+A leitura não informa quando nem por qual fluxo ocorreu a baixa anterior;
+não atribuir ao piloto ou afirmar que antecedeu a orientação sem auditoria.
+Nenhuma baixa, reabertura, transferência ou alteração de gates nesta investigação.
+
 ## Decisões vigentes do operador
 
 Continuar a ADR-004. Contrato enviado pelo técnico no grupo DESC é o gatilho

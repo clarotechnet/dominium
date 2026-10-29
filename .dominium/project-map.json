@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-29T18:31:08+00:00",
+  "generated_at": "2026-10-29T18:57:13+00:00",
   "schema": 2,
-  "source_fingerprint": "843c6a24fc61e2f612590c53e83e0232bd358c690769d7759905ed28e0e53271",
+  "source_fingerprint": "c873d5f8fd528f989e79bfb777b331b2917bf025d3b1f77ede203ef18192a9ce",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1405,8 +1405,8 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 66836,
-      "sha256": "636484ccb87dfd28e4875bfc796eb96d3709bc5da6d4cc126c993acb835759a3",
+      "bytes": 67500,
+      "sha256": "877aebfdd93ae9feb160bef6877569cc15811db95fe16241b1d62f2e2660e915",
       "summary": "Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106",
       "imports": [],
       "endpoints": [],
@@ -1434,8 +1434,8 @@
     {
       "path": "docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md",
       "category": "docs",
-      "bytes": 6671,
-      "sha256": "991cd390b9645d6ea3312d767102a63ff0aa20bcb326e7be4956bbacaeac122d",
+      "bytes": 9861,
+      "sha256": "b3516076f7672a7413b0c100307261ff6c31fb7cf46d029c9242719c2399c035",
       "summary": "DESC, Adesão e lote 106 — revalidação em 29/10/2026",
       "imports": [],
       "endpoints": [],
@@ -1447,8 +1447,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 13334,
-      "sha256": "ea7e0a9b6f3854834466a96621c18c04dd63b793e9cf9f6aa217ef8c1b65ea83",
+      "bytes": 13974,
+      "sha256": "4335ff06f67679d4e9d9a7d34a2173656f142e60c2132076ef37cfe1a972fafa",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
