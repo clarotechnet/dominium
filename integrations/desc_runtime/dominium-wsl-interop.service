@@ -1,0 +1,14 @@
+[Unit]
+Description=DOMINIUM - restore WSL Windows binary interoperability
+Documentation=https://learn.microsoft.com/windows/wsl/
+After=systemd-binfmt.service
+ConditionPathExists=/proc/sys/fs/binfmt_misc/register
+ConditionPathExists=!/proc/sys/fs/binfmt_misc/WSLInterop
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'printf ":WSLInterop:M::MZ::/init:PF" > /proc/sys/fs/binfmt_misc/register'
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target
