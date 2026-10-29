@@ -57,3 +57,39 @@ O agendador ativo pode ser consultado em `GET /api/nightly-backlog` no
 serviço local 8765. Ativação não comprova que o lote das 23h já foi executado.
 
 Detalhes e limites: `docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md`.
+
+## Releitura de movimentos persistidos (29/10/2026)
+
+A API legada recebeu correção **somente de leitura** em quatro métodos:
+`_parse_installed_detail_row`, `_find_installed_detail_serial`,
+`_parse_removed_detail_row` e `read_detail_equipment_movements`.
+O GetRecords do Imperium grava flags e trailers distintos dos dados enviados
+na baixa; não usar a ausência de movimentos no leitor antigo como prova de
+ausência de movimentação. A validação cruza IdOS, técnico, vínculo de registro,
+serial repetido e rejeita duplicatas. Nenhuma rotina de envio ou estoque foi
+modificada por este patch.
+
+Regressão portável, com registros fictícios e leitor legado congelado:
+
+```powershell
+python -m unittest -q integrations.desc_runtime.test_persisted_removed_movements
+```
+
+**Servidor:** staging `C:\DominiumRuntime\Maintenance\DescRemovedReader-20261029`.
+Instalação cirúrgica do arquivo `imperium_api.py` com hash anterior
+`a0f45197e42d872ea4f824ce4abf33d2800f8d9c753623f85880eb171aab3ccf`
+e novo
+`61045717b6d7ccfd672088ee2c81fc0510ddedb79fa052ea3650501cd85cdf0e`.
+Backup recuperável:
+`C:\DominiumRuntime\Backup\DescRemovedReader-20261029-163756\imperium_api.py`.
+O instalador local registra `installed.json` e aceita `rollback`, seguido
+de reinício verificado da porta 8765. Os 15 testes específicos passaram antes
+da recarga e a porta voltou saudável; lote 106 às 23h preservado, sem
+ativar executor geral.
+
+Os casos reais de validação por releitura foram O.S. 2603550706 (430,
+retirada C85D38D7FAED) e 2614498305 (409, instalação 241806484254 e
+retirada 241800890005), ambos Recife. **Não reenviar essas baixas.**
+Isso não homologa o fechamento acompanhante de múltiplas O.S. nem a
+Adesão completa pela API oficial. Referência detalhada:
+`docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md`.
