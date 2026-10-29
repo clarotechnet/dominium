@@ -57,6 +57,9 @@
     const label=names[job.kind]||job.kind;
     const states={queued:"Na fila",processing:"Processando",ready:"Pronto para baixar",failed:"Falhou"};
     let extra="";
+    if(job.state==="processing" && Number.isInteger(job.summary?.datasnap_checked)) {
+      extra=" • DataSnap: "+job.summary.datasnap_checked+"/"+(job.summary.datasnap_total||0)+" seriais consultados";
+    }
     if(job.summary?.parcial)extra=" • RELATORIO PARCIAL: "+(job.summary.limitation||"Validacao pendente");
     detail.textContent=label+" • "+(states[job.state]||job.state)+extra;
     detail.classList.toggle("quality-error",job.state==="failed");

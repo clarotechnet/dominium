@@ -135,6 +135,10 @@ def build_sheets(kind: str, records: list[dict], city: str, query_id: str, sourc
                  history_rows: list[dict] | None = None):
     if kind not in TYPES:
         raise ValueError("Tipo de analise invalido")
+    evidence = {str(e.get("serial") or "").upper():e for e in (history_rows or [])
+                if isinstance(e,dict)}
+    def evidence_for(row):
+        return evidence.get(_key(row), evidence.get(str(row.get("enderecavel_principal") or "").upper(),{}))
     meta = [
         ["Fonte", "Valor"],
         ["Operacao", city.upper()],
@@ -155,7 +159,11 @@ def build_sheets(kind: str, records: list[dict], city: str, query_id: str, sourc
                     ("SUSPEITO", "ANALISE DE INVENTARIO")]
         header = ["Serial", "Enderecavel Principal", "Modelo", "Estado Atlas",
                   "Contrato Atlas historico", "Operacao", "Data da Alteracao",
-                  "Responsavel Atlas", "Codigo SAP", "Situacao", "Fonte", "Observacoes"]
+                  "Responsavel Atlas", "Codigo SAP", "Situacao", "Fonte", "Observacoes",
+                  "DataSnap historico confirmado", "Qtd movimentos Imperium",
+                  "Ultima movimentacao", "Ultimo destino historico",
+                  "Contrato historico Imperium", "Posse atual verificada",
+                  "Tecnico atual confirmado", "Divergencia historica"]
         out=[header]
         today=datetime.now(timezone(timedelta(hours=-3))).date()
         for row in filtered:
@@ -163,17 +171,29 @@ def build_sheets(kind: str, records: list[dict], city: str, query_id: str, sourc
             when = str(row.get("data_ultima_alteracao") or "")
             if when.startswith(today.isoformat()) or when.startswith(today.strftime("%d/%m/%Y")):  # Ignore movements from the report day.
                 continue
+            e=evidence_for(row)
+            atlas_contract=str(row.get("numero_contrato") or "").strip()
+            historical_contract=str(e.get("last_contract_historical") or "").strip()
+            difference="REVISAR datas" if atlas_contract and historical_contract and atlas_contract!=historical_contract else ""
             out.append([row.get("numero_serie"), row.get("enderecavel_principal"),
                 row.get("modelo"), row.get("estado"),
                 row.get("numero_contrato"), row.get("operacao"), when,
                 row.get("responsavel"),row.get("codigo_sap_normalizado"),
                 "Pendente de conferencia",
-                "QUERY Atlas (historico)", "Rastreabilidade/OS do Controlador nao confirmadas"])
+                "QUERY Atlas + DataSnap historico",
+                "Posse atual/aceite/OS historica exigem confirmacao",
+                "SIM" if e.get("history_verified") else "NAO CONFIRMADO",
+                e.get("movement_count"),e.get("last_movement"),
+                e.get("last_destination_historical"),e.get("last_contract_historical"),
+                "SIM" if e.get("current_owner_verified") else "NAO CONFIRMADO",
+                e.get("current_owner"),difference])
         meta.extend([["Estado incluido","SUSPEITO; ANALISE DE INVENTARIO"],
                      ["Filtro temporal","Ocorrencias do dia excluidas quando data identificada"],
-                     ["Aviso","Pendencias de aceite, contratos e OS nao foram confirmados automaticamente"]])
+                     ["DataSnap","Movimentos confirmados diferem de posse atual confirmada"],
+                     ["Aviso","Aceite e OS historica do Controlador nao foram comprovados automaticamente"]])
         return [("Suspeitos",out),("Fontes e criterios",meta)], {"total":len(out)-1,"parcial":True,
-           "limitation":"Rastreabilidade do Atlas, aceite e OS do Controlador ainda exigem integracao propria"}
+           "imperium_evidence_rows":sum(bool(evidence_for(r)) for r in filtered),
+           "limitation":"Os historicos DataSnap foram consultados; aceite e OS do Controlador nao foram comprovados automaticamente"}
 
     # Report of equipment: retain reference tabs. Do NOT fabricate Used Equipment results.
     atlas = [["Serial","Codigo","Equipamento","Data","Num. OS","Contrato","Usuario"]]
@@ -192,13 +212,28 @@ def build_sheets(kind: str, records: list[dict], city: str, query_id: str, sourc
                 row.get("responsavel"),"Pendente de conferencia"])
         if row.get("responsavel"):names.append([serial,row.get("responsavel")])
     # Imperium's 'Equipamentos Utilizados' isn't the same as read-only DataSnap movement history.
-    imph=[["Serie / Ender. Princ.","Modelo","DATA","Contrato NETSMS","Tipo Contrato UNO"]]
-    meta.extend([["IMPERIUM / CHIP IMPERIUM", "Consulta Equipamentos Utilizados ainda nao integrada: abas nao preenchidas"],
-                 ["Estoque fisico", "Pendente de conferencia (nao inferir de historico)"]])
-    return [("Atlas",atlas),("Chips Atlas",chip_atlas),("IMPERIUM",imph),
-            ("CHIP IMPERIUM",list(imph)),("Assinantes",ass),("Nomes.",names),
+    imph=[["Serie / Ender. Princ.","Modelo","DATA","Contrato NETSMS","Tipo Contrato UNO",
+             "Historico DataSnap","Ultima movimentacao","Ultimo destino historico",
+             "Posse atual verificada","Tecnico atual confirmado","Limitacao"]]
+    imp=[list(imph[0])]
+    chip_imp=[list(imph[0])]
+    for row in records:
+        e=evidence_for(row)
+        if not e.get("history_verified"):continue
+        item=[_key(row),row.get("modelo"),e.get("last_movement_date"),
+             e.get("last_contract_historical"),"",
+             "SIM",e.get("last_movement"),e.get("last_destination_historical"),
+             "SIM" if e.get("current_owner_verified") else "NAO CONFIRMADO",
+             e.get("current_owner"),"Historico/DataSnap, NAO relatorio de equipamentos utilizados"]
+        (chip_imp if _is_chip(row) else imp).append(item)
+    meta.extend([["IMPERIUM / CHIP IMPERIUM", "Dados de historico obtidos pelo DataSnap; nao substituir Equipamentos Utilizados"],
+                 ["Estoque fisico", "Pendente de conferencia (nao inferir de historico)"],
+                 ["Posse atual", "Confirmada somente quando consta no estoque atual consultado"]])
+    return [("Atlas",atlas),("Chips Atlas",chip_atlas),("IMPERIUM",imp),
+            ("CHIP IMPERIUM",chip_imp),("Assinantes",ass),("Nomes.",names),
             ("Fontes e criterios",meta)],{"total":len(records),"parcial":True,
-              "limitation":"Equipamentos Utilizados do Imperium ainda nao disponivel nesta integracao"}
+              "imperium_evidence_rows":len(imp)+len(chip_imp)-2,
+              "limitation":"Dados DataSnap historicos integrados; consulta especifica Equipamentos Utilizados ainda nao foi comprovada"}
 
 
 class StockAnalysisService:
@@ -315,7 +350,20 @@ class StockAnalysisService:
             if not created:raise ValueError("QUERY de origem nao esta mais concluida")
             source_time=float(created[0])
         finally:con.close()
-        sheets,summary=build_sheets(job["kind"],rows,job["city"],job["query_id"],source_time)
+        history=[]
+        enrichment_summary={}
+        if job["kind"] in ("equipamentos","suspeitos"):
+            from stock_report_enrichment import collect
+            def update_progress(stats):
+                with self._connect() as db:
+                    db.execute("UPDATE jobs SET summary=?,updated_at=? WHERE id=?",
+                               (json.dumps(stats),self.clock(),job["id"]))
+            history,enrichment_summary=collect(
+                job["id"],job["city"],job["kind"],rows,db_path=self.db,
+                progress=update_progress)
+        sheets,summary=build_sheets(job["kind"],rows,job["city"],job["query_id"],
+                                    source_time,history_rows=history)
+        summary.update(enrichment_summary)
         output=xlsx(sheets)
         target=self.root/(job["id"]+".xlsx")
         temp=self.root/(job["id"]+".tmp")

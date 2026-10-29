@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-29T18:16:54+00:00",
+  "generated_at": "2026-10-29T19:52:18+00:00",
   "schema": 2,
-  "source_fingerprint": "533f8a7260fecfa6eb129203fca6b2acaa29b59fe11ca5f5682979d6e2a25496",
+  "source_fingerprint": "1537cfb108ec1a2d3d05ac991b4c83b0685e02d12b28312592874b33964bc09a",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -2846,8 +2846,8 @@
     {
       "path": "integrations/serial_consult/stock_analysis_http.py",
       "category": "shared",
-      "bytes": 18958,
-      "sha256": "279d21d949dbaf8c9ee75b7f5c900b4ea5c7649f4063634893e676bbb205603a",
+      "bytes": 22029,
+      "sha256": "7ec20009eaec551f0a8da0c21c2ee44bded098640cc9e0ed5b5114661c883e65",
       "summary": "Audited, read-only stock reports from a previously validated Atlas QUERY.",
       "imports": [
         "__future__",
@@ -2862,6 +2862,7 @@
         "pathlib",
         "re",
         "sqlite3",
+        "stock_report_enrichment",
         "threading",
         "time",
         "unicodedata",
@@ -2879,6 +2880,30 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 17
+    },
+    {
+      "path": "integrations/serial_consult/stock_report_enrichment.py",
+      "category": "shared",
+      "bytes": 5676,
+      "sha256": "dff77b77c7f8eec51160dea440d9b6a78127ae70662a3db1e99735acc7c6b120",
+      "summary": "Bounded read-only DataSnap enrichment for stock XLSX reports.",
+      "imports": [
+        "__future__",
+        "contextlib",
+        "json",
+        "pathlib",
+        "re",
+        "serial_service",
+        "sqlite3",
+        "stock_analysis_http",
+        "time",
+        "typing"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
     },
     {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/background.js",
@@ -4704,8 +4729,8 @@
     {
       "path": "static/stock-analysis-ui.js",
       "category": "frontend",
-      "bytes": 6895,
-      "sha256": "cf76f72383196e9b12bec3c714c9eff2bfa7bddf51988c9852c032bd3bf55c6d",
+      "bytes": 7106,
+      "sha256": "997f20bda8f57df99ba454155bdf2a9c3bd524eee33d9b008fa3554aa55384b8",
       "summary": "Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */",
       "imports": [],
       "endpoints": [
@@ -7025,6 +7050,30 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "tests/test_stock_report_enrichment.py",
+      "category": "tests",
+      "bytes": 4212,
+      "sha256": "ed28a40e70740d86d855e274ab0651c1a6861e42a5198c5a46d7a16bf1b90bd2",
+      "summary": "DataSnap history must enrich reports without inventing physical stock or ownership.",
+      "imports": [
+        "__future__",
+        "contextlib",
+        "json",
+        "pathlib",
+        "sqlite3",
+        "stock_analysis_http",
+        "stock_report_enrichment",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 6
     },
     {
       "path": "tests/test_supabase_sdk_compat.py",

@@ -151,7 +151,8 @@ shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
 shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
 shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only serial consultation: real DataSnap history + local evidence.	d9f51c614747ed37
-shared	integrations/serial_consult/stock_analysis_http.py	17	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	279d21d949dbaf8c
+shared	integrations/serial_consult/stock_analysis_http.py	17	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	7ec20009eaec551f
+shared	integrations/serial_consult/stock_report_enrichment.py	3			Bounded read-only DataSnap enrichment for stock XLSX reports.	dff77b77c7f8eec5
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76				b8274ffc7dfb2fbb
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-isolated.js	1			content-isolated.js - Roda no world: ISOLATED	3aa2ece3a08e2b62
@@ -255,7 +256,7 @@ frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b
 frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */	fd462fc168e71c03
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
-frontend	static/stock-analysis-ui.js	12	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	cf76f72383196e9b
+frontend	static/stock-analysis-ui.js	12	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	997f20bda8f57df9
 frontend	static/stock-nav.js	6			Navegacao consolidada de Estoque (mantem os modulos existentes). */	1cd96c23d87bb70a
 frontend	static/styles.css					5f7bda5e579ca38a
 frontend	static/theme-init.js					97eb92ef899f8dcf
@@ -372,6 +373,7 @@ tests	tests/test_stock_analysis_reports.py	8	5		Tests for safe, cached, actor-sc
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
 tests	tests/test_stock_quality_bridge.mjs		2			3022814e71dead90
+tests	tests/test_stock_report_enrichment.py	6			DataSnap history must enrich reports without inventing physical stock or ownership.	ed28a40e70740d86
 tests	tests/test_supabase_sdk_compat.py	2				49269ce926869e84
 tests	tests/test_technician_directory.py	5				d78aba13b7ad30e2
 tests	tests/test_toa_agenda.py	4				169f9c78410dfd88
