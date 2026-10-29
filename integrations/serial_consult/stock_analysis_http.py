@@ -23,8 +23,23 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from xml.sax.saxutils import escape
 
-from atlas_query_report import DB as ATLAS_DB
-from atlas_query_data import COLUMNS, material_no_zero
+# These are the stable report column labels, not a dependency on the Atlas
+# Chrome automation module (which imports optional websocket at import time).
+# Stock analyses must remain importable on headless CI and standalone workers.
+ATLAS_DB = Path(r"C:\DominiumRuntime\AtlasQueryData\query_jobs.sqlite3")
+COLUMNS = (
+    ("numero_serie", "Numero Serie"),
+    ("codigo_material_sap", "Codigo Material SAP"),
+    ("codigo_sap_normalizado", "Codigo SAP sem zeros"),
+    ("modelo", "Modelo"),
+    ("enderecavel_principal", "Enderecavel Principal"),
+    ("operacao", "Operacao"),
+    ("nome_local", "Nome do Local"),
+    ("estado", "Estado"),
+    ("data_ultima_alteracao", "Data Ultima Alteracao"),
+    ("responsavel", "Responsavel"),
+    ("numero_contrato", "Numero do Contrato"),
+)
 
 ROOT = Path(r"C:\DominiumRuntime\StockAnalysisData")
 SOURCE_DB = Path(r"C:\DominiumMain\data\dominium_operacional.sqlite3")

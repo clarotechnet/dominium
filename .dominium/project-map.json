@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-29T21:03:02+00:00",
+  "generated_at": "2026-10-29T21:05:22+00:00",
   "schema": 2,
-  "source_fingerprint": "550cc81fe71139382c92729bb176232296bb3dbc6f35aba5d84ab629c50595f4",
+  "source_fingerprint": "5683002877d9a41d7d4a2bd55f1ad9a5e754c78e8b8554985c6a28b969d12bd3",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -3213,13 +3213,11 @@
     {
       "path": "integrations/serial_consult/stock_analysis_http.py",
       "category": "shared",
-      "bytes": 22029,
-      "sha256": "7ec20009eaec551f0a8da0c21c2ee44bded098640cc9e0ed5b5114661c883e65",
+      "bytes": 22707,
+      "sha256": "f51aeb5c6d526a5176b3988476e008329abc0b76652b4cbb84edd1cead7f27ce",
       "summary": "Audited, read-only stock reports from a previously validated Atlas QUERY.",
       "imports": [
         "__future__",
-        "atlas_query_data",
-        "atlas_query_report",
         "collections",
         "contextlib",
         "datetime",

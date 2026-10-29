@@ -568,8 +568,6 @@ serial_datasnap	integrations/serial_consult/serial_service.py
 sqlite3	integrations/serial_consult/serial_service.py
 urllib	integrations/serial_consult/serial_service.py
 __future__	integrations/serial_consult/stock_analysis_http.py
-atlas_query_data	integrations/serial_consult/stock_analysis_http.py
-atlas_query_report	integrations/serial_consult/stock_analysis_http.py
 collections	integrations/serial_consult/stock_analysis_http.py
 contextlib	integrations/serial_consult/stock_analysis_http.py
 datetime	integrations/serial_consult/stock_analysis_http.py
