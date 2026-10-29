@@ -176,6 +176,10 @@ endpoint	path
 /api/health	flow_reader/server.py
 /api/analyze	flow_reader/static/app.js
 /api/disconnection/reports	integrations/desc_reports/desc_review_relay.py
+/api/orders/{int(row	integrations/desc_runtime/nightly_backlog_106.py
+/api/orders?	integrations/desc_runtime/nightly_backlog_106.py
+/api/profiles	integrations/desc_runtime/nightly_backlog_106.py
+/api/profiles	integrations/desc_runtime/test_nightly_backlog_106.py
 /api/disconnection/	integrations/import_bridge/worker.mjs
 /api/orders/bulk-create	integrations/import_bridge/worker.mjs
 /api/serials/consult	integrations/import_bridge/worker.mjs

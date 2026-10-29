@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-29T19:52:18+00:00
-- Source fingerprint: `1537cfb108ec1a2d`
-- Indexed files: 430
-- Indexed symbols: 3738
-- API path references: 429
+- Generated: 2026-10-29T20:56:48+00:00
+- Source fingerprint: `550cc81fe7113938`
+- Indexed files: 455
+- Indexed symbols: 3991
+- API path references: 433
 
 ## Navigation rule
 
@@ -49,6 +49,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `toa-discovery/service-worker.js` (16 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa-discovery/service-worker.test.js`
 - `toa-discovery/test.js`
+- `toa_adm_task_splitter.py` (11 symbols) - Split a completed TOA DMV_ADM CSV row into exact per-task evidence.
 - `toa_agenda.py` (11 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_automation.py` (32 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_bridge_server.py` (21 symbols, 1 DataSnap methods) - Bridge local escutando na porta 8787.
@@ -115,6 +116,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `.mcp.json`
 - `ABRIR LEITOR DE FLUXOS.cmd`
 - `Abrir Painel.cmd`
+- `adm_allocation.py` (3 symbols) - Read-only allocation for DESC multi-OS activities.
 - `AGENTS.md` (1 DataSnap methods) - DOMINIUM agent guide
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.
 - `auth_store.py` (28 symbols) - Autenticacao local do DOMINIUM.
@@ -148,7 +150,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `material_protocol_templates.json` (1 DataSnap methods)
 - `native_order_protocol_templates.json` (2 DataSnap methods)
 - `official_candidate_locator.py` (4 symbols) - Read-only offline candidate locator for official API closes.
-- `official_close.py` (4 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `official_close.py` (5 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_close_code_catalog.py` (8 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_close_code_reconciliation.py` (12 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_close_dry_run.py` (28 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -175,10 +177,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 137 files
+- shared: 146 files
 - tooling-deploy: 48 files
-- docs: 38 files
-- tests: 123 files
+- docs: 41 files
+- tests: 135 files
 
 ## Search indexes
 
@@ -190,4 +192,4 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Environment variable names
 
-`DOMINIUM_AUTH_BACKEND`, `DOMINIUM_AUTH_EMAIL_DOMAIN`, `DOMINIUM_CHROMEDRIVER`, `DOMINIUM_DATABASE_URL`, `DOMINIUM_DESC_REVIEW_ACCESS_FILE`, `DOMINIUM_DESC_REVIEW_CONNECTION`, `DOMINIUM_DESC_REVIEW_ORIGIN`, `DOMINIUM_DESC_REVIEW_TOKEN`, `DOMINIUM_HTTPS`, `DOMINIUM_IMPERIUM_RUNTIME_ROOT`, `DOMINIUM_INGEST_TOKEN`, `DOMINIUM_LOCAL_TOA_AUTOMATION`, `DOMINIUM_PROJECT_ROOT`, `DOMINIUM_PROXY_TOKEN`, `DOMINIUM_PUBLIC_ORIGIN`, `DOMINIUM_QA_ARTIFACT_DIR`, `DOMINIUM_QA_BASE_SHA`, `DOMINIUM_QUALITY_ENV_FILE`, `DOMINIUM_SUPABASE_BRIDGE_TOKEN`, `DOMINIUM_TOA_AUTOMATION_REMOTE`, `DOMINIUM_TOA_BRIDGE_LOOKUP_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_POLL_INTERVAL`, `DOMINIUM_TOA_BRIDGE_REQUEST_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_URL`, `DOMINIUM_TOA_COLLECTOR_TOKEN`, `DOMINIUM_TOA_DEBUG_PORT`, `DOMINIUM_TOA_PRIMARY_TOKEN`, `DOMINIUM_TV_INGEST_URL`, `DOMINIUM_WEB_MODE`, `IMPERIUM_DATASNAP_PASSWORD`, `IMPERIUM_DATASNAP_USERNAME`, `PLAYWRIGHT_MODULE`, `PORT`, `QA_SCREENSHOT_DIR`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`, `SUPABASE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`
+`DOMINIUM_AUTH_BACKEND`, `DOMINIUM_AUTH_EMAIL_DOMAIN`, `DOMINIUM_CHROMEDRIVER`, `DOMINIUM_DATABASE_URL`, `DOMINIUM_DESC_REVIEW_ACCESS_FILE`, `DOMINIUM_DESC_REVIEW_CONNECTION`, `DOMINIUM_DESC_REVIEW_ORIGIN`, `DOMINIUM_DESC_REVIEW_TOKEN`, `DOMINIUM_HTTPS`, `DOMINIUM_IMPERIUM_RUNTIME_ROOT`, `DOMINIUM_INGEST_TOKEN`, `DOMINIUM_LOCAL_TOA_AUTOMATION`, `DOMINIUM_NODE`, `DOMINIUM_PROJECT_ROOT`, `DOMINIUM_PROXY_TOKEN`, `DOMINIUM_PUBLIC_ORIGIN`, `DOMINIUM_QA_ARTIFACT_DIR`, `DOMINIUM_QA_BASE_SHA`, `DOMINIUM_QUALITY_ENV_FILE`, `DOMINIUM_SUPABASE_BRIDGE_TOKEN`, `DOMINIUM_TOA_AUTOMATION_REMOTE`, `DOMINIUM_TOA_BRIDGE_LOOKUP_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_POLL_INTERVAL`, `DOMINIUM_TOA_BRIDGE_REQUEST_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_URL`, `DOMINIUM_TOA_COLLECTOR_TOKEN`, `DOMINIUM_TOA_DEBUG_PORT`, `DOMINIUM_TOA_PRIMARY_TOKEN`, `DOMINIUM_TV_INGEST_URL`, `DOMINIUM_WEB_MODE`, `DOMINIUM_WHATSAPP_PORT`, `IMPERIUM_DATASNAP_PASSWORD`, `IMPERIUM_DATASNAP_USERNAME`, `PLAYWRIGHT_MODULE`, `PORT`, `QA_SCREENSHOT_DIR`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`, `SUPABASE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, `USERPROFILE`

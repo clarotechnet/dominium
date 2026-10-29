@@ -785,7 +785,7 @@ class EquipmentGroupMatchingTests(unittest.TestCase):
         )
         transfer.assert_not_called()
 
-    def test_official_materials_tolerates_one_missing_misc_even_with_large_quantity(self) -> None:
+    def test_official_materials_blocks_one_missing_misc_even_with_large_quantity(self) -> None:
         order, context, client = self._mock_order_context()
         cable = StockMaterial(6001, "22066906", "CABO COAXIAL RG6 PRETO", 0, 260, "M", 1, "N")
         self.api._equipment_group_cache[cable.code] = {
@@ -808,17 +808,15 @@ class EquipmentGroupMatchingTests(unittest.TestCase):
             patch.object(self.api, "_material_virtual_stock_quantities_on", return_value={}),
             patch.object(self.api, "_transfer_material_shortfalls") as transfer,
         ):
-            result = self.api.prepare_official_materials(
-                order,
-                [{"code": cable.code, "description": cable.name, "quantity": "23"}],
-                expected_installer_id=context.installer_id,
-            )
-        self.assertEqual(result["resolved_materials"], [])
-        self.assertEqual(result["tolerated_shortfall_count"], 1)
-        self.assertEqual(result["tolerated_shortfalls"][0]["missing_quantity"], "23")
+            with self.assertRaisesRegex(ValueError, "faltam 1 miscelaneas sem cobertura"):
+                self.api.prepare_official_materials(
+                    order,
+                    [{"code": cable.code, "description": cable.name, "quantity": "23"}],
+                    expected_installer_id=context.installer_id,
+                )
         transfer.assert_not_called()
 
-    def test_official_materials_tolerates_four_distinct_missing_misc(self) -> None:
+    def test_official_materials_blocks_four_distinct_missing_misc(self) -> None:
         order, context, client = self._mock_order_context()
         codes = ["22065718", "22065719", "22065720", "22065721"]
         materials = [
@@ -846,16 +844,15 @@ class EquipmentGroupMatchingTests(unittest.TestCase):
             patch.object(self.api, "_material_virtual_stock_quantities_on", return_value={}),
             patch.object(self.api, "_transfer_material_shortfalls") as transfer,
         ):
-            result = self.api.prepare_official_materials(
-                order,
-                [
-                    {"code": material.code, "description": material.name, "quantity": str(index * 10)}
-                    for index, material in enumerate(materials, start=1)
-                ],
-                expected_installer_id=context.installer_id,
-            )
-        self.assertEqual(result["tolerated_shortfall_count"], 4)
-        self.assertEqual(len(result["tolerated_shortfalls"]), 4)
+            with self.assertRaisesRegex(ValueError, "faltam 4 miscelaneas sem cobertura"):
+                self.api.prepare_official_materials(
+                    order,
+                    [
+                        {"code": material.code, "description": material.name, "quantity": str(index * 10)}
+                        for index, material in enumerate(materials, start=1)
+                    ],
+                    expected_installer_id=context.installer_id,
+                )
         transfer.assert_not_called()
 
     def test_official_materials_blocks_when_five_distinct_misc_are_missing(self) -> None:

@@ -18,6 +18,7 @@ import datetime as dt
 import hashlib
 import json
 import re
+import unicodedata
 from typing import Any
 
 from imperium_http_api import build_close_payload
@@ -30,6 +31,17 @@ def _value(source: Any, field: str, default: Any = "") -> Any:
 
 def _text(value: Any) -> str:
     return str(value or "").strip()
+
+
+def is_code_only_adhesion_service(service: Any) -> bool:
+    label = re.sub(r"^\d+\s*[-:]\s*", "", _text(service))
+    normalized = unicodedata.normalize("NFKD", label).upper()
+    normalized = "".join(c for c in normalized if not unicodedata.combining(c))
+    normalized = " ".join(re.sub(r"[^A-Z0-9]+", " ", normalized).split())
+    return (
+        normalized in {"INST GPON INST CABO", "INSTALACAO DE CABO GPON"}
+        or (normalized.startswith("ADESAO ") and "ASSINATURA" in normalized.split())
+    )
 
 
 def _items(value: Any, field: str) -> list[dict[str, Any]]:
@@ -65,6 +77,11 @@ def build_manual_official_plan(
         removed_source = [
             {"serial": legacy_removed, "type": _text(body.get("removed_type"))}
         ]
+
+    if is_code_only_adhesion_service(_value(order, "service")) and (
+        installed_source or removed_source or material_source
+    ):
+        raise ValueError("Este servico de adesao aceita somente codigo de baixa, sem itens")
 
     if not productive and (installed_source or removed_source or material_source):
         raise ValueError("Codigo improdutivo nao aceita movimentacao de estoque")

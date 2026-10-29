@@ -94,6 +94,35 @@ class OfficialClosePlanTests(unittest.TestCase):
                 code="430",
             )
 
+    def test_adhesion_signature_and_gpon_reject_inventory(self) -> None:
+        for service in (
+            "ADESAO - INSTALACAO DE ASSINATURA",
+            "Adesão - Instalação de Assinatura",
+            "43 - ADESAO - INSTALACAO DE ASSINATURA",
+            "INST GPON - INST CABO",
+            "INSTALACAO DE CABO GPON",
+        ):
+            self.order.service = service
+            for body in (
+                {"installed_equipment": [{"serial": "2CD8AE5D425C"}]},
+                {"removed_equipment": [{"serial": "241786844144", "type": "decoder"}]},
+                {"materials": [{"code": "433135", "quantity": 1}]},
+                {"installed_serial": "2CD8AE5D425C"},
+            ):
+                with self.subTest(service=service, body=body):
+                    with self.assertRaisesRegex(ValueError, "somente codigo de baixa"):
+                        self.plan(body)
+
+    def test_adhesion_signature_and_gpon_keep_empty_arrays(self) -> None:
+        for service in ("ADESAO - INSTALACAO DE ASSINATURA", "INST GPON - INST CABO"):
+            with self.subTest(service=service):
+                self.order.service = service
+                payload = self.plan({})["payload"]["ordemservico"]
+                self.assertEqual(payload["codigobaixa"], 409)
+                self.assertEqual(payload["instaladosserializados"], [])
+                self.assertEqual(payload["removidosserializados"], [])
+                self.assertEqual(payload["instaladosmiscelaneas"], [])
+
     def test_non_postable_accessories_are_not_sent(self) -> None:
         result = self.plan(
             {

@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 JS_TESTS = (
+    ROOT / "tests" / "test_desc_message_formats.cjs",
     ROOT / "integrations" / "toa_cloud_bridge" / "extension-central-2.6.3" / "test-toa-route-tree.cjs",
     ROOT / "tests" / "test_productive_snapshot_frontend.js",
     ROOT / "tests" / "test_order_close_proxy.js",
@@ -177,6 +178,12 @@ def main() -> None:
         ],
     )
     node = shutil.which("node")
+    for pattern in ("test_nightly*.py", "test_whatsapp_bridge_service.py"):
+        run(
+            f"Portable DESC runtime {pattern}",
+            [sys.executable, "-m", "unittest", "discover", "-s",
+             "integrations/desc_runtime", "-p", pattern, "-q"],
+        )
     if not node:
         raise SystemExit("Node.js nao encontrado; testes JS nao podem ser executados")
     for test in JS_TESTS:

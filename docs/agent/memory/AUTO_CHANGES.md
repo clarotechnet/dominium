@@ -192,3 +192,51 @@ Alterações preparadas para commit (2 arquivos). Para motivação e resultado c
 
 - `deploy/hostinger-web/operational-policy.js`
 - `tests/test_private_operational_migration.cjs`
+
+## 2026-10-29 | staged:06334615e72bb1ef
+
+Alterações preparadas para commit (30 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `adm_allocation.py`
+- `docs/agent/memory/CURRENT_STATE.md`
+- `docs/agent/memory/DECISIONS.md`
+- `docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md`
+- `docs/agent/memory/OPERATIONS_JOURNAL.md`
+- `docs/superpowers/plans/2026-10-29-desc-adesao-safety.md`
+- `imperium_api.py`
+- `integrations/desc_runtime/README.md`
+- `integrations/desc_runtime/bot/disconnectPilot.js`
+- `integrations/desc_runtime/bot/disconnectPilotCoordinator.js`
+- `integrations/desc_runtime/disconnect_local_runner.py`
+- `integrations/desc_runtime/nightly_backlog_106.py`
+- `integrations/desc_runtime/nightly_backlog_service.py`
+- `integrations/desc_runtime/patch_runtime_safety.py`
+- `integrations/desc_runtime/test_desc_multi_owner_runtime.py`
+- `integrations/desc_runtime/test_desc_sector_scope.py`
+- `integrations/desc_runtime/test_nightly_backlog_106.py`
+- `integrations/desc_runtime/test_nightly_backlog_service.py`
+- `integrations/desc_runtime/test_runtime_official_materials.py`
+- `integrations/desc_runtime/test_whatsapp_bridge_service.py`
+- `integrations/desc_runtime/whatsapp_bridge_service.py`
+- `official_close.py`
+- `scripts/quality_gate.py`
+- `tests/test_adm_allocation.py`
+- `tests/test_desc_message_formats.cjs`
+- `tests/test_equipment_group_matching.py`
+- `tests/test_official_close.py`
+- `tests/test_official_material_completeness.py`
+- `tests/test_toa_adm_task_splitter.py`
+- `toa_adm_task_splitter.py`
+
+## 2026-10-29 | staged:3922043af96ef454
+
+Alterações preparadas para commit (2 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `docs/agent/memory/CURRENT_STATE.md`
+- `docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md`
+
+## 2026-10-29 | staged:907601394ad93b03
+
+Alterações preparadas para commit (1 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `docs/superpowers/plans/2026-10-29-desc-adesao-safety.md`

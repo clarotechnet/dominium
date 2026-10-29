@@ -37,3 +37,21 @@ Consulte `.gitignore`, `AGENTS.md` e `scripts/quality_gate.py`.
 - Executor geral que varria O.S. sem origem de grupo permanece **desativado**. Aprovar execução por fluxo somente depois de testes reais, isolamento de setor e garantia de idempotência.
 
 **Evidências e pendências:** `docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md`, issues [#25](https://github.com/clarotechnet/dominium/issues/25) e [#28](https://github.com/clarotechnet/dominium/issues/28). Os ZIPs originais de WhatsApp e seus anexos são privados e não fazem parte do repositório.
+
+
+## ADR-005 — Exceção para o lote diário 106 das 23h
+
+**Data:** 2026-10-29. **Status:** autorizado pelo operador e configuração ativa verificada.
+
+- O usuário corrigiu a orientação de manter todos os lotes desligados: o lote
+  106 às 23h deve ficar ativo para evitar trabalho manual diário.
+- Escopo: quatro cidades, O.S. de desconexão/retirada em campo na data do lote,
+  DataSnap, sem equipamentos nem miscelâneas, dentro das 23h de Brasília.
+- O servidor agenda a rotina; o navegador não precisa ficar aberto.
+- Repetir apenas GET 409 ocupado dentro da janela, até 12 tentativas/15s;
+  nenhum POST repetido. Recibo por IdOS persiste antes do envio e impede
+  repetição depois de timeout, erro ou reinício.
+- As demais baixas gerais continuam desligadas. Esta exceção não libera
+  produtivas gerais, Adesão automática nem executor direto dos grupos.
+- Configuração ativa não comprova lote já executado. Conferir relatório
+  operacional após o horário; falha/baixa incerta exige reconciliação.
