@@ -9,10 +9,12 @@ shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	adm_allocation.py	3			Read-only allocation for DESC multi-OS activities.	a9434a5b2e81e0ca
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	151	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	227ade0c245b77ed
+orchestration	app.py	152	89	44	DOMINIUM | MAPA DE RESPONSABILIDADE	26ca1613c431da29
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
+imperium	backlog_imperium_service.py	14			Read-only annual Imperium history loader for the DOMINIUM backlog panel.	38472ae057f562f3
+imperium	backlog_imperium_year.py	9			Planejamento seguro da sincronizacao anual Imperium/DataSnap.	ceb36f2a83cc0fda
 shared	bulk_orders.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	2775b7a068f33346
 shared	cancel_all_open.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	9dde6a0f10a22ffe
 shared	CLAUDE.md			1	DOMINIUM / Claude Code	de5472b9149c3be8
@@ -40,7 +42,7 @@ tooling-deploy	deploy/hostinger-web/order-close-proxy.js	2				78fc563fd7b62d77
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	32	1		7a173eae07ee98d1
+tooling-deploy	deploy/hostinger-web/server.js	41	33	1		8d8cfe377af7ab74
 tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	1			89b408296b439bf8
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
@@ -68,6 +70,7 @@ docs	docs/agent/ATLAS_QUERY_VIDEO_RECOVERY_20261026.md				Natal — vídeo, comp
 docs	docs/agent/ATLAS_QUERY_WAITING_HUD_20261026.md				QUERY — distinguir espera de processamento	cfd355576cf2880e
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor de sessão instalado em 26/10/2026	cd87d67d5054efb8
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
+docs	docs/agent/BACKLOG_DESC_LAB_20261030.md				Análise Backlog dentro de DESCONEXÃO — 30/10/2026	1f81779e8dcf1ec4
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	2eb3f7cfc6336d0a
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
@@ -243,6 +246,7 @@ tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
 tooling-deploy	scripts/configure_supabase_hosted.py	1				f4637b027d3a1889
 tooling-deploy	scripts/confront_local_cli.py	1			Operator-only LOCAL CLI for staging the Atlas x Imperium confrontation.	08f63e21a0801564
 tooling-deploy	scripts/deploy_supabase.ps1					ae66340ccd4c0380
+tooling-deploy	scripts/finalize_desc_backlog_lab.py					424c22e823cf3fe9
 tooling-deploy	scripts/generate_agent_context.py	20		1		99f386dde01ec92f
 tooling-deploy	scripts/inspect_atlas_bridge_readonly.py	1			Inspect only Atlas local bridge health and safely redacted metadata.	5729f817efeba45c
 tooling-deploy	scripts/inspect_confront_wiring.py		1			764a258b7207afec
@@ -250,6 +254,8 @@ tooling-deploy	scripts/inspect_managed_atlas_readonly.py	1			Safe Chrome-for-Tes
 tooling-deploy	scripts/install_agent_context_hooks.py	3			Install durable-memory Git hooks safely, including linked worktrees.	f5813377dae67559
 tooling-deploy	scripts/install_atlas_session_watchdog.ps1			2		7b17ecaf06189449
 tooling-deploy	scripts/install_confront_relay.py	3	1		Minimal, backup-first insertion of the confront read-only API into live DESC relay.	4ae20a35e3eeb9d3
+tooling-deploy	scripts/integrate_current_desc_backlog.py	1	11			cf95d629c44cc666
+tooling-deploy	scripts/patch_route_parser.py					0f3fef874290517e
 tooling-deploy	scripts/probe_atlas_synthetic.py				Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.	865b81e754d5a762
 tooling-deploy	scripts/quality_gate.py	5				b5910492ab2f7b89
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
@@ -257,21 +263,24 @@ tooling-deploy	scripts/restart_confront_relay.ps1					de8c58415028c25c
 tooling-deploy	scripts/smoke_confront_cloudflare.mjs		3		Verify private Worker route with the same Node fetch transport used by Hostinger. */	5d9320441c44eea2
 tooling-deploy	scripts/smoke_confront_cloudflare.py	1	3		Smoke Cloudflare -> DESC private service; never prints keys or customer records.	a2d14b133b75f42d
 tooling-deploy	scripts/smoke_confront_private_relay.py	1	4		Smoke isolated pre-production local DESC relay, no serials or customer records read.	5ed8fc53345d22f5
+tooling-deploy	scripts/verify_backlog_excel_import.py					777690f519672490
 tooling-deploy	scripts/verify_confront_runtime.py				Import live DESC relay and verify Atlas module availability without changing services.	4d0fd85a2d7b2661
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/all-operations.js	14	2		Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */	2bc9ea7f772fad01
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
+frontend	static/backlog-analysis.css					bf4fc7d77ca612ce
+frontend	static/backlog-analysis.js	8	7		DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */	eb422c8fb276caba
 frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	0b07900bcc977ee8
 frontend	static/daily-stock-parser.js	6			Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */	62266f55fa3c9f65
 frontend	static/daily-stock.js	11	2		Estoque diario independente do Imperium; importacao por arquivo e historico. */	1f315a27ae8c43b4
-frontend	static/desc-analytics-nav.js	2			Submenu de desconexao, independente dos fluxos de baixa existentes. */	de2c537e32ac7a0a
+frontend	static/desc-analytics-nav.js	2			Submenu de desconexao, independente dos fluxos de baixa existentes. */	06dccb7e8e84c574
 frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			ffdbe3d88e50c7de
+frontend	static/index.html		1			1b568a27aba45f06
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
@@ -320,6 +329,8 @@ tests	tests/test_atlas_query_reserve_delay.py	22	1		The user's two-ID policy is 
 tests	tests/test_atlas_query_ui_status.js	4	1			f9172992b8656ecb
 tests	tests/test_auth_store.py	7				2131129f824fbae2
 tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
+tests	tests/test_backlog_imperium_service.py	14				b8e2e7a384ec9c52
+tests	tests/test_backlog_imperium_year.py	9				1ab2338fc7b9cff4
 tests	tests/test_build_hostinger_node_release.py	3				157aef4ebdf049a3
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-30T12:40:17+00:00",
+  "generated_at": "2026-10-30T13:36:32+00:00",
   "schema": 2,
-  "source_fingerprint": "82b056bc5ecd1df32f8cd9df5fa4f96bc911828f6a3c29583232b04736d8ff84",
+  "source_fingerprint": "1462949b984aadcc23be929af4bfc453fdbffea53fe731b77baf4db9affcd3f3",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -162,8 +162,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 360511,
-      "sha256": "227ade0c245b77edd829b6ebe072eec88f7eef133572c9953fcd4e35d7f4e466",
+      "bytes": 364363,
+      "sha256": "26ca1613c431da29aa2d92f4712a14fea8d1409ffcc647e7557b33d2193fd6fc",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -171,6 +171,7 @@
         "auth_store",
         "auth_store_postgres",
         "auto_improductive_close",
+        "backlog_imperium_service",
         "base64",
         "bulk_orders",
         "close_report",
@@ -238,6 +239,14 @@
         "/api/auth/users/(\\d+)/reject",
         "/api/auto-improductive-close",
         "/api/auto-improductive-close/toggle",
+        "/api/backlog/year/",
+        "/api/backlog/year/compare",
+        "/api/backlog/year/fora-rota",
+        "/api/backlog/year/pause",
+        "/api/backlog/year/routes",
+        "/api/backlog/year/sent",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status",
         "/api/close-report",
         "/api/close-report.xlsx",
         "/api/close-report/export.xlsx",
@@ -310,6 +319,7 @@
       ],
       "env_vars": [
         "DOMINIUM_AUTH_BACKEND",
+        "DOMINIUM_BACKLOG_YEAR_ENABLE",
         "DOMINIUM_DATABASE_URL",
         "DOMINIUM_HTTPS",
         "DOMINIUM_INGEST_TOKEN",
@@ -367,7 +377,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 151
+      "symbol_count": 152
     },
     {
       "path": "auth_store.py",
@@ -443,6 +453,59 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 23
+    },
+    {
+      "path": "backlog_imperium_service.py",
+      "category": "imperium",
+      "bytes": 19566,
+      "sha256": "38472ae057f562f3d4da407a76b1e584f64a6469435d0804136b467d5cbb332f",
+      "summary": "Read-only annual Imperium history loader for the DOMINIUM backlog panel.",
+      "imports": [
+        "__future__",
+        "backlog_imperium_year",
+        "base64",
+        "contextlib",
+        "csv",
+        "datetime",
+        "hashlib",
+        "io",
+        "itertools",
+        "json",
+        "openpyxl",
+        "os",
+        "pathlib",
+        "re",
+        "sqlite3",
+        "threading",
+        "time",
+        "unicodedata",
+        "uuid"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 14
+    },
+    {
+      "path": "backlog_imperium_year.py",
+      "category": "imperium",
+      "bytes": 3980,
+      "sha256": "ceb36f2a83cc0fdad73e97777fa9b4fc44c98a98fe3b1a0d47691ccde7ebcabe",
+      "summary": "Planejamento seguro da sincronizacao anual Imperium/DataSnap.",
+      "imports": [
+        "__future__",
+        "dataclasses",
+        "datetime",
+        "re",
+        "typing",
+        "unicodedata"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 9
     },
     {
       "path": "bulk_orders.py",
@@ -925,8 +988,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 43665,
-      "sha256": "7a173eae07ee98d1fbedbf108a722a9651df347eccfd3c561e088eba0085eb4e",
+      "bytes": 43735,
+      "sha256": "8d8cfe377af7ab7412647d7781915ccba17e8db780fa09d3f344a9b6765b57b3",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -939,6 +1002,7 @@
         "/api/auth/register",
         "/api/auth/session",
         "/api/auth/users",
+        "/api/backlog/year/routes",
         "/api/confront/",
         "/api/diagnostics",
         "/api/disconnection",
@@ -1372,6 +1436,19 @@
       "bytes": 4794,
       "sha256": "a481138944205315ffe15daf075d9dcf4edf6212986f376f007667982ec71783",
       "summary": "Atlas: verificação real de sessão no watchdog",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/BACKLOG_DESC_LAB_20261030.md",
+      "category": "docs",
+      "bytes": 3773,
+      "sha256": "1f81779e8dcf1ec469df1ccd4d1437708ce1ffd1b73521c2dac8df46c37e3879",
+      "summary": "Análise Backlog dentro de DESCONEXÃO — 30/10/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -4553,6 +4630,23 @@
       "symbol_count": 0
     },
     {
+      "path": "scripts/finalize_desc_backlog_lab.py",
+      "category": "tooling-deploy",
+      "bytes": 2484,
+      "sha256": "424c22e823cf3fe9c5bc1b63ff5c8b26d6be4b70c549cde78695417d4c48b7c0",
+      "summary": "",
+      "imports": [
+        "pathlib"
+      ],
+      "endpoints": [],
+      "env_vars": [
+        "DOMINIUM_BACKLOG_YEAR_ENABLE"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "scripts/generate_agent_context.py",
       "category": "tooling-deploy",
       "bytes": 15803,
@@ -4685,6 +4779,48 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 3
+    },
+    {
+      "path": "scripts/integrate_current_desc_backlog.py",
+      "category": "tooling-deploy",
+      "bytes": 7676,
+      "sha256": "cf95d629c44cc66647525a9e8329611952c07a3919174d7887c2a896bceea55c",
+      "summary": "",
+      "imports": [
+        "pathlib"
+      ],
+      "endpoints": [
+        "/api/auth/register",
+        "/api/backlog/year/",
+        "/api/backlog/year/compare",
+        "/api/backlog/year/fora-rota",
+        "/api/backlog/year/pause",
+        "/api/backlog/year/routes",
+        "/api/backlog/year/sent",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status",
+        "/api/import-history",
+        "/api/toa-datalake/records/"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "scripts/patch_route_parser.py",
+      "category": "tooling-deploy",
+      "bytes": 4898,
+      "sha256": "0f3fef874290517e0a3211275c4ae46af946557ffd3f45f4c81ec05b317eb88d",
+      "summary": "",
+      "imports": [
+        "pathlib"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "scripts/probe_atlas_synthetic.py",
@@ -4823,6 +4959,27 @@
       "symbol_count": 1
     },
     {
+      "path": "scripts/verify_backlog_excel_import.py",
+      "category": "tooling-deploy",
+      "bytes": 1090,
+      "sha256": "777690f519672490d2dcc081371ca31c4a578e17186f7b5a861c0f5579e155f7",
+      "summary": "",
+      "imports": [
+        "backlog_imperium_service",
+        "base64",
+        "io",
+        "openpyxl",
+        "pathlib",
+        "tempfile",
+        "types"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "scripts/verify_confront_runtime.py",
       "category": "tooling-deploy",
       "bytes": 659,
@@ -4928,6 +5085,40 @@
       "symbol_count": 23
     },
     {
+      "path": "static/backlog-analysis.css",
+      "category": "frontend",
+      "bytes": 2473,
+      "sha256": "bf4fc7d77ca612ce1f34a99c325ecef9cd5b5811c4046e503e1a7c255a68f73c",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "static/backlog-analysis.js",
+      "category": "frontend",
+      "bytes": 9932,
+      "sha256": "eb422c8fb276caba65c440c4c6a9f126cf3a500c8375a99a72a917103f1a9c7c",
+      "summary": "DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/compare?limit=300",
+        "/api/backlog/year/fora-rota?profile=",
+        "/api/backlog/year/pause",
+        "/api/backlog/year/routes",
+        "/api/backlog/year/sent",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 8
+    },
+    {
       "path": "static/confront.js",
       "category": "frontend",
       "bytes": 11151,
@@ -4976,8 +5167,8 @@
     {
       "path": "static/desc-analytics-nav.js",
       "category": "frontend",
-      "bytes": 1161,
-      "sha256": "de2c537e32ac7a0a9459a67da9bde65d15b520fc6ed02a68a3793733f0b019e2",
+      "bytes": 1371,
+      "sha256": "06dccb7e8e84c574a415be7f897106aa762913d1beb0da5e28879d18d874cdfd",
       "summary": "Submenu de desconexao, independente dos fluxos de baixa existentes. */",
       "imports": [],
       "endpoints": [],
@@ -5052,8 +5243,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 141935,
-      "sha256": "ffdbe3d88e50c7de1af857065b8fb96642f2a3976af70e51315d0b036c9347e1",
+      "bytes": 148050,
+      "sha256": "1b568a27aba45f0630d167ec4ec2797b2dddd465c8821cf00fed1dc4743c3985",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5920,6 +6111,46 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 11
+    },
+    {
+      "path": "tests/test_backlog_imperium_service.py",
+      "category": "tests",
+      "bytes": 3900,
+      "sha256": "b8e2e7a384ec9c52f8c594b141858592fc1fc62408cad0c3ef27aa6755e294ac",
+      "summary": "",
+      "imports": [
+        "backlog_imperium_service",
+        "base64",
+        "datetime",
+        "io",
+        "openpyxl",
+        "pathlib",
+        "tempfile",
+        "types",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 14
+    },
+    {
+      "path": "tests/test_backlog_imperium_year.py",
+      "category": "tests",
+      "bytes": 2437,
+      "sha256": "1ab2338fc7b9cff44cbe9c4374c189fb7340549eca4e29f6341ea4634b37f4fc",
+      "summary": "",
+      "imports": [
+        "backlog_imperium_year",
+        "datetime",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 9
     },
     {
       "path": "tests/test_build_hostinger_node_release.py",
@@ -8722,6 +8953,7 @@
   "env_vars": [
     "DOMINIUM_AUTH_BACKEND",
     "DOMINIUM_AUTH_EMAIL_DOMAIN",
+    "DOMINIUM_BACKLOG_YEAR_ENABLE",
     "DOMINIUM_CHROMEDRIVER",
     "DOMINIUM_DATABASE_URL",
     "DOMINIUM_DESC_REVIEW_ACCESS_FILE",

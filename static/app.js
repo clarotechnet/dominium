@@ -47,7 +47,9 @@ const state = {
     { code: "0", description: "CANCELAMENTO", productive: false },
   ],
   failures: [],
-  activeModule: window.location.hash === "#todos"
+  activeModule: window.location.hash === "#desconexao-backlog"
+    ? "backlog"
+    : window.location.hash === "#todos"
     ? "all-operations"
     : window.location.hash === "#desconexao-indicadores"
     ? "descAnalytics"
@@ -334,6 +336,8 @@ const elements = {
   stockModule: document.querySelector("#stockModule"),
   serialsModule: document.querySelector("#serialsModule"),
   techniciansModule: document.querySelector("#techniciansModule"),
+  backlogModule: document.querySelector("#backlogModule"),
+  backlogWorkspace: document.querySelector("#backlogWorkspace"),
   intelligenceModule: document.querySelector("#intelligenceModule"),
   bulkCreateModule: document.querySelector("#bulkCreateModule"),
   importsModule: document.querySelector("#importsModule"),
@@ -875,7 +879,7 @@ function apiUrlForProfile(path, profile) {
 function updateAddress() {
   const url = new URL(window.location.href);
   url.searchParams.set("profile", state.profile);
-  url.hash = state.activeModule === "all-operations"
+  url.hash = state.activeModule === "backlog" ? "desconexao-backlog" : state.activeModule === "all-operations"
     ? "todos"
     : state.activeModule === "descAnalytics"
     ? "desconexao-indicadores"
@@ -3603,7 +3607,7 @@ function setModule(module) {
     || state.stockWriteoffLoading
     || ![
       "dashboard", "monitor", "orders", "stock", "serials", "confront", "technicians", "bulk", "imports",
-      "automation-test", "close", "report", "history", "intelligence", "database", "disconnection", "descAnalytics",
+      "automation-test", "close", "report", "history", "intelligence", "database", "disconnection", "descAnalytics", "backlog",
     ].includes(module)
   ) return;
   if (module !== "stock" && state.stockSource === "official") {
@@ -7178,6 +7182,7 @@ function render() {
   elements.serialsWorkspace.classList.toggle("hidden", state.activeModule !== "serials");
   document.getElementById("confrontWorkspace").classList.toggle("hidden", state.activeModule !== "confront");
   elements.techniciansWorkspace.classList.toggle("hidden", state.activeModule !== "technicians");
+  elements.backlogWorkspace.classList.toggle("hidden", state.activeModule !== "backlog");
   elements.intelligenceWorkspace.classList.toggle("hidden", state.activeModule !== "intelligence");
   elements.bulkCreateWorkspace.classList.toggle("hidden", state.activeModule !== "bulk");
   elements.importWorkspace.classList.toggle("hidden", state.activeModule !== "imports");
@@ -7200,6 +7205,7 @@ function render() {
   elements.serialsModule.classList.toggle("active", state.activeModule === "serials");
   document.getElementById("confrontModule").classList.toggle("active", state.activeModule === "confront");
   elements.techniciansModule.classList.toggle("active", state.activeModule === "technicians");
+  elements.backlogModule.classList.toggle("active", state.activeModule === "backlog");
   elements.intelligenceModule.classList.toggle("active", state.activeModule === "intelligence");
   elements.bulkCreateModule.classList.toggle("active", state.activeModule === "bulk");
   elements.importsModule.classList.toggle("active", state.activeModule === "imports");
@@ -12502,6 +12508,7 @@ elements.serialsInput.addEventListener("keydown", (event) => {
   if ((event.ctrlKey || event.metaKey) && event.key === "Enter") runSerialConsult();
 });
 elements.techniciansModule.addEventListener("click", () => setModule("technicians"));
+elements.backlogModule.addEventListener("click", () => setModule("backlog"));
 elements.intelligenceModule.addEventListener("click", () => setModule("intelligence"));
 elements.bulkCreateModule.addEventListener("click", () => setModule("bulk"));
 elements.importsModule.addEventListener("click", () => setModule("imports"));

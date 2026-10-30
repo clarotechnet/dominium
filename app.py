@@ -64,6 +64,7 @@ from close_report_excel import (
     format_materials_readable,
 )
 from datasnap_client import DataSnapError, load_credentials
+from backlog_imperium_service import BacklogHistoryService
 from disconnect_automation import DisconnectAutomation
 from edge_voice import EDGE_VOICE, EdgeVoiceError
 from imperium_http_api import (
@@ -5084,6 +5085,19 @@ class ExclusiveThreadingHTTPServer(ThreadingHTTPServer):
 # =============================================================================
 # DOMINIUM COMPARTILHADO | SERVIDOR HTTP, ROTAS E PONTE ENTRE OS DOMINIOS
 # =============================================================================
+_BACKLOG_SERVICE = None
+_BACKLOG_SERVICE_LOCK = threading.Lock()
+
+def _get_backlog_service():
+    global _BACKLOG_SERVICE
+    with _BACKLOG_SERVICE_LOCK:
+        if _BACKLOG_SERVICE is None:
+            _BACKLOG_SERVICE = BacklogHistoryService(
+                LOG_ROOT / "backlog_year" / "history.sqlite3", PROFILES,
+                operation_gate=OPERATION_GATE,
+            )
+    return _BACKLOG_SERVICE
+
 class PanelHandler(BaseHTTPRequestHandler):
     def _desc_request(self, method: str, path: str) -> None:
         user = self._current_user() or {}
@@ -5346,6 +5360,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                     "/api/toa/v1/openapi.json",
                 }
                 or path.startswith("/api/toa-datalake/records/")
+                or path.startswith("/api/backlog/year/")
             )
             if (
                 method.upper() == "GET"
@@ -5534,6 +5549,25 @@ class PanelHandler(BaseHTTPRequestHandler):
                     HTTPStatus.OK,
                     {"ok": True, "targets": list(IMPORT_TARGETS)},
                 )
+                return
+            if parsed.path == "/api/backlog/year/status":
+                self._json(HTTPStatus.OK, _get_backlog_service().snapshot())
+                return
+            if parsed.path == "/api/backlog/year/compare":
+                query = parse_qs(parsed.query)
+                self._json(HTTPStatus.OK, _get_backlog_service().compare(
+                    int(query.get("limit", ["250"])[0])
+                ))
+                return
+            if parsed.path == "/api/backlog/year/fora-rota":
+                query = parse_qs(parsed.query)
+                self._json(HTTPStatus.OK, _get_backlog_service().fora_rota(
+                    profile=str(query.get("profile", ["natal"])[0]),
+                    limit=int(query.get("limit", ["150"])[0])
+                ))
+                return
+            if parsed.path == "/api/backlog/year/sent":
+                self._json(HTTPStatus.OK, _get_backlog_service().list_sent())
                 return
             if parsed.path == "/api/import-history":
                 query = parse_qs(parsed.query)
@@ -6378,6 +6412,50 @@ class PanelHandler(BaseHTTPRequestHandler):
             return
         if parsed.path.startswith('/api/disconnection/'):
             self._desc_request('POST', self.path)
+            return
+        if parsed.path == "/api/backlog/year/start":
+            try:
+                body = self._body(max_length=8 * 1024)
+                sync_mode = str(body.get("mode") or "batch")
+                if sync_mode != "probe" and os.environ.get("DOMINIUM_BACKLOG_YEAR_ENABLE", "") != "1":
+                    self._json(HTTPStatus.LOCKED, {
+                        "ok": False,
+                        "error": "Carga anual desabilitada ate homologacao DataSnap. Use Testar ontem primeiro.",
+                    })
+                    return
+                result = _get_backlog_service().start(
+                    mode=sync_mode,
+                    days_per_profile=int(body.get("days_per_profile") or 1),
+                    only_profile=str(body.get("profile") or "") or None,
+                )
+                self._auth_audit("backlog.year.start", "success",
+                    metadata={"mode":result["mode"],"tasks":result["tasks"]})
+                self._json(HTTPStatus.ACCEPTED,result)
+            except (ValueError, RuntimeError) as exc:
+                self._json(HTTPStatus.CONFLICT,{"ok":False,"error":str(exc)})
+            return
+        if parsed.path == "/api/backlog/year/pause":
+            self._json(HTTPStatus.OK,_get_backlog_service().cancel())
+            return
+        if parsed.path == "/api/backlog/year/routes":
+            try:
+                body = self._body(max_length=22 * 1024 * 1024)
+                result = _get_backlog_service().import_route_files(body.get("files"))
+                self._auth_audit("backlog.routes.upload","success",
+                    metadata={"count":len(body.get("files") or [])})
+                self._json(HTTPStatus.OK,result)
+            except (ValueError,TypeError,OSError) as exc:
+                self._json(HTTPStatus.BAD_REQUEST,{"ok":False,"error":str(exc)})
+            return
+        if parsed.path == "/api/backlog/year/sent":
+            try:
+                body = self._body(max_length=8 * 1024)
+                result = _get_backlog_service().mark_sent(body)
+                self._auth_audit("backlog.fora_rota.sent","success",
+                    target=str(body.get("contract") or "")[-4:])
+                self._json(HTTPStatus.OK,result)
+            except (ValueError,TypeError) as exc:
+                self._json(HTTPStatus.BAD_REQUEST,{"ok":False,"error":str(exc)})
             return
         if parsed.path == "/api/auth/register":
             try:
