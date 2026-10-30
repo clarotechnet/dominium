@@ -574,6 +574,13 @@ json	integrations/serial_consult/monitor_snapshot_relay.py
 os	integrations/serial_consult/monitor_snapshot_relay.py
 pathlib	integrations/serial_consult/monitor_snapshot_relay.py
 urllib	integrations/serial_consult/monitor_snapshot_relay.py
+__future__	integrations/serial_consult/report_sheet_preview.py
+contextlib	integrations/serial_consult/report_sheet_preview.py
+json	integrations/serial_consult/report_sheet_preview.py
+pathlib	integrations/serial_consult/report_sheet_preview.py
+sqlite3	integrations/serial_consult/report_sheet_preview.py
+xml	integrations/serial_consult/report_sheet_preview.py
+zipfile	integrations/serial_consult/report_sheet_preview.py
 __future__	integrations/serial_consult/serial_datasnap.py
 base64	integrations/serial_consult/serial_datasnap.py
 datasnap_client	integrations/serial_consult/serial_datasnap.py
@@ -599,6 +606,7 @@ json	integrations/serial_consult/stock_analysis_http.py
 logging	integrations/serial_consult/stock_analysis_http.py
 pathlib	integrations/serial_consult/stock_analysis_http.py
 re	integrations/serial_consult/stock_analysis_http.py
+report_sheet_preview	integrations/serial_consult/stock_analysis_http.py
 sqlite3	integrations/serial_consult/stock_analysis_http.py
 stock_report_enrichment	integrations/serial_consult/stock_analysis_http.py
 threading	integrations/serial_consult/stock_analysis_http.py
@@ -780,9 +788,13 @@ time	operations_intelligence.py
 toa_capture	operations_intelligence.py
 typing	operations_intelligence.py
 unicodedata	operations_intelligence.py
+pathlib	patch_daily_period_20261030.py
 pathlib	patch_daily_ui.py
+pathlib	patch_front_preview_20261030.py
 pathlib	patch_last_reports.py
+pathlib	patch_query_filter_preview_20261030.py
 pathlib	patch_remote_toa.py
+pathlib	patch_subtabs_20261030.py
 __future__	quality_control.py
 datetime	quality_control.py
 functools	quality_control.py

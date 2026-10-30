@@ -22,6 +22,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlsplit
 from equipment_daily_catalog import DailyEquipmentCatalog,parse_route as parse_daily_route
+from report_sheet_preview import snapshot_page
 from xml.sax.saxutils import escape
 
 # These are the stable report column labels, not a dependency on the Atlas
@@ -50,6 +51,12 @@ JOB_ID = re.compile(r"[a-f0-9]{32}\Z")
 ACTOR = re.compile(r"user-[1-9][0-9]{0,18}\Z")
 STATES = frozenset(("SUSPEITO", "ANALISE DE INVENTARIO", "ANÁLISE DE INVENTÁRIO"))
 MIME_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+QUERY_FILTER_VERSION = "dmv_diniz_me_eireli_v1"
+QUERY_LOCALS = frozenset(("DMV DINIZ ME","DMV DINIZ EIRELI"))
+
+def filtered_query_records(records):
+    return [row for row in records
+        if str(row.get("nome_local") or "").strip().upper() in QUERY_LOCALS]
 
 
 def route_for(method: str, target: str):
@@ -64,6 +71,9 @@ def route_for(method: str, target: str):
         if not re.fullmatch(r"city=(natal|fortaleza|mossoro|recife)", uri.query):
             return None
         return ("available", uri.query[5:])
+    preview=re.fullmatch(r"/api/stock/analyses/jobs/([a-f0-9]{32})/data",uri.path)
+    if method=="GET" and preview and re.fullmatch(r"page=([1-9][0-9]{0,3})",uri.query):
+        return ("preview",(preview.group(1),int(uri.query[5:])))
     if uri.query:
         return None
     if uri.path == "/api/stock/analyses/jobs":
@@ -335,10 +345,18 @@ class StockAnalysisService:
                     return 409,{"ok":False,"error":"Nenhuma QUERY concluida e validada para esta praca. Gere/recupere no Atlas Query."},None
                 with self._lock:
                     with self._connect() as con:
-                        prior=con.execute("""SELECT * FROM jobs WHERE city=? AND kind=? AND query_id=?
+                        if body["kind"]=="suspeitos":
+                            treated=con.execute("""SELECT 1 FROM jobs WHERE city=? AND kind='query'
+                              AND query_id=? AND state='ready' AND summary LIKE ?
+                              LIMIT 1""",(body["city"],latest["id"],'%"filter_version": "'+QUERY_FILTER_VERSION+'"%')).fetchone()
+                            if not treated:
+                                return 409,{"ok":False,"error":"Gere primeiro a QUERY tratada com o filtro DMV DINIZ."},None
+                        candidates=con.execute("""SELECT * FROM jobs WHERE city=? AND kind=? AND query_id=?
                                 AND state IN ('queued','processing','ready')
-                                ORDER BY created_at DESC LIMIT 1""",
-                            (body["city"],body["kind"],latest["id"])).fetchone()
+                                ORDER BY created_at DESC LIMIT 20""",
+                            (body["city"],body["kind"],latest["id"])).fetchall()
+                        prior=next((row for row in candidates if row["state"] in ("queued","processing")
+                                    or json.loads(row["summary"]).get("filter_version")==QUERY_FILTER_VERSION),None)
                         if prior:
                             return 200,{"ok":True,"reused":True,"job":self.info(prior)},None
                         id=uuid.uuid4().hex;now=self.clock()
@@ -349,9 +367,17 @@ class StockAnalysisService:
                     self._wake.set()
                     return 202,{"ok":True,"reused":False,"job":self.info(job)},None
             with self._connect() as con:
-                job=con.execute("SELECT * FROM jobs WHERE id=?",(argument,)).fetchone()
+                lookup_id=argument[0] if action=="preview" else argument
+                job=con.execute("SELECT * FROM jobs WHERE id=?",(lookup_id,)).fetchone()
             if not job:return 404,{"ok":False,"error":"Trabalho nao encontrado"},None
             if action=="detail":return 200,{"ok":True,"job":self.info(job)},None
+            if action=="preview":
+                if job["state"]!="ready" or job["kind"] not in ("query","suspeitos"):
+                    return 409,{"ok":False,"error":"Dados tratados ainda nao concluidos"},None
+                workbook=self.root/(job["id"]+".xlsx")
+                if not workbook.is_file():
+                    return 503,{"ok":False,"error":"Arquivo ainda indisponivel"},None
+                return 200,snapshot_page(self.db,workbook,job["id"],page=argument[1]),None
             if action=="export":
                 if job["state"]!="ready":return 409,{"ok":False,"error":"Relatorio ainda nao concluido"},None
                 filename=self.root/(job["id"]+".xlsx")
@@ -368,8 +394,8 @@ class StockAnalysisService:
         con=sqlite3.connect(self.atlas_db,timeout=20)
         try:
             con.row_factory=sqlite3.Row
-            rows=[json.loads(r[0]) for r in con.execute(
-                "SELECT data FROM query_rows WHERE job_id=? ORDER BY position",(job["query_id"],))]
+            rows=filtered_query_records([json.loads(r[0]) for r in con.execute(
+                "SELECT data FROM query_rows WHERE job_id=? ORDER BY position",(job["query_id"],))])
             if not rows:raise ValueError("QUERY sem registros validados")
             created=con.execute("SELECT created_at FROM query_jobs WHERE id=? AND state='ready'",
                                 (job["query_id"],)).fetchone()
@@ -392,10 +418,15 @@ class StockAnalysisService:
         sheets,summary=build_sheets(job["kind"],rows,job["city"],job["query_id"],
                                     source_time,history_rows=history)
         summary.update(enrichment_summary)
+        summary.update({"filter_version":QUERY_FILTER_VERSION,
+                        "allowed_locations":sorted(QUERY_LOCALS)})
         output=xlsx(sheets)
         target=self.root/(job["id"]+".xlsx")
         temp=self.root/(job["id"]+".tmp")
         temp.write_bytes(output);temp.replace(target)
+        if job["kind"] in ("query","suspeitos"):
+            preview=snapshot_page(self.db,target,job["id"],page=1)
+            summary["table_rows_persisted"]=preview["total"]
         return summary
 
     def _work(self):

@@ -7667,3 +7667,16 @@ body.sidebar-collapsed .stock-group-chevron { display:none; }
 .stock-daily-analysis-tabs button[aria-pressed="true"]{border-color:#ff1744;color:#ff1744}
 #stockDailyAnalysisTable {min-width:750px;width:100%}
 #stockDailyAnalysisTable td {padding:9px 12px;white-space:nowrap;border-bottom:1px solid #34343c}
+
+.stock-analysis-subtabbar {display:flex;gap:9px;flex-wrap:wrap;background:#0d0d10;padding:14px;border-radius:12px;margin-bottom:18px}
+.stock-analysis-subtabbar [aria-selected="true"] {border-color:#ff1744;color:#ff1744;background:#1c1016}
+.stock-analysis-workspace {border-radius:12px;border:1px solid #37373d;padding:18px;min-height:300px}
+.stock-analysis-workspace[hidden] {display:none!important}
+.stock-analysis-toolbar {display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.stock-analysis-toolbar p{max-width:640px;color:#babac1;font-size:13px}
+.stock-analysis-toolbar h3{font-weight:750;margin-bottom:7px}
+.stock-analysis-preview{margin-top:16px}
+.stock-analysis-pagination{display:flex;align-items:center;gap:12px;justify-content:flex-end;margin-top:12px}
+.stock-analysis-workspace table{width:100%;min-width:970px}
+.stock-analysis-workspace td,.stock-analysis-workspace th{padding:9px 12px;white-space:nowrap;border-bottom:1px solid #37373d}
+.stock-analysis-workspace th{background:#17171b}

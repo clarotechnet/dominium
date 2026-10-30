@@ -209,7 +209,12 @@ endpoint	path
 /api/stock/analyses/available	integrations/serial_consult/stock_analysis_http.py
 /api/stock/analyses/jobs	integrations/serial_consult/stock_analysis_http.py
 /api/stock/analyses/jobs/(	integrations/serial_consult/stock_analysis_http.py
+/api/stock/analyses/daily	patch_daily_period_20261030.py
+/api/stock/analyses/daily?city=	patch_daily_period_20261030.py
 /api/stock/analyses/jobs/	patch_last_reports.py
+/api/stock/analyses/jobs	patch_query_filter_preview_20261030.py
+/api/stock/analyses/jobs/(	patch_query_filter_preview_20261030.py
+/api/stock/analyses/jobs\	patch_query_filter_preview_20261030.py
 /api/toa-automation	patch_remote_toa.py
 /api/toa-automation/run	patch_remote_toa.py
 /api/serials/consult	scripts/inspect_confront_wiring.py
@@ -251,6 +256,8 @@ endpoint	path
 /api/stock/analyses/daily/	static/stock-daily-analysis-ui.js
 /api/stock/analyses/daily/import	static/stock-daily-analysis-ui.js
 /api/stock/analyses/daily?city=	static/stock-daily-analysis-ui.js
+/api/stock/analyses/jobs	static/stock-report-preview-ui.js
+/api/stock/analyses/jobs/	static/stock-report-preview-ui.js
 /api/auth/session	tests/qa_disconnection_browser.js
 /api/disconnection/decision	tests/qa_disconnection_browser.js
 /api/disconnection/photo/	tests/qa_disconnection_browser.js
@@ -332,6 +339,8 @@ endpoint	path
 /api/stock/analyses/daily/{run}/export	tests/test_equipment_daily_catalog.py
 /api/stock/analyses/daily/{run}/sheets/2	tests/test_equipment_daily_catalog.py
 /api/stock/analyses/daily?city=all	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/daily?city=all&start=2026-10-28&end=2026-10-29	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/daily?city=all&start=2026-10-29&end=2026-10-28	tests/test_equipment_daily_catalog.py
 /api/stock/analyses/daily?city=natal	tests/test_equipment_daily_catalog.py
 /api/stock/analyses/daily?city=natal&date=2026-15-40	tests/test_equipment_daily_catalog.py
 /api/stock/analyses/daily?city=recife	tests/test_equipment_daily_catalog.py
@@ -449,6 +458,7 @@ endpoint	path
 /api/stock/analyses/daily?city=all	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/daily?city=natal	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/daily?city=natal&date=2026-10-29	tests/test_stock_analysis_proxy.cjs
+/api/stock/analyses/daily?city=natal&start=2026-10-28&end=2026-10-29	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/jobs	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/jobs/	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/jobs/123	tests/test_stock_analysis_proxy.cjs

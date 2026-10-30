@@ -17,7 +17,9 @@ test('report routes are allowlisted only',()=>{
  assert.equal(policy.allowedStockAnalysisRoute('GET','/api/stock/analyses/jobs/'+('a'.repeat(32))+'/export'),true);
  assert.equal(policy.allowedStockAnalysisRoute('POST','/api/stock/analyses/daily/import'),true);
  assert.equal(policy.allowedStockAnalysisRoute('GET','/api/stock/analyses/daily?city=natal&date=2026-10-29'),true);
- assert.equal(policy.allowedStockAnalysisRoute('GET','/api/stock/analyses/daily?city=all'),false);
+ assert.equal(policy.allowedStockAnalysisRoute('GET','/api/stock/analyses/daily?city=all'),true);
+ assert.equal(policy.allowedStockAnalysisRoute('GET','/api/stock/analyses/daily?city=natal&start=2026-10-28&end=2026-10-29'),true);
+ assert.equal(policy.allowedStockAnalysisRoute('GET','/api/stock/analyses/jobs/'+('a'.repeat(32))+'/data?page=1'),true);
 });
 test('only authenticated operational actors can generate reports',()=>{
  const call=()=>({token});
@@ -43,4 +45,10 @@ test('frontend offers three report actions in stock navigation',()=>{
  assert.match(html,/stockReportsTab/);
  assert.match(html,/id="stockDailyAnalysisOpen"/);
  assert.match(html,/id="stockDailyAnalysisHistory"/);
+ for(const kind of ['query','equipamentos','suspeitos'])
+  assert.match(html,new RegExp('data-stock-analysis-tab="'+kind+'"'));
+ assert.match(html,/id="stockDailyRangeStart"/);
+ assert.match(html,/id="stockDailyRangeEnd"/);
+ assert.match(html,/id="stockQueryPreviewTable"/);
+ assert.match(html,/id="stockSuspectsPreviewTable"/);
 });

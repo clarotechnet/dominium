@@ -42,7 +42,7 @@ tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
 tooling-deploy	deploy/hostinger-web/server.js	41	33	1		6f2154ce896cc34b
-tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	2			0e946465db8c2116
+tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	2			e67e015eb4cf8082
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -170,13 +170,14 @@ shared	integrations/serial_consult/confront_http.py	7	3		Private HTTP interface 
 shared	integrations/serial_consult/confront_job_runner.py	14			Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).	46db8339b45b1bf4
 imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	3ee171b567d7bafe
 shared	integrations/serial_consult/desc_review_relay.py	8	2		Authenticated relay for DESC review and private read-only Imperium checks.	5a42732796f2450f
-shared	integrations/serial_consult/equipment_daily_catalog.py	9	3		Persisted daily equipment-analysis workbook, independent of the Atlas QUERY.	8e58189f55710579
+shared	integrations/serial_consult/equipment_daily_catalog.py	9	3		Persisted daily equipment-analysis workbook, independent of the Atlas QUERY.	ee8057fcdb851041
 shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	6f5b01f448826d25
 shared	integrations/serial_consult/monitor_snapshot_relay.py	1	1		Read-only bridge for the existing TOA CSV monitor snapshots.	5202d89531eb4b46
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
+shared	integrations/serial_consult/report_sheet_preview.py	1			SQLite materialized, paged views of completed stock-analysis XLSX reports.	59f0d19563f30298
 shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
 shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only serial consultation: real DataSnap history + local evidence.	d9f51c614747ed37
-shared	integrations/serial_consult/stock_analysis_http.py	17	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	042a23ecde4df397
+shared	integrations/serial_consult/stock_analysis_http.py	18	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	8c7e074c7cc06407
 shared	integrations/serial_consult/stock_report_enrichment.py	3			Bounded read-only DataSnap enrichment for stock XLSX reports.	dff77b77c7f8eec5
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76				b8274ffc7dfb2fbb
@@ -225,9 +226,13 @@ shared	official_stock_remediation_plan.py	25		1	DOMINIUM | MAPA DE RESPONSABILID
 orchestration	operation_scope.py	55			DOMINIUM | MAPA DE RESPONSABILIDADE	3f9d748a18c158b6
 orchestration	operational_store.py	25			DOMINIUM | MAPA DE RESPONSABILIDADE	5676e4f9f3fdab38
 orchestration	operations_intelligence.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	96115509d8e34c26
+shared	patch_daily_period_20261030.py	1	2			d968df2f1b86c239
 shared	patch_daily_ui.py	1				25ab8f3d841d22bc
+shared	patch_front_preview_20261030.py	1				24063c6f44a48786
 shared	patch_last_reports.py	1	1			c6c300a2ea8df693
+shared	patch_query_filter_preview_20261030.py	1	3			dc8152a36758b2f6
 toa	patch_remote_toa.py		2	5		cb6eb87e50eeb356
+shared	patch_subtabs_20261030.py					a83682cf352f70a5
 shared	productive_protocol_templates.json			3		c04b19e6f576ff97
 shared	protocol_templates.json					dea41cc769da2970
 shared	quality_control.py	6			Regras de controle de qualidade, independentes do saldo do Imperium.	bc0380aafb00d2a6
@@ -275,7 +280,7 @@ frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			a0de331efd0df616
+frontend	static/index.html		1			86267bf74c0b498a
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
@@ -283,10 +288,11 @@ frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b
 frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */	fd462fc168e71c03
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
-frontend	static/stock-analysis-ui.js	13	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	fb51072484689f2b
-frontend	static/stock-daily-analysis-ui.js	10	3		Daily equipment: independent period/catalog; Atlas QUERY is not its source. */	de026abeb943a0dc
+frontend	static/stock-analysis-ui.js	13	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	a4f6e5555162d901
+frontend	static/stock-daily-analysis-ui.js	10	3		Daily equipment: independent period/catalog; Atlas QUERY is not its source. */	ce5a90aca5ea44e6
 frontend	static/stock-nav.js	6			Navegacao consolidada de Estoque (mantem os modulos existentes). */	1cd96c23d87bb70a
-frontend	static/styles.css					20f6dc338581e821
+frontend	static/stock-report-preview-ui.js	5	2		The three stock analysis processes have independent, paged workspace views. */	2939b473e78d754d
+frontend	static/styles.css					a7ac1c9c026ee8ee
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
@@ -349,7 +355,7 @@ tests	tests/test_disconnection_access.py	6	5			cba855ef00508a97
 tests	tests/test_disconnection_frontend.js	1	1			65b81e61b3966421
 tests	tests/test_disconnection_hostinger.js	2	13			73827cfd80596bf7
 tests	tests/test_edge_voice.py	4				4e8791562f884964
-tests	tests/test_equipment_daily_catalog.py	6	8		Daily equipment workbooks are by date and city, never the Atlas QUERY.	5cc97f9b8d88eefa
+tests	tests/test_equipment_daily_catalog.py	6	10		Daily equipment workbooks are by date and city, never the Atlas QUERY.	cfa68f07b606fe6b
 tests	tests/test_equipment_group_matching.py	24				abb0031d8ae437aa
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38
 tests	tests/test_hostinger_dataset_regression.cjs	4	1			ec6b2b088eea6eb2
@@ -402,8 +408,8 @@ tests	tests/test_serial_confront_engine.py	19			Synthetic contract tests for the
 tests	tests/test_serial_consult.py	3				3bb13e50693f977d
 tests	tests/test_serial_datasnap_history.py	9	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	36414aaf670dbe68
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
-tests	tests/test_stock_analysis_proxy.cjs	3	9			da95d3bdda5fccf7
-tests	tests/test_stock_analysis_reports.py	10	7		Tests for safe, cached, actor-scoped stock analysis report generation.	5eb2fb3df30f0ade
+tests	tests/test_stock_analysis_proxy.cjs	3	10			e2efb9fdbb96ae28
+tests	tests/test_stock_analysis_reports.py	12	7		Tests for safe, cached, actor-scoped stock analysis report generation.	81edf96228f8fb8c
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
 tests	tests/test_stock_quality_bridge.mjs		2			3022814e71dead90

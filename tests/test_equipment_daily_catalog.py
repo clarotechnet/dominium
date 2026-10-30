@@ -38,10 +38,12 @@ class DailyEquipmentTests(unittest.TestCase):
   self.assertIn("sheet",mime)
   self.assertEqual(self.c.handle("POST","/api/stock/analyses/daily/import","user-999",self.body)[1]["reused"],True)
  def test_date_and_city_are_strict(self):
-  self.assertIsNone(parse_route("GET","/api/stock/analyses/daily?city=all"))
+  self.assertEqual(parse_route("GET","/api/stock/analyses/daily?city=all")[0],"daily")
   self.assertIsNone(parse_route("GET","/api/stock/analyses/daily?city=natal&date=2026-15-40"))
   self.assertIsNone(parse_route("DELETE","/api/stock/analyses/daily/import"))
   self.assertEqual(self.c.handle("GET","/api/stock/analyses/daily?city=recife",self.actor)[1]["latest"],None)
+  self.assertEqual(parse_route("GET","/api/stock/analyses/daily?city=all&start=2026-10-28&end=2026-10-29")[0],"daily")
+  self.assertIsNone(parse_route("GET","/api/stock/analyses/daily?city=all&start=2026-10-29&end=2026-10-28"))
   self.assertEqual(self.c.handle("POST","/api/stock/analyses/daily/import",self.actor,{**self.body,"city":"all"})[0],400)
   self.assertIsNotNone(previous_day())
  def test_old_report_not_regenerated_from_atlas(self):

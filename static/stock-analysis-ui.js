@@ -67,6 +67,9 @@
     byId("stockReportsDownload").hidden=job.state!=="ready";
     byId("stockReportsDownload").disabled=job.state!=="ready";
     if(job.error)message("Erro na geracao: "+job.error,true);
+    if(job.state==="ready"){
+      document.dispatchEvent(new CustomEvent("dominium:stock-report-ready",{detail:job}));
+    }
     if(job.state==="ready")message(job.summary?.parcial
       ? "Arquivo disponivel com evidencias parciais e pendencias explicitadas. Confira a aba Fontes e criterios."
       : "Relatorio concluido com a ultima QUERY validada.");
@@ -110,11 +113,15 @@
       }
       select.replaceChildren(opts);
       for(const kind of ["query","suspeitos"]){
-        const job=(history.jobs||[]).find(x=>x.city===state.profile && x.kind===kind && x.state==="ready");
+        const job=(history.jobs||[]).find(x=>x.city===state.profile && x.kind===kind
+          && x.state==="ready" && x.summary?.filter_version==="dmv_diniz_me_eireli_v1");
         latestDone[kind]=job||null;
         const info=byId(kind==="query"?"stockQueryLastResult":"stockSuspectsLastResult");
         const button=byId(kind==="query"?"stockQueryLastDownload":"stockSuspectsLastDownload");
-        info.textContent=job?"Última concluída: "+new Date(job.updated_at*1000).toLocaleString("pt-BR"):"Nenhum relatório concluído";
+        const older=(history.jobs||[]).find(x=>x.city===state.profile&&x.kind===kind&&x.state==="ready");
+        info.textContent=job?"Última concluída: "+new Date(job.updated_at*1000).toLocaleString("pt-BR")
+           :older?"Versão anterior sem filtro DMV DINIZ. Atualize o tratamento para usar os dados corretos."
+           :"Nenhum relatório concluído";
         button.hidden=!job;
       }
       const same=(history.jobs||[]).find(x=>x.city===state.profile);

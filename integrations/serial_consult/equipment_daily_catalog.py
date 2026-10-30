@@ -57,14 +57,19 @@ def parse_route(method,target):
     if u.path=="/api/stock/analyses/daily":
         try:q=parse_qs(u.query,strict_parsing=True)
         except ValueError:return None
-        if set(q) not in ({"city"},{"city","date"}) or any(len(v)!=1 for v in q.values()):
+        if set(q) not in ({"city"},{"city","date"},{"city","start","end"}) or any(len(v)!=1 for v in q.values()):
             return None
         city=q["city"][0]
-        if city not in CITIES:return None
+        if city not in CITIES and city!="all":return None
         if "date" in q:
             try:_date(q["date"][0])
             except ValueError:return None
-        return ("daily",(city,q.get("date",[None])[0]))
+        start,end=q.get("start",[None])[0],q.get("end",[None])[0]
+        if (start or end):
+            try:
+                if _date(start)>_date(end):return None
+            except ValueError:return None
+        return ("daily",(city,q.get("date",[None])[0],start,end))
     if u.query:return None
     m=re.fullmatch(r"/api/stock/analyses/daily/([a-f0-9]{32})/sheets/([0-5])",u.path)
     if m:return ("sheet",(m.group(1),int(m.group(2))))
@@ -177,12 +182,19 @@ class DailyEquipmentCatalog:
             with closing(sqlite3.connect(self.db,timeout=15)) as db:
                 db.row_factory=sqlite3.Row
                 if action=="daily":
-                    city,day=arg
-                    if day:
-                        chosen=db.execute("SELECT * FROM daily_runs WHERE city=? AND reference_date=? ORDER BY created_at DESC LIMIT 1",(city,day)).fetchone()
-                    else:chosen=db.execute("SELECT * FROM daily_runs WHERE city=? ORDER BY reference_date DESC,created_at DESC LIMIT 1",(city,)).fetchone()
-                    latest=db.execute("SELECT * FROM daily_runs WHERE city=? ORDER BY reference_date DESC,created_at DESC LIMIT 1",(city,)).fetchone()
-                    history=db.execute("SELECT * FROM daily_runs WHERE city=? ORDER BY reference_date DESC,created_at DESC LIMIT 40",(city,)).fetchall()
+                    city,day,start,end=arg
+                    where=[];params=[]
+                    if city!="all":where.append("city=?");params.append(city)
+                    if day:where.append("reference_date=?");params.append(day)
+                    if start and end:where.append("reference_date BETWEEN ? AND ?");params.extend((start,end))
+                    condition=" AND ".join(where) if where else "1=1"
+                    history=db.execute("SELECT * FROM daily_runs WHERE "+condition+
+                        " ORDER BY reference_date DESC,created_at DESC LIMIT 120",params).fetchall()
+                    chosen=history[0] if history else None
+                    latest=db.execute("SELECT * FROM daily_runs WHERE "+
+                        ("city=?" if city!="all" else "1=1")+
+                        " ORDER BY reference_date DESC,created_at DESC LIMIT 1",
+                        (city,) if city!="all" else ()).fetchone()
                     return 200,{"ok":True,"selected":self._public(chosen) if chosen else None,
                                 "latest":self._public(latest) if latest else None,
                                 "history":[self._public(r) for r in history]},None

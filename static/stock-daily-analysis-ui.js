@@ -6,6 +6,7 @@ const panel=el("stockDailyAnalysisPanel");
 if(!panel)return;
 const tabs=["Atlas","Chips Atlas","IMPERIUM","CHIP IMPERIUM","Assinantes","Nomes."];
 let selected=null,activeTab=0,fetching=false;
+let allRuns=[];
 const currentCity=()=>state.profile;
 const canWrite=()=>["admin","controller"].includes(state.authUser?.role);
 function status(msg,error=false){
@@ -20,7 +21,9 @@ function setVisible(visible){
  panel.hidden=!visible;
  if(!visible)return;
  el("stockDailyAnalysisDate").value ||= referenceDate();
- el("stockDailyAnalysisImport").hidden=!canWrite();
+ el("stockDailyRangeStart").value ||= referenceDate();
+ el("stockDailyRangeEnd").value ||= referenceDate();
+ el("stockDailyAnalysisImport").hidden=!canWrite()||currentCity()==="all";
  void loadDaily();
 }
 async function loadDaily(){
@@ -29,16 +32,26 @@ async function loadDaily(){
  const city=currentCity(),day=el("stockDailyAnalysisDate").value;
  try{
    let url="/api/stock/analyses/daily?city="+encodeURIComponent(city);
-   if(day)url+="&date="+encodeURIComponent(day);
+   const start=el("stockDailyRangeStart").value,end=el("stockDailyRangeEnd").value;
+   if(start&&end){if(start>end)throw new Error("Data inicial maior que a final");url+="&start="+start+"&end="+end;}
+   else if(day)url+="&date="+encodeURIComponent(day);
    const data=await request(url,{timeoutMs:30000});
    if(city!==currentCity())return;
-   selected=data.selected||data.latest;
+   selected=data.selected||data.latest||null;
+   allRuns=[];
+   if(city==="all"){
+     const latestByCity=new Map();
+     for(const item of data.history||[]){
+       if(!latestByCity.has(item.city))latestByCity.set(item.city,item);
+     }
+     allRuns=[...latestByCity.values()];
+   }
    const historic=el("stockDailyAnalysisHistory");
    const options=document.createDocumentFragment();
    for(const item of data.history||[]){
      const opt=document.createElement("option");
      opt.value=item.id;
-     opt.textContent=item.date+" • "+item.origin+" • "+item.filename;
+     opt.textContent=item.city.toUpperCase()+" • "+item.date+" • "+item.origin+" • "+item.filename;
      options.appendChild(opt);
    }
    historic.replaceChildren(options);
@@ -62,7 +75,19 @@ async function displaySheet(index){
  activeTab=index;
  const item=selected,city=currentCity();
  try{
-   const data=await request("/api/stock/analyses/daily/"+item.id+"/sheets/"+index,{timeoutMs:30000});
+   let data=await request("/api/stock/analyses/daily/"+item.id+"/sheets/"+index,{timeoutMs:30000});
+   if(city==="all" && allRuns.length){
+     const groups=await Promise.all(allRuns.map(async run=>({
+       city:run.city,
+       data:run.id===item.id?data:await request("/api/stock/analyses/daily/"+run.id+"/sheets/"+index,{timeoutMs:30000})
+     })));
+     data={
+       header:["Praça",...(groups[0]?.data.header||[])],
+       rows:groups.flatMap(group=>(group.data.rows||[]).map(row=>[group.city.toUpperCase(),...row])),
+       total:groups.reduce((sum,group)=>sum+(group.data.total||0),0),
+       preview_limited:groups.some(group=>group.data.preview_limited)
+     };
+   }
    if(city!==currentCity()||selected?.id!==item.id)return;
    const nav=el("stockDailyAnalysisTabs");
    nav.replaceChildren();
@@ -89,7 +114,8 @@ async function displaySheet(index){
    table.appendChild(body);
    el("stockDailyAnalysisSheetInfo").textContent=
      tabs[index]+" • "+data.total+" registros"+(data.preview_limited?" • mostrando os primeiros 200":"");
-   el("stockDailyAnalysisDownload").disabled=false;
+   el("stockDailyAnalysisDownload").disabled=city==="all";
+   if(city==="all")el("stockDailyAnalysisDownload").title="Para baixar o Excel, selecione uma cidade no cabeçalho";
  }catch(error){status("Falha ao abrir a aba: "+(error.message||error),true)}
 }
 async function download(){
@@ -128,6 +154,8 @@ async function importWorkbook(){
 }
 el("stockDailyAnalysisOpen").addEventListener("click",()=>setVisible(true));
 el("stockDailyAnalysisDate").addEventListener("change",()=>void loadDaily());
+el("stockDailyRangeStart").addEventListener("change",()=>void loadDaily());
+el("stockDailyRangeEnd").addEventListener("change",()=>void loadDaily());
 el("stockDailyAnalysisHistory").addEventListener("change",async e=>{
  const id=e.target.value;const city=currentCity();
  try{

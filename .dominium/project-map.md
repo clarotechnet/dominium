@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-30T14:33:53+00:00
-- Source fingerprint: `89c247f855ed971a`
-- Indexed files: 466
-- Indexed symbols: 4034
-- API path references: 467
+- Generated: 2026-10-30T15:06:54+00:00
+- Source fingerprint: `c17efa14840fa22a`
+- Indexed files: 472
+- Indexed symbols: 4046
+- API path references: 477
 
 ## Navigation rule
 
@@ -108,6 +108,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/stock-analysis-ui.js` (13 symbols, 3 API paths) - Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */
 - `static/stock-daily-analysis-ui.js` (10 symbols, 3 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
 - `static/stock-nav.js` (6 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
+- `static/stock-report-preview-ui.js` (5 symbols, 2 API paths) - The three stock analysis processes have independent, paged workspace views. */
 - `static/styles.css`
 - `static/theme-init.js`
 - `static/workspace.css` - Shared workspace: the original Technet image, floating glass and Dominium red. */
@@ -162,8 +163,12 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `official_stock_audit.py` (14 symbols, 2 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_stock_blocker_review.py` (15 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_stock_remediation_plan.py` (25 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `patch_daily_period_20261030.py` (1 symbols, 2 API paths)
 - `patch_daily_ui.py` (1 symbols)
+- `patch_front_preview_20261030.py` (1 symbols)
 - `patch_last_reports.py` (1 symbols, 1 API paths)
+- `patch_query_filter_preview_20261030.py` (1 symbols, 3 API paths)
+- `patch_subtabs_20261030.py`
 - `productive_protocol_templates.json` (3 DataSnap methods)
 - `protocol_templates.json`
 - `quality_control.py` (6 symbols) - Regras de controle de qualidade, independentes do saldo do Imperium.
@@ -181,7 +186,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 154 files
+- shared: 159 files
 - tooling-deploy: 48 files
 - docs: 41 files
 - tests: 137 files
