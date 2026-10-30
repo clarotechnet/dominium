@@ -6,7 +6,7 @@
   <title>DOMINIUM</title>
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="/styles.css?v=20261029-analysis-1">
+  <link rel="stylesheet" href="/styles.css?v=20261030-daily-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
 </head>
@@ -1034,19 +1034,37 @@
         <header class="workspace-heading">
           <div><p class="section-label">ATLAS + IMPERIUM</p>
             <h2>Analises e Relatorios do Estoque</h2>
-            <p class="workspace-description">Usa a ultima QUERY concluida e validada da operacao. Nao cria fila nova nem altera equipamentos.</p>
+            <p class="workspace-description">Três processos independentes: QUERY tratada; análise diária do Imperium; análise de suspeitos baseada na QUERY.</p>
           </div>
           <button class="button secondary" id="stockReportsRefresh" type="button">Atualizar</button>
         </header>
         <p class="stock-analysis-source" id="stockReportsSource">Selecione esta aba para consultar a ultima QUERY valida.</p>
         <div class="stock-analysis-cards">
           <article><h3>1. QUERY tratada</h3><p>Materiais, seriais e codigo SAP sem zeros. Replica o tratamento do Excel.</p>
-            <button class="button primary" type="button" data-stock-report="query">Gerar QUERY tratada</button></article>
-          <article><h3>2. Analise de equipamentos</h3><p>Abas Atlas, Chips, Imperium, Assinantes e Nomes. A consulta Equipamentos Utilizados sera sinalizada como pendente ate sua integracao.</p>
-            <button class="button primary" type="button" data-stock-report="equipamentos">Gerar analise de equipamentos</button></article>
+            <button class="button primary" type="button" data-stock-report="query">Gerar QUERY tratada</button><p id="stockQueryLastResult" class="stock-analysis-status">Sem execução registrada</p><button class="button secondary" type="button" id="stockQueryLastDownload" hidden>Baixar última QUERY tratada</button></article>
+          <article><h3>2. Analise de equipamentos</h3><p>Controle por dia, independente da QUERY. Seis abas e historico compartilhado. A coleta automatica por periodo do Imperium depende de integracao propria.</p>
+            <button class="button primary" type="button" id="stockDailyAnalysisOpen">Abrir controle diario</button></article>
           <article><h3>3. Analise de suspeitos</h3><p>Filtra SUSPEITO e ANALISE DE INVENTARIO; sem prova de rastreabilidade ou baixa, permanece pendente de conferencia.</p>
-            <button class="button primary" type="button" data-stock-report="suspeitos">Gerar analise de suspeitos</button></article>
+            <button class="button primary" type="button" data-stock-report="suspeitos">Gerar analise de suspeitos</button><p id="stockSuspectsLastResult" class="stock-analysis-status">Sem execução registrada</p><button class="button secondary" type="button" id="stockSuspectsLastDownload" hidden>Baixar última análise de suspeitos</button></article>
         </div>
+        <section id="stockDailyAnalysisPanel" hidden class="stock-daily-analysis-panel">
+          <h3>Analise diaria de equipamentos</h3>
+          <p class="workspace-description">A fonte diaria e o Imperium, nao a QUERY Atlas. Visualize cada aba e o historico salvo. A importacao do Excel final permite registrar dias anteriores enquanto a extracao automatica por periodo nao estiver integrada.</p>
+          <div class="daily-stock-toolbar">
+            <label class="field"><span>Data de referencia (normalmente ontem)</span><input type="date" id="stockDailyAnalysisDate"></label>
+            <label class="field"><span>Historico da operacao</span><select id="stockDailyAnalysisHistory"></select></label>
+            <button class="button secondary" type="button" id="stockDailyAnalysisRefresh">Atualizar</button>
+          </div>
+          <div class="daily-stock-toolbar">
+            <label class="field"><span>Registrar Excel final de referencia</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
+            <button class="button secondary" id="stockDailyAnalysisImport" type="button">Importar no historico</button>
+            <button class="button secondary" id="stockDailyAnalysisDownload" type="button" disabled>Baixar XLSX</button>
+          </div>
+          <p id="stockDailyAnalysisMessage" class="stock-analysis-status" role="status" aria-live="polite"></p>
+          <div id="stockDailyAnalysisTabs" class="stock-daily-analysis-tabs" role="group" aria-label="Abas do relatorio"></div>
+          <p id="stockDailyAnalysisSheetInfo" class="stock-analysis-status"></p>
+          <div class="table-scroll"><table id="stockDailyAnalysisTable" class="daily-stock-table"></table></div>
+        </section>
         <p class="stock-analysis-warning">Os relatorios 2 e 3 exibem fontes e pendencias. Historico de movimentacao nao comprova posse atual nem estoque fisico.</p>
         <div class="daily-stock-toolbar">
           <label class="field"><span>Execucoes anteriores</span><select id="stockReportsHistory"><option value="">Nenhum relatorio registrado</option></select></label>
@@ -2458,7 +2476,8 @@
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261029-analysis-1"></script>
   <script src="/stock-nav.js?v=20261029-analysis-1"></script>
-  <script src="/stock-analysis-ui.js?v=20261030-xlsx-2"></script>
+  <script src="/stock-analysis-ui.js?v=20261030-daily-1"></script>
+  <script src="/stock-daily-analysis-ui.js?v=20261030-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>
   <script src="/query-import.js?v=20261023-1"></script>

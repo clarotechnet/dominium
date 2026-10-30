@@ -95,7 +95,8 @@ class DescRelayHandler(BaseHTTPRequestHandler):
             return
         stock_analysis_route = parse_stock_analysis_route(self.command, self.path)
         if stock_analysis_route is not None:
-            if self.headers.get('X-Dominium-Role') not in {'admin','controller'}:
+            allowed_roles = {'admin','controller','viewer'} if self.command=='GET' else {'admin','controller'}
+            if self.headers.get('X-Dominium-Role') not in allowed_roles:
                 self._json(403, {'ok':False,'error':'Perfil operacional necessario'})
                 return
             service = getattr(self.server,'stock_analysis_service',None)
@@ -215,7 +216,8 @@ class DescRelayHandler(BaseHTTPRequestHandler):
     def _read_json(self):
         try:
             length = int(self.headers.get('Content-Length', '0'))
-            if not 0 < length <= 64 * 1024 or self.headers.get_content_type() != 'application/json':
+            limit = 5*1024*1024 if self.path == '/api/stock/analyses/daily/import' else 64*1024
+            if not 0 < length <= limit or self.headers.get_content_type() != 'application/json':
                 raise ValueError
             body = json.loads(self.rfile.read(length))
             if not isinstance(body, dict):

@@ -36,7 +36,7 @@ export default {
     const operationalWrite=allowedOperationalWrite(request.method,url.pathname+url.search);
     const bulkCreate=url.pathname==='/api/orders/bulk-create' && operationalWrite;
     const role=request.headers.get('x-dominium-role');
-    if (!(((operational && !officialStock && !serialConsult && !confrontation && !query && !analysis && !toaLookup) || ((quality || daily) && request.method==='GET')) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
+    if (!(((operational && !officialStock && !serialConsult && !confrontation && !query && !analysis && !toaLookup) || ((quality || daily || analysis) && request.method==='GET')) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
         !request.headers.get('x-dominium-actor')) return json(403,'Operador não identificado');
     let route;
     try {route=(operational || confrontation || query || analysis || toaLookup || orderClose || operationalWrite || quality || daily) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
@@ -49,6 +49,7 @@ export default {
       if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return json(415,'Envie JSON');
       const maxBytes=url.pathname==='/api/toa-agenda/import' ? 24*1024*1024 :
         operationalWrite ? 256*1024 :
+        (analysis && url.pathname==='/api/stock/analyses/daily/import') ? 5*1024*1024 :
         (desc || confrontation || query || analysis || toaLookup || orderClose || quality || daily) ? 64*1024 : MAX_IMPORT_BYTES;
       if (Number(request.headers.get('content-length')||0)>maxBytes) return json(413,'Arquivo acima do limite');
       body=await request.arrayBuffer();

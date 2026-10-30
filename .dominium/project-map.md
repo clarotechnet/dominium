@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-30T12:40:17+00:00
-- Source fingerprint: `82b056bc5ecd1df3`
-- Indexed files: 460
-- Indexed symbols: 4004
-- API path references: 442
+- Generated: 2026-10-30T14:27:41+00:00
+- Source fingerprint: `89c247f855ed971a`
+- Indexed files: 466
+- Indexed symbols: 4034
+- API path references: 467
 
 ## Navigation rule
 
@@ -105,7 +105,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/quality-control.js` (11 symbols, 1 API paths) - Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */
 - `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
-- `static/stock-analysis-ui.js` (12 symbols, 3 API paths) - Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */
+- `static/stock-analysis-ui.js` (13 symbols, 3 API paths) - Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */
+- `static/stock-daily-analysis-ui.js` (10 symbols, 3 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
 - `static/stock-nav.js` (6 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
 - `static/styles.css`
 - `static/theme-init.js`
@@ -119,6 +120,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `adm_allocation.py` (3 symbols) - Read-only allocation for DESC multi-OS activities.
 - `AGENTS.md` (1 DataSnap methods) - DOMINIUM agent guide
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.
+- `apply_daily_backend.py` (1 symbols, 2 API paths)
 - `auth_store.py` (28 symbols) - Autenticacao local do DOMINIUM.
 - `auth_store_postgres.py` (18 symbols) - Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.
 - `auto_improductive_close.py` (23 symbols)
@@ -160,6 +162,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `official_stock_audit.py` (14 symbols, 2 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_stock_blocker_review.py` (15 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_stock_remediation_plan.py` (25 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `patch_daily_ui.py` (1 symbols)
+- `patch_last_reports.py` (1 symbols, 1 API paths)
 - `productive_protocol_templates.json` (3 DataSnap methods)
 - `protocol_templates.json`
 - `quality_control.py` (6 symbols) - Regras de controle de qualidade, independentes do saldo do Imperium.
@@ -177,10 +181,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 150 files
+- shared: 154 files
 - tooling-deploy: 48 files
 - docs: 41 files
-- tests: 136 files
+- tests: 137 files
 
 ## Search indexes
 

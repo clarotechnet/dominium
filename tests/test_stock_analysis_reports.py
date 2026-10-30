@@ -67,7 +67,7 @@ class StockReportTests(unittest.TestCase):
   status,data,_=self.service.handle("POST","/api/stock/analyses/jobs","user-555",{"city":"natal","kind":"query"})
   self.assertEqual(status,202)
   self.assertEqual(data["job"]["query_id"],"other")
-  self.assertEqual(self.service.handle("GET","/api/stock/analyses/jobs",ACTOR)[1]["jobs"],[])
+  self.assertEqual(len(self.service.handle("GET","/api/stock/analyses/jobs",ACTOR)[1]["jobs"]),1)
 
  def test_report_jobs_idempotent_and_scope_actor(self):
   status,created,_=self.service.handle("POST","/api/stock/analyses/jobs",ACTOR,
@@ -76,7 +76,7 @@ class StockReportTests(unittest.TestCase):
   self.assertEqual(self.service.handle("POST","/api/stock/analyses/jobs",ACTOR,
                               {"city":"natal","kind":"query"})[1]["reused"],True)
   target=created["job"]["id"]
-  self.assertEqual(self.service.handle("GET","/api/stock/analyses/jobs/"+target,"user-999")[0],404)
+  self.assertEqual(self.service.handle("GET","/api/stock/analyses/jobs/"+target,"user-999")[0],200)
   self.assertEqual(self.service.handle("GET","/api/stock/analyses/jobs/"+target+"/export",ACTOR)[0],409)
   with self.service._connect() as con:
    job=con.execute("SELECT * FROM jobs WHERE id=?",(target,)).fetchone()

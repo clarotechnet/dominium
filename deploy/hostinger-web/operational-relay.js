@@ -22,7 +22,8 @@ function resolveOperationalRead(req, connection = readPrivateConnection) {
   const daily = allowedDailyStock(req.method, req.originalUrl);
   const write = allowedOperationalWrite(req.method, req.originalUrl);
   if (!confrontation && !toaLookup && !quality && !daily && !allowedOperationalRead(req.method, req.originalUrl) && !allowedOperationalWrite(req.method,req.originalUrl)) return null;
-  if (!req.dominiumSession || ((confrontation || toaLookup || ((quality || daily) && req.method === 'POST') || write)
+  const analysisRead=allowedStockAnalysisRoute(req.method,req.originalUrl) && req.method==='GET';
+  if (!req.dominiumSession || (((confrontation && !analysisRead) || toaLookup || ((quality || daily) && req.method === 'POST') || write)
     ? !['admin','controller'].includes(req.dominiumUser?.role)
     : !['admin','controller','viewer'].includes(req.dominiumUser?.role))) {
     throw new Error('operational_session_required');

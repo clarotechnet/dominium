@@ -21,6 +21,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlsplit
+from equipment_daily_catalog import DailyEquipmentCatalog,parse_route as parse_daily_route
 from xml.sax.saxutils import escape
 
 # These are the stable report column labels, not a dependency on the Atlas
@@ -52,6 +53,8 @@ MIME_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
 def route_for(method: str, target: str):
+    if parse_daily_route(method,target) is not None:
+        return ("daily_catalog",None)
     if method not in ("GET", "POST") or len(target) > 180 or "%" in target or "//" in target:
         return None
     uri = urlsplit(target)
@@ -257,6 +260,7 @@ class StockAnalysisService:
         self.root=Path(root)
         self.root.mkdir(parents=True,exist_ok=True)
         self.db=self.root/"jobs.sqlite3"
+        self.daily_catalog=DailyEquipmentCatalog(root=self.root/"equipment_daily")
         self.atlas_db=Path(atlas_db)
         self.clock=clock
         self._stop=threading.Event()
@@ -312,25 +316,29 @@ class StockAnalysisService:
         if route is None:return 404,{"ok":False,"error":"Rota nao permitida"},None
         if not ACTOR.fullmatch(actor or ""):return 403,{"ok":False,"error":"Operador invalido"},None
         action,argument=route
+        if action=="daily_catalog":
+            return self.daily_catalog.handle(method,target,actor,body)
         try:
             if action=="available":
                 return 200,{"ok":True,"latest":self.latest(actor,argument)},None
             if action=="list":
                 with self._connect() as con:
-                    jobs=con.execute("SELECT * FROM jobs WHERE actor=? ORDER BY created_at DESC LIMIT 20",(actor,)).fetchall()
+                    jobs=con.execute("SELECT * FROM jobs WHERE kind IN ('query','suspeitos') ORDER BY created_at DESC LIMIT 50").fetchall()
                 return 200,{"ok":True,"jobs":[self.info(j) for j in jobs]},None
             if action=="create":
                 if not isinstance(body,dict) or set(body)!={"city","kind"} or body["city"] not in CITY or body["kind"] not in TYPES:
                     return 400,{"ok":False,"error":"Selecione uma praca e tipo valido"},None
+                if body["kind"]=="equipamentos":
+                    return 409,{"ok":False,"error":"A analise diaria depende da fonte Equipamentos Utilizados do Imperium, por periodo. Consulte o historico diario ou importe o Excel final, sem executar a QUERY em massa."},None
                 latest=self.latest(actor,body["city"])
                 if not latest:
                     return 409,{"ok":False,"error":"Nenhuma QUERY concluida e validada para esta praca. Gere/recupere no Atlas Query."},None
                 with self._lock:
                     with self._connect() as con:
-                        prior=con.execute("""SELECT * FROM jobs WHERE actor=? AND city=? AND kind=? AND query_id=?
+                        prior=con.execute("""SELECT * FROM jobs WHERE city=? AND kind=? AND query_id=?
                                 AND state IN ('queued','processing','ready')
                                 ORDER BY created_at DESC LIMIT 1""",
-                            (actor,body["city"],body["kind"],latest["id"])).fetchone()
+                            (body["city"],body["kind"],latest["id"])).fetchone()
                         if prior:
                             return 200,{"ok":True,"reused":True,"job":self.info(prior)},None
                         id=uuid.uuid4().hex;now=self.clock()
@@ -341,7 +349,7 @@ class StockAnalysisService:
                     self._wake.set()
                     return 202,{"ok":True,"reused":False,"job":self.info(job)},None
             with self._connect() as con:
-                job=con.execute("SELECT * FROM jobs WHERE id=? AND actor=?",(argument,actor)).fetchone()
+                job=con.execute("SELECT * FROM jobs WHERE id=?",(argument,)).fetchone()
             if not job:return 404,{"ok":False,"error":"Trabalho nao encontrado"},None
             if action=="detail":return 200,{"ok":True,"job":self.info(job)},None
             if action=="export":
@@ -370,7 +378,9 @@ class StockAnalysisService:
         finally:con.close()
         history=[]
         enrichment_summary={}
-        if job["kind"] in ("equipamentos","suspeitos"):
+        if job["kind"]=="equipamentos":
+            raise ValueError("Consulta em massa por serial desativada: use fonte diaria por periodo")
+        if job["kind"]=="suspeitos":
             from stock_report_enrichment import collect
             def update_progress(stats):
                 with self._connect() as db:

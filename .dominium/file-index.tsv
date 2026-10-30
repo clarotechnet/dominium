@@ -10,6 +10,7 @@ shared	adm_allocation.py	3			Read-only allocation for DESC multi-OS activities.	
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
 orchestration	app.py	151	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	227ade0c245b77ed
+shared	apply_daily_backend.py	1	2			5b767211141b4bbc
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -35,13 +36,13 @@ tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
 tooling-deploy	deploy/hostinger-web/operational-policy.js	10	39			dc32d50351c96abf
-tooling-deploy	deploy/hostinger-web/operational-relay.js	3				1a4bbbe19948571e
+tooling-deploy	deploy/hostinger-web/operational-relay.js	3				e22710f451a7083d
 tooling-deploy	deploy/hostinger-web/order-close-proxy.js	2				78fc563fd7b62d77
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	32	1		7a173eae07ee98d1
-tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	1			89b408296b439bf8
+tooling-deploy	deploy/hostinger-web/server.js	41	33	1		6f2154ce896cc34b
+tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	2			0e946465db8c2116
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -145,7 +146,7 @@ shared	integrations/desc_runtime/whatsapp_bridge_service.py	22				931cf8de8b9ce0
 shared	integrations/import_bridge/daily_stock_service.py	7			Leitura e snapshots de estoque diario no Supabase operacional do Dominium.	4bfea8bad6b4d792
 shared	integrations/import_bridge/quality_control_relay.py	7			Private, authenticated Quality Control Supabase bridge (no Imperium writes).	6e21d816d7b3a9fd
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
-shared	integrations/import_bridge/worker.mjs	3	4			b03286f2c4ca6000
+shared	integrations/import_bridge/worker.mjs	3	5			6c29ee0496d45275
 shared	integrations/import_bridge/worker.test.mjs		4			0d702314872586ba
 shared	integrations/import_bridge/worker_create.test.mjs					5f31d81dbeac6a12
 shared	integrations/managed_atlas_toa/claro-login-submit.js	4				cced9c141f48f623
@@ -168,13 +169,14 @@ shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-
 shared	integrations/serial_consult/confront_http.py	7	3		Private HTTP interface and supervised background job scheduler.	86da7071f7da0062
 shared	integrations/serial_consult/confront_job_runner.py	14			Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).	46db8339b45b1bf4
 imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	3ee171b567d7bafe
-shared	integrations/serial_consult/desc_review_relay.py	8	1		Authenticated relay for DESC review and private read-only Imperium checks.	54e7b71da84500d4
+shared	integrations/serial_consult/desc_review_relay.py	8	2		Authenticated relay for DESC review and private read-only Imperium checks.	5a42732796f2450f
+shared	integrations/serial_consult/equipment_daily_catalog.py	9	3		Persisted daily equipment-analysis workbook, independent of the Atlas QUERY.	8e58189f55710579
 shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	6f5b01f448826d25
 shared	integrations/serial_consult/monitor_snapshot_relay.py	1	1		Read-only bridge for the existing TOA CSV monitor snapshots.	5202d89531eb4b46
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
 shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
 shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only serial consultation: real DataSnap history + local evidence.	d9f51c614747ed37
-shared	integrations/serial_consult/stock_analysis_http.py	17	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	aeb574bba61d3d0a
+shared	integrations/serial_consult/stock_analysis_http.py	17	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	042a23ecde4df397
 shared	integrations/serial_consult/stock_report_enrichment.py	3			Bounded read-only DataSnap enrichment for stock XLSX reports.	dff77b77c7f8eec5
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76				b8274ffc7dfb2fbb
@@ -223,6 +225,8 @@ shared	official_stock_remediation_plan.py	25		1	DOMINIUM | MAPA DE RESPONSABILID
 orchestration	operation_scope.py	55			DOMINIUM | MAPA DE RESPONSABILIDADE	3f9d748a18c158b6
 orchestration	operational_store.py	25			DOMINIUM | MAPA DE RESPONSABILIDADE	5676e4f9f3fdab38
 orchestration	operations_intelligence.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	96115509d8e34c26
+shared	patch_daily_ui.py	1				25ab8f3d841d22bc
+shared	patch_last_reports.py	1	1			c6c300a2ea8df693
 toa	patch_remote_toa.py		2	5		cb6eb87e50eeb356
 shared	productive_protocol_templates.json			3		c04b19e6f576ff97
 shared	protocol_templates.json					dea41cc769da2970
@@ -271,7 +275,7 @@ frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			ffdbe3d88e50c7de
+frontend	static/index.html		1			a0de331efd0df616
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
@@ -279,9 +283,10 @@ frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b
 frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */	fd462fc168e71c03
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
-frontend	static/stock-analysis-ui.js	12	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	ccd36b711ebfdeb2
+frontend	static/stock-analysis-ui.js	13	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	fb51072484689f2b
+frontend	static/stock-daily-analysis-ui.js	10	3		Daily equipment: independent period/catalog; Atlas QUERY is not its source. */	de026abeb943a0dc
 frontend	static/stock-nav.js	6			Navegacao consolidada de Estoque (mantem os modulos existentes). */	1cd96c23d87bb70a
-frontend	static/styles.css					5f7bda5e579ca38a
+frontend	static/styles.css					20f6dc338581e821
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
@@ -344,6 +349,7 @@ tests	tests/test_disconnection_access.py	6	5			cba855ef00508a97
 tests	tests/test_disconnection_frontend.js	1	1			65b81e61b3966421
 tests	tests/test_disconnection_hostinger.js	2	13			73827cfd80596bf7
 tests	tests/test_edge_voice.py	4				4e8791562f884964
+tests	tests/test_equipment_daily_catalog.py	6	8		Daily equipment workbooks are by date and city, never the Atlas QUERY.	5cc97f9b8d88eefa
 tests	tests/test_equipment_group_matching.py	24				abb0031d8ae437aa
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38
 tests	tests/test_hostinger_dataset_regression.cjs	4	1			ec6b2b088eea6eb2
@@ -396,8 +402,8 @@ tests	tests/test_serial_confront_engine.py	19			Synthetic contract tests for the
 tests	tests/test_serial_consult.py	3				3bb13e50693f977d
 tests	tests/test_serial_datasnap_history.py	9	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	36414aaf670dbe68
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
-tests	tests/test_stock_analysis_proxy.cjs	2	5			6825594ffa79cba8
-tests	tests/test_stock_analysis_reports.py	10	7		Tests for safe, cached, actor-scoped stock analysis report generation.	55bb78af4f62a70f
+tests	tests/test_stock_analysis_proxy.cjs	3	9			da95d3bdda5fccf7
+tests	tests/test_stock_analysis_reports.py	10	7		Tests for safe, cached, actor-scoped stock analysis report generation.	5eb2fb3df30f0ade
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
 tests	tests/test_stock_quality_bridge.mjs		2			3022814e71dead90
