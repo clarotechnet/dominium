@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "dominium-backlog-bridge",
+  "account_id": "416ec837ec86eec81dcc8dcade3d32ae",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-30",
+  "workers_dev": true,
+  "vpc_services": [
+    {
+      "binding": "BACKLOG_SERVICE",
+      "service_id": "01a18e5e-7364-70e2-8eb0-613c7069f2ca"
+    }
+  ]
+}

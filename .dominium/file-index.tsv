@@ -116,6 +116,11 @@ shared	import_protocol_templates.json			1		9a6465634e73b3ec
 shared	import_technicians_xlsx.py	4		1	DOMINIUM | MAPA DE RESPONSABILIDADE	341a4f747dde9502
 imperium	installer_change.py	5			DOMINIUM | MAPA DE RESPONSABILIDADE	18de9230c2938c1e
 shared	installer_change_protocol_templates.json			1		f69d1e6915145bd3
+shared	integrations/backlog_standalone/dryrun/README.md				This folder contains the built output assets for the worker "dominium-backlog-bridge" generated at 2026-10-30T19:54:55.892Z.	8c0a12733f98b0a4
+shared	integrations/backlog_standalone/dryrun/worker.js	4	7			8899fdd8f55839ea
+shared	integrations/backlog_standalone/README.md				DOMINIUM Backlog — nova infraestrutura Cloudflare	416c246501d53f87
+shared	integrations/backlog_standalone/worker.mjs	4	7		Isolated, deny-by-default bridge. No operational OS-closing endpoints.	2101e260e26d7735
+shared	integrations/backlog_standalone/worker.test.mjs	2	7			673c8cb3a603672b
 shared	integrations/desc_reports/desc_review_relay.py	6	1		Authenticated relay for DESC review and private read-only Imperium checks.	db2faeb1c34ebf97
 shared	integrations/desc_reports/operator_reports.py	7			Persistent operator feedback, scoped to the private authenticated DESC relay.	43caa7925ed75b0b
 shared	integrations/desc_reports/README.md				DESC — contratos, revisão manual e REPORT	7b2f2308f26140fa

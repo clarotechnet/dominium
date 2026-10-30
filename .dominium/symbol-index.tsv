@@ -699,6 +699,16 @@ __init__	method	installer_change.py	27	InstallerChangeProtocol
 build_query	method	installer_change.py	86	InstallerChangeProtocol
 _contains_blob	method	installer_change.py	103	InstallerChangeProtocol
 confirmed	method	installer_change.py	112	InstallerChangeProtocol
+__name	function	integrations/backlog_standalone/dryrun/worker.js	2	-
+json	function	integrations/backlog_standalone/dryrun/worker.js	10	-
+allowed	function	integrations/backlog_standalone/dryrun/worker.js	14	-
+equal	function	integrations/backlog_standalone/dryrun/worker.js	27	-
+json	function	integrations/backlog_standalone/worker.mjs	7	-
+allowed	function	integrations/backlog_standalone/worker.mjs	8	-
+bounded	function	integrations/backlog_standalone/worker.mjs	14	-
+equal	function	integrations/backlog_standalone/worker.mjs	22	-
+req	function	integrations/backlog_standalone/worker.test.mjs	7	-
+auth	function	integrations/backlog_standalone/worker.test.mjs	11	-
 DescRelayHandler	class	integrations/desc_reports/desc_review_relay.py	31	-
 log_message	method	integrations/desc_reports/desc_review_relay.py	34	DescRelayHandler
 _json	method	integrations/desc_reports/desc_review_relay.py	37	DescRelayHandler

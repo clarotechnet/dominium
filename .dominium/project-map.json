@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-30T17:48:43+00:00",
+  "generated_at": "2026-10-30T19:56:27+00:00",
   "schema": 2,
-  "source_fingerprint": "33e6d00e444c312e1203fa012cf7c26b8b525d51e0e635e34b89a0dad22daa9c",
+  "source_fingerprint": "dbc85f51b25c25218dccbed60ac1929f5ff146bb89a9e3d943a6ff78972b8ae5",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -2223,6 +2223,95 @@
       ],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "integrations/backlog_standalone/dryrun/README.md",
+      "category": "shared",
+      "bytes": 124,
+      "sha256": "8c0a12733f98b0a4eca258615ea47f4989d110052a11b621ce2e8424bf40a457",
+      "summary": "This folder contains the built output assets for the worker \"dominium-backlog-bridge\" generated at 2026-10-30T19:54:55.892Z.",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/backlog_standalone/dryrun/worker.js",
+      "category": "shared",
+      "bytes": 4632,
+      "sha256": "8899fdd8f55839ea1a4994b5173f263f3bb2252112603ff1998de2b23c39516e",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/compare",
+        "/api/backlog/year/fora-rota",
+        "/api/backlog/year/pause",
+        "/api/backlog/year/routes",
+        "/api/backlog/year/sent",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
+      "path": "integrations/backlog_standalone/README.md",
+      "category": "shared",
+      "bytes": 3401,
+      "sha256": "416c246501d53f874c2847104c15144662b21aeb4828846dbedd3c2922163892",
+      "summary": "DOMINIUM Backlog — nova infraestrutura Cloudflare",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/backlog_standalone/worker.mjs",
+      "category": "shared",
+      "bytes": 4025,
+      "sha256": "2101e260e26d77353f3b3a8e10edb89f37f503c5b488bb0d49057e0844cdd341",
+      "summary": "Isolated, deny-by-default bridge. No operational OS-closing endpoints.",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/compare",
+        "/api/backlog/year/fora-rota",
+        "/api/backlog/year/pause",
+        "/api/backlog/year/routes",
+        "/api/backlog/year/sent",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
+      "path": "integrations/backlog_standalone/worker.test.mjs",
+      "category": "shared",
+      "bytes": 2644,
+      "sha256": "673c8cb3a603672bf1aeffdd7771e5a70981074827820169a6e9cd38f9aeea04",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/compare?limit=999999",
+        "/api/backlog/year/delete",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status",
+        "/api/backlog/year/status?unexpected=yes",
+        "/api/orders",
+        "/api/orders/42/close"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "integrations/desc_reports/desc_review_relay.py",
