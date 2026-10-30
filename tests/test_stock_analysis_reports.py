@@ -91,6 +91,22 @@ class StockReportTests(unittest.TestCase):
    xml=z.read("xl/worksheets/sheet1.xml").decode()
    self.assertIn("41001277",xml)
    self.assertIn("PBL001",xml)
+ def test_xlsx_has_valid_openxml_package_relationships(self):
+  import xml.etree.ElementTree as ET
+  raw=xlsx([("QUERY Tratada",[["Material","Serie"],["22025245","X012"]]),("Fontes e criterios",[["Fonte","Atlas"]])])
+  ns="{http://schemas.openxmlformats.org/package/2006/relationships}"
+  with zipfile.ZipFile(BytesIO(raw)) as z:
+   self.assertIsNone(z.testzip())
+   root=ET.fromstring(z.read("_rels/.rels"))
+   workbook_rels=ET.fromstring(z.read("xl/_rels/workbook.xml.rels"))
+   self.assertEqual(root.tag,ns+"Relationships")
+   self.assertEqual(workbook_rels.tag,ns+"Relationships")
+   self.assertEqual(len(list(workbook_rels)),2)
+   self.assertEqual(list(root)[0].get("Target"),"xl/workbook.xml")
+   for name in z.namelist():
+    if name.endswith((".xml",".rels")) or name=="[Content_Types].xml":
+     ET.fromstring(z.read(name))
+
  def test_equipment_sheets_are_conservative(self):
   sheets,summary=build_sheets("equipamentos",ROWS,"natal","valid",time.time())
   self.assertEqual([s[0] for s in sheets[:6]],[

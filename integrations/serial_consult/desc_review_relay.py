@@ -32,6 +32,7 @@ from serial_service import parse_route as parse_serial_route, consult_serials
 from confront_http import ConfrontService, parse_confront_route
 from atlas_query_http import AtlasQueryService, parse_query_route
 from stock_analysis_http import StockAnalysisService, route_for as parse_stock_analysis_route
+from monitor_snapshot_relay import read_monitor_snapshot
 
 
 class DescRelayHandler(BaseHTTPRequestHandler):
@@ -82,6 +83,15 @@ class DescRelayHandler(BaseHTTPRequestHandler):
         actor = unquote(self.headers.get('X-Dominium-Actor', ''))[:100]
         if not actor:
             self._json(400, {'ok': False, 'error': 'Operador não identificado'})
+            return
+        if self.command == 'GET' and self.path.startswith('/api/monitor/snapshot'):
+            if self.headers.get('X-Dominium-Role') not in {'admin','controller','viewer'}:
+                self._json(403, {'ok':False,'error':'Perfil sem acesso ao monitor'})
+                return
+            try:
+                self._json(200, read_monitor_snapshot(self.path))
+            except ValueError:
+                self._json(400, {'ok':False,'error':'Parametros do monitor invalidos'})
             return
         stock_analysis_route = parse_stock_analysis_route(self.command, self.path)
         if stock_analysis_route is not None:

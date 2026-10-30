@@ -134,7 +134,14 @@
     try{
       const response=await requestBlob("/api/stock/analyses/jobs/"+current.id+"/export",
         {timeoutMs:120000});
-      saveBlob(response.blob, "DOMINIUM-"+current.kind+"-"+current.city+"-"+current.id.slice(0,8)+".xlsx");
+      const file=response.blob;
+      const signature=new Uint8Array(await file.slice(0,4).arrayBuffer());
+      const isZip=signature.length===4 && signature[0]===0x50 && signature[1]===0x4B
+        && signature[2]===0x03 && signature[3]===0x04;
+      if (!isZip || file.size<300 || !file.type.includes("spreadsheetml.sheet")) {
+        throw new Error("O servidor nao entregou um XLSX valido. O arquivo nao foi salvo.");
+      }
+      saveBlob(file, "DOMINIUM-"+current.kind+"-"+current.city+"-"+current.id.slice(0,8)+".xlsx");
     }catch(error){message("Erro ao baixar o XLSX: "+(error.message||""),true);}
   }
   tab.addEventListener("click",select);

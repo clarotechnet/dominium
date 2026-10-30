@@ -53,7 +53,7 @@ jobs:
           node --test tests/test_productive_snapshot_frontend.js tests/test_order_close_proxy.js tests/test_import_hostinger.js integrations/import_bridge/worker.test.mjs tests/test_stock_quality_bridge.mjs tests/test_quality_modal_frontend.cjs tests/test_all_operations_view.cjs tests/test_daily_stock.cjs tests/test_stock_analysis_proxy.cjs
           npm ci --prefix deploy/hostinger-web --ignore-scripts --no-audit --no-fund
           npm run build --prefix deploy/hostinger-web
-          python -m unittest tests.test_build_hostinger_node_release tests.test_hostinger_runtime_dependencies tests.test_daily_stock_service tests.test_stock_analysis_reports tests.test_stock_report_enrichment -v
+          python -m unittest tests.test_build_hostinger_node_release tests.test_hostinger_runtime_dependencies tests.test_daily_stock_service tests.test_stock_analysis_reports tests.test_stock_report_enrichment tests.test_monitor_snapshot_relay -v
           python scripts/build_hostinger_node_release.py
           node -e "const runtime = require('./output/hostinger-node-release/operational-relay.js'); if (typeof runtime.resolveOperationalRead !== 'function') process.exit(1); console.log('Release Node require smoke: OK')"
           test -s output/hostinger-node-release.zip

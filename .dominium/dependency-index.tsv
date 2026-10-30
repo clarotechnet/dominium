@@ -540,6 +540,7 @@ hmac	integrations/serial_consult/desc_review_relay.py
 http	integrations/serial_consult/desc_review_relay.py
 json	integrations/serial_consult/desc_review_relay.py
 logging	integrations/serial_consult/desc_review_relay.py
+monitor_snapshot_relay	integrations/serial_consult/desc_review_relay.py
 official_stock_bridge	integrations/serial_consult/desc_review_relay.py
 os	integrations/serial_consult/desc_review_relay.py
 pathlib	integrations/serial_consult/desc_review_relay.py
@@ -552,6 +553,11 @@ __future__	integrations/serial_consult/midas_reader.py
 datetime	integrations/serial_consult/midas_reader.py
 io	integrations/serial_consult/midas_reader.py
 struct	integrations/serial_consult/midas_reader.py
+__future__	integrations/serial_consult/monitor_snapshot_relay.py
+json	integrations/serial_consult/monitor_snapshot_relay.py
+os	integrations/serial_consult/monitor_snapshot_relay.py
+pathlib	integrations/serial_consult/monitor_snapshot_relay.py
+urllib	integrations/serial_consult/monitor_snapshot_relay.py
 __future__	integrations/serial_consult/serial_datasnap.py
 base64	integrations/serial_consult/serial_datasnap.py
 datasnap_client	integrations/serial_consult/serial_datasnap.py
@@ -1218,6 +1224,12 @@ imperium_api	tests/test_material_writeoff.py
 pathlib	tests/test_material_writeoff.py
 struct	tests/test_material_writeoff.py
 unittest	tests/test_material_writeoff.py
+json	tests/test_monitor_snapshot_relay.py
+monitor_snapshot_relay	tests/test_monitor_snapshot_relay.py
+pathlib	tests/test_monitor_snapshot_relay.py
+sys	tests/test_monitor_snapshot_relay.py
+tempfile	tests/test_monitor_snapshot_relay.py
+unittest	tests/test_monitor_snapshot_relay.py
 base64	tests/test_native_orders.py
 bulk_orders	tests/test_native_orders.py
 datetime	tests/test_native_orders.py
@@ -1377,6 +1389,7 @@ sys	tests/test_stock_analysis_reports.py
 tempfile	tests/test_stock_analysis_reports.py
 time	tests/test_stock_analysis_reports.py
 unittest	tests/test_stock_analysis_reports.py
+xml	tests/test_stock_analysis_reports.py
 zipfile	tests/test_stock_analysis_reports.py
 decimal	tests/test_stock_inventory.py
 pathlib	tests/test_stock_inventory.py

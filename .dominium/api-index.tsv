@@ -194,6 +194,8 @@ endpoint	path
 /api/confront/jobs	integrations/serial_consult/confront_http.py
 /api/confront/jobs/(	integrations/serial_consult/confront_http.py
 /api/confront/status	integrations/serial_consult/confront_http.py
+/api/monitor/snapshot	integrations/serial_consult/desc_review_relay.py
+/api/monitor/snapshot	integrations/serial_consult/monitor_snapshot_relay.py
 /api/serials/consult	integrations/serial_consult/serial_service.py
 /api/stock/analyses/available	integrations/serial_consult/stock_analysis_http.py
 /api/stock/analyses/jobs	integrations/serial_consult/stock_analysis_http.py
@@ -322,6 +324,11 @@ endpoint	path
 /api/imports/preview	tests/test_import_hostinger.js
 /api/imports/preview?url=evil	tests/test_import_hostinger.js
 /api/orders/1837422/close?profile=natal	tests/test_installer_reassignment.py
+/api/monitor/snapshot?profile=../recife	tests/test_monitor_snapshot_relay.py
+/api/monitor/snapshot?profile=all	tests/test_monitor_snapshot_relay.py
+/api/monitor/snapshot?profile=natal	tests/test_monitor_snapshot_relay.py
+/api/monitor/snapshot?profile=natal&profile=recife	tests/test_monitor_snapshot_relay.py
+/api/monitor/snapshot?profile=recife&debug=1	tests/test_monitor_snapshot_relay.py
 /api/imperium-official/stocks	tests/test_official_stock_relay.py
 /api/imperium-official/stocks/0/items	tests/test_official_stock_relay.py
 /api/imperium-official/stocks/123/commit	tests/test_official_stock_relay.py

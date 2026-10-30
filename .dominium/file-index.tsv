@@ -168,12 +168,13 @@ shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-
 shared	integrations/serial_consult/confront_http.py	7	3		Private HTTP interface and supervised background job scheduler.	86da7071f7da0062
 shared	integrations/serial_consult/confront_job_runner.py	14			Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).	46db8339b45b1bf4
 imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	3ee171b567d7bafe
-shared	integrations/serial_consult/desc_review_relay.py	8			Authenticated relay for DESC review and private read-only Imperium checks.	2d28773d21252a63
+shared	integrations/serial_consult/desc_review_relay.py	8	1		Authenticated relay for DESC review and private read-only Imperium checks.	54e7b71da84500d4
 shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	6f5b01f448826d25
+shared	integrations/serial_consult/monitor_snapshot_relay.py	1	1		Read-only bridge for the existing TOA CSV monitor snapshots.	5202d89531eb4b46
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
 shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
 shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only serial consultation: real DataSnap history + local evidence.	d9f51c614747ed37
-shared	integrations/serial_consult/stock_analysis_http.py	17	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	f33d75b28a164e81
+shared	integrations/serial_consult/stock_analysis_http.py	17	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	aeb574bba61d3d0a
 shared	integrations/serial_consult/stock_report_enrichment.py	3			Bounded read-only DataSnap enrichment for stock XLSX reports.	dff77b77c7f8eec5
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76				b8274ffc7dfb2fbb
@@ -270,7 +271,7 @@ frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			b8afefe485c914db
+frontend	static/index.html		1			ffdbe3d88e50c7de
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
@@ -278,7 +279,7 @@ frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b
 frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */	fd462fc168e71c03
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
-frontend	static/stock-analysis-ui.js	12	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	060cac705aa947d8
+frontend	static/stock-analysis-ui.js	12	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	ccd36b711ebfdeb2
 frontend	static/stock-nav.js	6			Navegacao consolidada de Estoque (mantem os modulos existentes). */	1cd96c23d87bb70a
 frontend	static/styles.css					5f7bda5e579ca38a
 frontend	static/theme-init.js					97eb92ef899f8dcf
@@ -360,6 +361,7 @@ tests	tests/test_manual_materials.py	14				13ebf22bf45dd258
 tests	tests/test_manual_serial_installer.py	4				2ffbc70495e2cdcf
 tests	tests/test_material_matching.py	33				f7a01b4226d11747
 tests	tests/test_material_writeoff.py	16				4d6bdafc337eb87a
+tests	tests/test_monitor_snapshot_relay.py	4	5			74743ae84a658a76
 tests	tests/test_native_orders.py	19		2		5c6e534e26a7d8de
 tests	tests/test_official_close.py	10				571cb0bb570b4bb5
 tests	tests/test_official_close_code_catalog.py	9		1		dbabe02e00041d80
@@ -395,7 +397,7 @@ tests	tests/test_serial_consult.py	3				3bb13e50693f977d
 tests	tests/test_serial_datasnap_history.py	9	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	36414aaf670dbe68
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_analysis_proxy.cjs	2	5			6825594ffa79cba8
-tests	tests/test_stock_analysis_reports.py	9	7		Tests for safe, cached, actor-scoped stock analysis report generation.	572a21c77d86e3a6
+tests	tests/test_stock_analysis_reports.py	10	7		Tests for safe, cached, actor-scoped stock analysis report generation.	55bb78af4f62a70f
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
 tests	tests/test_stock_quality_bridge.mjs		2			3022814e71dead90

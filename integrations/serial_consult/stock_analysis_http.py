@@ -96,6 +96,7 @@ def xlsx(sheets: list[tuple[str, list[list]]]) -> bytes:
     files = io.BytesIO()
     ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
     rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+    package_rel = "http://schemas.openxmlformats.org/package/2006/relationships"
     with zipfile.ZipFile(files, "w", zipfile.ZIP_DEFLATED, compresslevel=5) as z:
         ct = ['<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">',
               '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>',
@@ -105,11 +106,11 @@ def xlsx(sheets: list[tuple[str, list[list]]]) -> bytes:
             ct.append(f'<Override PartName="/xl/worksheets/sheet{i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>')
         ct.append("</Types>")
         z.writestr("[Content_Types].xml","".join(ct))
-        z.writestr("_rels/.rels",f'<Relationships xmlns="{rel}"><Relationship Id="rId1" Type="{rel}/officeDocument" Target="xl/workbook.xml"/></Relationships>')
+        z.writestr("_rels/.rels",f'<Relationships xmlns="{package_rel}"><Relationship Id="rId1" Type="{rel}/officeDocument" Target="xl/workbook.xml"/></Relationships>')
         z.writestr("xl/workbook.xml",f'<workbook xmlns="{ns}" xmlns:r="{rel}"><sheets>'+
             "".join(f'<sheet name="{escape(name)}" sheetId="{i}" r:id="rId{i}"/>' for i,name in enumerate(names,1))+
             "</sheets></workbook>")
-        z.writestr("xl/_rels/workbook.xml.rels",f'<Relationships xmlns="{rel}">'+
+        z.writestr("xl/_rels/workbook.xml.rels",f'<Relationships xmlns="{package_rel}">'+
             "".join(f'<Relationship Id="rId{i}" Type="{rel}/worksheet" Target="worksheets/sheet{i}.xml"/>' for i in range(1,len(sheets)+1))+
             "</Relationships>")
         for index,(_,records) in enumerate(sheets,1):

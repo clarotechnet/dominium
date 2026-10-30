@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-30T12:18:15+00:00",
+  "generated_at": "2026-10-30T12:40:17+00:00",
   "schema": 2,
-  "source_fingerprint": "f8cc640b43166d7c09cdabaf4d930b0b2ed1448f5281b68a1478462366c0f37f",
+  "source_fingerprint": "82b056bc5ecd1df32f8cd9df5fa4f96bc911828f6a3c29583232b04736d8ff84",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -3138,8 +3138,8 @@
     {
       "path": "integrations/serial_consult/desc_review_relay.py",
       "category": "shared",
-      "bytes": 11883,
-      "sha256": "2d28773d21252a6363301a60d300ad23ed4c38f10beeb9ff68f59f4f1c62e260",
+      "bytes": 12444,
+      "sha256": "54e7b71da84500d48d25f1af1ba1faa154ec6eb4e1904453148ce979e7cfbf1f",
       "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
       "imports": [
         "__future__",
@@ -3152,6 +3152,7 @@
         "http",
         "json",
         "logging",
+        "monitor_snapshot_relay",
         "official_stock_bridge",
         "os",
         "pathlib",
@@ -3161,7 +3162,9 @@
         "sys",
         "urllib"
       ],
-      "endpoints": [],
+      "endpoints": [
+        "/api/monitor/snapshot"
+      ],
       "env_vars": [
         "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
       ],
@@ -3186,6 +3189,29 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 2
+    },
+    {
+      "path": "integrations/serial_consult/monitor_snapshot_relay.py",
+      "category": "shared",
+      "bytes": 1570,
+      "sha256": "5202d89531eb4b46130fa3c0279a8b36cd4b4d59cdf223a56c30fd0e48a7186a",
+      "summary": "Read-only bridge for the existing TOA CSV monitor snapshots.",
+      "imports": [
+        "__future__",
+        "json",
+        "os",
+        "pathlib",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/monitor/snapshot"
+      ],
+      "env_vars": [
+        "DOMINIUM_MONITOR_SNAPSHOT_ROOT"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
     },
     {
       "path": "integrations/serial_consult/README.md",
@@ -3252,8 +3278,8 @@
     {
       "path": "integrations/serial_consult/stock_analysis_http.py",
       "category": "shared",
-      "bytes": 22794,
-      "sha256": "f33d75b28a164e81a75f04ec98fe871176cca08720d71d96716dab11bf1418db",
+      "bytes": 22891,
+      "sha256": "aeb574bba61d3d0a18cefe4471aebcc5b44ca498a034564b1215718d5cff82a6",
       "summary": "Audited, read-only stock reports from a previously validated Atlas QUERY.",
       "imports": [
         "__future__",
@@ -5026,8 +5052,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 141930,
-      "sha256": "b8afefe485c914dbba906f1fff63feb8f8937461ba4e01d6e00ee1bbfd4ad8d5",
+      "bytes": 141935,
+      "sha256": "ffdbe3d88e50c7de1af857065b8fb96642f2a3976af70e51315d0b036c9347e1",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5134,8 +5160,8 @@
     {
       "path": "static/stock-analysis-ui.js",
       "category": "frontend",
-      "bytes": 7090,
-      "sha256": "060cac705aa947d8af99cbc1548de712e6e454a16696c4a3125da6ca7a49fd64",
+      "bytes": 7512,
+      "sha256": "ccd36b711ebfdeb21fa65c4a53daca87d1dcce528775b2db23bf8c077819d769",
       "summary": "Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */",
       "imports": [],
       "endpoints": [
@@ -6696,6 +6722,32 @@
       "symbol_count": 16
     },
     {
+      "path": "tests/test_monitor_snapshot_relay.py",
+      "category": "tests",
+      "bytes": 1408,
+      "sha256": "74743ae84a658a76b46aff5240c5d0fc0d962fc990bc306e25d238bcdba4f1dc",
+      "summary": "",
+      "imports": [
+        "json",
+        "monitor_snapshot_relay",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/monitor/snapshot?profile=../recife",
+        "/api/monitor/snapshot?profile=all",
+        "/api/monitor/snapshot?profile=natal",
+        "/api/monitor/snapshot?profile=natal&profile=recife",
+        "/api/monitor/snapshot?profile=recife&debug=1"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 4
+    },
+    {
       "path": "tests/test_native_orders.py",
       "category": "tests",
       "bytes": 15889,
@@ -7440,8 +7492,8 @@
     {
       "path": "tests/test_stock_analysis_reports.py",
       "category": "tests",
-      "bytes": 6513,
-      "sha256": "572a21c77d86e3a6712ebfd5f619c000e5c63fbc4d644b5ab09f6685a91c0a8b",
+      "bytes": 7347,
+      "sha256": "55bb78af4f62a70f7e0f642cd3789d00733d10669cbcc6dd6af95c8d928022c0",
       "summary": "Tests for safe, cached, actor-scoped stock analysis report generation.",
       "imports": [
         "io",
@@ -7453,6 +7505,7 @@
         "tempfile",
         "time",
         "unittest",
+        "xml",
         "zipfile"
       ],
       "endpoints": [
@@ -7467,7 +7520,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 9
+      "symbol_count": 10
     },
     {
       "path": "tests/test_stock_inventory.py",
@@ -8679,6 +8732,7 @@
     "DOMINIUM_IMPERIUM_RUNTIME_ROOT",
     "DOMINIUM_INGEST_TOKEN",
     "DOMINIUM_LOCAL_TOA_AUTOMATION",
+    "DOMINIUM_MONITOR_SNAPSHOT_ROOT",
     "DOMINIUM_NODE",
     "DOMINIUM_PROJECT_ROOT",
     "DOMINIUM_PROXY_TOKEN",
