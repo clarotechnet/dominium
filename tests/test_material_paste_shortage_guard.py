@@ -1,33 +1,30 @@
-"""Regression for paste-to-OS with insufficient materials in Natal."""
+"""TOA paste keeps requested quantities and audits stock-bounded allocations."""
 from pathlib import Path
 import unittest
 
-SOURCE = (Path(__file__).resolve().parents[1] / "static" / "app.js").read_text(encoding="utf-8")
-START = SOURCE.index("async function processMaterialPaste()")
-STOP = SOURCE.index("async function loadMaterialInventory(", START)
-BODY = SOURCE[START:STOP]
+SOURCE=(Path(__file__).resolve().parents[1]/"static"/"app.js").read_text(encoding="utf-8")
+START=SOURCE.index("async function processMaterialPaste()")
+END=SOURCE.index("async function loadMaterialInventory(",START)
+BODY=SOURCE[START:END]
 
+class MaterialPasteStockAdjustmentTests(unittest.TestCase):
+    def test_shortfall_is_not_automatic_block(self):
+        self.assertIn("const blocked = unresolved > 0 || validation.can_close === false",BODY)
+        self.assertNotIn("const blockingShortage = shortage > 0",BODY)
 
-class MaterialPasteShortageTests(unittest.TestCase):
-    def test_any_city_blocks_shortfall(self):
-        self.assertIn("const blockingShortage = shortage > 0 || validation.can_close === false", BODY)
-        self.assertNotIn('shortage > 0 && state.profile !== "natal"', BODY)
+    def test_audit_contains_original_quantity_and_missing(self):
+        self.assertIn("state.materialPasteReconciliation",BODY)
+        self.assertIn("requested_quantity: Number(group.requested_quantity || 0)",BODY)
+        self.assertIn("posted_quantity: Number(group.allocated_quantity || 0)",BODY)
+        self.assertIn("missing_quantity: Number(group.missing_quantity || 0)",BODY)
 
-    def test_backend_correlated_group_displays_missing_original_quantity(self):
-        self.assertIn("payload.atlas_groups", BODY)
-        self.assertIn("group.missing_quantity", BODY)
-        self.assertIn("group.requested_quantity", BODY)
-        self.assertIn("group.requested_code", BODY)
+    def test_partial_makes_warning_not_success_or_error(self):
+        self.assertIn('missingDetails.length ? "warning" : "success"',BODY)
+        self.assertIn("lancar ${item.posted_quantity}/${item.requested_quantity}",BODY)
 
-    def test_shortage_causes_persistent_material_error(self):
-        self.assertIn("state.materialError = `Baixa bloqueada:", BODY)
-        self.assertIn('blockingShortage ? state.materialError : state.materialNotice', BODY)
-        self.assertIn('unresolved || blockingShortage ? "error" : "success"', BODY)
+    def test_previous_false_success_message_removed(self):
+        self.assertNotIn("com complemento do estoque virtual RETORNO",BODY)
+        self.assertIn("sem saldo completo apos tecnico + RETORNO",BODY)
 
-    def test_old_natal_success_message_is_gone(self):
-        self.assertNotIn("com complemento do estoque virtual RETORNO", BODY)
-        self.assertIn("miscelanea(s) sem saldo completo apos tecnico + RETORNO", BODY)
-
-
-if __name__ == "__main__":
+if __name__=="__main__":
     unittest.main()

@@ -11294,23 +11294,39 @@ function selectedMaterialIssues(rows = [...elements.materialRows.querySelectorAl
       issues.push(`${code}: saldo invalido no Imperium`);
       continue;
     }
-    const available = technicianStock + (
-      state.profile === "natal" && hasReturnStock ? returnStock : 0
-    );
-    if (quantity > available) {
-      const missing = quantity - available;
-      const reason = state.profile !== "natal"
-        ? "RETORNO nao habilitado nesta base"
-        : hasReturnStock ? "tecnico + RETORNO insuficientes" : "RETORNO nao consultado";
-      issues.push(`${code}: faltam ${missing} unidade(s); ${reason}`);
+    // Missing quantity is an auditable adjustment, not a reason to block.
+    // However, never assume RETORNO has zero when the query did not run.
+    if (!hasReturnStock && quantity > technicianStock) {
+      issues.push(`${code}: RETORNO nao consultado; aguarde uma consulta valida`);
     }
   }
   return issues;
 }
 
+function selectedMaterialAdjustments(rows = [...elements.materialRows.querySelectorAll(".material-row")]) {
+  return rows.map((row) => {
+    const code = row.querySelector(".material-code").value;
+    const requested = Number(row.querySelector(".material-quantity").value || 0);
+    const material = state.materialInventory.find((item) => item.code === code);
+    if (!material || !Number.isSafeInteger(requested) || requested <= 0) return null;
+    const technician = Math.max(0, Number(material.stock_quantity || 0));
+    const retorno = Math.max(0, Number(material.return_stock_quantity || 0));
+    const available = technician + retorno;
+    const posted = Math.min(requested, available);
+    return { code, requested_quantity: requested, posted_quantity: posted,
+      missing_quantity: requested - posted, technician_available: technician,
+      return_available: retorno };
+  }).filter(Boolean);
+}
+
 function refreshMaterialControls() {
   const rows = [...elements.materialRows.querySelectorAll(".material-row")];
   const materialIssues = selectedMaterialIssues(rows);
+  const stockAdjustments = selectedMaterialAdjustments(rows)
+    .filter((item) => item.missing_quantity > 0);
+  const stockAdjustmentNotice = stockAdjustments.map((item) => (
+    `${item.code}: lancar ${item.posted_quantity}/${item.requested_quantity}, faltam ${item.missing_quantity}`
+  )).join("; ");
   elements.addMaterial.disabled = state.materialLoading
     || state.materialPasteLoading
     || Boolean(state.materialError)
@@ -11324,8 +11340,9 @@ function refreshMaterialControls() {
     elements.materialStatus.textContent = state.materialError;
   } else if (materialIssues.length) {
     elements.materialStatus.textContent = `Baixa bloqueada: ${materialIssues.join("; ")}`;
-  } else if (state.materialNotice) {
-    elements.materialStatus.textContent = state.materialNotice;
+  } else if (state.materialNotice || stockAdjustmentNotice) {
+    elements.materialStatus.textContent = [state.materialNotice, stockAdjustmentNotice]
+      .filter(Boolean).join("; ");
   } else {
     elements.materialStatus.textContent = `${state.materialInventory.length} itens no estoque`;
   }
@@ -11373,11 +11390,8 @@ function updateMaterialStock(row) {
   const returnStock = Number(material?.return_stock_quantity || 0);
   const shortage = Math.max(0, quantity - technicianStock);
   const totalAvailable = technicianStock + (hasReturnStock ? returnStock : 0);
-  const insufficient = Boolean(material && quantity > technicianStock && (
-    state.profile !== "natal"
-    || !hasReturnStock
-    || quantity > totalAvailable
-  ));
+  const insufficient = Boolean(material && quantity > technicianStock && !hasReturnStock);
+  const willAdjust = Boolean(material && hasReturnStock && quantity > totalAvailable);
   stock.replaceChildren();
   if (material?.status === "unresolved") {
     stock.textContent = "Nao localizado (baixa bloqueada)";
@@ -11402,16 +11416,14 @@ function updateMaterialStock(row) {
     }
     if (shortage) {
       const detail = document.createElement("span");
-      detail.className = `material-stock-detail ${insufficient ? "blocked" : "covered"}`;
+      detail.className = `material-stock-detail ${insufficient ? "blocked" : willAdjust ? "warning" : "covered"}`;
       detail.textContent = insufficient
-        ? (totalAvailable <= 0
-            ? "Sem saldo (baixa bloqueada)"
-            : state.profile !== "natal"
-              ? `Saldo do tecnico insuficiente (faltam ${Math.max(0, quantity - technicianStock)})`
-              : !hasReturnStock
-                ? "RETORNO nao consultado (baixa bloqueada)"
-                : `RETORNO ${returnStock} (faltam ${Math.max(0, quantity - totalAvailable)}); baixa bloqueada`)
-        : `RETORNO complementa ${shortage}`;
+        ? "RETORNO nao consultado; aguarde a consulta"
+        : willAdjust
+          ? (totalAvailable <= 0
+            ? `Sem saldo: ${quantity} unidade(s) nao serao lancadas`
+            : `Lancar ${totalAvailable}/${quantity}; faltam ${quantity - totalAvailable} unidade(s)`)
+          : `RETORNO complementa ${Math.min(shortage, returnStock)}`;
       stock.append(detail);
     }
   }
@@ -11423,7 +11435,7 @@ function updateMaterialStock(row) {
       || quantity > technicianStock
     )),
   );
-  stock.classList.toggle("shortfall", insufficient);
+  stock.classList.toggle("shortfall", insufficient || willAdjust);
   refreshMaterialControls();
 }
 
@@ -11444,7 +11456,12 @@ function addMaterialRow(initial = {}) {
         material.code,
       ));
     });
-  const initialResolvedCode = resolveMaterialCodeWithEquivalence(initial.code, state.materialInventory);
+  // A resolved code returned by the official API must not be replaced
+  // a second time by the UI's historical alias shortcuts.
+  const exactPresent = state.materialInventory.some((item) => item.code === initial.code);
+  const initialResolvedCode = exactPresent
+    ? initial.code
+    : resolveMaterialCodeWithEquivalence(initial.code, state.materialInventory);
   code.value = initialResolvedCode || initial.code || "";
 
   const quantity = document.createElement("input");
@@ -11482,18 +11499,19 @@ function addMaterialRow(initial = {}) {
 }
 
 function materialValues() {
-  // The TOA quantity is authoritative. Never truncate or discard a material.
   const issues = selectedMaterialIssues();
   if (issues.length) throw new Error(`Baixa bloqueada: ${issues.join("; ")}`);
-  return [...elements.materialRows.querySelectorAll(".material-row")].map((row) => {
-    const code = row.querySelector(".material-code").value;
-    const material = state.materialInventory.find((item) => item.code === code);
-    const quantity = Number(row.querySelector(".material-quantity").value);
+  const adjustments = selectedMaterialAdjustments();
+  // Each visible shortfall is announced in refreshMaterialControls and
+  // sent for audit. The actual payload contains only available quantities.
+  return adjustments.filter((item) => item.posted_quantity > 0).map((item) => {
+    const material = state.materialInventory.find((value) => value.code === item.code);
     return {
-      code,
+      code: item.code,
       description: material.lookup_description || material.name || "",
-      quantity,
-      source_codes: material.source_codes || [code],
+      quantity: item.posted_quantity,
+      requested_quantity: item.requested_quantity,
+      source_codes: material.source_codes || [item.code],
       match_type: material.match_type || "exact",
       requires_confirmation: Boolean(material.requires_confirmation),
       equivalence_confirmed: Boolean(
@@ -11793,19 +11811,27 @@ async function processMaterialPaste() {
       parts.push("equipamento nao definido pelo servico");
     }
     state.currentMaterialPasteKey = resolvedPasteKey;
-    state.materialNotice = parts.join("; ");
-    const blockingShortage = shortage > 0 || validation.can_close === false;
-    if (blockingShortage) {
-      const missingDetails = (payload.atlas_groups || [])
-        .filter((group) => Number(group.missing_quantity || 0) > 0)
-        .map((group) => `${group.requested_code}: faltam ${group.missing_quantity} de ${group.requested_quantity}`);
-      state.materialError = `Baixa bloqueada: ${missingDetails.length
-        ? missingDetails.join("; ")
-        : "estoque insuficiente para as quantidades registradas no TOA"}`;
+    const groups = Array.isArray(payload.atlas_groups) ? payload.atlas_groups : [];
+    state.materialPasteReconciliation = groups.map((group) => ({
+      code: String(group.requested_code || ""),
+      requested_quantity: Number(group.requested_quantity || 0),
+      posted_quantity: Number(group.allocated_quantity || 0),
+      missing_quantity: Number(group.missing_quantity || 0),
+      source: "toa_paste",
+    }));
+    const missingDetails = state.materialPasteReconciliation
+      .filter((item) => item.missing_quantity > 0)
+      .map((item) => `${item.code}: lancar ${item.posted_quantity}/${item.requested_quantity}; faltam ${item.missing_quantity}`);
+    state.materialNotice = [parts.join("; "), ...missingDetails].filter(Boolean).join("; ");
+    // Shortage is explicitly authorized: launch only available quantities.
+    // Other validation errors remain blocking.
+    const blocked = unresolved > 0 || validation.can_close === false;
+    if (blocked) {
+      state.materialError = "Baixa bloqueada: correlacao ou dados da OS invalidos";
     }
     showToast(
-      blockingShortage ? state.materialError : state.materialNotice,
-      unresolved || blockingShortage ? "error" : "success",
+      blocked ? state.materialError : state.materialNotice,
+      blocked ? "error" : missingDetails.length ? "warning" : "success",
     );
   } catch (error) {
     state.materialNotice = error.message;
@@ -11819,6 +11845,7 @@ async function processMaterialPaste() {
 
 async function loadMaterialInventory(order) {
   state.materialInventory = [];
+  state.materialPasteReconciliation = [];
   state.materialError = "";
   state.materialNotice = "";
   state.materialEquivalenceConfirmed = false;
@@ -13142,6 +13169,12 @@ elements.equipmentDialog.addEventListener("close", () => {
     materials: closeCodeAllowsMaterials(pending.code) && (movement === "install" || movement === "swap")
       ? materialValues()
       : [],
+    material_stock_reconciliation: [
+      ...(state.materialPasteReconciliation || []),
+      ...selectedMaterialAdjustments()
+        .filter((item) => item.missing_quantity > 0)
+        .map((item) => ({ ...item, source: "manual_selection" })),
+    ],
     toa_paste_key: state.currentMaterialPasteKey,
     // Preserve TOA live capture metadata so the backend receives the original
     // scheduled_date (dataagendamento) even after the user edits the equipment list.

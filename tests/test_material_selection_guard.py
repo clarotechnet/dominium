@@ -1,63 +1,56 @@
-"""Regression contracts for the browser's miscellaneous-stock submit guard."""
+"""Regression contracts for quantity-limited miscellaneous POSTs."""
 from pathlib import Path
 import unittest
 
-APP = Path(__file__).resolve().parents[1] / "static" / "app.js"
-SOURCE = APP.read_text(encoding="utf-8")
-
-def segment(begin: str, end: str) -> str:
-    start = SOURCE.index(begin)
-    stop = SOURCE.index(end, start + len(begin))
-    return SOURCE[start:stop]
+SOURCE = (Path(__file__).resolve().parents[1] / "static" / "app.js").read_text(encoding="utf-8")
+def segment(start,end):
+    a=SOURCE.index(start)
+    b=SOURCE.index(end,a+len(start))
+    return SOURCE[a:b]
 
 class MaterialSelectionGuardTests(unittest.TestCase):
-    def test_original_quantity_is_not_truncated(self):
-        body = segment("function materialValues()", "\nfunction expectedEquipmentType(")
-        self.assertNotIn("Math.min(quantity, totalAvail)", body)
-        self.assertNotIn("return null", body)
-        self.assertNotIn(".filter(Boolean)", body)
-        self.assertIn("quantity,", body)
-        self.assertIn("selectedMaterialIssues()", body)
+    def test_material_values_never_post_more_than_confirmed_stock(self):
+        text=segment("function materialValues()", "\nfunction expectedEquipmentType(")
+        self.assertIn("selectedMaterialAdjustments()", text)
+        self.assertIn("item.posted_quantity > 0", text)
+        self.assertIn("quantity: item.posted_quantity", text)
+        self.assertIn("requested_quantity: item.requested_quantity", text)
 
-    def test_missing_balance_never_discards_required_material(self):
-        body = segment("function selectedMaterialIssues(", "\nfunction refreshMaterialControls(")
-        self.assertIn("quantity > available", body)
-        self.assertIn("const missing = quantity - available", body)
-        self.assertIn("RETORNO nao consultado", body)
-        self.assertIn("tecnico + RETORNO insuficientes", body)
-        self.assertIn("material.status === \"unresolved\"", body)
+    def test_adjustment_is_explicit_and_auditable(self):
+        text=segment("function selectedMaterialAdjustments(", "\nfunction refreshMaterialControls(")
+        self.assertIn("Math.min(requested, available)",text)
+        self.assertIn("missing_quantity: requested - posted",text)
+        self.assertIn("technician_available",text)
+        self.assertIn("return_available",text)
 
-    def test_only_validated_natal_return_balance_is_added(self):
-        body = segment("function selectedMaterialIssues(", "\nfunction refreshMaterialControls(")
-        self.assertIn('state.profile === "natal" && hasReturnStock', body)
-        self.assertIn("Number.isFinite(returnStock)", body)
-        self.assertIn("Number.isSafeInteger(quantity)", body)
+    def test_unqueried_return_and_invalid_code_remain_blocking(self):
+        text=segment("function selectedMaterialIssues(", "\nfunction selectedMaterialAdjustments(")
+        self.assertIn("!hasReturnStock && quantity > technicianStock",text)
+        self.assertIn("RETORNO nao consultado",text)
+        self.assertIn("material.status === \"unresolved\"",text)
+        self.assertIn("Number.isSafeInteger(quantity)",text)
 
-    def test_material_duplicates_are_blocked(self):
-        body = segment("function selectedMaterialIssues(", "\nfunction refreshMaterialControls(")
-        self.assertIn("seen.has(code)", body)
-        self.assertIn("material duplicado", body)
+    def test_duplicate_materials_remain_blocked(self):
+        text=segment("function selectedMaterialIssues(", "\nfunction selectedMaterialAdjustments(")
+        self.assertIn("seen.has(code)",text)
+        self.assertIn("material duplicado",text)
 
-    def test_shortage_disables_confirmation(self):
-        body = segment("function refreshMaterialControls(", "\nfunction updateMaterialStock(")
-        self.assertIn("materialIssues.length > 0", body)
-        self.assertIn("elements.equipmentConfirm.disabled", body)
-        self.assertIn("Baixa bloqueada:", body)
+    def test_visible_preview_shows_posted_requested_and_missing(self):
+        text=segment("function refreshMaterialControls(", "\nfunction updateMaterialStock(")
+        self.assertIn("lancar ${item.posted_quantity}/${item.requested_quantity}",text)
+        self.assertIn("faltam ${item.missing_quantity}",text)
+        self.assertIn("materialIssues.length > 0",text)
 
-    def test_submission_is_cancelled_if_validation_fails(self):
-        body = segment(
-            'elements.equipmentDialog.addEventListener("submit",',
-            '\nelements.equipmentDialog.addEventListener("close",',
-        )
-        self.assertIn("selectedMaterialIssues()", body)
-        self.assertIn("event.preventDefault()", body)
-        self.assertIn("materialError || issues.length", body)
+    def test_submit_still_cancels_real_validation_errors(self):
+        text=segment('elements.equipmentDialog.addEventListener("submit",','\nelements.equipmentDialog.addEventListener("close",')
+        self.assertIn("selectedMaterialIssues()",text)
+        self.assertIn("event.preventDefault()",text)
 
-    def test_preview_no_longer_promises_discard(self):
-        body = segment("function updateMaterialStock(", "\nfunction addMaterialRow(")
-        self.assertIn("Sem saldo (baixa bloqueada)", body)
-        self.assertIn("RETORNO nao consultado (baixa bloqueada)", body)
-        self.assertNotIn("sera descartado da baixa", body)
+    def test_zero_stock_is_marked_omitted_not_falsely_sufficient(self):
+        text=segment("function updateMaterialStock(", "\nfunction addMaterialRow(")
+        self.assertIn("Sem saldo:",text)
+        self.assertIn("nao serao lancadas",text)
+        self.assertIn("RETORNO nao consultado",text)
 
 if __name__ == "__main__":
     unittest.main()
