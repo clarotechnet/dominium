@@ -2,7 +2,7 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-30T14:27:41+00:00
+- Generated: 2026-10-30T14:33:53+00:00
 - Source fingerprint: `89c247f855ed971a`
 - Indexed files: 466
 - Indexed symbols: 4034
