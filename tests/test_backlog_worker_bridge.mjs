@@ -27,7 +27,7 @@ test('private bridge read routes use operational service and authenticated actor
   const response=await worker.fetch(request('GET','/api/backlog/year/status'),envFor(calls));
   assert.equal(response.status,200);
   assert.equal(calls.length,1);
-  assert.equal(calls[0].url,'http://127.0.0.1:8765/api/backlog/year/status');
+  assert.equal(calls[0].url,'http://127.0.0.1:9342/api/backlog/year/status');
   assert.equal(calls[0].auth,'Bearer '+token);
   assert.equal(calls[0].role,'controller');
 });

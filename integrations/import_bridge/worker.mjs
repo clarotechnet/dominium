@@ -74,7 +74,7 @@ export default {
     }
     try {
       const service=(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily) ? env.DESC_SERVICE : env.IMPORT_SERVICE;
-      const origin=(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily) ? 'http://127.0.0.1:8793' : 'http://127.0.0.1:8765';
+      const origin=backlog ? 'http://127.0.0.1:9342' : ((desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily) ? 'http://127.0.0.1:8793' : 'http://127.0.0.1:8765');
       const upstream=await service.fetch(new Request(origin+route,
         {method:request.method,headers,body,redirect:'manual'}));
       if (upstream.status>=300 && upstream.status<400) return (orderClose || operationalWrite || (backlog && request.method==='POST'))

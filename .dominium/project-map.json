@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-30T17:29:17+00:00",
+  "generated_at": "2026-10-30T17:41:09+00:00",
   "schema": 2,
-  "source_fingerprint": "0eee1e1f50770a24e16d7c92ffb72325284c312f1e80b29488028bfb5306fd51",
+  "source_fingerprint": "c17c85ccfa28645d26c98c019d02ab652e8ac9c7ee26436d345c533d017e0260",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -536,6 +536,45 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 9
+    },
+    {
+      "path": "backlog_sidecar.py",
+      "category": "shared",
+      "bytes": 8792,
+      "sha256": "a0c84045844845b353dd6f16eee71fe41b6f7c1b1c6d80430e9b319dab5f940a",
+      "summary": "Independent localhost-only Backlog HTTP service.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "backlog_bridge_auth",
+        "backlog_imperium_service",
+        "http",
+        "imperium_api",
+        "json",
+        "os",
+        "pathlib",
+        "re",
+        "sys",
+        "threading",
+        "types",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/backlog/year/compare",
+        "/api/backlog/year/fora-rota",
+        "/api/backlog/year/pause",
+        "/api/backlog/year/routes",
+        "/api/backlog/year/sent",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status"
+      ],
+      "env_vars": [
+        "DOMINIUM_BACKLOG_BRIDGE_TOKEN",
+        "DOMINIUM_BACKLOG_YEAR_ENABLE"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 3
     },
     {
       "path": "bulk_orders.py",
@@ -1486,8 +1525,8 @@
     {
       "path": "docs/agent/BACKLOG_DESC_LAB_20261030.md",
       "category": "docs",
-      "bytes": 5234,
-      "sha256": "e25453567607dc3cd66a7385e6f4ccbd53f5c33f763379875d350691ee784e29",
+      "bytes": 6328,
+      "sha256": "9ca49ba0ab85db99f8eba00c88952b953aa54e3784479806c384e619b85720c4",
       "summary": "Análise Backlog dentro de DESCONEXÃO — 30/10/2026",
       "imports": [],
       "endpoints": [],
@@ -2803,8 +2842,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 7132,
-      "sha256": "20542b0876620b033d29546e9f45eb9dfcf307e3d01b3571904b3819e7fbb3db",
+      "bytes": 7170,
+      "sha256": "63da03ca8b115dd1c8f8de35d5fa2e696d6e65ad5ff1aad327c4658c1b411a8f",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4746,6 +4785,21 @@
       "symbol_count": 0
     },
     {
+      "path": "scripts/fix_sidecar_test_resources.py",
+      "category": "tooling-deploy",
+      "bytes": 458,
+      "sha256": "f49cdce92794956ef5c753289be8635475bd8eda30399f1575bb04e8ad3bf7de",
+      "summary": "",
+      "imports": [
+        "pathlib"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "scripts/generate_agent_context.py",
       "category": "tooling-deploy",
       "bytes": 15803,
@@ -6480,10 +6534,39 @@
       "symbol_count": 2
     },
     {
+      "path": "tests/test_backlog_sidecar.py",
+      "category": "tests",
+      "bytes": 3904,
+      "sha256": "36e4ffcd6dcb25018d6e5637ab47fa96f468acaec328c09bf5254138d7f324de",
+      "summary": "",
+      "imports": [
+        "backlog_sidecar",
+        "http",
+        "json",
+        "os",
+        "pathlib",
+        "tempfile",
+        "threading",
+        "unittest",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/backlog/year/compare?limit=100",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status",
+        "/api/backlog/year/unknown",
+        "/api/orders/123/close"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 19
+    },
+    {
       "path": "tests/test_backlog_worker_bridge.mjs",
       "category": "tests",
       "bytes": 2256,
-      "sha256": "814b8ca191604cf5a37cd7c2d0494506cf63cc3ffca8bf6f32dc1846ad2c2193",
+      "sha256": "1f99e2194fc7bfd7b80aebb0ee58bdddf05812b4315f407c377d320dcf010432",
       "summary": "",
       "imports": [],
       "endpoints": [

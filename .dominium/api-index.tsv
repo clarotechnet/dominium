@@ -101,6 +101,13 @@ endpoint	path
 /api/backlog/year/sent	backlog_bridge_auth.py
 /api/backlog/year/start	backlog_bridge_auth.py
 /api/backlog/year/status	backlog_bridge_auth.py
+/api/backlog/year/compare	backlog_sidecar.py
+/api/backlog/year/fora-rota	backlog_sidecar.py
+/api/backlog/year/pause	backlog_sidecar.py
+/api/backlog/year/routes	backlog_sidecar.py
+/api/backlog/year/sent	backlog_sidecar.py
+/api/backlog/year/start	backlog_sidecar.py
+/api/backlog/year/status	backlog_sidecar.py
 /api/atlas-query/	deploy/hostinger-web/atlas-query-policy.js
 /api/atlas-query/jobs	deploy/hostinger-web/atlas-query-policy.js
 /api/confront/	deploy/hostinger-web/confront-policy.js
@@ -365,6 +372,11 @@ endpoint	path
 /api/backlog/year/start?x=1	tests/test_backlog_private_bridge.js
 /api/backlog/year/status	tests/test_backlog_private_bridge.js
 /api/backlog/year/status?unexpected=yes	tests/test_backlog_private_bridge.js
+/api/backlog/year/compare?limit=100	tests/test_backlog_sidecar.py
+/api/backlog/year/start	tests/test_backlog_sidecar.py
+/api/backlog/year/status	tests/test_backlog_sidecar.py
+/api/backlog/year/unknown	tests/test_backlog_sidecar.py
+/api/orders/123/close	tests/test_backlog_sidecar.py
 /api/backlog/year/delete	tests/test_backlog_worker_bridge.mjs
 /api/backlog/year/start	tests/test_backlog_worker_bridge.mjs
 /api/backlog/year/status	tests/test_backlog_worker_bridge.mjs

@@ -39,4 +39,11 @@ Branch de desenvolvimento baseada no `origin/main` atual `5dc1403` — sem alter
 - Hostinger e Worker: allowlist de GET status/compare/fora-rota/sent e POST start/pause/routes/sent, com limites e cargo admin/controller. Nenhuma nova rota autoriza baixar OS.
 - Backend: helper backlog_bridge_auth exige DOMINIUM_BACKLOG_BRIDGE_TOKEN forte, cliente loopback, ator identificado e cargo operacional. Sem token, retorna negado.
 - 20 testes Python + 41 Node passaram, com validacao de sintaxe e release ZIP. D1 legado nao foi migrado; SQLite isolado e a fonte do laboratorio.
-- Bloqueador de deploy: backend operacional no servidor tem diferencas em relacao ao main; exige reconciliacao, backup e configuracao privada da credencial. Nao publicar antes de teste HTTP fim a fim. A carga anual segue desabilitada por padrao.
+- Bloqueador de deploy: backend operacional no servidor tem diferencas em relacao ao main; exige reconciliacao, backup e configuracao privada da credencial. Nao publicar antes de teste HTTP fim a fim. A carga anual segue desabilitada por padrao.## API independente no servidor — laboratorio
+- Novo backend autonomo backlog_sidecar.py, escutando somente 127.0.0.1:9342, sem substituir app.py antigo. Codigo copiado para C:\DominiumRuntime\BacklogLab-20261030\app, base SQLite sob data.
+- Usa token forte existente do Relay DESC por arquivo local de acesso restrito, sem copiar credenciais ao GitHub e sem expor o token no navegador.
+- Worker VPC agora encaminha apenas endpoints do Backlog a 127.0.0.1:9342; os caminhos existentes 8765 e 8793 continuam os mesmos.
+- Teste HTTP direto ao servidor validou 401 anonimo/viewer, 200 GET status, 423 carga anual bloqueada, 200 importacao CSV ficticia e comparacao, 202 inicio piloto DataSnap.
+- Piloto DataSnap real terminou completed com 3 codigos confirmados, 0 itens no historico persistente e nenhum checkpoint alterado.
+- 25 testes Python e 27 testes Node passaram nessa etapa; daemon da porta 9342 iniciou em laboratorio.
+- Ainda NAO foi feito deploy do Worker/Hostinger, nem teste autenticado pela internet. A fonte Supabase continua opcional; o D1 antigo nao participa desta integracao.
