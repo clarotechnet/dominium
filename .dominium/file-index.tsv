@@ -148,6 +148,9 @@ shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be
 shared	integrations/import_bridge/worker.mjs	3	4			b03286f2c4ca6000
 shared	integrations/import_bridge/worker.test.mjs		4			0d702314872586ba
 shared	integrations/import_bridge/worker_create.test.mjs					5f31d81dbeac6a12
+shared	integrations/managed_atlas_toa/claro-login-submit.js	4				cced9c141f48f623
+shared	integrations/managed_atlas_toa/README.md				Login Claro — extensão gerenciada Atlas/TOA	627beb06b01e03d8
+shared	integrations/managed_atlas_toa/test-claro-login.cjs	2				77c8fa75715df5dd
 toa	integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json					4313d055b4300572
 shared	integrations/n8n/payload-example.json					0c015c7d1052fb63
 shared	integrations/n8n/README.md				Ponte n8n → DOMINIUM	6f3edf663dec3c6b
@@ -170,7 +173,7 @@ shared	integrations/serial_consult/midas_reader.py	2			Bounded read-only decoder
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
 shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
 shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only serial consultation: real DataSnap history + local evidence.	d9f51c614747ed37
-shared	integrations/serial_consult/stock_analysis_http.py	17	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	f51aeb5c6d526a51
+shared	integrations/serial_consult/stock_analysis_http.py	17	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	f33d75b28a164e81
 shared	integrations/serial_consult/stock_report_enrichment.py	3			Bounded read-only DataSnap enrichment for stock XLSX reports.	dff77b77c7f8eec5
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/background.js	8			background.js — TOA TechNet Bridge	2f4ba9edd9ab3334
 shared	integrations/toa_cloud_bridge/extension-central-2.6.3/content-atlas-main.js	76				b8274ffc7dfb2fbb
@@ -267,7 +270,7 @@ frontend	static/disconnection.js	37	10			0bd6d973955a71c6
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			6e23fc435749cea2
+frontend	static/index.html		1			b8afefe485c914db
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
@@ -275,7 +278,7 @@ frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b
 frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */	fd462fc168e71c03
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
-frontend	static/stock-analysis-ui.js	12	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	997f20bda8f57df9
+frontend	static/stock-analysis-ui.js	12	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	060cac705aa947d8
 frontend	static/stock-nav.js	6			Navegacao consolidada de Estoque (mantem os modulos existentes). */	1cd96c23d87bb70a
 frontend	static/styles.css					5f7bda5e579ca38a
 frontend	static/theme-init.js					97eb92ef899f8dcf
@@ -392,7 +395,7 @@ tests	tests/test_serial_consult.py	3				3bb13e50693f977d
 tests	tests/test_serial_datasnap_history.py	9	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	36414aaf670dbe68
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_analysis_proxy.cjs	2	5			6825594ffa79cba8
-tests	tests/test_stock_analysis_reports.py	8	5		Tests for safe, cached, actor-scoped stock analysis report generation.	6e1e4b03f757c6d3
+tests	tests/test_stock_analysis_reports.py	9	7		Tests for safe, cached, actor-scoped stock analysis report generation.	572a21c77d86e3a6
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
 tests	tests/test_stock_quality_bridge.mjs		2			3022814e71dead90

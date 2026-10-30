@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-29T21:05:22+00:00",
+  "generated_at": "2026-10-30T12:18:15+00:00",
   "schema": 2,
-  "source_fingerprint": "5683002877d9a41d7d4a2bd55f1ad9a5e754c78e8b8554985c6a28b969d12bd3",
+  "source_fingerprint": "f8cc640b43166d7c09cdabaf4d930b0b2ed1448f5281b68a1478462366c0f37f",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -2733,6 +2733,45 @@
       "symbol_count": 0
     },
     {
+      "path": "integrations/managed_atlas_toa/claro-login-submit.js",
+      "category": "shared",
+      "bytes": 2410,
+      "sha256": "cced9c141f48f623812a02b33ee88c4c0f609c5029057af1aa20ebc23069e827",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
+      "path": "integrations/managed_atlas_toa/README.md",
+      "category": "shared",
+      "bytes": 3170,
+      "sha256": "627beb06b01e03d80816cc15cc7120c1f0fce58bd4c23ff5ddb0dcc1b7dff80a",
+      "summary": "Login Claro — extensão gerenciada Atlas/TOA",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/managed_atlas_toa/test-claro-login.cjs",
+      "category": "shared",
+      "bytes": 2111,
+      "sha256": "77c8fa75715df5dd2c6137ab8c9fcdb8778687ad2e2636f591eeca4f4765b272",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
       "path": "integrations/n8n/DOMINIUM_Ponte_Datalake_TOA.json",
       "category": "toa",
       "bytes": 3691,
@@ -3213,8 +3252,8 @@
     {
       "path": "integrations/serial_consult/stock_analysis_http.py",
       "category": "shared",
-      "bytes": 22707,
-      "sha256": "f51aeb5c6d526a5176b3988476e008329abc0b76652b4cbb84edd1cead7f27ce",
+      "bytes": 22794,
+      "sha256": "f33d75b28a164e81a75f04ec98fe871176cca08720d71d96716dab11bf1418db",
       "summary": "Audited, read-only stock reports from a previously validated Atlas QUERY.",
       "imports": [
         "__future__",
@@ -4988,7 +5027,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 141930,
-      "sha256": "6e23fc435749cea2e1a0f0ce75cb9956fcfe9816648dc092aab87dd6900d742d",
+      "sha256": "b8afefe485c914dbba906f1fff63feb8f8937461ba4e01d6e00ee1bbfd4ad8d5",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5095,8 +5134,8 @@
     {
       "path": "static/stock-analysis-ui.js",
       "category": "frontend",
-      "bytes": 7106,
-      "sha256": "997f20bda8f57df99ba454155bdf2a9c3bd524eee33d9b008fa3554aa55384b8",
+      "bytes": 7090,
+      "sha256": "060cac705aa947d8af99cbc1548de712e6e454a16696c4a3125da6ca7a49fd64",
       "summary": "Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */",
       "imports": [],
       "endpoints": [
@@ -7401,8 +7440,8 @@
     {
       "path": "tests/test_stock_analysis_reports.py",
       "category": "tests",
-      "bytes": 5287,
-      "sha256": "6e1e4b03f757c6d3b939e8c7ee1cd7904687ce0e59fd16bb4d99fccc53efa5b9",
+      "bytes": 6513,
+      "sha256": "572a21c77d86e3a6712ebfd5f619c000e5c63fbc4d644b5ab09f6685a91c0a8b",
       "summary": "Tests for safe, cached, actor-scoped stock analysis report generation.",
       "imports": [
         "io",
@@ -7418,7 +7457,9 @@
       ],
       "endpoints": [
         "/api/stock/analyses/available?city=all",
+        "/api/stock/analyses/available?city=mossoro",
         "/api/stock/analyses/available?city=natal",
+        "/api/stock/analyses/available?city=recife",
         "/api/stock/analyses/jobs",
         "/api/stock/analyses/jobs/",
         "/api/stock/analyses/jobs/f"
@@ -7426,7 +7467,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 8
+      "symbol_count": 9
     },
     {
       "path": "tests/test_stock_inventory.py",

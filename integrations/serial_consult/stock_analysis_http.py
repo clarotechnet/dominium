@@ -293,8 +293,10 @@ class StockAnalysisService:
         try:
             rows=con.execute("""SELECT q.id,q.city,q.created_at,
                 (SELECT count(*) FROM query_rows r WHERE r.job_id=q.id) AS total_rows
-                FROM query_jobs q WHERE q.city=? AND q.created_by=? AND q.state='ready'
-                ORDER BY q.created_at DESC LIMIT 12""",(city,actor)).fetchall()
+                FROM query_jobs q
+                WHERE q.city=? AND q.location='empreiteira' AND q.state='ready'
+                  AND EXISTS (SELECT 1 FROM query_rows r WHERE r.job_id=q.id)
+                ORDER BY q.created_at DESC LIMIT 1""",(city,)).fetchall()
             return next((dict(r) for r in rows if r["total_rows"]>0),None)
         finally:con.close()
 
@@ -321,7 +323,7 @@ class StockAnalysisService:
                     return 400,{"ok":False,"error":"Selecione uma praca e tipo valido"},None
                 latest=self.latest(actor,body["city"])
                 if not latest:
-                    return 409,{"ok":False,"error":"Nenhuma QUERY concluida e validada para esta praca e operador. Gere/recupere no Atlas Query."},None
+                    return 409,{"ok":False,"error":"Nenhuma QUERY concluida e validada para esta praca. Gere/recupere no Atlas Query."},None
                 with self._lock:
                     with self._connect() as con:
                         prior=con.execute("""SELECT * FROM jobs WHERE actor=? AND city=? AND kind=? AND query_id=?

@@ -95,7 +95,7 @@
       byId("stockReportsSource").textContent=q
         ? "QUERY validada: "+new Date(q.created_at*1000).toLocaleString("pt-BR")
           +" • "+q.total_rows.toLocaleString("pt-BR")+" registros • "+state.profile.toUpperCase()
-        : "Nao ha QUERY Atlas concluida para este operador e esta operacao. Gere a QUERY na area Atlas Query.";
+        : "Nao ha QUERY Atlas concluida para esta operacao. Gere a QUERY na area Atlas Query.";
       if(!q)message("Nenhuma QUERY validada. Nao sera gerada outra automaticamente.");
       const select=byId("stockReportsHistory");
       const opts=document.createDocumentFragment();

@@ -421,7 +421,9 @@ endpoint	path
 /api/stock/analyses/jobs/	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/jobs/123	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/available?city=all	tests/test_stock_analysis_reports.py
+/api/stock/analyses/available?city=mossoro	tests/test_stock_analysis_reports.py
 /api/stock/analyses/available?city=natal	tests/test_stock_analysis_reports.py
+/api/stock/analyses/available?city=recife	tests/test_stock_analysis_reports.py
 /api/stock/analyses/jobs	tests/test_stock_analysis_reports.py
 /api/stock/analyses/jobs/	tests/test_stock_analysis_reports.py
 /api/stock/analyses/jobs/f	tests/test_stock_analysis_reports.py
