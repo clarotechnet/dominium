@@ -11265,8 +11265,52 @@ function equipmentValues(kind) {
   }));
 }
 
+function selectedMaterialIssues(rows = [...elements.materialRows.querySelectorAll(".material-row")]) {
+  const issues = [];
+  const seen = new Set();
+  for (const row of rows) {
+    const code = row.querySelector(".material-code").value;
+    const quantity = Number(row.querySelector(".material-quantity").value || 0);
+    const material = state.materialInventory.find((item) => item.code === code);
+    if (!code || !material || material.status === "unresolved") {
+      issues.push(`Material ${code || "(sem codigo)"} nao localizado; revise antes da baixa`);
+      continue;
+    }
+    if (!Number.isSafeInteger(quantity) || quantity <= 0) {
+      issues.push(`${code}: quantidade invalida`);
+      continue;
+    }
+    if (seen.has(code)) {
+      issues.push(`${code}: material duplicado`);
+      continue;
+    }
+    seen.add(code);
+    const technicianStock = Number(material.stock_quantity || 0);
+    const hasReturnStock = material.return_stock_quantity !== undefined
+      && material.return_stock_quantity !== null;
+    const returnStock = hasReturnStock ? Number(material.return_stock_quantity) : 0;
+    if (!Number.isFinite(technicianStock) || technicianStock < 0
+      || !Number.isFinite(returnStock) || returnStock < 0) {
+      issues.push(`${code}: saldo invalido no Imperium`);
+      continue;
+    }
+    const available = technicianStock + (
+      state.profile === "natal" && hasReturnStock ? returnStock : 0
+    );
+    if (quantity > available) {
+      const missing = quantity - available;
+      const reason = state.profile !== "natal"
+        ? "RETORNO nao habilitado nesta base"
+        : hasReturnStock ? "tecnico + RETORNO insuficientes" : "RETORNO nao consultado";
+      issues.push(`${code}: faltam ${missing} unidade(s); ${reason}`);
+    }
+  }
+  return issues;
+}
+
 function refreshMaterialControls() {
   const rows = [...elements.materialRows.querySelectorAll(".material-row")];
+  const materialIssues = selectedMaterialIssues(rows);
   elements.addMaterial.disabled = state.materialLoading
     || state.materialPasteLoading
     || Boolean(state.materialError)
@@ -11278,6 +11322,8 @@ function refreshMaterialControls() {
     elements.materialStatus.textContent = "Correlacionando colagem TOA";
   } else if (state.materialError) {
     elements.materialStatus.textContent = state.materialError;
+  } else if (materialIssues.length) {
+    elements.materialStatus.textContent = `Baixa bloqueada: ${materialIssues.join("; ")}`;
   } else if (state.materialNotice) {
     elements.materialStatus.textContent = state.materialNotice;
   } else {
@@ -11310,7 +11356,9 @@ function refreshMaterialControls() {
     && !state.materialEquivalenceConfirmed;
   const materialsVisible = !elements.materialSection.classList.contains("hidden");
   elements.equipmentConfirm.disabled = materialsVisible
-    && (state.materialPasteLoading || hasUnconfirmedEquivalence);
+    && (state.materialLoading || state.materialPasteLoading || Boolean(state.materialError)
+      || hasUnconfirmedEquivalence || materialIssues.length > 0);
+  elements.equipmentConfirm.title = materialIssues[0] || "";
 }
 
 function updateMaterialStock(row) {
@@ -11332,7 +11380,7 @@ function updateMaterialStock(row) {
   ));
   stock.replaceChildren();
   if (material?.status === "unresolved") {
-    stock.textContent = "Nao localizado (sera ignorado)";
+    stock.textContent = "Nao localizado (baixa bloqueada)";
   } else if (!material) {
     stock.textContent = "Selecione o material";
   } else {
@@ -11357,8 +11405,12 @@ function updateMaterialStock(row) {
       detail.className = `material-stock-detail ${insufficient ? "blocked" : "covered"}`;
       detail.textContent = insufficient
         ? (totalAvailable <= 0
-            ? "Sem saldo (sera descartado da baixa)"
-            : `RETORNO complementa ${returnStock} (faltam ${Math.max(0, quantity - totalAvailable)})`)
+            ? "Sem saldo (baixa bloqueada)"
+            : state.profile !== "natal"
+              ? `Saldo do tecnico insuficiente (faltam ${Math.max(0, quantity - technicianStock)})`
+              : !hasReturnStock
+                ? "RETORNO nao consultado (baixa bloqueada)"
+                : `RETORNO ${returnStock} (faltam ${Math.max(0, quantity - totalAvailable)}); baixa bloqueada`)
         : `RETORNO complementa ${shortage}`;
       stock.append(detail);
     }
@@ -11430,22 +11482,17 @@ function addMaterialRow(initial = {}) {
 }
 
 function materialValues() {
+  // The TOA quantity is authoritative. Never truncate or discard a material.
+  const issues = selectedMaterialIssues();
+  if (issues.length) throw new Error(`Baixa bloqueada: ${issues.join("; ")}`);
   return [...elements.materialRows.querySelectorAll(".material-row")].map((row) => {
     const code = row.querySelector(".material-code").value;
     const material = state.materialInventory.find((item) => item.code === code);
-    if (!material || !code) return null;
-    const quantity = Number(row.querySelector(".material-quantity").value || 0);
-    if (quantity <= 0) return null;
-    const techStock = Number(material.stock_quantity || 0);
-    const retStock = Number(material.return_stock_quantity || 0);
-    const totalAvail = techStock + retStock;
-    // Se o item nao tem saldo nem no tecnico nem no retorno, descarta automaticamente da baixa
-    if (totalAvail <= 0) return null;
-    const finalQty = Math.min(quantity, totalAvail);
+    const quantity = Number(row.querySelector(".material-quantity").value);
     return {
       code,
       description: material.lookup_description || material.name || "",
-      quantity: finalQty,
+      quantity,
       source_codes: material.source_codes || [code],
       match_type: material.match_type || "exact",
       requires_confirmation: Boolean(material.requires_confirmation),
@@ -11453,7 +11500,7 @@ function materialValues() {
         !material.requires_confirmation || state.materialEquivalenceConfirmed
       ),
     };
-  }).filter(Boolean);
+  });
 }
 
 function expectedEquipmentType(service) {
@@ -13057,6 +13104,21 @@ elements.processMaterialPaste.addEventListener("click", processMaterialPaste);
 elements.materialEquivalenceConfirm.addEventListener("change", () => {
   state.materialEquivalenceConfirmed = elements.materialEquivalenceConfirm.checked;
   refreshMaterialControls();
+});
+elements.equipmentDialog.addEventListener("submit", (event) => {
+  if (event.submitter?.value !== "confirm") return;
+  const pending = state.pendingProductive;
+  if (!pending || !closeCodeAllowsMaterials(pending.code)
+    || !["install", "swap"].includes(elements.movement.value)) return;
+  const issues = selectedMaterialIssues();
+  if (state.materialLoading || state.materialPasteLoading
+    || state.materialError || issues.length) {
+    event.preventDefault();
+    showToast(issues.length
+      ? `Baixa bloqueada: ${issues.join("; ")}`
+      : "Aguarde a validacao completa do estoque antes de confirmar a baixa", "error");
+    refreshMaterialControls();
+  }
 });
 elements.equipmentDialog.addEventListener("close", () => {
   const pending = state.pendingProductive;
