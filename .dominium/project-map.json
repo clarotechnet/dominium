@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-30T13:36:32+00:00",
+  "generated_at": "2026-10-30T15:54:15+00:00",
   "schema": 2,
-  "source_fingerprint": "1462949b984aadcc23be929af4bfc453fdbffea53fe731b77baf4db9affcd3f3",
+  "source_fingerprint": "d126d7053c83abd09c479a7e2916407db04def94a320c3a074d79c23c67c82ac",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -919,8 +919,8 @@
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 3338,
-      "sha256": "1a4bbbe19948571e4c480aa55616d15a77dafd485464c778ccb7545f6c89f00a",
+      "bytes": 3455,
+      "sha256": "e22710f451a7083d37578f276885243884ba7e42687aa0f88ed03ed2a27bd9d3",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -988,8 +988,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 43735,
-      "sha256": "8d8cfe377af7ab7412647d7781915ccba17e8db780fa09d3f344a9b6765b57b3",
+      "bytes": 43812,
+      "sha256": "b334685c776072515b109352febdab7952308dec1f08cd139785e0d0bd0b31a4",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1017,6 +1017,7 @@
         "/api/profiles",
         "/api/status",
         "/api/stock/analyses/",
+        "/api/stock/analyses/daily/import",
         "/api/stock/batch",
         "/api/stock/daily",
         "/api/stock/quality-control",
@@ -1042,11 +1043,12 @@
     {
       "path": "deploy/hostinger-web/stock-analysis-policy.js",
       "category": "tooling-deploy",
-      "bytes": 762,
-      "sha256": "89b408296b439bf899c517117692c3a65cbd188afb1af946645526da0340172e",
+      "bytes": 1198,
+      "sha256": "e67e015eb4cf80827c5b2a1cbce5f307ca26a1b8f35c96be55722658ed890a95",
       "summary": "",
       "imports": [],
       "endpoints": [
+        "/api/stock/analyses/daily/import",
         "/api/stock/analyses/jobs"
       ],
       "env_vars": [],
@@ -2763,14 +2765,15 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 6561,
-      "sha256": "b03286f2c4ca600028fd30021f843f6bb26e2843dbb3507a2158f8f54873efd0",
+      "bytes": 6661,
+      "sha256": "6c29ee0496d4527511d9db8b240bfbce4aba9f0b4a4fb5fa97cab72b6c18f40c",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/disconnection/",
         "/api/orders/bulk-create",
         "/api/serials/consult",
+        "/api/stock/analyses/daily/import",
         "/api/toa-agenda/import"
       ],
       "env_vars": [],
@@ -3215,8 +3218,8 @@
     {
       "path": "integrations/serial_consult/desc_review_relay.py",
       "category": "shared",
-      "bytes": 12444,
-      "sha256": "54e7b71da84500d48d25f1af1ba1faa154ec6eb4e1904453148ce979e7cfbf1f",
+      "bytes": 12638,
+      "sha256": "5a42732796f2450fa54b2c35481fca15edc9dc1ebf82090d462c5d901edc9816",
       "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
       "imports": [
         "__future__",
@@ -3240,7 +3243,8 @@
         "urllib"
       ],
       "endpoints": [
-        "/api/monitor/snapshot"
+        "/api/monitor/snapshot",
+        "/api/stock/analyses/daily/import"
       ],
       "env_vars": [
         "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
@@ -3248,6 +3252,39 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 8
+    },
+    {
+      "path": "integrations/serial_consult/equipment_daily_catalog.py",
+      "category": "shared",
+      "bytes": 14408,
+      "sha256": "ee8057fcdb851041eef3da225a339b9c20e600863876b0b2658e59adb5fc95d9",
+      "summary": "Persisted daily equipment-analysis workbook, independent of the Atlas QUERY.",
+      "imports": [
+        "__future__",
+        "base64",
+        "binascii",
+        "contextlib",
+        "datetime",
+        "hashlib",
+        "io",
+        "json",
+        "pathlib",
+        "re",
+        "sqlite3",
+        "urllib",
+        "uuid",
+        "xml",
+        "zipfile"
+      ],
+      "endpoints": [
+        "/api/stock/analyses/daily",
+        "/api/stock/analyses/daily/(",
+        "/api/stock/analyses/daily/import"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 9
     },
     {
       "path": "integrations/serial_consult/midas_reader.py",
@@ -3306,6 +3343,27 @@
       "symbol_count": 0
     },
     {
+      "path": "integrations/serial_consult/report_sheet_preview.py",
+      "category": "shared",
+      "bytes": 3673,
+      "sha256": "59f0d19563f302983f93524a9fb45ab7a2122cfc96b7e1cd2c0ccb3dc793b056",
+      "summary": "SQLite materialized, paged views of completed stock-analysis XLSX reports.",
+      "imports": [
+        "__future__",
+        "contextlib",
+        "json",
+        "pathlib",
+        "sqlite3",
+        "xml",
+        "zipfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "integrations/serial_consult/serial_datasnap.py",
       "category": "shared",
       "bytes": 4824,
@@ -3355,19 +3413,21 @@
     {
       "path": "integrations/serial_consult/stock_analysis_http.py",
       "category": "shared",
-      "bytes": 22891,
-      "sha256": "aeb574bba61d3d0a18cefe4471aebcc5b44ca498a034564b1215718d5cff82a6",
+      "bytes": 25842,
+      "sha256": "8c7e074c7cc06407aa71de0d160b0ab6eb3d5ae769a0c131aac11fb2d1dfd68b",
       "summary": "Audited, read-only stock reports from a previously validated Atlas QUERY.",
       "imports": [
         "__future__",
         "collections",
         "contextlib",
         "datetime",
+        "equipment_daily_catalog",
         "io",
         "json",
         "logging",
         "pathlib",
         "re",
+        "report_sheet_preview",
         "sqlite3",
         "stock_report_enrichment",
         "threading",
@@ -3386,7 +3446,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 17
+      "symbol_count": 18
     },
     {
       "path": "integrations/serial_consult/stock_report_enrichment.py",
@@ -5243,8 +5303,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 148050,
-      "sha256": "1b568a27aba45f0630d167ec4ec2797b2dddd465c8821cf00fed1dc4743c3985",
+      "bytes": 152964,
+      "sha256": "be6ce66e94639419fc3d7cf11bb2cf1d283dc5cdc5c4d48a61a1e8f56d1b6332",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5351,8 +5411,8 @@
     {
       "path": "static/stock-analysis-ui.js",
       "category": "frontend",
-      "bytes": 7512,
-      "sha256": "ccd36b711ebfdeb21fa65c4a53daca87d1dcce528775b2db23bf8c077819d769",
+      "bytes": 9715,
+      "sha256": "2217d26e2cfc214015855361e8461128af2d67ad7a0ad9fcb722f99384fcab8b",
       "summary": "Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */",
       "imports": [],
       "endpoints": [
@@ -5363,7 +5423,24 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 12
+      "symbol_count": 13
+    },
+    {
+      "path": "static/stock-daily-analysis-ui.js",
+      "category": "frontend",
+      "bytes": 8339,
+      "sha256": "ce5a90aca5ea44e613b8f944d5ad2292901f3ef92ea429c458537efba1c2e230",
+      "summary": "Daily equipment: independent period/catalog; Atlas QUERY is not its source. */",
+      "imports": [],
+      "endpoints": [
+        "/api/stock/analyses/daily/",
+        "/api/stock/analyses/daily/import",
+        "/api/stock/analyses/daily?city="
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 10
     },
     {
       "path": "static/stock-nav.js",
@@ -5379,10 +5456,26 @@
       "symbol_count": 6
     },
     {
+      "path": "static/stock-report-preview-ui.js",
+      "category": "frontend",
+      "bytes": 4651,
+      "sha256": "2939b473e78d754d908b27d4423cd1f424af7b0b41556f87aa5036c19d832d31",
+      "summary": "The three stock analysis processes have independent, paged workspace views. */",
+      "imports": [],
+      "endpoints": [
+        "/api/stock/analyses/jobs",
+        "/api/stock/analyses/jobs/"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 223542,
-      "sha256": "5f7bda5e579ca38abaf5973b83f4204f3f7209ae9825b865ef0f81ee5231c670",
+      "bytes": 225176,
+      "sha256": "a7ac1c9c026ee8ee905fa4a9c3fc2d1e96af6ab4ae5eaff375c3bfbcb7300543",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6627,6 +6720,38 @@
       "symbol_count": 4
     },
     {
+      "path": "tests/test_equipment_daily_catalog.py",
+      "category": "tests",
+      "bytes": 3595,
+      "sha256": "cfa68f07b606fe6b76dd5e6029e15ec8760ce8750c52047699d9584b4eff693b",
+      "summary": "Daily equipment workbooks are by date and city, never the Atlas QUERY.",
+      "imports": [
+        "base64",
+        "equipment_daily_catalog",
+        "pathlib",
+        "stock_analysis_http",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/stock/analyses/daily/import",
+        "/api/stock/analyses/daily/{run}/export",
+        "/api/stock/analyses/daily/{run}/sheets/2",
+        "/api/stock/analyses/daily?city=all",
+        "/api/stock/analyses/daily?city=all&start=2026-10-28&end=2026-10-29",
+        "/api/stock/analyses/daily?city=all&start=2026-10-29&end=2026-10-28",
+        "/api/stock/analyses/daily?city=natal",
+        "/api/stock/analyses/daily?city=natal&date=2026-15-40",
+        "/api/stock/analyses/daily?city=recife",
+        "/api/stock/analyses/jobs"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 6
+    },
+    {
       "path": "tests/test_equipment_group_matching.py",
       "category": "tests",
       "bytes": 35976,
@@ -7704,13 +7829,18 @@
     {
       "path": "tests/test_stock_analysis_proxy.cjs",
       "category": "tests",
-      "bytes": 2202,
-      "sha256": "6825594ffa79cba807200b9b0565dd47a68f4365b3dd472efe581d132682a6bd",
+      "bytes": 3539,
+      "sha256": "e2efb9fdbb96ae282055f2ee0d405215eb0bb3c336097efcec8c4950251cbe93",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/stock/analyses/available?city=all",
         "/api/stock/analyses/available?city=natal",
+        "/api/stock/analyses/daily/import",
+        "/api/stock/analyses/daily?city=all",
+        "/api/stock/analyses/daily?city=natal",
+        "/api/stock/analyses/daily?city=natal&date=2026-10-29",
+        "/api/stock/analyses/daily?city=natal&start=2026-10-28&end=2026-10-29",
         "/api/stock/analyses/jobs",
         "/api/stock/analyses/jobs/",
         "/api/stock/analyses/jobs/123"
@@ -7718,13 +7848,13 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 2
+      "symbol_count": 3
     },
     {
       "path": "tests/test_stock_analysis_reports.py",
       "category": "tests",
-      "bytes": 7347,
-      "sha256": "55bb78af4f62a70f7e0f642cd3789d00733d10669cbcc6dd6af95c8d928022c0",
+      "bytes": 9318,
+      "sha256": "81edf96228f8fb8c1fd342ab0e1acc31f02a5fa1b94cf6347c9d32dac7fd1111",
       "summary": "Tests for safe, cached, actor-scoped stock analysis report generation.",
       "imports": [
         "io",
@@ -7751,7 +7881,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 10
+      "symbol_count": 12
     },
     {
       "path": "tests/test_stock_inventory.py",

@@ -6,7 +6,7 @@
   <title>DOMINIUM</title>
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="/styles.css?v=20261029-analysis-1">
+  <link rel="stylesheet" href="/styles.css?v=20261030-subtabs-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
 </head>
@@ -1038,26 +1038,81 @@
         <header class="workspace-heading">
           <div><p class="section-label">ATLAS + IMPERIUM</p>
             <h2>Analises e Relatorios do Estoque</h2>
-            <p class="workspace-description">Usa a ultima QUERY concluida e validada da operacao. Nao cria fila nova nem altera equipamentos.</p>
+            <p class="workspace-description">Três processos independentes: QUERY tratada; análise diária do Imperium; análise de suspeitos baseada na QUERY.</p>
           </div>
           <button class="button secondary" id="stockReportsRefresh" type="button">Atualizar</button>
         </header>
         <p class="stock-analysis-source" id="stockReportsSource">Selecione esta aba para consultar a ultima QUERY valida.</p>
-        <div class="stock-analysis-cards">
-          <article><h3>1. QUERY tratada</h3><p>Materiais, seriais e codigo SAP sem zeros. Replica o tratamento do Excel.</p>
-            <button class="button primary" type="button" data-stock-report="query">Gerar QUERY tratada</button></article>
-          <article><h3>2. Analise de equipamentos</h3><p>Abas Atlas, Chips, Imperium, Assinantes e Nomes. A consulta Equipamentos Utilizados sera sinalizada como pendente ate sua integracao.</p>
-            <button class="button primary" type="button" data-stock-report="equipamentos">Gerar analise de equipamentos</button></article>
-          <article><h3>3. Analise de suspeitos</h3><p>Filtra SUSPEITO e ANALISE DE INVENTARIO; sem prova de rastreabilidade ou baixa, permanece pendente de conferencia.</p>
-            <button class="button primary" type="button" data-stock-report="suspeitos">Gerar analise de suspeitos</button></article>
+        <div class="stock-analysis-subtabbar" role="tablist" aria-label="Processos de analise do estoque">
+          <button type="button" class="button active" data-stock-analysis-tab="query" role="tab" aria-selected="true">1. QUERY tratada</button>
+          <button type="button" class="button secondary" data-stock-analysis-tab="equipamentos" role="tab" aria-selected="false">2. Análise de equipamentos</button>
+          <button type="button" class="button secondary" data-stock-analysis-tab="suspeitos" role="tab" aria-selected="false">3. Análise de suspeitos</button>
         </div>
-        <p class="stock-analysis-warning">Os relatorios 2 e 3 exibem fontes e pendencias. Historico de movimentacao nao comprova posse atual nem estoque fisico.</p>
-        <div class="daily-stock-toolbar">
-          <label class="field"><span>Execucoes anteriores</span><select id="stockReportsHistory"><option value="">Nenhum relatorio registrado</option></select></label>
-          <button class="button secondary" type="button" id="stockReportsDownload" hidden disabled>Baixar XLSX concluido</button>
-        </div>
-        <p id="stockReportsProgress" class="stock-analysis-status" role="status"></p>
-        <p id="stockReportsNotice" class="stock-analysis-status" role="status" aria-live="polite"></p>
+        <section id="stockQueryWorkspace" data-stock-analysis-workspace="query" class="stock-analysis-workspace" role="tabpanel">
+          <div class="stock-analysis-toolbar">
+            <div><h3>QUERY tratada</h3><p>Exibe exclusivamente os locais DMV DINIZ ME e DMV DINIZ EIRELI, com codigo SAP tratado. Fonte: ultima QUERY validada.</p></div>
+            <button class="button primary" type="button" data-stock-report="query">Atualizar tratamento</button>
+            <button class="button secondary" type="button" id="stockQueryLastDownload" hidden>Baixar última QUERY tratada</button>
+          </div>
+          <p id="stockQueryLastResult" class="stock-analysis-status">Aguardando consulta</p>
+          <div id="stockQueryPreview" class="stock-analysis-preview">
+            <div class="table-scroll"><table id="stockQueryPreviewTable" class="daily-stock-table"></table></div>
+            <div class="stock-analysis-pagination">
+              <button class="button secondary" type="button" id="stockQueryPrev">Anterior</button>
+              <span id="stockQueryPageInfo">—</span>
+              <button class="button secondary" type="button" id="stockQueryNext">Próxima</button>
+            </div>
+          </div>
+        </section>
+        <section id="stockEquipmentWorkspace" data-stock-analysis-workspace="equipamentos" class="stock-analysis-workspace" role="tabpanel" hidden>
+          <div class="stock-analysis-toolbar">
+            <div><h3>Análise diária de equipamentos</h3><p>Seis abas internas: Atlas, Chips Atlas, IMPERIUM, CHIP IMPERIUM, Assinantes e Nomes.</p></div>
+            <button class="button secondary" type="button" id="stockDailyAnalysisOpen">Consultar período</button>
+          </div>
+        <section id="stockDailyAnalysisPanel" hidden class="stock-daily-analysis-panel">
+          <h3>Analise diaria de equipamentos</h3>
+          <p class="workspace-description">A fonte diaria e o Imperium, nao a QUERY Atlas. Visualize cada aba e o historico salvo. A importacao do Excel final permite registrar dias anteriores enquanto a extracao automatica por periodo nao estiver integrada.</p>
+          <div class="daily-stock-toolbar">
+            <label class="field"><span>Data de referencia</span><input type="date" id="stockDailyAnalysisDate"></label>
+            <label class="field"><span>Data inicial</span><input type="date" id="stockDailyRangeStart"></label>
+            <label class="field"><span>Data final</span><input type="date" id="stockDailyRangeEnd"></label>
+            <label class="field"><span>Historico da operacao</span><select id="stockDailyAnalysisHistory"></select></label>
+            <button class="button secondary" type="button" id="stockDailyAnalysisRefresh">Consultar período</button>
+            <button class="button secondary" type="button" disabled title="Depende da consulta Equipamentos Utilizados por período no DataSnap">Executar tratativa no Imperium (aguardando integração)</button>
+          </div>
+          <div class="daily-stock-toolbar">
+            <label class="field"><span>Registrar Excel final de referencia</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
+            <button class="button secondary" id="stockDailyAnalysisImport" type="button">Importar no historico</button>
+            <button class="button secondary" id="stockDailyAnalysisDownload" type="button" disabled>Baixar XLSX</button>
+          </div>
+          <p id="stockDailyAnalysisMessage" class="stock-analysis-status" role="status" aria-live="polite"></p>
+          <div id="stockDailyAnalysisTabs" class="stock-daily-analysis-tabs" role="group" aria-label="Abas do relatorio"></div>
+          <p id="stockDailyAnalysisSheetInfo" class="stock-analysis-status"></p>
+          <div class="table-scroll"><table id="stockDailyAnalysisTable" class="daily-stock-table"></table></div>
+        </section>
+
+        </section>
+        <section id="stockSuspectsWorkspace" data-stock-analysis-workspace="suspeitos" class="stock-analysis-workspace" role="tabpanel" hidden>
+          <div class="stock-analysis-toolbar">
+            <div><h3>Análise de suspeitos</h3><p>Usa a QUERY já tratada dos locais DMV DINIZ. O histórico do Imperium não comprova sozinho baixa ou posse atual.</p></div>
+            <button class="button primary" type="button" data-stock-report="suspeitos">Atualizar tratamento</button>
+            <button class="button secondary" type="button" id="stockSuspectsLastDownload" hidden>Baixar última análise de suspeitos</button>
+          </div>
+          <p id="stockSuspectsLastResult" class="stock-analysis-status">Aguardando consulta</p>
+          <div class="table-scroll"><table id="stockSuspectsPreviewTable" class="daily-stock-table"></table></div>
+          <div class="stock-analysis-pagination">
+            <button class="button secondary" type="button" id="stockSuspectsPrev">Anterior</button>
+            <span id="stockSuspectsPageInfo">—</span>
+            <button class="button secondary" type="button" id="stockSuspectsNext">Próxima</button>
+          </div>
+          <p class="stock-analysis-warning">Os historicos DataSnap e Atlas sao evidencias; pendencias de aceite, OS e estoque fisico exigem conferencia.</p>
+          <div class="daily-stock-toolbar">
+            <label class="field"><span>Execuções anteriores</span><select id="stockReportsHistory"><option value="">Nenhum relatório</option></select></label>
+            <button class="button secondary" type="button" id="stockReportsDownload" hidden disabled>Baixar XLSX selecionado</button>
+          </div>
+          <p id="stockReportsProgress" class="stock-analysis-status" role="status"></p>
+          <p id="stockReportsNotice" class="stock-analysis-status" role="status" aria-live="polite"></p>
+        </section>
       </section>
     </section>
 
@@ -2549,7 +2604,9 @@
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261029-analysis-1"></script>
   <script src="/stock-nav.js?v=20261029-analysis-1"></script>
-  <script src="/stock-analysis-ui.js?v=20261030-xlsx-2"></script>
+  <script src="/stock-analysis-ui.js?v=20261030-daily-1"></script>
+  <script src="/stock-daily-analysis-ui.js?v=20261030-subtabs-1"></script>
+  <script src="/stock-report-preview-ui.js?v=20261030-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>
   <script src="/query-import.js?v=20261023-1"></script>

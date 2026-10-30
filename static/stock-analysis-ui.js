@@ -9,6 +9,7 @@
   let current = null;
   let pollTimer = null;
   let lastProfile = null;
+  const latestDone = {query:null,suspeitos:null};
   const names = {
     query:"QUERY tratada",
     equipamentos:"Analise de equipamentos",
@@ -16,7 +17,7 @@
   };
   const isActive = () => state.activeModule === "stock"
     && tab.getAttribute("aria-selected") === "true";
-  const allowed = () => ["admin","controller"].includes(state.authUser?.role);
+  const allowed = () => ["admin","controller"].includes(state.authUser?.role) && state.profile!=="all";
   function message(txt, error=false) {
     const n=byId("stockReportsNotice");
     n.textContent=txt||"";
@@ -66,6 +67,9 @@
     byId("stockReportsDownload").hidden=job.state!=="ready";
     byId("stockReportsDownload").disabled=job.state!=="ready";
     if(job.error)message("Erro na geracao: "+job.error,true);
+    if(job.state==="ready"){
+      document.dispatchEvent(new CustomEvent("dominium:stock-report-ready",{detail:job}));
+    }
     if(job.state==="ready")message(job.summary?.parcial
       ? "Arquivo disponivel com evidencias parciais e pendencias explicitadas. Confira a aba Fontes e criterios."
       : "Relatorio concluido com a ultima QUERY validada.");
@@ -81,13 +85,14 @@
     } catch(error){message("Nao foi possivel atualizar o andamento: "+error.message,true);}
   }
   async function refresh() {
-    if(!isActive()||pending||!allowed())return;
+    if(!isActive()||pending)return;
     stopPoll();
     lastProfile=state.profile;
     setBusy(true);
     try {
       const [available,history]=await Promise.all([
-        request("/api/stock/analyses/available?city="+encodeURIComponent(state.profile),{timeoutMs:25000}),
+        state.profile==="all"?Promise.resolve({latest:null}):
+          request("/api/stock/analyses/available?city="+encodeURIComponent(state.profile),{timeoutMs:25000}),
         request("/api/stock/analyses/jobs",{timeoutMs:25000})
       ]);
       if(lastProfile!==state.profile || !isActive())return;
@@ -96,10 +101,12 @@
         ? "QUERY validada: "+new Date(q.created_at*1000).toLocaleString("pt-BR")
           +" • "+q.total_rows.toLocaleString("pt-BR")+" registros • "+state.profile.toUpperCase()
         : "Nao ha QUERY Atlas concluida para esta operacao. Gere a QUERY na area Atlas Query.";
-      if(!q)message("Nenhuma QUERY validada. Nao sera gerada outra automaticamente.");
+      if(!q)message(state.profile==="all"
+        ?"Na visao Todos, use a subaba Analise de equipamentos. Para gerar QUERY ou Suspeitos, selecione uma cidade."
+        :"Nenhuma QUERY validada. Nao sera gerada outra automaticamente.");
       const select=byId("stockReportsHistory");
       const opts=document.createDocumentFragment();
-      for(const job of history.jobs||[]) {
+      for(const job of (history.jobs||[]).filter(x=>x.city===state.profile)) {
         const option=document.createElement("option");
         option.value=job.id;
         option.textContent=(names[job.kind]||job.kind)+" • "+job.city.toUpperCase()
@@ -108,9 +115,25 @@
         opts.append(option);
       }
       select.replaceChildren(opts);
-      if(history.jobs?.length){
-        const same=history.jobs.find(x=>x.city===state.profile);
-        if(same){select.value=same.id;renderJob(same);}
+      for(const kind of ["query","suspeitos"]){
+        const job=(history.jobs||[]).find(x=>x.city===state.profile && x.kind===kind
+          && x.state==="ready" && x.summary?.filter_version==="dmv_diniz_me_eireli_v1");
+        latestDone[kind]=job||null;
+        const info=byId(kind==="query"?"stockQueryLastResult":"stockSuspectsLastResult");
+        const button=byId(kind==="query"?"stockQueryLastDownload":"stockSuspectsLastDownload");
+        const older=(history.jobs||[]).find(x=>x.city===state.profile&&x.kind===kind&&x.state==="ready");
+        info.textContent=job?"Última concluída: "+new Date(job.updated_at*1000).toLocaleString("pt-BR")
+           :older?"Versão anterior sem filtro DMV DINIZ. Atualize o tratamento para usar os dados corretos."
+           :"Nenhum relatório concluído";
+        button.hidden=!job;
+      }
+      const same=(history.jobs||[]).find(x=>x.city===state.profile);
+      if(same){select.value=same.id;renderJob(same);}
+      else{
+        current=null;
+        byId("stockReportsDownload").hidden=true;
+        byId("stockReportsDownload").disabled=true;
+        byId("stockReportsProgress").textContent="";
       }
     } catch(error){message("Falha ao consultar relatorios: "+(error.message||""),true);}
     finally{setBusy(false);}
@@ -144,6 +167,18 @@
       saveBlob(file, "DOMINIUM-"+current.kind+"-"+current.city+"-"+current.id.slice(0,8)+".xlsx");
     }catch(error){message("Erro ao baixar o XLSX: "+(error.message||""),true);}
   }
+  async function downloadLatest(kind){
+    const job=latestDone[kind];
+    if(!job)return;
+    try{
+      const response=await requestBlob("/api/stock/analyses/jobs/"+job.id+"/export",{timeoutMs:120000});
+      const bytes=new Uint8Array(await response.blob.slice(0,4).arrayBuffer());
+      if(bytes[0]!==0x50||bytes[1]!==0x4B||bytes[2]!==0x03||bytes[3]!==0x04)throw new Error("Arquivo XLSX invalido");
+      saveBlob(response.blob,"DOMINIUM-"+kind+"-"+job.city+"-"+job.id.slice(0,8)+".xlsx");
+    }catch(error){message("Erro no download: "+error.message,true);}
+  }
+  byId("stockQueryLastDownload").addEventListener("click",()=>void downloadLatest("query"));
+  byId("stockSuspectsLastDownload").addEventListener("click",()=>void downloadLatest("suspeitos"));
   tab.addEventListener("click",select);
   byId("stockReportsRefresh").addEventListener("click",()=>void refresh());
   byId("stockReportsHistory").addEventListener("change",e=>{if(e.target.value)void readJob(e.target.value);});

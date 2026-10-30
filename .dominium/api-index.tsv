@@ -168,6 +168,7 @@ endpoint	path
 /api/profiles	deploy/hostinger-web/server.js
 /api/status	deploy/hostinger-web/server.js
 /api/stock/analyses/	deploy/hostinger-web/server.js
+/api/stock/analyses/daily/import	deploy/hostinger-web/server.js
 /api/stock/batch	deploy/hostinger-web/server.js
 /api/stock/daily	deploy/hostinger-web/server.js
 /api/stock/quality-control	deploy/hostinger-web/server.js
@@ -177,6 +178,7 @@ endpoint	path
 /api/toa-automation	deploy/hostinger-web/server.js
 /api/toa-live/lookup	deploy/hostinger-web/server.js
 /api/toa-live/status	deploy/hostinger-web/server.js
+/api/stock/analyses/daily/import	deploy/hostinger-web/stock-analysis-policy.js
 /api/stock/analyses/jobs	deploy/hostinger-web/stock-analysis-policy.js
 /api/disconnection/	desc_review_proxy.py
 /api/stock/daily	desc_review_relay.py
@@ -192,6 +194,7 @@ endpoint	path
 /api/disconnection/	integrations/import_bridge/worker.mjs
 /api/orders/bulk-create	integrations/import_bridge/worker.mjs
 /api/serials/consult	integrations/import_bridge/worker.mjs
+/api/stock/analyses/daily/import	integrations/import_bridge/worker.mjs
 /api/toa-agenda/import	integrations/import_bridge/worker.mjs
 /api/close	integrations/import_bridge/worker.test.mjs
 /api/imperium-official/stocks/123/items?profile=fortaleza	integrations/import_bridge/worker.test.mjs
@@ -204,6 +207,10 @@ endpoint	path
 /api/confront/jobs/(	integrations/serial_consult/confront_http.py
 /api/confront/status	integrations/serial_consult/confront_http.py
 /api/monitor/snapshot	integrations/serial_consult/desc_review_relay.py
+/api/stock/analyses/daily/import	integrations/serial_consult/desc_review_relay.py
+/api/stock/analyses/daily	integrations/serial_consult/equipment_daily_catalog.py
+/api/stock/analyses/daily/(	integrations/serial_consult/equipment_daily_catalog.py
+/api/stock/analyses/daily/import	integrations/serial_consult/equipment_daily_catalog.py
 /api/monitor/snapshot	integrations/serial_consult/monitor_snapshot_relay.py
 /api/serials/consult	integrations/serial_consult/serial_service.py
 /api/stock/analyses/available	integrations/serial_consult/stock_analysis_http.py
@@ -265,6 +272,11 @@ endpoint	path
 /api/stock/analyses/available?city=	static/stock-analysis-ui.js
 /api/stock/analyses/jobs	static/stock-analysis-ui.js
 /api/stock/analyses/jobs/	static/stock-analysis-ui.js
+/api/stock/analyses/daily/	static/stock-daily-analysis-ui.js
+/api/stock/analyses/daily/import	static/stock-daily-analysis-ui.js
+/api/stock/analyses/daily?city=	static/stock-daily-analysis-ui.js
+/api/stock/analyses/jobs	static/stock-report-preview-ui.js
+/api/stock/analyses/jobs/	static/stock-report-preview-ui.js
 /api/auth/session	tests/qa_disconnection_browser.js
 /api/disconnection/decision	tests/qa_disconnection_browser.js
 /api/disconnection/photo/	tests/qa_disconnection_browser.js
@@ -342,6 +354,16 @@ endpoint	path
 /api/disconnection/session	tests/test_disconnection_hostinger.js
 /api/disconnection/state	tests/test_disconnection_hostinger.js
 /api/disconnection/state?url=evil	tests/test_disconnection_hostinger.js
+/api/stock/analyses/daily/import	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/daily/{run}/export	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/daily/{run}/sheets/2	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/daily?city=all	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/daily?city=all&start=2026-10-28&end=2026-10-29	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/daily?city=all&start=2026-10-29&end=2026-10-28	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/daily?city=natal	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/daily?city=natal&date=2026-15-40	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/daily?city=recife	tests/test_equipment_daily_catalog.py
+/api/stock/analyses/jobs	tests/test_equipment_daily_catalog.py
 /api/toa-agenda/import	tests/test_hostinger_dataset_regression.cjs
 /api/close	tests/test_import_hostinger.js
 /api/import-history?profile=fortaleza&date=2026-10-15&limit=120	tests/test_import_hostinger.js
@@ -451,6 +473,11 @@ endpoint	path
 /api/serials/consult?serials=SERIAL000000&profile=natal&profile=recife	tests/test_serial_datasnap_history.py
 /api/stock/analyses/available?city=all	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/available?city=natal	tests/test_stock_analysis_proxy.cjs
+/api/stock/analyses/daily/import	tests/test_stock_analysis_proxy.cjs
+/api/stock/analyses/daily?city=all	tests/test_stock_analysis_proxy.cjs
+/api/stock/analyses/daily?city=natal	tests/test_stock_analysis_proxy.cjs
+/api/stock/analyses/daily?city=natal&date=2026-10-29	tests/test_stock_analysis_proxy.cjs
+/api/stock/analyses/daily?city=natal&start=2026-10-28&end=2026-10-29	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/jobs	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/jobs/	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/jobs/123	tests/test_stock_analysis_proxy.cjs

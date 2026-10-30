@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-30T13:36:32+00:00
-- Source fingerprint: `1462949b984aadcc`
-- Indexed files: 471
-- Indexed symbols: 4060
-- API path references: 469
+- Generated: 2026-10-30T15:54:15+00:00
+- Source fingerprint: `d126d7053c83abd0`
+- Indexed files: 476
+- Indexed symbols: 4096
+- API path references: 496
 
 ## Navigation rule
 
@@ -109,8 +109,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/quality-control.js` (11 symbols, 1 API paths) - Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */
 - `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
-- `static/stock-analysis-ui.js` (12 symbols, 3 API paths) - Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */
+- `static/stock-analysis-ui.js` (13 symbols, 3 API paths) - Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */
+- `static/stock-daily-analysis-ui.js` (10 symbols, 3 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
 - `static/stock-nav.js` (6 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
+- `static/stock-report-preview-ui.js` (5 symbols, 2 API paths) - The three stock analysis processes have independent, paged workspace views. */
 - `static/styles.css`
 - `static/theme-init.js`
 - `static/workspace.css` - Shared workspace: the original Technet image, floating glass and Dominium red. */
@@ -181,10 +183,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 150 files
+- shared: 152 files
 - tooling-deploy: 52 files
 - docs: 42 files
-- tests: 138 files
+- tests: 139 files
 
 ## Search indexes
 

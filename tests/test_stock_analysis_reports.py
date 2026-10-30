@@ -18,12 +18,12 @@ ROWS=[
   "codigo_sap_normalizado":"41001277","modelo":"TERMINAL GPON",
   "enderecavel_principal":"ABC123456789","estado":"SUSPEITO",
   "operacao":"NATAL","numero_contrato":"9001","data_ultima_alteracao":"2026-10-27",
-  "responsavel":"TECNICO A"},
+  "responsavel":"TECNICO A","nome_local":"DMV DINIZ ME"},
  {"numero_serie":"890000001234","codigo_material_sap":"PBL001",
   "codigo_sap_normalizado":"PBL001","modelo":"SIM CARD MOVEL",
   "enderecavel_principal":"890000001234","estado":"ANALISE DE INVENTARIO",
   "operacao":"NATAL","numero_contrato":"","data_ultima_alteracao":"2026-10-26",
-  "responsavel":""}
+  "responsavel":"","nome_local":"DMV DINIZ EIRELI"}
 ]
 class StockReportTests(unittest.TestCase):
  def setUp(self):
@@ -67,7 +67,40 @@ class StockReportTests(unittest.TestCase):
   status,data,_=self.service.handle("POST","/api/stock/analyses/jobs","user-555",{"city":"natal","kind":"query"})
   self.assertEqual(status,202)
   self.assertEqual(data["job"]["query_id"],"other")
-  self.assertEqual(self.service.handle("GET","/api/stock/analyses/jobs",ACTOR)[1]["jobs"],[])
+  self.assertEqual(len(self.service.handle("GET","/api/stock/analyses/jobs",ACTOR)[1]["jobs"]),1)
+
+ def test_query_filter_and_saved_paged_preview(self):
+  from stock_analysis_http import QUERY_FILTER_VERSION
+  nonmatching=dict(ROWS[0],numero_serie="OTHER1234567",nome_local="ATP")
+  with sqlite3.connect(self.atlas) as db:
+   db.execute("INSERT INTO query_rows VALUES ('valid',?,?)",(2,json.dumps(nonmatching)))
+  db.close()
+  status,result,_=self.service.handle("POST","/api/stock/analyses/jobs",ACTOR,{"city":"natal","kind":"query"})
+  self.assertEqual(status,202)
+  job_id=result["job"]["id"]
+  with self.service._connect() as con:
+   job=con.execute("SELECT * FROM jobs WHERE id=?",(job_id,)).fetchone()
+  summary=self.service._run_one(job)
+  self.assertEqual(summary["total"],2)
+  self.assertEqual(summary["filter_version"],QUERY_FILTER_VERSION)
+  with self.service._connect() as con:
+   con.execute("UPDATE jobs SET state='ready',summary=? WHERE id=?",(json.dumps(summary),job_id))
+  path="/api/stock/analyses/jobs/"+job_id+"/data?page=1"
+  status,preview,_=self.service.handle("GET",path,"user-999")
+  self.assertEqual(status,200,preview)
+  self.assertEqual(preview["total"],2)
+  self.assertIn("Nome do Local",preview["header"])
+  self.assertEqual({r[6] for r in preview["rows"]},{"DMV DINIZ ME","DMV DINIZ EIRELI"})
+  with self.service._connect() as con:
+   self.assertEqual(con.execute("SELECT COUNT(*) FROM analysis_sheet_records WHERE job_id=?",(job_id,)).fetchone()[0],2)
+  self.assertEqual(self.service.handle("GET","/api/stock/analyses/jobs/"+job_id+"/data?page=0",ACTOR)[0],404)
+  status,created,_=self.service.handle("POST","/api/stock/analyses/jobs",ACTOR,{"city":"natal","kind":"suspeitos"})
+  self.assertEqual(status,202,created)
+
+ def test_suspects_require_valid_treated_query_first(self):
+  status,result,_=self.service.handle("POST","/api/stock/analyses/jobs",ACTOR,{"city":"natal","kind":"suspeitos"})
+  self.assertEqual(status,409)
+  self.assertIn("QUERY tratada",result["error"])
 
  def test_report_jobs_idempotent_and_scope_actor(self):
   status,created,_=self.service.handle("POST","/api/stock/analyses/jobs",ACTOR,
@@ -76,7 +109,7 @@ class StockReportTests(unittest.TestCase):
   self.assertEqual(self.service.handle("POST","/api/stock/analyses/jobs",ACTOR,
                               {"city":"natal","kind":"query"})[1]["reused"],True)
   target=created["job"]["id"]
-  self.assertEqual(self.service.handle("GET","/api/stock/analyses/jobs/"+target,"user-999")[0],404)
+  self.assertEqual(self.service.handle("GET","/api/stock/analyses/jobs/"+target,"user-999")[0],200)
   self.assertEqual(self.service.handle("GET","/api/stock/analyses/jobs/"+target+"/export",ACTOR)[0],409)
   with self.service._connect() as con:
    job=con.execute("SELECT * FROM jobs WHERE id=?",(target,)).fetchone()

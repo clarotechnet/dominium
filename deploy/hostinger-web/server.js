@@ -519,6 +519,7 @@ async function listOrders(profileKey, isoDate, status = "field", serviceType = "
 app.use("/api/toa-agenda/import", express.json({ limit: "24mb" }));
 app.use(["/api/imports/preview", "/api/imports/commit"], express.json({ limit: "12mb" }));
 app.use("/api/backlog/year/routes", express.json({ limit: "22mb" }));
+app.use("/api/stock/analyses/daily/import", express.json({ limit: "5mb" }));
 app.use(express.json({ limit: "256kb" }));
 app.use((error, req, res, next) => {
   if (error?.type === "entity.too.large") {
