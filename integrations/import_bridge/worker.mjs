@@ -73,7 +73,8 @@ export default {
       headers.set('Content-Type','application/json');
     }
     try {
-      const service=(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily) ? env.DESC_SERVICE : env.IMPORT_SERVICE;
+      if (backlog && !env.BACKLOG_SERVICE) return json(503,'Servico privado do Backlog nao configurado');
+      const service=backlog ? env.BACKLOG_SERVICE : ((desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily) ? env.DESC_SERVICE : env.IMPORT_SERVICE);
       const origin=backlog ? 'http://127.0.0.1:9342' : ((desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily) ? 'http://127.0.0.1:8793' : 'http://127.0.0.1:8765');
       const upstream=await service.fetch(new Request(origin+route,
         {method:request.method,headers,body,redirect:'manual'}));

@@ -2500,7 +2500,7 @@ test_probe_allowed_but_annual_locked_by_default	method	tests/test_backlog_sideca
 test_only_exact_routes_accept_json	method	tests/test_backlog_sidecar.py	69	SidecarHttpContract
 test_secret_loader_validates_format	method	tests/test_backlog_sidecar.py	72	SidecarHttpContract
 envFor	function	tests/test_backlog_worker_bridge.mjs	6	-
-request	function	tests/test_backlog_worker_bridge.mjs	16	-
+request	function	tests/test_backlog_worker_bridge.mjs	17	-
 HostingerNodeReleaseTests	class	tests/test_build_hostinger_node_release.py	9	-
 test_release_contains_runtime_and_current_frontend	method	tests/test_build_hostinger_node_release.py	10	HostingerNodeReleaseTests
 test_release_does_not_contain_backup_or_secret_files	method	tests/test_build_hostinger_node_release.py	35	HostingerNodeReleaseTests

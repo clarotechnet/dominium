@@ -275,6 +275,7 @@ endpoint	path
 /api/confront/jobs/	scripts/smoke_confront_private_relay.py
 /api/confront/status	scripts/smoke_confront_private_relay.py
 /api/disconnection/reports	scripts/smoke_confront_private_relay.py
+/api/backlog/year/status	scripts/test_missing_vpc_binding.py
 /api/orders?status=field&service_type=all&date=	static/all-operations.js
 /api/toa-contracts?date=	static/all-operations.js
 /api/atlas-query/jobs	static/atlas-query-ui.js

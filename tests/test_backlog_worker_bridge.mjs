@@ -6,12 +6,13 @@ const token='A'.repeat(50);
 function envFor(calls) {
   return {
     IMPORT_TOKEN:token,
-    IMPORT_SERVICE:{fetch:async req=>{
+    IMPORT_SERVICE:{fetch:async()=>{throw Error('Backlog must not call IMPORT_SERVICE')}},
+    DESC_SERVICE:{fetch:async()=>{throw Error('Wrong relay')}},
+    BACKLOG_SERVICE:{fetch:async req=>{
       calls.push({url:req.url,method:req.method,auth:req.headers.get('Authorization'),
         role:req.headers.get('X-Dominium-Role')});
       return Response.json({ok:true,method:req.method});
-    }},
-    DESC_SERVICE:{fetch:async()=>{throw Error('Wrong relay')}}};
+    }}};
 }
 function request(method,path,role='controller',body) {
   return new Request('https://bridge.example'+path,{
@@ -46,5 +47,14 @@ test('bridge rejects unrecognized backlog path and invalid bearer',async()=>{
   const forged=request('GET','/api/backlog/year/status');
   forged.headers.set('authorization','Bearer invalid');
   assert.equal((await worker.fetch(forged,envFor(calls))).status,401);
+  assert.equal(calls.length,0);
+});
+
+test('missing dedicated VPC binding fails closed, leaves operational service alone',async()=>{
+  const calls=[];
+  const env=envFor(calls);
+  delete env.BACKLOG_SERVICE;
+  const res=await worker.fetch(request('GET','/api/backlog/year/status'),env);
+  assert.equal(res.status,503);
   assert.equal(calls.length,0);
 });

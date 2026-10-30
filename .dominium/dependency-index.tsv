@@ -917,8 +917,10 @@ json	scripts/confront_local_cli.py
 pathlib	scripts/confront_local_cli.py
 serial_service	scripts/confront_local_cli.py
 sys	scripts/confront_local_cli.py
+pathlib	scripts/fail_closed_backlog_vpc.py
 pathlib	scripts/finalize_desc_backlog_lab.py
 pathlib	scripts/fix_sidecar_test_resources.py
+pathlib	scripts/fix_vpc_backlog_binding.py
 __future__	scripts/generate_agent_context.py
 argparse	scripts/generate_agent_context.py
 ast	scripts/generate_agent_context.py
@@ -978,6 +980,7 @@ json	scripts/smoke_confront_private_relay.py
 pathlib	scripts/smoke_confront_private_relay.py
 urllib	scripts/smoke_confront_private_relay.py
 pathlib	scripts/strengthen_all_status_tests.py
+pathlib	scripts/test_missing_vpc_binding.py
 backlog_imperium_service	scripts/verify_backlog_excel_import.py
 base64	scripts/verify_backlog_excel_import.py
 io	scripts/verify_backlog_excel_import.py
