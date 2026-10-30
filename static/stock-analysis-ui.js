@@ -17,7 +17,7 @@
   };
   const isActive = () => state.activeModule === "stock"
     && tab.getAttribute("aria-selected") === "true";
-  const allowed = () => ["admin","controller"].includes(state.authUser?.role);
+  const allowed = () => ["admin","controller"].includes(state.authUser?.role) && state.profile!=="all";
   function message(txt, error=false) {
     const n=byId("stockReportsNotice");
     n.textContent=txt||"";
@@ -91,7 +91,8 @@
     setBusy(true);
     try {
       const [available,history]=await Promise.all([
-        request("/api/stock/analyses/available?city="+encodeURIComponent(state.profile),{timeoutMs:25000}),
+        state.profile==="all"?Promise.resolve({latest:null}):
+          request("/api/stock/analyses/available?city="+encodeURIComponent(state.profile),{timeoutMs:25000}),
         request("/api/stock/analyses/jobs",{timeoutMs:25000})
       ]);
       if(lastProfile!==state.profile || !isActive())return;
@@ -100,7 +101,9 @@
         ? "QUERY validada: "+new Date(q.created_at*1000).toLocaleString("pt-BR")
           +" • "+q.total_rows.toLocaleString("pt-BR")+" registros • "+state.profile.toUpperCase()
         : "Nao ha QUERY Atlas concluida para esta operacao. Gere a QUERY na area Atlas Query.";
-      if(!q)message("Nenhuma QUERY validada. Nao sera gerada outra automaticamente.");
+      if(!q)message(state.profile==="all"
+        ?"Na visao Todos, use a subaba Analise de equipamentos. Para gerar QUERY ou Suspeitos, selecione uma cidade."
+        :"Nenhuma QUERY validada. Nao sera gerada outra automaticamente.");
       const select=byId("stockReportsHistory");
       const opts=document.createDocumentFragment();
       for(const job of (history.jobs||[]).filter(x=>x.city===state.profile)) {

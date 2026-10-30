@@ -2047,9 +2047,9 @@ stopPoll	function	static/stock-analysis-ui.js	52	-
 renderJob	function	static/stock-analysis-ui.js	55	-
 readJob	function	static/stock-analysis-ui.js	81	-
 refresh	function	static/stock-analysis-ui.js	87	-
-start	function	static/stock-analysis-ui.js	138	-
-download	function	static/stock-analysis-ui.js	152	-
-downloadLatest	function	static/stock-analysis-ui.js	167	-
+start	function	static/stock-analysis-ui.js	141	-
+download	function	static/stock-analysis-ui.js	155	-
+downloadLatest	function	static/stock-analysis-ui.js	170	-
 el	function	static/stock-daily-analysis-ui.js	4	-
 currentCity	function	static/stock-daily-analysis-ui.js	10	-
 canWrite	function	static/stock-daily-analysis-ui.js	11	-

@@ -288,7 +288,7 @@ frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b
 frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */	fd462fc168e71c03
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
-frontend	static/stock-analysis-ui.js	13	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	a4f6e5555162d901
+frontend	static/stock-analysis-ui.js	13	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	2217d26e2cfc2140
 frontend	static/stock-daily-analysis-ui.js	10	3		Daily equipment: independent period/catalog; Atlas QUERY is not its source. */	ce5a90aca5ea44e6
 frontend	static/stock-nav.js	6			Navegacao consolidada de Estoque (mantem os modulos existentes). */	1cd96c23d87bb70a
 frontend	static/stock-report-preview-ui.js	5	2		The three stock analysis processes have independent, paged workspace views. */	2939b473e78d754d

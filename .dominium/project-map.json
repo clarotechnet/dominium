@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-30T15:06:54+00:00",
+  "generated_at": "2026-10-30T15:09:57+00:00",
   "schema": 2,
-  "source_fingerprint": "c17efa14840fa22ab6213bccc474989591432f9cddcc19d033d065e89ac66d46",
+  "source_fingerprint": "431b33ac764c55d61ca5e7c6066e25586fc95be997e681b552c3c7b1bbe8c1b6",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -5337,8 +5337,8 @@
     {
       "path": "static/stock-analysis-ui.js",
       "category": "frontend",
-      "bytes": 9477,
-      "sha256": "a4f6e5555162d901adebd8c4c59b8162ec098951a85aaf3873add865c1d880cd",
+      "bytes": 9715,
+      "sha256": "2217d26e2cfc214015855361e8461128af2d67ad7a0ad9fcb722f99384fcab8b",
       "summary": "Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */",
       "imports": [],
       "endpoints": [
