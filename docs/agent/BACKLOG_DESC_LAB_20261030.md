@@ -32,3 +32,11 @@ Mantenha este PR em **draft**. Não publicar UI isoladamente, pois o backend ope
 
 ## Estado
 Branch de desenvolvimento baseada no `origin/main` atual `5dc1403` — sem alterações no checkout do operador, sem upload de dados legados D1 e sem baixa real.
+## Validacao TODOS/TODOS — 30/10/2026
+- Teste DataSnap somente leitura: Natal 29/10/2026. Filtro TODOS/TODOS retornou 764 OS. Quatro filtros individuais: field 2, completed 538, canceled 41, rescheduled 134, total de 715 OS. 49 OS adicionais nao pertencem a esses quatro grupos.
+- A nova sincronizacao usa a consulta TODOS/TODOS como fonte principal, preserva os 49 com status DESCONHECIDO, anota os status individuais quando identificados e verifica o CodigoBaixa real no detalhe.
+- Comparativo original: qualquer historico com um codigo selecionado (101, 306, 404, 430 por padrao) marca SEGURAR. O backend novo reproduz essa regra. Codigo 106 e usado na analise de Fora de Rota. Sem historico confirmado nao implica baixa.
+- Hostinger e Worker: allowlist de GET status/compare/fora-rota/sent e POST start/pause/routes/sent, com limites e cargo admin/controller. Nenhuma nova rota autoriza baixar OS.
+- Backend: helper backlog_bridge_auth exige DOMINIUM_BACKLOG_BRIDGE_TOKEN forte, cliente loopback, ator identificado e cargo operacional. Sem token, retorna negado.
+- 20 testes Python + 41 Node passaram, com validacao de sintaxe e release ZIP. D1 legado nao foi migrado; SQLite isolado e a fonte do laboratorio.
+- Bloqueador de deploy: backend operacional no servidor tem diferencas em relacao ao main; exige reconciliacao, backup e configuracao privada da credencial. Nao publicar antes de teste HTTP fim a fim. A carga anual segue desabilitada por padrao.

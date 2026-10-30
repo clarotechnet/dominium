@@ -31,7 +31,7 @@ PRAGMA busy_timeout=10000;
 CREATE TABLE IF NOT EXISTS history (
  profile TEXT NOT NULL, id_os INTEGER NOT NULL, activity_date TEXT NOT NULL,
  os_number TEXT NOT NULL, contract TEXT NOT NULL, service TEXT NOT NULL,
- code TEXT, verification TEXT NOT NULL, captured_at TEXT NOT NULL,
+ code TEXT, verification TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'DESCONHECIDO', captured_at TEXT NOT NULL,
  PRIMARY KEY(profile,id_os,activity_date)
 );
 CREATE INDEX IF NOT EXISTS idx_history_contract ON history(contract,activity_date DESC);
@@ -79,6 +79,9 @@ class BacklogHistoryService:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         with self._connect() as conn:
             conn.executescript(SCHEMA)
+            columns={r[1] for r in conn.execute("PRAGMA table_info(history)")}
+            if "status" not in columns:
+                conn.execute("ALTER TABLE history ADD COLUMN status TEXT NOT NULL DEFAULT 'DESCONHECIDO'")
             conn.execute("UPDATE sync_runs SET status='interrupted', finished_at=?, error=? WHERE status='running'",
                          (utcnow(),"Processo reiniciado; cursor preservado"))
             conn.commit()
@@ -165,18 +168,48 @@ class BacklogHistoryService:
                     status="paused";break
                 api=self.profiles[profile_key].api
                 # Read-only status: no close, no stock changes and no TOA bridge.
-                orders=self._datasnap_read(api.list_orders,day,status="completed",service_type="all")
+                # O conjunto TODOS/TODOS e a fonte oficial.
+                # As quatro consultas por status sao somente anotacoes:
+                # o DataSnap pode retornar OS adicionais que nao pertencem
+                # a nenhum dos quatro status conhecidos.
+                all_payload=self._datasnap_read(
+                    api._fetch_main_payload,day,status="all",service_type="all")
+                all_orders=api._parse_orders(all_payload)
+                if len(all_orders)>3000:
+                    raise RuntimeError("Mais de 3000 OS num dia: revisar antes de processar")
+                all_by_id={order.id_os:order for order in all_orders}
+                if len(all_by_id)!=len(all_orders):
+                    raise RuntimeError("IDs duplicados na consulta TODOS/TODOS")
+                status_labels={
+                    "field":"EM CAMPO","completed":"CONCLUIDA",
+                    "canceled":"CANCELADA","rescheduled":"REAGENDADA"
+                }
+                known={}
+                for status_name,status_label in status_labels.items():
+                    batch=self._datasnap_read(
+                        api.list_orders,day,status=status_name,service_type="all")
+                    for order in batch:
+                        if order.id_os not in all_by_id:
+                            raise RuntimeError("OS no filtro de status ausente em TODOS/TODOS")
+                        if order.id_os in known and known[order.id_os]!=status_label:
+                            raise RuntimeError("DataSnap retornou OS em status conflitantes")
+                        known[order.id_os]=status_label
+                orders=[
+                    (order,known.get(order.id_os,"DESCONHECIDO"))
+                    for order in all_orders
+                ]
                 if len(orders)>3000:
                     raise RuntimeError("Mais de 3000 OS num dia: revisar antes de processar")
                 records=[]
-                for order in orders[:3] if mode == "probe" else orders:
+                for order,status_label in orders[:3] if mode == "probe" else orders:
                     if self._stop.is_set():
                         status="paused";break
                     # Existing code validates the actual IdCodigoBaixa field.
                     detail=self._datasnap_read(api._fetch_detail,order.id_os,timeout=15)
                     code=valid_close_code(api._detail_close_code(detail))
                     records.append((profile_key,order.id_os,day.isoformat(),order.num_os,order.contract,
-                         order.service,code,"confirmed" if code else "missing_code",utcnow()))
+                         order.service,code,"confirmed" if code else "missing_code",
+                         status_label,utcnow()))
                     if mode != "probe":
                         self.sleep(0.10)
                 if status=="paused":break
@@ -190,11 +223,12 @@ class BacklogHistoryService:
                 # One atomic transaction: rows and checkpoint cannot diverge.
                 with self._connect() as conn:
                     conn.executemany("""INSERT INTO history(
-                        profile,id_os,activity_date,os_number,contract,service,code,verification,captured_at)
-                        VALUES(?,?,?,?,?,?,?,?,?)
+                        profile,id_os,activity_date,os_number,contract,service,code,verification,status,captured_at)
+                        VALUES(?,?,?,?,?,?,?,?,?,?)
                         ON CONFLICT(profile,id_os,activity_date) DO UPDATE SET
                         os_number=excluded.os_number,contract=excluded.contract,service=excluded.service,
-                        code=excluded.code,verification=excluded.verification,captured_at=excluded.captured_at""",records)
+                        code=excluded.code,verification=excluded.verification,status=excluded.status,
+                        captured_at=excluded.captured_at""",records)
                     conn.execute("""INSERT INTO checkpoint(profile,date,updated_at) VALUES(?,?,?)
                         ON CONFLICT(profile) DO UPDATE SET date=excluded.date,updated_at=excluded.updated_at""",
                         (profile_key,day.isoformat(),utcnow()))
@@ -315,17 +349,35 @@ class BacklogHistoryService:
             conn.commit()
         return {"ok":True,"files":[{"filename":n,"rows":len(x),"sha256":d} for d,n,x in parsed]}
 
-    def compare(self,limit=300):
+    def compare(self,limit=300,selected_codes=None):
         limit=max(1,min(int(limit),1000))
+        selected_codes=selected_codes if selected_codes is not None else ("101","306","404","430")
+        selected_codes={valid_close_code(x) for x in selected_codes}
+        selected_codes.discard(None)
         with self._connect() as conn:
-            rows=conn.execute("""SELECT r.contract,r.city,r.technician,r.bairro,r.window,r.os_number,r.route_code,
-              h.code AS historical_code,h.activity_date AS historical_date,h.verification
-              FROM route_rows r LEFT JOIN history h ON h.rowid=(
-                  SELECT h2.rowid FROM history h2 WHERE h2.contract=r.contract
-                  ORDER BY h2.activity_date DESC,h2.id_os DESC LIMIT 1)
-              ORDER BY r.city,r.technician,r.row_num LIMIT ?""",(limit,)).fetchall()
-            return {"ok":True,"rows":[dict(r) for r in rows],
-                    "snapshot":self.snapshot(),"note":"Sem historico significa apenas nao localizado na carga parcial; nao equivale a baixa confirmada"}
+            rows=conn.execute("""SELECT r.contract,r.city,r.technician,r.bairro,r.window,r.os_number,r.route_code
+              FROM route_rows r ORDER BY r.city,r.technician,r.row_num LIMIT ?""",(limit,)).fetchall()
+            output=[]
+            for row in rows:
+                item=dict(row)
+                history=conn.execute("""SELECT code,status,activity_date,verification
+                    FROM history WHERE contract=? ORDER BY activity_date DESC,id_os DESC""",
+                    (item["contract"],)).fetchall()
+                match=next((h for h in history if h["code"] in selected_codes),None)
+                latest=history[0] if history else None
+                reference=match or latest
+                item.update({
+                    "classification":"SEGURAR" if match else ("OUTRO HISTÓRICO" if history else "NÃO CONFIRMADO"),
+                    "historical_code":reference["code"] if reference else None,
+                    "historical_status":reference["status"] if reference else None,
+                    "historical_date":reference["activity_date"] if reference else None,
+                    "verification":reference["verification"] if reference else None,
+                    "history_count":len(history),
+                })
+                output.append(item)
+            return {"ok":True,"rows":output,
+                    "snapshot":self.snapshot(),
+                    "note":"Classificacao por qualquer codigo selecionado no historico. Sem registro pode significar carga parcial."}
 
     def fora_rota(self,profile="natal",limit=150):
         if profile not in PROFILES: raise ValueError("Perfil invalido")

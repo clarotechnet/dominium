@@ -19,7 +19,12 @@ class FakeAPI:
     def __init__(self):self.calls=[]
     def list_orders(self,date,*,status,service_type):
         self.calls.append(("list",date,status,service_type))
+        return [FakeOrder()] if status == "completed" else []
+    def _fetch_main_payload(self,date,*,status,service_type):
+        self.calls.append(("raw_all",status,service_type))
         return [FakeOrder()]
+    def _parse_orders(self,payload):
+        return payload
     def _fetch_detail(self,order_id,timeout):
         self.calls.append(("detail",order_id))
         return b"confirmed"

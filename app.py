@@ -65,6 +65,7 @@ from close_report_excel import (
 )
 from datasnap_client import DataSnapError, load_credentials
 from backlog_imperium_service import BacklogHistoryService
+from backlog_bridge_auth import _authorized_backlog_bridge
 from disconnect_automation import DisconnectAutomation
 from edge_voice import EDGE_VOICE, EdgeVoiceError
 from imperium_http_api import (
@@ -5253,7 +5254,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 channel=channel,
                 target=target,
                 technician=technician,
-                external_actor=external_actor,
+                external_actor=external_actor or getattr(self, "_dominium_backlog_actor", ""),
                 metadata=metadata,
             )
         except Exception:
@@ -5325,6 +5326,12 @@ class PanelHandler(BaseHTTPRequestHandler):
                     },
                 )
                 return False
+        # The private Workers VPC connector may access only dedicated
+        # Backlog routes with a strong server-side token + authorized role.
+        # This never authenticates unrelated OS, inventory or close routes.
+        if _authorized_backlog_bridge(headers, method, path, peer):
+            self._dominium_backlog_actor = str(headers.get("X-Dominium-Actor", ""))[:160]
+            return True
         public_auth = path in {
             "/api/auth/register",
             "/api/auth/login",
@@ -5556,7 +5563,11 @@ class PanelHandler(BaseHTTPRequestHandler):
             if parsed.path == "/api/backlog/year/compare":
                 query = parse_qs(parsed.query)
                 self._json(HTTPStatus.OK, _get_backlog_service().compare(
-                    int(query.get("limit", ["250"])[0])
+                    int(query.get("limit", ["250"])[0]),
+                    selected_codes=[
+                        v.strip() for v in
+                        query.get("codes", ["101,306,404,430"])[0].split(",")
+                    ],
                 ))
                 return
             if parsed.path == "/api/backlog/year/fora-rota":

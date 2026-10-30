@@ -104,12 +104,9 @@
     update($("backlogUploadStatus"),"Rotas: "+r.files.map(x=>x.filename+" ("+x.rows+" O.S.)").join("; "));
   },$("backlogUploadStatus")));
   $("backlogCompare").addEventListener("click",()=>action($("backlogCompare"),async()=>{
-    const r=await call("/api/backlog/year/compare?limit=300");
-    const chosen=new Set([...root.querySelectorAll("[data-backlog-code]:checked")].map(x=>x.dataset.backlogCode));
-    comparison=(r.rows||[]).map(row=>{
-      const code=String(row.historical_code||"");
-      return {...row,classification:!code ? "NÃO CONFIRMADO" : chosen.has(code) ? "SEGURAR" : "OUTRO HISTÓRICO"};
-    });
+    const codes=[...root.querySelectorAll("[data-backlog-code]:checked")].map(x=>x.dataset.backlogCode);
+    const r=await call("/api/backlog/year/compare?limit=300&codes="+encodeURIComponent(codes.join(",")));
+    comparison=r.rows||[];
     const counts={SEGURAR:0,"OUTRO HISTÓRICO":0,"NÃO CONFIRMADO":0};
     for(const row of comparison)counts[row.classification]++;
     const metrics=$("backlogMetrics");metrics.replaceChildren();
@@ -118,7 +115,7 @@
     }
     comparison.sort((a,b)=>a.classification.localeCompare(b.classification)||
       a.city.localeCompare(b.city)||a.technician.localeCompare(b.technician));
-    table($("backlogResult"),[["Análise","classification"],["Contrato","contract"],["Cidade","city"],["Recurso","technician"],["Bairro","bairro"],["Janela","window"],["Código","historical_code"],["Data","historical_date"]],comparison);
+    table($("backlogResult"),[["Análise","classification"],["Contrato","contract"],["Cidade","city"],["Recurso","technician"],["Bairro","bairro"],["Janela","window"],["Código","historical_code"],["Status Imperium","historical_status"],["Data","historical_date"]],comparison);
     update($("backlogUploadStatus"),comparison.length+" itens exibidos. Histórico parcial não prova ausência de baixa.");
   },$("backlogUploadStatus")));
   $("backlogCopyResult").addEventListener("click",()=>copy(comparison.map(r=>[r.contract,r.city,r.technician,r.historical_code||"NÃO CONFIRMADO",r.classification].join("\t")).join("\n")));

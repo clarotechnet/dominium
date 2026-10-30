@@ -17,6 +17,7 @@ argparse	app.py
 auth_store	app.py
 auth_store_postgres	app.py
 auto_improductive_close	app.py
+backlog_bridge_auth	app.py
 backlog_imperium_service	app.py
 base64	app.py
 bulk_orders	app.py
@@ -104,6 +105,11 @@ pathlib	auto_improductive_close.py
 threading	auto_improductive_close.py
 time	auto_improductive_close.py
 typing	auto_improductive_close.py
+__future__	backlog_bridge_auth.py
+collections	backlog_bridge_auth.py
+hmac	backlog_bridge_auth.py
+os	backlog_bridge_auth.py
+re	backlog_bridge_auth.py
 __future__	backlog_imperium_service.py
 backlog_imperium_year	backlog_imperium_service.py
 base64	backlog_imperium_service.py
@@ -927,7 +933,12 @@ hashlib	scripts/install_confront_relay.py
 pathlib	scripts/install_confront_relay.py
 shutil	scripts/install_confront_relay.py
 pathlib	scripts/integrate_current_desc_backlog.py
+pathlib	scripts/patch_all_statuses.py
+pathlib	scripts/patch_backlog_policy.py
+pathlib	scripts/patch_compare_endpoints.py
+pathlib	scripts/patch_raw_all_source.py
 pathlib	scripts/patch_route_parser.py
+pathlib	scripts/patch_worker_backlog.py
 atlas_bridge_client	scripts/probe_atlas_synthetic.py
 pathlib	scripts/probe_atlas_synthetic.py
 sys	scripts/probe_atlas_synthetic.py
@@ -951,6 +962,7 @@ urllib	scripts/smoke_confront_cloudflare.py
 json	scripts/smoke_confront_private_relay.py
 pathlib	scripts/smoke_confront_private_relay.py
 urllib	scripts/smoke_confront_private_relay.py
+pathlib	scripts/strengthen_all_status_tests.py
 backlog_imperium_service	scripts/verify_backlog_excel_import.py
 base64	scripts/verify_backlog_excel_import.py
 io	scripts/verify_backlog_excel_import.py
@@ -962,6 +974,7 @@ ast	scripts/verify_confront_runtime.py
 desc_review_relay	scripts/verify_confront_runtime.py
 pathlib	scripts/verify_confront_runtime.py
 sys	scripts/verify_confront_runtime.py
+pathlib	scripts/wire_backlog_auth_backend.py
 base64	serialized_transfer.py
 datasnap_client	serialized_transfer.py
 datetime	serialized_transfer.py
@@ -1113,6 +1126,15 @@ json	tests/test_auto_improductive_close.py
 pathlib	tests/test_auto_improductive_close.py
 tempfile	tests/test_auto_improductive_close.py
 unittest	tests/test_auto_improductive_close.py
+backlog_imperium_service	tests/test_backlog_all_statuses.py
+datetime	tests/test_backlog_all_statuses.py
+pathlib	tests/test_backlog_all_statuses.py
+tempfile	tests/test_backlog_all_statuses.py
+types	tests/test_backlog_all_statuses.py
+unittest	tests/test_backlog_all_statuses.py
+backlog_bridge_auth	tests/test_backlog_bridge_auth.py
+os	tests/test_backlog_bridge_auth.py
+unittest	tests/test_backlog_bridge_auth.py
 backlog_imperium_service	tests/test_backlog_imperium_service.py
 base64	tests/test_backlog_imperium_service.py
 datetime	tests/test_backlog_imperium_service.py

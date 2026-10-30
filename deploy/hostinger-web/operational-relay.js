@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
-const { allowedOperationalRead, allowedToaLookup, allowedQualityControl, allowedDailyStock, allowedOperationalWrite } = require('./operational-policy');
+const { allowedOperationalRead, allowedToaLookup, allowedQualityControl, allowedDailyStock, allowedOperationalWrite, allowedBacklogRoute } = require('./operational-policy');
 const { allowedConfrontRoute } = require('./confront-policy');
 const {allowedAtlasQueryRoute}=require('./atlas-query-policy');
 const {allowedStockAnalysisRoute}=require('./stock-analysis-policy');
@@ -21,9 +21,10 @@ function resolveOperationalRead(req, connection = readPrivateConnection) {
   const quality = allowedQualityControl(req.method, req.originalUrl);
   const daily = allowedDailyStock(req.method, req.originalUrl);
   const write = allowedOperationalWrite(req.method, req.originalUrl);
-  if (!confrontation && !toaLookup && !quality && !daily && !allowedOperationalRead(req.method, req.originalUrl) && !allowedOperationalWrite(req.method,req.originalUrl)) return null;
+  const backlog = allowedBacklogRoute(req.method,req.originalUrl);
+  if (!backlog && !confrontation && !toaLookup && !quality && !daily && !allowedOperationalRead(req.method, req.originalUrl) && !allowedOperationalWrite(req.method,req.originalUrl)) return null;
   const analysisRead=allowedStockAnalysisRoute(req.method,req.originalUrl) && req.method==='GET';
-  if (!req.dominiumSession || (((confrontation && !analysisRead) || toaLookup || ((quality || daily) && req.method === 'POST') || write)
+  if (!req.dominiumSession || (((confrontation && !analysisRead) || backlog || toaLookup || ((quality || daily || backlog) && req.method === 'POST') || write)
     ? !['admin','controller'].includes(req.dominiumUser?.role)
     : !['admin','controller','viewer'].includes(req.dominiumUser?.role))) {
     throw new Error('operational_session_required');
@@ -51,7 +52,7 @@ function restorePrivateJsonContentType(req, headers, body) {
   if (!headers || !req || req.method !== 'POST' || body === undefined) return;
   const url=String(req.originalUrl||'');
   if (!allowedConfrontRoute('POST',url) && !allowedAtlasQueryRoute('POST',url) && !allowedStockAnalysisRoute('POST',url) &&
-      !allowedToaLookup('POST',url) && !allowedQualityControl('POST',url) && !allowedDailyStock('POST',url) && !allowedOperationalWrite('POST',url)) return;
+      !allowedToaLookup('POST',url) && !allowedQualityControl('POST',url) && !allowedDailyStock('POST',url) && !allowedOperationalWrite('POST',url) && !allowedBacklogRoute('POST',url)) return;
   const original=String(req.headers?.['content-type']||'').toLowerCase();
   if (!original.startsWith('application/json')) return;
   headers['content-type']='application/json';

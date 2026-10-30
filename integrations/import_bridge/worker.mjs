@@ -5,7 +5,7 @@ import confrontPolicy from '../../deploy/hostinger-web/confront-policy.js';
 import atlasPolicy from '../../deploy/hostinger-web/atlas-query-policy.js';
 import stockAnalysisPolicy from '../../deploy/hostinger-web/stock-analysis-policy.js';
 const {allowedImportRoute, MAX_IMPORT_BYTES} = policy;
-const {allowedOperationalRead,allowedToaLookup,allowedOrderClose,allowedQualityControl,allowedDailyStock,allowedOperationalWrite,validBulkCreateBody,operationTransportFailure,validOfficialCloseBody,closeTransportFailure} = operationalPolicy;
+const {allowedOperationalRead,allowedToaLookup,allowedOrderClose,allowedQualityControl,allowedDailyStock,allowedOperationalWrite,allowedBacklogRoute,validBulkCreateBody,operationTransportFailure,validOfficialCloseBody,closeTransportFailure} = operationalPolicy;
 const {allowedConfrontRoute} = confrontPolicy;
 const {allowedAtlasQueryRoute} = atlasPolicy;
 const {allowedStockAnalysisRoute} = stockAnalysisPolicy;
@@ -29,6 +29,7 @@ export default {
     const query=allowedAtlasQueryRoute(request.method,url.pathname+url.search);
     const analysis=allowedStockAnalysisRoute(request.method,url.pathname+url.search);
     const operational=allowedOperationalRead(request.method,url.pathname+url.search);
+    const backlog=allowedBacklogRoute(request.method,url.pathname+url.search);
     const toaLookup=allowedToaLookup(request.method,url.pathname+url.search);
     const quality=allowedQualityControl(request.method,url.pathname+url.search);
     const daily=allowedDailyStock(request.method,url.pathname+url.search);
@@ -36,18 +37,21 @@ export default {
     const operationalWrite=allowedOperationalWrite(request.method,url.pathname+url.search);
     const bulkCreate=url.pathname==='/api/orders/bulk-create' && operationalWrite;
     const role=request.headers.get('x-dominium-role');
-    if (!(((operational && !officialStock && !serialConsult && !confrontation && !query && !analysis && !toaLookup) || ((quality || daily || analysis) && request.method==='GET')) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
+    if (!backlog && !(((operational && !officialStock && !serialConsult && !confrontation && !query && !analysis && !toaLookup) || ((quality || daily || analysis) && request.method==='GET')) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
         !request.headers.get('x-dominium-actor')) return json(403,'Operador não identificado');
+    if (backlog && (!['admin','controller'].includes(role) ||
+        !request.headers.get('x-dominium-actor'))) return json(403,'Operador nao identificado');
     let route;
-    try {route=(operational || confrontation || query || analysis || toaLookup || orderClose || operationalWrite || quality || daily) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
+    try {route=(operational || confrontation || query || analysis || toaLookup || orderClose || operationalWrite || quality || daily || backlog) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
     catch {return json(404,'Rota não permitida');}
     const headers=new Headers({Accept:'application/json','X-Dominium-Actor':request.headers.get('x-dominium-actor')});
-    if(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily)headers.set('Authorization',request.headers.get('authorization'));
-    if(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily)headers.set('X-Dominium-Role',role);
+    if(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily || backlog)headers.set('Authorization',request.headers.get('authorization'));
+    if(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily || backlog)headers.set('X-Dominium-Role',role);
     let body;
     if (request.method==='POST') {
       if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return json(415,'Envie JSON');
       const maxBytes=url.pathname==='/api/toa-agenda/import' ? 24*1024*1024 :
+        backlog ? (url.pathname==='/api/backlog/year/routes' ? 22*1024*1024 : 8*1024) :
         operationalWrite ? 256*1024 :
         (analysis && url.pathname==='/api/stock/analyses/daily/import') ? 5*1024*1024 :
         (desc || confrontation || query || analysis || toaLookup || orderClose || quality || daily) ? 64*1024 : MAX_IMPORT_BYTES;
@@ -73,13 +77,13 @@ export default {
       const origin=(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily) ? 'http://127.0.0.1:8793' : 'http://127.0.0.1:8765';
       const upstream=await service.fetch(new Request(origin+route,
         {method:request.method,headers,body,redirect:'manual'}));
-      if (upstream.status>=300 && upstream.status<400) return (orderClose || operationalWrite)
+      if (upstream.status>=300 && upstream.status<400) return (orderClose || operationalWrite || (backlog && request.method==='POST'))
         ? Response.json(orderClose ? closeTransportFailure() : operationTransportFailure(),{status:502,headers:{'cache-control':'no-store'}})
         : json(502,'Redirecionamento interno bloqueado');
       return new Response(upstream.body,{status:upstream.status,headers:{
         'Content-Type':upstream.headers.get('content-type')||'application/json',
         'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Dominium-Backend':'private-import-bridge'}});
-    } catch {return (orderClose || operationalWrite)
+    } catch {return (orderClose || operationalWrite || (backlog && request.method==='POST'))
       ? Response.json(orderClose ? closeTransportFailure() : operationTransportFailure(),{status:502,headers:{'cache-control':'no-store'}})
       : json(502,'Servidor operacional indisponível; não repita uma importação sem conferir o histórico');}
   }
