@@ -11785,11 +11785,7 @@ async function processMaterialPaste() {
       parts.push(`miscelaneas ja usadas na OS ${assignedOs}`);
     }
     if (shortage) {
-      parts.push(
-        state.profile === "natal"
-          ? `${shortage} com complemento do estoque virtual RETORNO`
-          : `${shortage} com saldo insuficiente`,
-      );
+      parts.push(`${shortage} miscelanea(s) sem saldo completo apos tecnico + RETORNO`);
     }
     if (unresolved) parts.push(`${unresolved} nao correlacionadas`);
     if (equivalent) parts.push(`${equivalent} equivalencias aguardando confirmacao`);
@@ -11798,9 +11794,17 @@ async function processMaterialPaste() {
     }
     state.currentMaterialPasteKey = resolvedPasteKey;
     state.materialNotice = parts.join("; ");
-    const blockingShortage = shortage > 0 && state.profile !== "natal";
+    const blockingShortage = shortage > 0 || validation.can_close === false;
+    if (blockingShortage) {
+      const missingDetails = (payload.atlas_groups || [])
+        .filter((group) => Number(group.missing_quantity || 0) > 0)
+        .map((group) => `${group.requested_code}: faltam ${group.missing_quantity} de ${group.requested_quantity}`);
+      state.materialError = `Baixa bloqueada: ${missingDetails.length
+        ? missingDetails.join("; ")
+        : "estoque insuficiente para as quantidades registradas no TOA"}`;
+    }
     showToast(
-      state.materialNotice,
+      blockingShortage ? state.materialError : state.materialNotice,
       unresolved || blockingShortage ? "error" : "success",
     );
   } catch (error) {
