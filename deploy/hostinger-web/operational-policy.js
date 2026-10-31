@@ -102,6 +102,41 @@ function allowedOperationalWrite(method,target) {
   // The UI uses apiUrl() to append exactly one selected city.
   return url.search==='' || /^\?profile=(?:natal|fortaleza|mossoro|recife)$/.test(url.search);
 }
+// Backlog: exact routes, narrow query parameters, no arbitrary backend proxy.
+function allowedBacklogRoute(method,target) {
+  if((method!=='GET' && method!=='POST') ||
+    typeof target!=='string' || target.length>512 ||
+    !target.startsWith('/api/backlog/year/') ||
+    target.includes('#') || target.includes('\\') || target.includes('//')) return false;
+  let u;
+  try {u=new URL(target,'https://dominium.invalid');} catch{return false;}
+  if(u.origin!=='https://dominium.invalid' || u.pathname.includes('%'))return false;
+  if(method==='POST'){
+    return !u.search && new Set([
+      '/api/backlog/year/start','/api/backlog/year/pause',
+      '/api/backlog/year/routes','/api/backlog/year/sent'
+    ]).has(u.pathname);
+  }
+  if(u.pathname==='/api/backlog/year/status' || u.pathname==='/api/backlog/year/sent')
+    return !u.search;
+  const keys=[...u.searchParams.keys()];
+  if(new Set(keys).size!==keys.length)return false;
+  const bounded=(key,max)=>!u.searchParams.has(key) ||
+    (/^[0-9]{1,4}$/.test(u.searchParams.get(key)) &&
+      Number(u.searchParams.get(key))>=1 && Number(u.searchParams.get(key))<=max);
+  if(u.pathname==='/api/backlog/year/compare'){
+    if(keys.some(k=>!['limit','codes'].includes(k)) || !bounded('limit',1000))return false;
+    return !u.searchParams.has('codes') ||
+      /^(?:[0-9]{3}(?:,[0-9]{3}){0,9})?$/.test(u.searchParams.get('codes'));
+  }
+  if(u.pathname==='/api/backlog/year/fora-rota'){
+    if(keys.some(k=>!['limit','profile'].includes(k))||!bounded('limit',300))return false;
+    return !u.searchParams.has('profile') ||
+      ['natal','fortaleza','mossoro','recife'].includes(u.searchParams.get('profile'));
+  }
+  return false;
+}
+
 function validBulkCreateBody(value) {
   return Boolean(value && typeof value==='object' && !Array.isArray(value) &&
     value.confirmed===true && /^[A-Za-z0-9_-]{12,100}$/.test(String(value.request_id||'')) &&
@@ -116,4 +151,4 @@ function operationTransportFailure() {
 
 module.exports = { allowedOperationalRead, allowedToaLookup, allowedOrderClose,
   allowedQualityControl, allowedDailyStock, allowedOperationalWrite, validBulkCreateBody,
-  operationTransportFailure, validOfficialCloseBody, closeTransportFailure };
+  allowedBacklogRoute, operationTransportFailure, validOfficialCloseBody, closeTransportFailure };

@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/styles.css?v=20261030-subtabs-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
+  <link rel="stylesheet" href="/backlog-analysis.css?v=20261031-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -122,6 +123,10 @@
         <button class="side-nav-item stock-nav-child" id="disconnectionModule" type="button">
           <i data-lucide="message-circle" aria-hidden="true"></i>
           <span><strong>WhatsApp · Atlas</strong><small>Revisão de contratos</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="backlogModule" type="button">
+          <i data-lucide="clipboard-list" aria-hidden="true"></i>
+          <span><strong>Análise Backlog</strong><small>Imperium + rotas Claro</small></span>
         </button>
         <button class="side-nav-item stock-nav-child" id="descAnalyticsModule" type="button">
           <i data-lucide="chart-column-increasing" aria-hidden="true"></i>
@@ -2006,6 +2011,94 @@
         <pre id="serverLogOutput">Carregando log...</pre>
       </section>
     </section>
+  <section class="backlog-workspace hidden" id="backlogWorkspace" aria-label="Analise de backlog">
+      <header class="workspace-heading">
+        <div><p class="section-label">IMPERIUM / CLARO</p><h2>Análise Backlog</h2>
+          <p>Conferência de rotas do dia com histórico confirmado do Imperium. Carregue a planilha oficial do TOA para identificar técnicos e janelas.</p>
+        </div>
+      </header>
+      <nav class="backlog-subtabs" aria-label="Áreas da análise">
+        <button type="button" class="button secondary active" data-backlog-tab="entry">Entrada</button>
+        <button type="button" class="button secondary" data-backlog-tab="result">Resultado</button>
+        <button type="button" class="button secondary" data-backlog-tab="offroute">Fora de Rota</button>
+        <button type="button" class="button secondary" data-backlog-tab="sent">Rotas Enviadas</button>
+      </nav>
+      <div class="backlog-panel" data-backlog-pane="entry">
+        <div class="backlog-grid">
+          <section class="backlog-card">
+            <h3>Base do Imperium</h3>
+            <p>Carregamento inicial: últimos 12 meses completos até ontem. Atualizações seguintes retomam o ponto confirmado.</p>
+            <div class="backlog-actions">
+              <button id="backlogRun" type="button" class="button primary" disabled title="Carga anual bloqueada até validação dos checkpoints">Carga anual — em homologação</button>
+              <button id="backlogPilot" type="button" class="button secondary">Testar ontem</button>
+              <button id="backlogPause" type="button" class="button secondary">Pausar</button>
+            </div>
+            <label class="backlog-field">Base para teste
+              <select id="backlogProfile">
+                <option value="natal">Natal / Parnamirim</option>
+                <option value="fortaleza">Fortaleza</option>
+                <option value="mossoro">Mossoró</option>
+                <option value="recife">Recife</option>
+              </select>
+            </label>
+            <p class="backlog-hint">Para proteger o Imperium, a carga é dividida em lotes de um dia por base. O sistema continua os próximos lotes automaticamente enquanto esta página estiver aberta. Pode pausar e retomar sem duplicar dias.</p>
+            <p id="backlogSyncStatus" role="status">Consultando estado da base...</p>
+            <div id="backlogProgress" class="backlog-progress"></div>
+          </section>
+          <section class="backlog-card">
+            <h3>Rotas da Claro</h3>
+            <p>Selecione as planilhas do dia (.xlsx ou .csv). A importação substitui a rota anterior, sem modificar o histórico do Imperium.</p>
+            <input type="file" id="backlogRouteFiles" accept=".xlsx,.csv" multiple>
+            <div class="backlog-actions"><button type="button" class="button secondary" id="backlogUpload">Carregar rotas</button>
+              <button type="button" class="button primary" id="backlogCompare">Analisar rotas</button></div>
+            <p id="backlogUploadStatus" role="status"></p>
+          </section>
+        </div>
+        <details class="backlog-card">
+          <summary>Códigos de baixa — filtro e interpretação</summary>
+          <p>O histórico só é considerado confirmado quando o código real foi lido no detalhe da O.S. Códigos sem confirmação não entram como baixa validada.</p>
+          <div class="backlog-code-filters" aria-label="Filtrar códigos do histórico">
+            <label><input type="checkbox" data-backlog-code="430" checked> 430</label>
+            <label><input type="checkbox" data-backlog-code="101" checked> 101</label>
+            <label><input type="checkbox" data-backlog-code="306" checked> 306</label>
+            <label><input type="checkbox" data-backlog-code="404" checked> 404</label>
+          </div>
+          <p>Os códigos selecionados indicam contratos a segurar. Código 106 é histórico improdutivo, mas não representa autorização de baixa.</p>
+        </details>
+      </div>
+      <div class="backlog-panel hidden" data-backlog-pane="result">
+        <section class="backlog-card">
+          <h3>Resultado tratado</h3>
+          <p>Resultado preliminar enquanto o histórico estiver incompleto. Sem registro histórico não é confirmação de baixa nem de liberação da rota.</p>
+          <div class="backlog-actions"><button type="button" class="button secondary" id="backlogCopyResult">Copiar resultado</button></div>
+          <div id="backlogMetrics" class="backlog-progress"></div>
+          <div id="backlogResult" class="backlog-results"></div>
+        </section>
+      </div>
+      <div class="backlog-panel hidden" data-backlog-pane="offroute">
+        <section class="backlog-card">
+          <h3>Gerar Fora de Rota</h3>
+          <p>Lista de sugestões de contratos com último histórico confirmado em código 106, excluindo a rota atual. Verifique o TOA antes de enviar.</p>
+          <div class="backlog-actions"><select id="backlogOffRouteProfile">
+            <option value="natal">Natal / Parnamirim</option>
+            <option value="fortaleza">Fortaleza</option>
+            <option value="mossoro">Mossoró</option>
+            <option value="recife">Recife</option>
+          </select>
+          <button type="button" class="button primary" id="backlogFindOffRoute">Gerar lista</button>
+          <button type="button" class="button secondary" id="backlogCopyOffRoute">Copiar lista</button></div>
+          <div id="backlogOffRouteResult" class="backlog-results"></div>
+        </section>
+      </div>
+      <div class="backlog-panel hidden" data-backlog-pane="sent">
+        <section class="backlog-card">
+          <h3>Rotas Enviadas</h3>
+          <p>Histórico de envios registrados manualmente; não equivale à confirmação de baixa.</p>
+          <button type="button" class="button secondary" id="backlogRefreshSent">Atualizar histórico</button>
+          <div id="backlogSentResult" class="backlog-results"></div>
+        </section>
+      </div>
+    </section>
   </main>
   </div>
 
@@ -2508,7 +2601,8 @@
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
-  <script src="/app.js?v=20261030-partial-stock-3"></script>
+  <script src="/app.js?v=20261031-backlog-1"></script>
+  <script src="/backlog-analysis.js?v=20261031-1"></script>
   <script src="/quality-control.js?v=20261029-analysis-1"></script>
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261029-analysis-1"></script>
