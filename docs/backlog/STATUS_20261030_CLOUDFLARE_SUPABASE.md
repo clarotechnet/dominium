@@ -77,10 +77,8 @@ inquestionável de histórico. A carga anual total permanece
    controlada e rollback; configurar supervisão persistente no Windows.
 3. Smoke ponta a ponta: 200 em leitura autenticada, 401/403 sem acesso,
    404 em rota desconhecida. Não usar endpoint de carga anual nesse teste.
-4. Criar e testar adaptador servidor→Supabase com gravação idempotente,
-   checkpoints atômicos e privilégios mínimos. Não enviar chave ao navegador.
-5. Validar um dia/uma cidade com DataSnap SOMENTE leitura, comparar
-   contagens e códigos; depois quatro cidades. Só então testar carga anual.
+4. **Adaptador offline implementado e testado:** `integrations/backlog_standalone/supabase_datasnap_sync.py` + `test_supabase_datasnap_sync.py`. São 17 testes aprovados. A função `sync_verified_day` somente lê dias com checkpoint confirmado no SQLite e prepara UPSERT idempotente de histórico + checkpoint numa mesma transação PostgreSQL. O SQL foi validado com `EXPLAIN` no Supabase. **Ainda não há conexão PostgreSQL credenciada nem sincronização real**, e nenhum dado foi gravado.
+5. Configurar acesso PostgreSQL exclusivamente no backend privado (nunca no navegador) e testar um dia/uma cidade com DataSnap SOMENTE leitura; comparar contagens e códigos antes de gravar. Depois testar quatro cidades. Só então habilitar carga anual.
 6. Ligar UI via backend autenticado Hostinger com RBAC/CSRF,
    sem fetch direto do navegador ao Worker e sem merge cego da PR #29.
 
