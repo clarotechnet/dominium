@@ -33,6 +33,7 @@ shared	consolidate_dominium.ps1			4	DOMINIUM | MAPA DE RESPONSABILIDADE	c82b6b36
 shared	datasnap_client.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	18769b58c990389a
 tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para migracao futura	bbfe97a6ef6f2341
 tooling-deploy	deploy/hostinger-web/atlas-query-policy.js	1	2			5920be286b6b2e0f
+tooling-deploy	deploy/hostinger-web/backlog-proxy.js	3	1	1		6bc78dbcfdb73ea8
 tooling-deploy	deploy/hostinger-web/confront-policy.js	1	3			9834dd541ca9ff51
 tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			b000d7e6a37d1516
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
@@ -44,7 +45,7 @@ tooling-deploy	deploy/hostinger-web/order-close-proxy.js	2				78fc563fd7b62d77
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	34	1		b334685c77607251
+tooling-deploy	deploy/hostinger-web/server.js	41	35	1		7540be0d60405577
 tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	2			e67e015eb4cf8082
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
@@ -72,6 +73,7 @@ docs	docs/agent/ATLAS_QUERY_VIDEO_RECOVERY_20261026.md				Natal — vídeo, comp
 docs	docs/agent/ATLAS_QUERY_WAITING_HUD_20261026.md				QUERY — distinguir espera de processamento	cfd355576cf2880e
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor de sessão instalado em 26/10/2026	cd87d67d5054efb8
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
+docs	docs/agent/BACKLOG_CLOUDFLARE_HOSTINGER_20261030.md				DOMINIUM — Backlog Cloudflare + Hostinger: validação 30/10/2026	827917df320e059b
 docs	docs/agent/BACKLOG_DESC_LAB_20261030.md				Análise Backlog dentro de DESCONEXÃO — 30/10/2026	9ca49ba0ab85db99
 docs	docs/agent/BACKLOG_VPC_9342_20261030.md				Cloudflare VPC Service — porta fixa (bloqueio validado em 30/10/2026)	86f86933bccaeeec
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
@@ -249,7 +251,7 @@ tooling-deploy	scripts/agent_memory.py	13		1	DOMINIUM portable agent memory: Git
 tooling-deploy	scripts/agent_memory_mcp.py	4			Portable MCP stdio entrypoint for DOMINIUM read/search/record memory.	a198c9aa044acd44
 tooling-deploy	scripts/bootstrap_admin.py	2				578b01fcd9f2bce3
 tooling-deploy	scripts/build_hostinger_frontend.py	3				376de6598486d1b3
-tooling-deploy	scripts/build_hostinger_node_release.py	4				e4668aa7ab319feb
+tooling-deploy	scripts/build_hostinger_node_release.py	4				b4aeb47ce6b9f1a0
 tooling-deploy	scripts/build_web_release.py	8		1		12c3694527509ac1
 tooling-deploy	scripts/check_supabase_ready.py	1				ef416758e6102aca
 tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
@@ -286,6 +288,7 @@ tests	scripts/test_missing_vpc_binding.py		1			887dc8aa8cd34631
 tooling-deploy	scripts/verify_backlog_excel_import.py					777690f519672490
 tooling-deploy	scripts/verify_confront_runtime.py				Import live DESC relay and verify Atlas module availability without changing services.	4d0fd85a2d7b2661
 tooling-deploy	scripts/wire_backlog_auth_backend.py	1				86fb820295521143
+tooling-deploy	scripts/wire_backlog_hostinger_worker.py		1			744133332370fc07
 imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc88daa911
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
@@ -354,6 +357,7 @@ tests	tests/test_auth_store.py	7				2131129f824fbae2
 tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
 tests	tests/test_backlog_all_statuses.py	6				ac731fdc97a3b1e0
 tests	tests/test_backlog_bridge_auth.py	6	4			369f0788871eadc2
+tests	tests/test_backlog_hostinger_proxy.js	3	5			5cc2d960a6f6389c
 tests	tests/test_backlog_imperium_service.py	16				cfeba8057058182f
 tests	tests/test_backlog_imperium_year.py	9				1ab2338fc7b9cff4
 tests	tests/test_backlog_private_bridge.js	2	20			a59bacaff3cf311b

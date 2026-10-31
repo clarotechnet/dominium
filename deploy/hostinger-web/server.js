@@ -960,6 +960,8 @@ const OPERATIONAL_PROXY_HEADER_ALLOWLIST = [
   "x-request-id",
 ];
 
+const { createBacklogMiddleware } = require('./backlog-proxy');
+app.use('/api/backlog/year', createBacklogMiddleware());
 const { createDisconnectionMiddleware } = require('./disconnection-proxy');
 app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }));
 const { createImportMiddleware } = require('./import-proxy');

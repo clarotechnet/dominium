@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-30T19:56:27+00:00",
+  "generated_at": "2026-10-31T02:27:06+00:00",
   "schema": 2,
-  "source_fingerprint": "dbc85f51b25c25218dccbed60ac1929f5ff146bb89a9e3d943a6ff78972b8ae5",
+  "source_fingerprint": "563fdcf40e17ee7e86d7f67bf7aaf31d85dfd492424551e6141569e1811d455d",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -850,6 +850,25 @@
       "symbol_count": 1
     },
     {
+      "path": "deploy/hostinger-web/backlog-proxy.js",
+      "category": "tooling-deploy",
+      "bytes": 3619,
+      "sha256": "6bc78dbcfdb73ea8a8cc1bbba9b46f2f847466b15adba17ade47a2a0c978eb11",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/routes"
+      ],
+      "env_vars": [
+        "DOMINIUM_BACKLOG_BRIDGE_TOKEN"
+      ],
+      "datasnap_methods": [
+        "TOKEN_PATTERN.test"
+      ],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
       "path": "deploy/hostinger-web/confront-policy.js",
       "category": "tooling-deploy",
       "bytes": 952,
@@ -1065,8 +1084,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 43812,
-      "sha256": "b334685c776072515b109352febdab7952308dec1f08cd139785e0d0bd0b31a4",
+      "bytes": 43933,
+      "sha256": "7540be0d604055772556b3d9ecb8e72e0e1aa3fcb2f8fba47c74a99e23e42500",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1079,6 +1098,7 @@
         "/api/auth/register",
         "/api/auth/session",
         "/api/auth/users",
+        "/api/backlog/year",
         "/api/backlog/year/routes",
         "/api/confront/",
         "/api/diagnostics",
@@ -1515,6 +1535,19 @@
       "bytes": 4794,
       "sha256": "a481138944205315ffe15daf075d9dcf4edf6212986f376f007667982ec71783",
       "summary": "Atlas: verificação real de sessão no watchdog",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/BACKLOG_CLOUDFLARE_HOSTINGER_20261030.md",
+      "category": "docs",
+      "bytes": 3895,
+      "sha256": "827917df320e059b634144cf77ba77b5d8abbdc0b4a39d28c822218a1f84c35a",
+      "summary": "DOMINIUM — Backlog Cloudflare + Hostinger: validação 30/10/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -4718,8 +4751,8 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 4842,
-      "sha256": "e4668aa7ab319feb7dbfff8a906c08d91b8623ed406228909db7e83eafe27ca3",
+      "bytes": 4894,
+      "sha256": "b4aeb47ce6b9f1a0d5ffceae0943c788ff1a4f57800de724b8c35e5e5fba1a3a",
       "summary": "",
       "imports": [
         "__future__",
@@ -5417,6 +5450,23 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 1
+    },
+    {
+      "path": "scripts/wire_backlog_hostinger_worker.py",
+      "category": "tooling-deploy",
+      "bytes": 529,
+      "sha256": "744133332370fc07f2ca399caea07940f07d63b5ea427ef437a5fd2b33f02c72",
+      "summary": "",
+      "imports": [
+        "pathlib"
+      ],
+      "endpoints": [
+        "/api/backlog/year"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "serialized_transfer.py",
@@ -6607,6 +6657,25 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 6
+    },
+    {
+      "path": "tests/test_backlog_hostinger_proxy.js",
+      "category": "tests",
+      "bytes": 3712,
+      "sha256": "5cc2d960a6f6389c2f400f6ebc53932ac022610ed54a86998c860f1fb4d85140",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/compare?limit=100&codes=106",
+        "/api/backlog/year/compare?limit=99999",
+        "/api/backlog/year/delete",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
     },
     {
       "path": "tests/test_backlog_imperium_service.py",
@@ -9694,6 +9763,7 @@
     "TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md",
     "TOA_PROVIDER_TREE_REPAIR_20261027.md",
     "TOA_REPLAY_HEADER_NAMES.has",
+    "TOKEN_PATTERN.test",
     "Tabela_codigo_baixa0711.catalog",
     "Tabela_codigo_baixa0711.pdf",
     "Tecnico.pdf",

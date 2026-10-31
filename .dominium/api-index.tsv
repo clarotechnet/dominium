@@ -110,6 +110,7 @@ endpoint	path
 /api/backlog/year/status	backlog_sidecar.py
 /api/atlas-query/	deploy/hostinger-web/atlas-query-policy.js
 /api/atlas-query/jobs	deploy/hostinger-web/atlas-query-policy.js
+/api/backlog/year/routes	deploy/hostinger-web/backlog-proxy.js
 /api/confront/	deploy/hostinger-web/confront-policy.js
 /api/confront/jobs	deploy/hostinger-web/confront-policy.js
 /api/confront/status	deploy/hostinger-web/confront-policy.js
@@ -175,6 +176,7 @@ endpoint	path
 /api/auth/register	deploy/hostinger-web/server.js
 /api/auth/session	deploy/hostinger-web/server.js
 /api/auth/users	deploy/hostinger-web/server.js
+/api/backlog/year	deploy/hostinger-web/server.js
 /api/backlog/year/routes	deploy/hostinger-web/server.js
 /api/confront/	deploy/hostinger-web/server.js
 /api/diagnostics	deploy/hostinger-web/server.js
@@ -297,6 +299,7 @@ endpoint	path
 /api/confront/status	scripts/smoke_confront_private_relay.py
 /api/disconnection/reports	scripts/smoke_confront_private_relay.py
 /api/backlog/year/status	scripts/test_missing_vpc_binding.py
+/api/backlog/year	scripts/wire_backlog_hostinger_worker.py
 /api/orders?status=field&service_type=all&date=	static/all-operations.js
 /api/toa-contracts?date=	static/all-operations.js
 /api/atlas-query/jobs	static/atlas-query-ui.js
@@ -374,6 +377,11 @@ endpoint	path
 /api/backlog/year/start	tests/test_backlog_bridge_auth.py
 /api/backlog/year/status	tests/test_backlog_bridge_auth.py
 /api/orders/123/close	tests/test_backlog_bridge_auth.py
+/api/backlog/year/compare?limit=100&codes=106	tests/test_backlog_hostinger_proxy.js
+/api/backlog/year/compare?limit=99999	tests/test_backlog_hostinger_proxy.js
+/api/backlog/year/delete	tests/test_backlog_hostinger_proxy.js
+/api/backlog/year/start	tests/test_backlog_hostinger_proxy.js
+/api/backlog/year/status	tests/test_backlog_hostinger_proxy.js
 /api/backlog/year/	tests/test_backlog_private_bridge.js
 /api/backlog/year/compare	tests/test_backlog_private_bridge.js
 /api/backlog/year/compare?codes=430	tests/test_backlog_private_bridge.js

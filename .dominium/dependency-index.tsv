@@ -993,6 +993,7 @@ desc_review_relay	scripts/verify_confront_runtime.py
 pathlib	scripts/verify_confront_runtime.py
 sys	scripts/verify_confront_runtime.py
 pathlib	scripts/wire_backlog_auth_backend.py
+pathlib	scripts/wire_backlog_hostinger_worker.py
 base64	serialized_transfer.py
 datasnap_client	serialized_transfer.py
 datetime	serialized_transfer.py
