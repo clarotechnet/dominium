@@ -1,0 +1,25 @@
+.backlog-workspace {display:grid;gap:20px;max-width:1380px;margin:0 auto;padding:18px 10px 40px}
+.backlog-workspace.hidden,.backlog-panel.hidden{display:none!important}
+.backlog-subtabs{display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--border-color,rgba(128,128,128,.22));padding-bottom:14px}
+.backlog-subtabs .button.active{background:var(--accent-color,#ee244e);color:white;border-color:transparent}
+.backlog-panel{display:grid;gap:16px}
+.backlog-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.backlog-card{min-width:0;border:1px solid var(--border-color,rgba(128,128,128,.24));border-radius:18px;background:var(--card-bg,var(--surface,#151719));padding:20px;display:grid;align-content:start;gap:12px}
+.backlog-card h3{font-size:1.14rem;margin:0}.backlog-card p{margin:0;line-height:1.55;opacity:.8}
+.backlog-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.backlog-actions .button{min-height:38px}
+.backlog-field{display:grid;gap:6px;font-size:.91rem;max-width:330px}
+.backlog-field select,.backlog-actions select{border-radius:10px;padding:9px;min-height:39px;background:var(--input-bg,transparent);color:inherit;border:1px solid rgba(128,128,128,.35)}
+.backlog-card input[type=file]{padding:12px;border:1px dashed rgba(128,128,128,.5);border-radius:12px;max-width:100%;overflow:hidden}
+.backlog-hint{font-size:.88rem}.backlog-progress{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.backlog-progress span{border:1px solid rgba(128,128,128,.2);border-radius:10px;padding:9px;font-size:.87rem}
+.backlog-warning{color:#ff726a}.backlog-table-scroll{max-width:100%;overflow:auto;max-height:600px;border-radius:12px;border:1px solid rgba(128,128,128,.15)}
+.backlog-table{border-collapse:collapse;width:100%;font-size:.91rem}
+.backlog-table th,.backlog-table td{padding:12px 10px;text-align:left;border-bottom:1px solid rgba(128,128,128,.16);white-space:nowrap}
+.backlog-table th{font-weight:700;position:sticky;top:0;background:var(--card-bg,#1b1d21);z-index:1}
+.backlog-results{min-height:64px}.backlog-card summary{cursor:pointer;font-weight:650}
+@media(max-width:900px){.backlog-grid{grid-template-columns:1fr}.backlog-progress{grid-template-columns:1fr}}
+
+.backlog-code-filters{display:flex;gap:8px;flex-wrap:wrap}
+.backlog-code-filters label{padding:8px 14px;border:1px solid rgba(128,128,128,.3);border-radius:999px;cursor:pointer}
+.backlog-code-filters input{accent-color:#ed1747}

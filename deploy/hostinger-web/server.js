@@ -517,6 +517,7 @@ async function listOrders(profileKey, isoDate, status = "field", serviceType = "
 }
 
 app.use("/api/toa-agenda/import", express.json({ limit: "24mb" }));
+app.use("/api/backlog/year/routes", express.json({ limit: "22mb" }));
 app.use(["/api/imports/preview", "/api/imports/commit"], express.json({ limit: "12mb" }));
 app.use("/api/stock/analyses/daily/import", express.json({ limit: "5mb" }));
 app.use(express.json({ limit: "256kb" }));
@@ -959,6 +960,8 @@ const OPERATIONAL_PROXY_HEADER_ALLOWLIST = [
   "x-request-id",
 ];
 
+const { createBacklogMiddleware } = require('./backlog-proxy');
+app.use('/api/backlog/year', createBacklogMiddleware());
 const { createDisconnectionMiddleware } = require('./disconnection-proxy');
 app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }));
 const { createImportMiddleware } = require('./import-proxy');

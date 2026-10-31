@@ -25,6 +25,7 @@ RUNTIME_FILES = (
     "stock-analysis-policy.js",
     "disconnection-proxy.js",
     "disconnection-policy.js",
+    "backlog-proxy.js",
     "server.js",
     "package.json",
     "package-lock.json",
@@ -115,6 +116,7 @@ def build(output: Path = DEFAULT_OUTPUT) -> tuple[Path, Path]:
         "static/confront.js",
         "static/styles.css",
         "confront-policy.js",
+        "backlog-proxy.js",
         "atlas-query-policy.js",
         "static/atlas-query-ui.js",
     }
