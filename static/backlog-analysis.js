@@ -93,8 +93,12 @@
     const chosen=[...$("backlogRouteFiles").files];
     if(!chosen.length||chosen.length>5)throw Error("Selecione de 1 a 5 planilhas");
     const files=[];
+    let totalBytes=0;
     for(const file of chosen){
-      if(!/\.(csv|xlsx)$/i.test(file.name)||file.size>3*1024*1024)throw Error("Formato/tamanho inválido: "+file.name);
+      if(!/\.(csv|xlsx)$/i.test(file.name))throw Error("Use somente planilhas .csv ou .xlsx: "+file.name);
+      if(!file.size||file.size>8*1024*1024)throw Error("Arquivo excede 8 MiB ou está vazio: "+file.name);
+      totalBytes+=file.size;
+      if(totalBytes>15*1024*1024)throw Error("Envio acima de 15 MiB no total. Divida as planilhas em lotes menores.");
       const result=await new Promise((resolve,reject)=>{
         const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error("Falha na leitura"));reader.readAsDataURL(file);
       });
