@@ -435,14 +435,24 @@ class BacklogHistoryService:
         selected_codes={valid_close_code(x) for x in selected_codes}
         selected_codes.discard(None)
         with self._connect() as conn:
-            rows=conn.execute("""SELECT r.contract,r.city,r.technician,r.bairro,r.window,r.os_number,r.route_code
-              FROM route_rows r ORDER BY r.city,r.technician,r.row_num LIMIT ?""",(limit,)).fetchall()
+            rows=conn.execute("""SELECT r.contract,r.city,r.technician,r.bairro,r.window,r.os_number,r.route_code,
+              COALESCE(b.filename,'') AS route_file
+              FROM route_rows r LEFT JOIN route_batches b ON b.route_hash=r.route_hash
+              ORDER BY r.city,r.technician,r.row_num LIMIT ?""",(limit,)).fetchall()
             output=[]
             for row in rows:
                 item=dict(row)
+                route_tag=next((tag for tag in ("NTL","PWM","FTZ","JCR","MRO")
+                    if re.search(r"(?:^|[-_])"+tag+r"(?:[-_.])",item["route_file"].upper())),None)
+                route_city={"NTL":"NATAL","PWM":"PARNAMIRIM","FTZ":"FORTALEZA",
+                            "JCR":"RECIFE","MRO":"MOSSORO"}.get(route_tag,item["city"])
+                route_profile={"NTL":"natal","PWM":"natal","FTZ":"fortaleza",
+                               "JCR":"recife","MRO":"mossoro"}.get(route_tag)
+                item["report_city"]=route_city
                 history=conn.execute("""SELECT code,status,activity_date,verification
-                    FROM history WHERE contract=? ORDER BY activity_date DESC,id_os DESC""",
-                    (item["contract"],)).fetchall()
+                    FROM history WHERE contract=? AND (? IS NULL OR profile=?)
+                    ORDER BY activity_date DESC,id_os DESC""",
+                    (item["contract"],route_profile,route_profile)).fetchall()
                 match=next((h for h in history if h["code"] in selected_codes),None)
                 latest=history[0] if history else None
                 reference=match or latest
@@ -455,7 +465,9 @@ class BacklogHistoryService:
                     "history_count":len(history),
                 })
                 output.append(item)
-            return {"ok":True,"rows":output,
+            total=conn.execute("SELECT COUNT(*) FROM route_rows").fetchone()[0]
+            return {"ok":True,"rows":output,"route_total":total,
+                    "truncated":total>limit,
                     "snapshot":self.snapshot(),
                     "note":"Classificacao por qualquer codigo selecionado no historico. Sem registro pode significar carga parcial."}
 

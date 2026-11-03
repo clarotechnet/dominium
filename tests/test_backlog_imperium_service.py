@@ -109,6 +109,30 @@ class BacklogServiceTests(unittest.TestCase):
     def test_reject_bad_limits(self):
         with self.assertRaises(ValueError):self.svc.start(mode="batch",days_per_profile=60)
 
+    def test_route_comparison_respects_bucket_and_returns_full_counts(self):
+        def csvitem(bucket,technician):
+            raw="Recurso,Cidade,Contrato,Número da WO,Status da Atividade\n"
+            raw+=technician+",NATAL,1234567,2600000123,pendente\n"
+            return {"name":f"Atividades-{bucket}_03_11_26.csv",
+                    "base64":base64.b64encode(raw.encode()).decode()}
+        self.svc.import_route_files([csvitem("FTZ-DMV_ADM","TECNICO FTZ"),
+                                     csvitem("PWM-DMV_ADM","TECNICO PWM")])
+        with self.svc._connect() as db:
+            db.execute("""INSERT INTO history(profile,id_os,activity_date,os_number,contract,service,
+                           code,verification,status,captured_at) VALUES(?,?,?,?,?,?,?,?,?,?)""",
+                       ("natal",123,"2026-09-21","100","1234567","DESC","430","xlsx_seed","CONCLUIDO","2026-11-03"))
+            db.execute("""INSERT INTO history(profile,id_os,activity_date,os_number,contract,service,
+                           code,verification,status,captured_at) VALUES(?,?,?,?,?,?,?,?,?,?)""",
+                       ("fortaleza",124,"2026-10-01","101","1234567","DESC","101","xlsx_seed","CONCLUIDO","2026-11-03"))
+            db.commit()
+        report=self.svc.compare(selected_codes=["430","101"])
+        self.assertEqual(report["route_total"],2)
+        self.assertFalse(report["truncated"])
+        by_city={x["report_city"]:x for x in report["rows"]}
+        self.assertEqual(by_city["FORTALEZA"]["historical_code"],"101")
+        self.assertEqual(by_city["PARNAMIRIM"]["historical_code"],"430")
+        self.assertTrue(all(x["classification"]=="SEGURAR" for x in report["rows"]))
+
     def test_sent_does_not_close_os(self):
         self.svc.mark_sent({"profile":"natal","contract":"1234567","note":"Mensagem copiada"})
         self.assertEqual(len(self.svc.list_sent()["rows"]),1)

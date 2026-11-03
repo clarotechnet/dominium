@@ -16,7 +16,7 @@ shared	auto_improductive_close.py	23				67e908956f5d6ca3
 shared	backlog_bridge_auth.py	1	7		Strict bearer-gated VPC authorization for the DOMINIUM Backlog module.	2e1f4f11deacb5b9
 shared	backlog_daily_scheduler.py	6			Idempotent 22:00 (UTC-03:00) read-only DataSnap history scheduling.	7282b8c33b14afde
 shared	backlog_daily_treatment.py	3			Strict status interpretation for daily TOA route treatment.	c96c8caaa925459b
-imperium	backlog_imperium_service.py	18			Read-only annual Imperium history loader for the DOMINIUM backlog panel.	74ad9b645382fa60
+imperium	backlog_imperium_service.py	18			Read-only annual Imperium history loader for the DOMINIUM backlog panel.	7efe62879974af6f
 imperium	backlog_imperium_year.py	9			Planejamento seguro da sincronizacao anual Imperium/DataSnap.	cc95d237e2a497e9
 shared	backlog_read_guard.py	3			Fail-closed guard for read-only Imperium history when OS writers are active.	b609bb5064d61331
 shared	backlog_seed_xlsx.py	8			Initial XLSX bootstrap for DOMINIUM's read-only DESC history.	9a7d6ee39adaa3a7
@@ -87,7 +87,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	Estado vigente — 03/11/2026: histórico DESC anual e sincronização 22h	9c2bfed58175e965
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	f82c350bb7d21c86
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	567301f0bd0979bd
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md				Caso real confirmado e ponte compartilhada preservada	281b6cb6cc46851e
@@ -95,6 +95,7 @@ docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
 docs	docs/agent/TOA_DAILY_ROUTE_20261103.md				DOMINIUM — rotas diárias TOA e tratativa de improdutivas (03/11/2026)	ff008cce313ab056
 docs	docs/agent/TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md				Buscar no TOA — correção do transporte em 27/10/2026	96edd6356856440e
 docs	docs/agent/TOA_PROVIDER_TREE_REPAIR_20261027.md			1	Consulta TOA: nome do recurso na árvore — 27/10/2026	3ba617d42bf357ed
+docs	docs/agent/WHATSAPP_ROUTE_COMPARATIVE_20261103.md				DOMINIUM — comparativo histórico das cinco rotas para WhatsApp (03/11/2026)	db485bc74375edd0
 docs	docs/backlog/STATUS_20261030_CLOUDFLARE_SUPABASE.md				Backlog DOMINIUM — situação consolidada 30/10/2026	03723cd844388b4e
 docs	docs/reference/DOMINIUM X IMPERIUM Especificacoes_requisicoes.txt				﻿================================================================================	0888eec3d49a2ab5
 docs	docs/reference/GUIA_API_OFICIAL_TOA_E_IMPERIUM.txt				GUIA OPERACIONAL - APIs OFICIAIS DO TOA E DO IMPERIUM	f786a457b0065170
@@ -349,7 +350,7 @@ tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
 tests	tests/test_backlog_all_statuses.py	6				f6a0961434a248a2
 tests	tests/test_backlog_bridge_auth.py	6	4			369f0788871eadc2
 tests	tests/test_backlog_daily_treatment.py	9			Daily route status and existing five-bucket TOA export safety regression.	1aafeb34e575b1fb
-tests	tests/test_backlog_imperium_service.py	20				a35e4bfa3c024b8f
+tests	tests/test_backlog_imperium_service.py	21				5c945dfbedab1d32
 tests	tests/test_backlog_imperium_year.py	12				a07a7ab2f2b805e4
 tests	tests/test_backlog_private_bridge.js	2	20			a59bacaff3cf311b
 tests	tests/test_backlog_seed_daily.py	15			Regression tests for the isolated DESC history bootstrap and 22h scheduler.	48aa0e04fa371cfa

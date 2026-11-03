@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-03T17:15:48+00:00",
+  "generated_at": "2026-11-03T17:57:37+00:00",
   "schema": 2,
-  "source_fingerprint": "dc12e6d6594b62484ed35a52c8846ab60035f4e7335141c3aa160b1294a9dd8a",
+  "source_fingerprint": "98ec5f08f3d9a0c372d3d28b0a196b30196280d6977f12e10be36427f12ecbac",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -524,8 +524,8 @@
     {
       "path": "backlog_imperium_service.py",
       "category": "imperium",
-      "bytes": 27253,
-      "sha256": "74ad9b645382fa600f35e3fb3319a73b9fb7ea6040f07e5c68a38fbaac5f7453",
+      "bytes": 28145,
+      "sha256": "7efe62879974af6f61fd5879371ad7728049f763aa21e238221d74a0ee676ee3",
       "summary": "Read-only annual Imperium history loader for the DOMINIUM backlog panel.",
       "imports": [
         "__future__",
@@ -1765,8 +1765,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 16438,
-      "sha256": "f82c350bb7d21c86c25a0dceae232c22c82e6a16b0b42dd8345cdd1ef3db4c6b",
+      "bytes": 17224,
+      "sha256": "567301f0bd0979bdb76f12b81c3256071ab51fb51b07ec80acc43f5b878a3ccf",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -1867,6 +1867,19 @@
       "datasnap_methods": [
         "Time.get"
       ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/WHATSAPP_ROUTE_COMPARATIVE_20261103.md",
+      "category": "docs",
+      "bytes": 3246,
+      "sha256": "db485bc74375edd01b5ad6c69bdac12939f9dd8a5d0a37bbe4408a6a97a6f982",
+      "summary": "DOMINIUM — comparativo histórico das cinco rotas para WhatsApp (03/11/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
     },
@@ -6542,8 +6555,8 @@
     {
       "path": "tests/test_backlog_imperium_service.py",
       "category": "tests",
-      "bytes": 6756,
-      "sha256": "a35e4bfa3c024b8fc4669684cd5402d00a950a218d1e70288fdce385da814d03",
+      "bytes": 8453,
+      "sha256": "5c945dfbedab1d323cb83a98e3e1bd3d5185b565c665704e75f13533261bdf9f",
       "summary": "",
       "imports": [
         "backlog_imperium_service",
@@ -6560,7 +6573,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 20
+      "symbol_count": 21
     },
     {
       "path": "tests/test_backlog_imperium_year.py",

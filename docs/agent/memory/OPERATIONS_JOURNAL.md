@@ -237,3 +237,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 388 atividades lidas de 5 rotas reais; 104 improdutivas e 176 pendentes snapshot; 42 testes Python passam; sidecar HTTP 200 com 101703 historicos e 388 rotas, 5 fontes.
 
 **Próximo passo/pendência:** Verificar a execucao DataSnap das 22h de 03/11 e confirmar deploy da interface web na branch principal.
+
+## 2026-11-03 17:57 UTC — Comparativo das 5 rotas para relatório WhatsApp por cidade e técnico
+
+**Motivo:** Usuário esclareceu fluxo antigo: carrega cinco rotas, analisa histórico Imperium, copia relatório integral para o grupo; respeitar cidade superior.
+
+**Alterado:** GET /compare existente agora retorna cidade distinta por bucket (NTL/PWM/FTZ/JCR/MRO), cruza perfil correspondente e informa total/truncamento; nenhum POST operacional.
+
+**Verificação:** 43 testes Python na estação e 33 no servidor aprovados. Smoke HTTP 200: 388 atividades, 136 correspondências históricas e 5 buckets; 101703 linhas históricas preservadas.
+
+**Próximo passo/pendência:** Publicar interface com resumo por cidade e texto WhatsApp; verificar execução automática DataSnap às 22h.

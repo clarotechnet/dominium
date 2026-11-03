@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-03T17:15:48+00:00
-- Source fingerprint: `dc12e6d6594b6248`
-- Indexed files: 496
-- Indexed symbols: 4247
+- Generated: 2026-11-03T17:57:37+00:00
+- Source fingerprint: `98ec5f08f3d9a0c3`
+- Indexed files: 497
+- Indexed symbols: 4248
 - API path references: 555
 
 ## Navigation rule
@@ -192,7 +192,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 - shared: 163 files
 - tooling-deploy: 48 files
-- docs: 46 files
+- docs: 47 files
 - tests: 147 files
 
 ## Search indexes
