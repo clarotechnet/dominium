@@ -10,6 +10,7 @@ shared	adm_allocation.py	3			Read-only allocation for DESC multi-OS activities.	
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
 orchestration	app.py	151	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	227ade0c245b77ed
+shared	apply_loading_feedback.py		1			a4d31184fe96d989
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -266,8 +267,10 @@ shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/all-operations.js	14	2		Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */	2bc9ea7f772fad01
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
-frontend	static/backlog-analysis.css					bf4fc7d77ca612ce
-frontend	static/backlog-analysis.js	11	7		DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */	f382012b0763c6ec
+frontend	static/backlog-analysis.css					1adb5fde1c5b6ead
+frontend	static/backlog-analysis.js	17	7		DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */	aafd78ff5396311c
+frontend	static/backlog-report-image.js	4			DOMINIUM — export PNG do resumo de códigos históricos por cidade.	19251bc949adc54d
+frontend	static/backlog-report.js	7			Read-only WhatsApp report derived from the route × historical-code comparison.	8d1b8adce447ba6f
 frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	0b07900bcc977ee8
 frontend	static/daily-stock-parser.js	6			Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */	62266f55fa3c9f65
 frontend	static/daily-stock.js	11	2		Estoque diario independente do Imperium; importacao por arquivo e historico. */	5202763e802b7213
@@ -276,7 +279,7 @@ frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			eabf3d5017678c87
+frontend	static/index.html		1			1aecf0f4e7f4b0f1
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
@@ -285,10 +288,10 @@ frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no pain
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
 frontend	static/stock-analysis-ui.js	13	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	2217d26e2cfc2140
-frontend	static/stock-daily-analysis-ui.js	10	3		Daily equipment: independent period/catalog; Atlas QUERY is not its source. */	ce5a90aca5ea44e6
+frontend	static/stock-daily-analysis-ui.js	12	3		Daily equipment: independent period/catalog; Atlas QUERY is not its source. */	14a1c9c412e8a9db
 frontend	static/stock-nav.js	6			Navegacao consolidada de Estoque (mantem os modulos existentes). */	1cd96c23d87bb70a
 frontend	static/stock-report-preview-ui.js	5	2		The three stock analysis processes have independent, paged workspace views. */	2939b473e78d754d
-frontend	static/styles.css					a7ac1c9c026ee8ee
+frontend	static/styles.css					a73066faa0b46aee
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
@@ -328,7 +331,9 @@ tests	tests/test_atlas_query_ui_status.js	4	1			f9172992b8656ecb
 tests	tests/test_auth_store.py	7				2131129f824fbae2
 tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
 tests	tests/test_backlog_hostinger_proxy.js	3	9			0ffdbca1cc822dd4
-tests	tests/test_backlog_ui_deploy_20261031.py		3			f13caba015d1ec11
+tests	tests/test_backlog_report_image.js	1				b8b66a90f2cb8ddd
+tests	tests/test_backlog_ui_deploy_20261031.py		3			403e0914fc6ebdf1
+tests	tests/test_backlog_whatsapp_report.js					c136df0853e1647d
 tests	tests/test_build_hostinger_node_release.py	3				157aef4ebdf049a3
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87
@@ -411,6 +416,7 @@ tests	tests/test_serial_datasnap_history.py	9	3		Safe synthetic tests: no actual
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_analysis_proxy.cjs	3	10			e2efb9fdbb96ae28
 tests	tests/test_stock_analysis_reports.py	12	7		Tests for safe, cached, actor-scoped stock analysis report generation.	81edf96228f8fb8c
+tests	tests/test_stock_daily_analysis_feedback.cjs	4	1			a5102f5c52dd4d56
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_navigation_monitor.cjs	1				aefd6adac71f9b55
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35

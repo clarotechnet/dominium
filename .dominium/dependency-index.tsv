@@ -70,6 +70,7 @@ toa_secondary_session	app.py
 unicodedata	app.py
 urllib	app.py
 webbrowser	app.py
+pathlib	apply_loading_feedback.py
 __future__	auth_store.py
 base64	auth_store.py
 contextlib	auth_store.py

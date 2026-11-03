@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-03T17:52:25+00:00",
+  "generated_at": "2026-11-03T18:35:11+00:00",
   "schema": 2,
-  "source_fingerprint": "c0aa84f9a754069138f99d9cba21620406e6f6e001cd4f6c906d36ee103a7094",
+  "source_fingerprint": "d56fb3145edd3813691a5ea7ddc5341364f133b69d44dd36beeb5e9d35f2fa43",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -368,6 +368,23 @@
       ],
       "entrypoint": true,
       "symbol_count": 151
+    },
+    {
+      "path": "apply_loading_feedback.py",
+      "category": "shared",
+      "bytes": 6274,
+      "sha256": "a4d31184fe96d9897af6d1e7e7eafa416ac921e5ddfb6d6e3cd6b634415d84d4",
+      "summary": "",
+      "imports": [
+        "pathlib"
+      ],
+      "endpoints": [
+        "/api/stock/analyses/daily?city="
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "auth_store.py",
@@ -5020,8 +5037,8 @@
     {
       "path": "static/backlog-analysis.css",
       "category": "frontend",
-      "bytes": 2473,
-      "sha256": "bf4fc7d77ca612ce1f34a99c325ecef9cd5b5811c4046e503e1a7c255a68f73c",
+      "bytes": 4481,
+      "sha256": "1adb5fde1c5b6ead688826a8f891a1c5913b62099fb9c5a1f2a4c867175121ae",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -5033,12 +5050,12 @@
     {
       "path": "static/backlog-analysis.js",
       "category": "frontend",
-      "bytes": 13309,
-      "sha256": "f382012b0763c6ec6cdf012b1fa49ea2f8bca70aedebde612f9141dd4d034e35",
+      "bytes": 20363,
+      "sha256": "aafd78ff5396311ce8b14ccfb88b36de1b78d9557d96058d3e6af735d696546e",
       "summary": "DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */",
       "imports": [],
       "endpoints": [
-        "/api/backlog/year/compare?limit=300&codes=",
+        "/api/backlog/year/compare?limit=1000&codes=",
         "/api/backlog/year/fora-rota?profile=",
         "/api/backlog/year/pause",
         "/api/backlog/year/routes",
@@ -5049,7 +5066,33 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 11
+      "symbol_count": 17
+    },
+    {
+      "path": "static/backlog-report-image.js",
+      "category": "frontend",
+      "bytes": 6839,
+      "sha256": "19251bc949adc54d4e981be95689828dbf6c8b6ddcc74da20b66675d7d76da28",
+      "summary": "DOMINIUM — export PNG do resumo de códigos históricos por cidade.",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
+      "path": "static/backlog-report.js",
+      "category": "frontend",
+      "bytes": 4985,
+      "sha256": "8d1b8adce447ba6f045e52338aaef64b9db3d633127eab2e38f52d1e6fd21539",
+      "summary": "Read-only WhatsApp report derived from the route × historical-code comparison.",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
     },
     {
       "path": "static/confront.js",
@@ -5176,8 +5219,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 154428,
-      "sha256": "eabf3d5017678c87594263ff11c28e09c86479cc61f6a65486846f0613ddcd9a",
+      "bytes": 156349,
+      "sha256": "1aecf0f4e7f4b0f13454e21a8802679ee18fa8e4ae59574b3c3da846c477a096",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5301,8 +5344,8 @@
     {
       "path": "static/stock-daily-analysis-ui.js",
       "category": "frontend",
-      "bytes": 8339,
-      "sha256": "ce5a90aca5ea44e613b8f944d5ad2292901f3ef92ea429c458537efba1c2e230",
+      "bytes": 9742,
+      "sha256": "14a1c9c412e8a9dbfae204db9541ac569947c4a2f83758bd825b0a2cb74ec89e",
       "summary": "Daily equipment: independent period/catalog; Atlas QUERY is not its source. */",
       "imports": [],
       "endpoints": [
@@ -5313,7 +5356,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 10
+      "symbol_count": 12
     },
     {
       "path": "static/stock-nav.js",
@@ -5347,8 +5390,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 225176,
-      "sha256": "a7ac1c9c026ee8ee905fa4a9c3fc2d1e96af6ab4ae5eaff375c3bfbcb7300543",
+      "bytes": 225983,
+      "sha256": "a73066faa0b46aeeff1339db2e5f6740e8b92af9b56b3266dd3b1cb1565fa616",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6102,10 +6145,23 @@
       "symbol_count": 3
     },
     {
+      "path": "tests/test_backlog_report_image.js",
+      "category": "tests",
+      "bytes": 2011,
+      "sha256": "b8b66a90f2cb8dddf66159042bffb68045db6d3bb777444a385e592a56c71545",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "tests/test_backlog_ui_deploy_20261031.py",
       "category": "tests",
-      "bytes": 2989,
-      "sha256": "f13caba015d1ec11235eb2f3722b0339d1f0fba41ec7cf500eeb38841940fa61",
+      "bytes": 3507,
+      "sha256": "403e0914fc6ebdf13efeff7e9c251bef620fd039fbe5581fd7eac01d64838af5",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6113,6 +6169,19 @@
         "/api/backlog/year/status",
         "/api/backlog/year/toa-import"
       ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "tests/test_backlog_whatsapp_report.js",
+      "category": "tests",
+      "bytes": 3065,
+      "sha256": "c136df0853e1647d0e5e6b4da94b418315ef1d5b69b2e400be91caafb3998112",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
@@ -7800,6 +7869,21 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 12
+    },
+    {
+      "path": "tests/test_stock_daily_analysis_feedback.cjs",
+      "category": "tests",
+      "bytes": 4269,
+      "sha256": "a5102f5c52dd4d56dc7d4c44c6f83633b1c809870857cbee8cbaa9057c775d40",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/stock/analyses/daily?city=natal&start=2026-11-01&end=2026-11-02"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
     },
     {
       "path": "tests/test_stock_inventory.py",

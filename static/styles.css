@@ -7680,3 +7680,20 @@ body.sidebar-collapsed .stock-group-chevron { display:none; }
 .stock-analysis-workspace table{width:100%;min-width:970px}
 .stock-analysis-workspace td,.stock-analysis-workspace th{padding:9px 12px;white-space:nowrap;border-bottom:1px solid #37373d}
 .stock-analysis-workspace th{background:#17171b}
+
+/* Retorno visível para a pesquisa do histórico de equipamentos. */
+.stock-daily-loading-indicator {
+ display:flex;align-items:center;gap:12px;padding:13px 16px;
+ border:1px solid rgba(255,52,89,.28);border-radius:9px;
+ background:rgba(244,37,76,.07);font-size:.82rem;color:var(--ink,#eee);
+ margin:12px 0;
+}
+.stock-daily-loading-indicator[hidden]{display:none!important}
+.stock-daily-loading-spinner{
+ display:inline-block;flex:0 0 18px;width:18px;height:18px;
+ border:2px solid rgba(255,255,255,.23);border-top-color:#ff3158;
+ border-radius:50%;animation:stock-daily-spinner 0.75s linear infinite;
+}
+.stock-daily-search-loading{cursor:progress;opacity:.88}
+@keyframes stock-daily-spinner{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.stock-daily-loading-spinner{animation:none}}

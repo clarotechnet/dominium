@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-03T17:52:25+00:00
-- Source fingerprint: `c0aa84f9a7540691`
-- Indexed files: 475
-- Indexed symbols: 4079
-- API path references: 500
+- Generated: 2026-11-03T18:35:11+00:00
+- Source fingerprint: `d56fb3145edd3813`
+- Indexed files: 481
+- Indexed symbols: 4103
+- API path references: 502
 
 ## Navigation rule
 
@@ -90,7 +90,9 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/all-operations.js` (14 symbols, 2 API paths) - Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */
 - `static/atlas-query-ui.js` (23 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
 - `static/backlog-analysis.css`
-- `static/backlog-analysis.js` (11 symbols, 7 API paths) - DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */
+- `static/backlog-analysis.js` (17 symbols, 7 API paths) - DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */
+- `static/backlog-report-image.js` (4 symbols) - DOMINIUM — export PNG do resumo de códigos históricos por cidade.
+- `static/backlog-report.js` (7 symbols) - Read-only WhatsApp report derived from the route × historical-code comparison.
 - `static/confront.js` (8 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
 - `static/daily-stock-parser.js` (6 symbols) - Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */
 - `static/daily-stock.js` (11 symbols, 2 API paths) - Estoque diario independente do Imperium; importacao por arquivo e historico. */
@@ -108,7 +110,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
 - `static/stock-analysis-ui.js` (13 symbols, 3 API paths) - Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */
-- `static/stock-daily-analysis-ui.js` (10 symbols, 3 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
+- `static/stock-daily-analysis-ui.js` (12 symbols, 3 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
 - `static/stock-nav.js` (6 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
 - `static/stock-report-preview-ui.js` (5 symbols, 2 API paths) - The three stock analysis processes have independent, paged workspace views. */
 - `static/styles.css`
@@ -123,6 +125,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `adm_allocation.py` (3 symbols) - Read-only allocation for DESC multi-OS activities.
 - `AGENTS.md` (1 DataSnap methods) - DOMINIUM agent guide
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.
+- `apply_loading_feedback.py` (1 API paths)
 - `auth_store.py` (28 symbols) - Autenticacao local do DOMINIUM.
 - `auth_store_postgres.py` (18 symbols) - Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.
 - `auto_improductive_close.py` (23 symbols)
@@ -181,10 +184,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 152 files
+- shared: 153 files
 - tooling-deploy: 49 files
 - docs: 41 files
-- tests: 144 files
+- tests: 147 files
 
 ## Search indexes
 

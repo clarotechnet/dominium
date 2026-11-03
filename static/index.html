@@ -6,7 +6,7 @@
   <title>DOMINIUM</title>
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="/styles.css?v=20261030-subtabs-1">
+  <link rel="stylesheet" href="/styles.css?v=20261103-loading-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
   <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-image-1">
@@ -1072,9 +1072,9 @@
           </div>
         <section id="stockDailyAnalysisPanel" hidden class="stock-daily-analysis-panel">
           <h3>Analise diaria de equipamentos</h3>
-          <p class="workspace-description">A fonte diaria e o Imperium, nao a QUERY Atlas. Visualize cada aba e o historico salvo. A importacao do Excel final permite registrar dias anteriores enquanto a extracao automatica por periodo nao estiver integrada.</p>
+          <p class="workspace-description">A fonte diaria e o Imperium, nao a QUERY Atlas. Visualize cada aba e o historico salvo. A consulta por periodo pesquisa arquivos ja registrados. A importacao do Excel final permite registrar dias anteriores enquanto a extracao automatica do Imperium nao estiver integrada.</p>
           <div class="daily-stock-toolbar">
-            <label class="field"><span>Data de referencia</span><input type="date" id="stockDailyAnalysisDate"></label>
+            <label class="field"><span>Data do Excel a importar</span><input type="date" id="stockDailyAnalysisDate"></label>
             <label class="field"><span>Data inicial</span><input type="date" id="stockDailyRangeStart"></label>
             <label class="field"><span>Data final</span><input type="date" id="stockDailyRangeEnd"></label>
             <label class="field"><span>Historico da operacao</span><select id="stockDailyAnalysisHistory"></select></label>
@@ -1085,6 +1085,10 @@
             <label class="field"><span>Registrar Excel final de referencia</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
             <button class="button secondary" id="stockDailyAnalysisImport" type="button">Importar no historico</button>
             <button class="button secondary" id="stockDailyAnalysisDownload" type="button" disabled>Baixar XLSX</button>
+          </div>
+          <div id="stockDailyAnalysisLoading" class="stock-daily-loading-indicator" role="status" aria-live="polite" hidden>
+            <span class="stock-daily-loading-spinner" aria-hidden="true"></span>
+            <span>Consultando arquivos cadastrados no histórico da operação...</span>
           </div>
           <p id="stockDailyAnalysisMessage" class="stock-analysis-status" role="status" aria-live="polite"></p>
           <div id="stockDailyAnalysisTabs" class="stock-daily-analysis-tabs" role="group" aria-label="Abas do relatorio"></div>
@@ -2652,7 +2656,7 @@
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>
   <script src="/stock-nav.js?v=20261029-analysis-1"></script>
   <script src="/stock-analysis-ui.js?v=20261030-daily-1"></script>
-  <script src="/stock-daily-analysis-ui.js?v=20261030-subtabs-1"></script>
+  <script src="/stock-daily-analysis-ui.js?v=20261103-loading-1"></script>
   <script src="/stock-report-preview-ui.js?v=20261030-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>

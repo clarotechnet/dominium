@@ -5,7 +5,7 @@ const el=id=>document.getElementById(id);
 const panel=el("stockDailyAnalysisPanel");
 if(!panel)return;
 const tabs=["Atlas","Chips Atlas","IMPERIUM","CHIP IMPERIUM","Assinantes","Nomes."];
-let selected=null,activeTab=0,fetching=false;
+let selected=null,activeTab=0,fetching=false,refreshQueued=false;
 let allRuns=[];
 const currentCity=()=>state.profile;
 const canWrite=()=>["admin","controller"].includes(state.authUser?.role);
@@ -26,49 +26,95 @@ function setVisible(visible){
  el("stockDailyAnalysisImport").hidden=!canWrite()||currentCity()==="all";
  void loadDaily();
 }
+function setLoading(on){
+ const button=el("stockDailyAnalysisRefresh");
+ const indicator=el("stockDailyAnalysisLoading");
+ button.disabled=on;
+ button.classList.toggle("stock-daily-search-loading",on);
+ button.setAttribute("aria-busy",String(on));
+ button.textContent=on?"Consultando período...":"Consultar período";
+ indicator.hidden=!on;
+ el("stockDailyAnalysisTable").setAttribute("aria-busy",String(on));
+}
+function formatDay(day){
+ if(!day)return "";
+ const parts=day.split("-");
+ return parts.length===3?parts[2]+"/"+parts[1]+"/"+parts[0]:day;
+}
 async function loadDaily(){
- if(fetching)return;
+ if(fetching){
+   refreshQueued=true;
+   status("Uma consulta ainda está em andamento. A nova seleção será pesquisada em seguida.");
+   return;
+ }
  fetching=true;
- const city=currentCity(),day=el("stockDailyAnalysisDate").value;
+ const city=currentCity();
+ const day=el("stockDailyAnalysisDate").value;
+ const start=el("stockDailyRangeStart").value;
+ const end=el("stockDailyRangeEnd").value;
+ const place=city==="all"?"todas as cidades":city.toUpperCase();
+ const period=start&&end?formatDay(start)+" a "+formatDay(end):"referência "+formatDay(day);
+ setLoading(true);
+ status("Consultando histórico de "+place+" • "+period+"...");
  try{
    let url="/api/stock/analyses/daily?city="+encodeURIComponent(city);
-   const start=el("stockDailyRangeStart").value,end=el("stockDailyRangeEnd").value;
-   if(start&&end){if(start>end)throw new Error("Data inicial maior que a final");url+="&start="+start+"&end="+end;}
-   else if(day)url+="&date="+encodeURIComponent(day);
+   if(start||end){
+     if(!start||!end)throw new Error("Informe a data inicial e a data final.");
+     if(start>end)throw new Error("A data inicial não pode ser posterior à data final.");
+     url+="&start="+encodeURIComponent(start)+"&end="+encodeURIComponent(end);
+   }else if(day)url+="&date="+encodeURIComponent(day);
    const data=await request(url,{timeoutMs:30000});
-   if(city!==currentCity())return;
-   selected=data.selected||data.latest||null;
+   if(city!==currentCity()){
+     refreshQueued=true;
+     return;
+   }
+   if(!data?.ok)throw new Error(data?.error||"Resposta inválida da consulta.");
+   const history=Array.isArray(data.history)?data.history:[];
+   // Não mostrar a última análise de outra data como se pertencesse ao período solicitado.
+   selected=data.selected||null;
    allRuns=[];
    if(city==="all"){
      const latestByCity=new Map();
-     for(const item of data.history||[]){
+     for(const item of history){
        if(!latestByCity.has(item.city))latestByCity.set(item.city,item);
      }
      allRuns=[...latestByCity.values()];
    }
    const historic=el("stockDailyAnalysisHistory");
    const options=document.createDocumentFragment();
-   for(const item of data.history||[]){
+   for(const item of history){
      const opt=document.createElement("option");
      opt.value=item.id;
      opt.textContent=item.city.toUpperCase()+" • "+item.date+" • "+item.origin+" • "+item.filename;
      options.appendChild(opt);
    }
    historic.replaceChildren(options);
+   const finished=new Date().toLocaleTimeString("pt-BR");
    if(selected){
      historic.value=selected.id;
-     status((data.selected?"Período selecionado":"Última análise disponível")+
-       ": "+selected.date+" • "+selected.origin+
-       ". Dados compartilhados entre usuários. Fonte: "+selected.filename);
+     status("Consulta concluída às "+finished+" • "+history.length+
+       " arquivo(s) encontrado(s) em "+place+" ("+period+"). Exibindo "+
+       formatDay(selected.date)+" • "+selected.filename+".");
      await displaySheet(0);
    }else{
      el("stockDailyAnalysisTable").replaceChildren();
      el("stockDailyAnalysisTabs").replaceChildren();
+     el("stockDailyAnalysisSheetInfo").textContent="";
      el("stockDailyAnalysisDownload").disabled=true;
-     status("Nenhuma análise diária registrada para esta operação. A extração automática por período do Imperium ainda não está integrada. É possível registrar o Excel final histórico.");
+     status("Consulta concluída às "+finished+" • nenhum arquivo encontrado em "+
+       place+" ("+period+"). Esta consulta pesquisa o histórico já salvo; "+
+       "a extração automática do Imperium ainda não está integrada.");
    }
- }catch(error){status("Erro ao consultar análise diária: "+(error.message||error),true)}
- finally{fetching=false;}
+ }catch(error){
+   status("Falha na consulta de "+place+" ("+period+"): "+(error.message||error),true);
+ }finally{
+   fetching=false;
+   setLoading(false);
+   if(refreshQueued){
+     refreshQueued=false;
+     void loadDaily();
+   }
+ }
 }
 async function displaySheet(index){
  if(!selected)return;
@@ -153,9 +199,6 @@ async function importWorkbook(){
  finally{button.disabled=false;}
 }
 el("stockDailyAnalysisOpen").addEventListener("click",()=>setVisible(true));
-el("stockDailyAnalysisDate").addEventListener("change",()=>void loadDaily());
-el("stockDailyRangeStart").addEventListener("change",()=>void loadDaily());
-el("stockDailyRangeEnd").addEventListener("change",()=>void loadDaily());
 el("stockDailyAnalysisHistory").addEventListener("change",async e=>{
  const id=e.target.value;const city=currentCity();
  try{
