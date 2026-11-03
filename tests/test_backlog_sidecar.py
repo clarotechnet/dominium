@@ -15,6 +15,11 @@ TOKEN="Z"*52
 class FakeService:
     def __init__(self): self.calls=[]
     def snapshot(self): return {"ok":True,"running":False}
+    def route_import_state(self): return {"status":"idle","running":False,"done":0,"total":5}
+    def daily_treatment(self): return {"ok":True,"total":0,"counts":{},"rows":[],"sources":[]}
+    def start_toa_route_import(self):
+        self.calls.append(("toa",{}))
+        return {"running":True,"status":"running","done":0,"total":5}
     def start(self,**kw):
         self.calls.append(("start",kw))
         return {"ok":True,"mode":kw["mode"],"tasks":1}
@@ -56,6 +61,15 @@ class SidecarHttpContract(unittest.TestCase):
     def test_authenticated_status_and_compare(self):
         self.assertEqual(self.request("GET","/api/backlog/year/status")[0],200)
         self.assertEqual(self.request("GET","/api/backlog/year/compare?limit=100")[0],200)
+    def test_toa_route_uses_existing_guarded_endpoints(self):
+        status,data=self.request("GET","/api/backlog/year/status")
+        self.assertEqual(status,200)
+        self.assertEqual(data["daily_treatment"]["total"],0)
+        self.assertEqual(data["toa_import"]["status"],"idle")
+        status,data=self.request("POST","/api/backlog/year/routes",{"source":"toa"})
+        self.assertEqual(status,202)
+        self.assertEqual(self.service.calls,[("toa",{})])
+        self.assertNotEqual(self.request("POST","/api/backlog/year/routes",{"source":"toa","force":True})[0],202)
     def test_no_token_or_viewer_rejected(self):
         self.assertEqual(self.request("GET","/api/backlog/year/status",authorization="Bearer invalid")[0],401)
         self.assertEqual(self.request("GET","/api/backlog/year/status",role="viewer")[0],401)

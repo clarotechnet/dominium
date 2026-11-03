@@ -24,6 +24,8 @@ from pathlib import Path
 from contextlib import contextmanager
 
 from backlog_imperium_year import PROFILES, plan_days, year_window, valid_close_code, normalize_city
+from backlog_toa_route import TOADailyRouteExporter
+from backlog_daily_treatment import classify_route_activity
 
 SCHEMA = """
 PRAGMA journal_mode=WAL;
@@ -67,7 +69,7 @@ def utcnow():
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
 
 class BacklogHistoryService:
-    def __init__(self, db_path: str | Path, profiles: dict, *, clock=None, sleep=None, operation_gate=None, read_guard=None):
+    def __init__(self, db_path: str | Path, profiles: dict, *, clock=None, sleep=None, operation_gate=None, read_guard=None, toa_helper=None):
         self.db_path = Path(db_path)
         self.profiles = profiles
         self.clock = clock or dt.date.today
@@ -77,12 +79,19 @@ class BacklogHistoryService:
         self.read_guard = read_guard
         self._stop = threading.Event()
         self._runner = None
+        self._toa_exporter = TOADailyRouteExporter(toa_helper) if toa_helper else None
+        self._toa_job = {"running":False,"status":"idle","done":0,"total":5,"files":[]}
+        self._toa_thread = None
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         with self._connect() as conn:
             conn.executescript(SCHEMA)
             columns={r[1] for r in conn.execute("PRAGMA table_info(history)")}
             if "status" not in columns:
                 conn.execute("ALTER TABLE history ADD COLUMN status TEXT NOT NULL DEFAULT 'DESCONHECIDO'")
+            route_fields = {col[1] for col in conn.execute("PRAGMA table_info(route_rows)")}
+            for colname in ("activity_status", "activity_date", "activity_type"):
+                if colname not in route_fields:
+                    conn.execute("ALTER TABLE route_rows ADD COLUMN "+colname+" TEXT NOT NULL DEFAULT ''")
             conn.execute("UPDATE sync_runs SET status='interrupted', finished_at=?, error=? WHERE status='running'",
                          (utcnow(),"Processo reiniciado; cursor preservado"))
             conn.commit()
@@ -252,6 +261,66 @@ class BacklogHistoryService:
                              (status,utcnow(),error,run_id))
                 conn.commit()
 
+    def route_import_state(self):
+        with self._mutex:
+            return dict(self._toa_job)
+
+    def start_toa_route_import(self):
+        """Start bounded, read-only export of the five configured DMV routes."""
+        if self._toa_exporter is None:
+            raise RuntimeError("Captura automatica do TOA nao configurada neste servidor")
+        with self._mutex:
+            if self._toa_job.get("running"):
+                raise RuntimeError("As rotas do TOA ja estao sendo consultadas")
+            if self._runner is not None and self._runner.is_alive():
+                raise RuntimeError("Historico DataSnap em execucao; tente depois")
+            self._toa_job = {"running":True,"status":"running","done":0,"total":5,
+                             "files":[],"route":"","error":None}
+            self._toa_thread=threading.Thread(target=self._import_toa_worker,
+                                               daemon=True,name="dominium-toa-rotas-dia")
+            self._toa_thread.start()
+            return dict(self._toa_job)
+
+    def _import_toa_worker(self):
+        try:
+            def progress(route,done,total):
+                with self._mutex:
+                    self._toa_job.update({"route":route,"done":done,"total":total})
+            day=dt.datetime.now(dt.timezone(dt.timedelta(hours=-3))).date()
+            files=self._toa_exporter.fetch(day,guard=self.read_guard,progress=progress)
+            result=self.import_route_files(files)
+            with self._mutex:
+                self._toa_job.update({"running":False,"status":"completed","done":5,
+                                      "files":result["files"],"route":"","error":None})
+        except Exception as exc:
+            with self._mutex:
+                self._toa_job.update({"running":False,"status":"failed","route":"",
+                                      "error":(type(exc).__name__+": "+str(exc))[:160]})
+
+    def daily_treatment(self,limit=1000):
+        """Status from today's TOA route: pending NEVER means improductive."""
+        limit=max(1,min(int(limit),2500))
+        with self._connect() as conn:
+            rows=conn.execute("""SELECT r.contract,r.city,r.technician,r.bairro,
+                r.window,r.os_number,r.route_code,r.activity_status,
+                r.activity_date,r.activity_type,b.filename
+                FROM route_rows r
+                JOIN route_batches b ON b.route_hash=r.route_hash
+                ORDER BY r.city,r.technician,r.row_num""").fetchall()
+        states={}
+        result=[]
+        for item in rows:
+            row=dict(item)
+            label,code=classify_route_activity(row["activity_status"],row["route_code"])
+            row["treatment"]=label
+            row["validated_code"]=code
+            states[label]=states.get(label,0)+1
+            if len(result)<limit:
+                result.append(row)
+        return {"ok":True,"total":len(rows),"counts":states,"rows":result,
+                "sources":sorted({r["filename"] for r in rows}),
+                "note":"Apenas concluidas com codigo validado podem ser improdutivas. Pendente, em rota e iniciada nunca sao tratadas como improdutivas."}
+
     def import_route_files(self,files):
         """Manual Claro xlsx or csv upload, up to 5 files, 3 MiB each."""
         if not isinstance(files,list) or not 1 <= len(files) <= 5:
@@ -281,12 +350,15 @@ class BacklogHistoryService:
             # do arquivo; planilhas multiaba usam o cabecalho de cada secao.
             aliases={
                 "Contrato":("CONTRATO","NUMERO DO CONTRATO","NUMERO CONTRATO","N CONTRATO"),
-                "Recurso":("RECURSO","TECNICO","NOME DO TECNICO","NOME TECNICO","NOME TOA"),
+                "Recurso":("RECURSO","TECNICO","NOME DO TECNICO","NOME TECNICO","NOME TOA","LOGIN DO TECNICO"),
                 "Cidade":("CIDADE","MUNICIPIO","LOCALIDADE"),
                 "Bairro":("BAIRRO","BAIRRO CLIENTE"),
                 "Janela de Serviço":("JANELA DE SERVICO","JANELA","HORARIO","HORARIO PREVISTO"),
                 "Número da WO":("NUMERO DA WO","NUMERO WO","WO","NUMERO DA OS","OS"),
                 "Cód de Baixa 1":("COD DE BAIXA 1","CODIGO DE BAIXA 1","COD BAIXA 1","CODIGO BAIXA"),
+                "Data":("DATA",),
+                "Status da Atividade":("STATUS DA ATIVIDADE",),
+                "Tipo de Atividade":("TIPO DE ATIVIDADE",),
             }
             def normalized(raw_label):
                 text=unicodedata.normalize("NFKD",str(raw_label or ""))
@@ -335,7 +407,9 @@ class BacklogHistoryService:
                     raise ValueError("Cidade nao identificada; informe na planilha ou no nome")
                 entries.append((digest,line_num,contract,city,
                     col("Recurso")[:140],col("Bairro")[:120],col("Janela de Serviço")[:70],
-                    col("Número da WO")[:70],col("Cód de Baixa 1")[:100]))
+                    col("Número da WO")[:70],col("Cód de Baixa 1")[:100],
+                    col("Status da Atividade")[:80],col("Data")[:35],
+                    col("Tipo de Atividade")[:130]))
             if valid_headers==0:
                 raise ValueError("Cabecalho TOA nao encontrado (Contrato e Recurso): "+name)
             if not entries:
@@ -347,8 +421,8 @@ class BacklogHistoryService:
             conn.execute("DELETE FROM route_batches")
             for digest,name,entries in parsed:
                 conn.execute("DELETE FROM route_rows WHERE route_hash=?",(digest,))
-                conn.executemany("""INSERT INTO route_rows(route_hash,row_num,contract,city,technician,bairro,window,os_number,route_code)
-                  VALUES(?,?,?,?,?,?,?,?,?)""",entries)
+                conn.executemany("""INSERT INTO route_rows(route_hash,row_num,contract,city,technician,bairro,window,os_number,route_code,activity_status,activity_date,activity_type)
+                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",entries)
                 conn.execute("""INSERT INTO route_batches(route_hash,filename,rows_count,imported_at) VALUES(?,?,?,?)
                   ON CONFLICT(route_hash) DO UPDATE SET filename=excluded.filename,rows_count=excluded.rows_count,
                   imported_at=excluded.imported_at""",(digest,name,len(entries),utcnow()))

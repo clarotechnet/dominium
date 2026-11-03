@@ -80,6 +80,8 @@ class DummyService:
         connection=sqlite3.connect(self.db)
         try: yield connection
         finally: connection.close()
+    def route_import_state(self):
+        return {"running":False}
     def snapshot(self):
         return {'running': self.busy}
     def start(self, **kw):

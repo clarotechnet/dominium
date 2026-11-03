@@ -227,3 +227,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 35 testes backlog no PC e 26 testes no servidor aprovados; HTTP 200 confirmou historico 101703, 1 rota e 4 checkpoints; Recife janeiro consultado sem DESC; sem escrita de OS.
 
 **Próximo passo/pendência:** Verificar primeira rodada automatica 03/11 as 22h pelo sync_runs; falta apenas auditoria de 8 contratos invalidos e eventual disponibilidade de historico Recife anterior a fevereiro.
+
+## 2026-11-03 17:15 UTC — Tratativa diaria: 5 rotas TOA e status pendente
+
+**Motivo:** Usuario confirmou que pendente e OS nao iniciada, sem codigo; usar os cinco arquivos TOA na tratativa diaria e renomear menu Query Atlas.
+
+**Alterado:** Sidecar importa em leitura 5 buckets DMV do TOA via helper existente e endpoint /routes source toa; /status contem progresso e tratativa; codigos 101 106 306 404 improdutivos somente com status concluido; backups e rollback.
+
+**Verificação:** 388 atividades lidas de 5 rotas reais; 104 improdutivas e 176 pendentes snapshot; 42 testes Python passam; sidecar HTTP 200 com 101703 historicos e 388 rotas, 5 fontes.
+
+**Próximo passo/pendência:** Verificar a execucao DataSnap das 22h de 03/11 e confirmar deploy da interface web na branch principal.

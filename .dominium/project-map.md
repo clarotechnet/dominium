@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-03T14:44:53+00:00
-- Source fingerprint: `2f4a761c1c572afa`
-- Indexed files: 492
-- Indexed symbols: 4221
-- API path references: 554
+- Generated: 2026-11-03T17:15:48+00:00
+- Source fingerprint: `dc12e6d6594b6248`
+- Indexed files: 496
+- Indexed symbols: 4247
+- API path references: 555
 
 ## Navigation rule
 
@@ -24,6 +24,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## toa
 
+- `backlog_toa_route.py` (4 symbols) - Read-only capture of the five DMV daily routes using the existing TOA session.
 - `Conectar TOA.cmd`
 - `Configurar TOA.cmd`
 - `Configurar_Coletor_TOA.cmd`
@@ -75,7 +76,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## imperium
 
 - `.imperium-project.json`
-- `backlog_imperium_service.py` (14 symbols) - Read-only annual Imperium history loader for the DOMINIUM backlog panel.
+- `backlog_imperium_service.py` (18 symbols) - Read-only annual Imperium history loader for the DOMINIUM backlog panel.
 - `backlog_imperium_year.py` (9 symbols) - Planejamento seguro da sincronizacao anual Imperium/DataSnap.
 - `imperium_api.py` (142 symbols, 3 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `imperium_http_api.py` (37 symbols, 2 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -130,6 +131,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `auto_improductive_close.py` (23 symbols)
 - `backlog_bridge_auth.py` (1 symbols, 7 API paths) - Strict bearer-gated VPC authorization for the DOMINIUM Backlog module.
 - `backlog_daily_scheduler.py` (6 symbols) - Idempotent 22:00 (UTC-03:00) read-only DataSnap history scheduling.
+- `backlog_daily_treatment.py` (3 symbols) - Strict status interpretation for daily TOA route treatment.
 - `backlog_read_guard.py` (3 symbols) - Fail-closed guard for read-only Imperium history when OS writers are active.
 - `backlog_seed_xlsx.py` (8 symbols) - Initial XLSX bootstrap for DOMINIUM's read-only DESC history.
 - `backlog_sidecar.py` (3 symbols, 7 API paths) - Independent localhost-only Backlog HTTP service.
@@ -188,10 +190,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 162 files
+- shared: 163 files
 - tooling-deploy: 48 files
-- docs: 45 files
-- tests: 146 files
+- docs: 46 files
+- tests: 147 files
 
 ## Search indexes
 

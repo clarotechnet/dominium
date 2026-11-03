@@ -365,6 +365,7 @@ endpoint	path
 /api/backlog/year/status	tests/test_backlog_private_bridge.js
 /api/backlog/year/status?unexpected=yes	tests/test_backlog_private_bridge.js
 /api/backlog/year/compare?limit=100	tests/test_backlog_sidecar.py
+/api/backlog/year/routes	tests/test_backlog_sidecar.py
 /api/backlog/year/start	tests/test_backlog_sidecar.py
 /api/backlog/year/status	tests/test_backlog_sidecar.py
 /api/backlog/year/unknown	tests/test_backlog_sidecar.py

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-03T14:44:53+00:00",
+  "generated_at": "2026-11-03T17:15:48+00:00",
   "schema": 2,
-  "source_fingerprint": "2f4a761c1c572afaf0fed7155099cc945154de6b0c6d8895eed295dab2b82879",
+  "source_fingerprint": "dc12e6d6594b62484ed35a52c8846ab60035f4e7335141c3aa160b1294a9dd8a",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -487,8 +487,8 @@
     {
       "path": "backlog_daily_scheduler.py",
       "category": "shared",
-      "bytes": 4059,
-      "sha256": "f0ebbf00bb7ab2022b011d91f4d14ccd9cc32b5a15dac9521a8183718cfd8cac",
+      "bytes": 4107,
+      "sha256": "7282b8c33b14afdea215766e475714b006b6e792aeb33ae5e4fb40579b633a58",
       "summary": "Idempotent 22:00 (UTC-03:00) read-only DataSnap history scheduling.",
       "imports": [
         "__future__",
@@ -505,14 +505,33 @@
       "symbol_count": 6
     },
     {
+      "path": "backlog_daily_treatment.py",
+      "category": "shared",
+      "bytes": 1643,
+      "sha256": "c96c8caaa925459bc731fb12211e0441ac9ce7a8bbdc10dd3d31b359100162b7",
+      "summary": "Strict status interpretation for daily TOA route treatment.",
+      "imports": [
+        "__future__",
+        "re",
+        "unicodedata"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
       "path": "backlog_imperium_service.py",
       "category": "imperium",
-      "bytes": 23084,
-      "sha256": "de3d22bb4cf8362da6d635800d601b26be94d214908c19d68717aec52902824c",
+      "bytes": 27253,
+      "sha256": "74ad9b645382fa600f35e3fb3319a73b9fb7ea6040f07e5c68a38fbaac5f7453",
       "summary": "Read-only annual Imperium history loader for the DOMINIUM backlog panel.",
       "imports": [
         "__future__",
+        "backlog_daily_treatment",
         "backlog_imperium_year",
+        "backlog_toa_route",
         "base64",
         "contextlib",
         "csv",
@@ -535,7 +554,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 14
+      "symbol_count": 18
     },
     {
       "path": "backlog_imperium_year.py",
@@ -605,8 +624,8 @@
     {
       "path": "backlog_sidecar.py",
       "category": "shared",
-      "bytes": 9330,
-      "sha256": "27086ec1e1b45369c50ca2ec5958db9ce80a84a917c6443ba7c469422d04c148",
+      "bytes": 9801,
+      "sha256": "7a34fc23b584817c67c59c4834e852042945abda2abce819cd26410878a6a022",
       "summary": "Independent localhost-only Backlog HTTP service.",
       "imports": [
         "__future__",
@@ -642,6 +661,27 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 3
+    },
+    {
+      "path": "backlog_toa_route.py",
+      "category": "toa",
+      "bytes": 3841,
+      "sha256": "ba0512c4beaae8ceadd4bf7465fc3bb5c4c0ec20c15c898a95d6a575e593877a",
+      "summary": "Read-only capture of the five DMV daily routes using the existing TOA session.",
+      "imports": [
+        "__future__",
+        "base64",
+        "datetime",
+        "json",
+        "pathlib",
+        "re",
+        "subprocess"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
     },
     {
       "path": "bulk_orders.py",
@@ -1725,8 +1765,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 15645,
-      "sha256": "281bf81760a8075edaa80ac4f94564aa178874b83e77a5b2c7e7de096d61fb5f",
+      "bytes": 16438,
+      "sha256": "f82c350bb7d21c86c25a0dceae232c22c82e6a16b0b42dd8345cdd1ef3db4c6b",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -1782,6 +1822,19 @@
       "bytes": 4445,
       "sha256": "ea4171c7459d3f29e0a73d25a7778869cdd7e78111c40dd311e830d69d391e6c",
       "summary": "DOMINIUM task router",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/TOA_DAILY_ROUTE_20261103.md",
+      "category": "docs",
+      "bytes": 3454,
+      "sha256": "ff008cce313ab056ad495299b96176302da84a39b6a498f0464352432b618b00",
+      "summary": "DOMINIUM — rotas diárias TOA e tratativa de improdutivas (03/11/2026)",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -6461,10 +6514,36 @@
       "symbol_count": 6
     },
     {
+      "path": "tests/test_backlog_daily_treatment.py",
+      "category": "tests",
+      "bytes": 5104,
+      "sha256": "1aafeb34e575b1fb86739d59e5cef1bcbd217696f4f270c7220751b099cb8f52",
+      "summary": "Daily route status and existing five-bucket TOA export safety regression.",
+      "imports": [
+        "backlog_daily_treatment",
+        "backlog_imperium_service",
+        "backlog_toa_route",
+        "base64",
+        "datetime",
+        "io",
+        "json",
+        "pathlib",
+        "tempfile",
+        "threading",
+        "types",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 9
+    },
+    {
       "path": "tests/test_backlog_imperium_service.py",
       "category": "tests",
-      "bytes": 6194,
-      "sha256": "b55bacb0715e6970a03b7c5c2f11c2b258bae3bc5034e4fffb745598ab6a6106",
+      "bytes": 6756,
+      "sha256": "a35e4bfa3c024b8fc4669684cd5402d00a950a218d1e70288fdce385da814d03",
       "summary": "",
       "imports": [
         "backlog_imperium_service",
@@ -6481,7 +6560,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 19
+      "symbol_count": 20
     },
     {
       "path": "tests/test_backlog_imperium_year.py",
@@ -6537,8 +6616,8 @@
     {
       "path": "tests/test_backlog_seed_daily.py",
       "category": "tests",
-      "bytes": 5505,
-      "sha256": "43811941ef6e9d5d61555ebee9370858ff3c49dbc7e54857037edf98f826f6bc",
+      "bytes": 5572,
+      "sha256": "48aa0e04fa371cfa6969908af649e4c531e2cba4f729769e14ab7c3925c762ed",
       "summary": "Regression tests for the isolated DESC history bootstrap and 22h scheduler.",
       "imports": [
         "backlog_daily_scheduler",
@@ -6556,13 +6635,13 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 14
+      "symbol_count": 15
     },
     {
       "path": "tests/test_backlog_sidecar.py",
       "category": "tests",
-      "bytes": 3904,
-      "sha256": "36e4ffcd6dcb25018d6e5637ab47fa96f468acaec328c09bf5254138d7f324de",
+      "bytes": 4822,
+      "sha256": "deee678a06050ab35984b65d816a431f0b6dcba6e51db3a77d5829764a911bf4",
       "summary": "",
       "imports": [
         "backlog_sidecar",
@@ -6577,6 +6656,7 @@
       ],
       "endpoints": [
         "/api/backlog/year/compare?limit=100",
+        "/api/backlog/year/routes",
         "/api/backlog/year/start",
         "/api/backlog/year/status",
         "/api/backlog/year/unknown",
@@ -6585,7 +6665,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 19
+      "symbol_count": 23
     },
     {
       "path": "tests/test_backlog_worker_bridge.mjs",

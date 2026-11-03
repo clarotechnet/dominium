@@ -78,6 +78,8 @@ def build_handler(service: BacklogHistoryService):
                 if path=="/api/backlog/year/status":
                     if params:raise ValueError("Parametros inesperados")
                     result=service.snapshot()
+                    result["toa_import"]=service.route_import_state()
+                    result["daily_treatment"]=service.daily_treatment()
                 elif path=="/api/backlog/year/compare":
                     if set(params)-{"limit","codes"}:raise ValueError("Parametro invalido")
                     limit=int(params.get("limit","300"))
@@ -135,7 +137,11 @@ def build_handler(service: BacklogHistoryService):
                 elif path=="/api/backlog/year/pause":
                     self._send(HTTPStatus.OK,service.cancel())
                 elif path=="/api/backlog/year/routes":
-                    self._send(HTTPStatus.OK,service.import_route_files(data.get("files")))
+                    if data.get("source")=="toa":
+                        if set(data)!={"source"}:raise ValueError("Captura TOA aceita apenas source")
+                        self._send(HTTPStatus.ACCEPTED,service.start_toa_route_import())
+                    else:
+                        self._send(HTTPStatus.OK,service.import_route_files(data.get("files")))
                 elif path=="/api/backlog/year/sent":
                     self._send(HTTPStatus.OK,service.mark_sent(data))
                 else:
@@ -170,7 +176,8 @@ def main():
         for profile,(port,city,controller) in _PROFILES.items()
     }
     service=BacklogHistoryService(data/"backlog.sqlite3",profiles,
-        operation_gate=threading.RLock(),read_guard=OperationalReadGate())
+        operation_gate=threading.RLock(),read_guard=OperationalReadGate(),
+        toa_helper=src/"toa_secondary_bucket_export.mjs")
     server=ThreadingHTTPServer(("127.0.0.1",args.port),build_handler(service))
     scheduler=DailyHistoryScheduler(service) if args.daily_sync else None
     if scheduler:

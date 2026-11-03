@@ -47,7 +47,7 @@ class DailyHistoryScheduler:
             if conn.execute("SELECT 1 FROM daily_history_attempts WHERE scheduled_date=?",
                             (today,)).fetchone():
                 return "already_started"
-        if self.service.snapshot()["running"]:
+        if self.service.snapshot()["running"] or self.service.route_import_state()["running"]:
             return "reader_busy"
         # The daily task must not overlap itself, including after restarts.
         with self.service._connect() as conn:

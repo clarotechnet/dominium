@@ -114,6 +114,14 @@ class BacklogServiceTests(unittest.TestCase):
         self.assertEqual(len(self.svc.list_sent()["rows"]),1)
         self.assertEqual(self.api.calls,[])
 
+    def test_native_toa_csv_with_login_instead_of_recurso(self):
+        raw="Login do Técnico,Data,Status da Atividade,Cidade,Contrato,Número da WO,Cód de Baixa 1\nZ123,03/11/26,pendente,MOSSORO,1234567,2600123456,\n"
+        result=self.svc.import_route_files([{"name":"Atividades-MRO-DMV_03_11_26.csv", "base64":base64.b64encode(raw.encode()).decode()}])
+        self.assertEqual(result["files"][0]["rows"],1)
+        row=self.svc.compare()["rows"][0]
+        self.assertEqual(row["technician"],"Z123")
+        self.assertEqual(row["contract"],"1234567")
+
     def test_xlsx_manual_route_import(self):
         try:from openpyxl import Workbook
         except ImportError:self.skipTest("openpyxl not installed in dev")
