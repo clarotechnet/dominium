@@ -7,15 +7,23 @@ html=(root/'static/index.html').read_text(encoding='utf8')
 js=(root/'static/app.js').read_text(encoding='utf8')
 client=(root/'static/backlog-analysis.js').read_text(encoding='utf8')
 assert html.count('id="backlogWorkspace"')==1
+assert '<strong>Query | Atlas</strong>' in html
+assert '<h2>Query | Atlas</h2>' in html
+assert '<strong>Pendente</strong><small>Atlas × IMPERIUM</small>' not in html
+assert '"/api/backlog/year/routes",{source:"toa"}' in client
+assert '"/api/backlog/year/status"' in client
+assert '/api/backlog/year/toa-import' not in client
 assert html.count('id="backlogModule"')==1
-assert 'src="/backlog-analysis.js?v=20261031-1"' in html
+assert 'src="/backlog-analysis.js?v=20261103-toa-rotas-1"' in html
 assert 'href="/backlog-analysis.css?v=20261031-1"' in html
 assert 'src="/app.js?v=20261031-backlog-1"' in html
 for id in ['backlogRun','backlogPilot','backlogPause','backlogProfile',
            'backlogRouteFiles','backlogUpload','backlogCompare','backlogResult',
+           'backlogFromTOA','backlogAutoStatus','backlogDailyRefresh',
+           'backlogCopyImproductive','backlogDailyMetrics','backlogDailyResult',
            'backlogOffRouteResult','backlogSentResult']:
     assert html.count('id="'+id+'"')==1,id
-for tab in ['entry','result','offroute','sent']:
+for tab in ['entry','result','daily','offroute','sent']:
     assert 'data-backlog-tab="'+tab+'"' in html
     assert 'data-backlog-pane="'+tab+'"' in html
 assert 'const call = (path, opts={}) => request(path,' in client
@@ -53,4 +61,4 @@ assert not parser.errors,parser.errors
 assert not parser.stack,parser.stack
 print('BACKLOG_UI_STRUCTURAL_OK=True')
 print('STOCK_RECONCILIATION_MARKERS_PRESERVED=True')
-print('4_TABS_AND_UPLOAD_OK=True')
+print('5_TABS_TOA_AND_UPLOAD_OK=True')

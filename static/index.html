@@ -180,7 +180,7 @@
       </div>
       <button class="side-nav-item" id="confrontModule" type="button">
         <i data-lucide="git-compare-arrows" aria-hidden="true"></i>
-        <span><strong>Pendente</strong><small>Atlas × IMPERIUM</small></span>
+        <span><strong>Query | Atlas</strong><small>Atlas × IMPERIUM</small></span>
       </button>
       <button class="side-nav-item" id="techniciansModule" type="button">
         <i data-lucide="users-round" aria-hidden="true"></i>
@@ -706,11 +706,11 @@
       </div>
     </section>
 
-    <section class="serials-workspace hidden" id="confrontWorkspace" aria-label="Pendente - confronto Atlas e Imperium">
+    <section class="serials-workspace hidden" id="confrontWorkspace" aria-label="Query | Atlas - confronto Atlas e Imperium">
       <header class="workspace-heading serials-heading">
         <div>
           <p class="section-label">RECURSOS / AUDITORIA DE EQUIPAMENTOS</p>
-          <h2>Pendente</h2>
+          <h2>Query | Atlas</h2>
           <p class="workspace-description">Confronte em lote o histórico e a localização dos seriais no Atlas e IMPERIUM. Nenhuma baixa ou transferência é executada.</p>
         </div>
         <span class="serials-live-pill"><i data-lucide="shield-check"></i> LEITURA SOMENTE</span>
@@ -2014,12 +2014,13 @@
   <section class="backlog-workspace hidden" id="backlogWorkspace" aria-label="Analise de backlog">
       <header class="workspace-heading">
         <div><p class="section-label">IMPERIUM / CLARO</p><h2>Análise Backlog</h2>
-          <p>Conferência de rotas do dia com histórico confirmado do Imperium. Carregue a planilha oficial do TOA para identificar técnicos e janelas.</p>
+          <p>Rotas capturadas do TOA e confrontadas com o histórico do Imperium. O upload manual continua disponível.</p>
         </div>
       </header>
       <nav class="backlog-subtabs" aria-label="Áreas da análise">
         <button type="button" class="button secondary active" data-backlog-tab="entry">Entrada</button>
         <button type="button" class="button secondary" data-backlog-tab="result">Resultado</button>
+        <button type="button" class="button secondary" data-backlog-tab="daily">Tratativa do dia</button>
         <button type="button" class="button secondary" data-backlog-tab="offroute">Fora de Rota</button>
         <button type="button" class="button secondary" data-backlog-tab="sent">Rotas Enviadas</button>
       </nav>
@@ -2027,7 +2028,7 @@
         <div class="backlog-grid">
           <section class="backlog-card">
             <h3>Base do Imperium</h3>
-            <p>Carregamento inicial: últimos 12 meses completos até ontem. Atualizações seguintes retomam o ponto confirmado.</p>
+            <p>Histórico anual do Imperium. A sincronização agendada para as 22h inclui as atividades do próprio dia.</p>
             <div class="backlog-actions">
               <button id="backlogRun" type="button" class="button primary" disabled title="Carga anual bloqueada até validação dos checkpoints">Carga anual — em homologação</button>
               <button id="backlogPilot" type="button" class="button secondary">Testar ontem</button>
@@ -2041,16 +2042,20 @@
                 <option value="recife">Recife</option>
               </select>
             </label>
-            <p class="backlog-hint">Para proteger o Imperium, a carga é dividida em lotes de um dia por base. O sistema continua os próximos lotes automaticamente enquanto esta página estiver aberta. Pode pausar e retomar sem duplicar dias.</p>
+            <p class="backlog-hint">A atualização usa checkpoints por base e não exige que a página fique aberta. O botão de teste consulta somente leitura; a rotina não baixa O.S.</p>
             <p id="backlogSyncStatus" role="status">Consultando estado da base...</p>
             <div id="backlogProgress" class="backlog-progress"></div>
           </section>
           <section class="backlog-card">
             <h3>Rotas da Claro</h3>
-            <p>Selecione as planilhas do dia (.xlsx ou .csv). A importação substitui a rota anterior, sem modificar o histórico do Imperium.</p>
+            <p>Busque as cinco rotas do TOA pela sessão existente ou importe até cinco planilhas (.xlsx/.csv) manualmente. A nova rota só substitui a anterior após validação.</p>
             <input type="file" id="backlogRouteFiles" accept=".xlsx,.csv" multiple>
-            <div class="backlog-actions"><button type="button" class="button secondary" id="backlogUpload">Carregar rotas</button>
-              <button type="button" class="button primary" id="backlogCompare">Analisar rotas</button></div>
+            <div class="backlog-actions">
+              <button type="button" class="button primary" id="backlogFromTOA">Buscar 5 rotas do TOA</button>
+              <button type="button" class="button secondary" id="backlogUpload">Carregar arquivos</button>
+              <button type="button" class="button secondary" id="backlogCompare">Analisar histórico</button>
+            </div>
+            <p id="backlogAutoStatus" role="status">Captura TOA somente leitura. Nenhuma O.S. será baixada.</p>
             <p id="backlogUploadStatus" role="status"></p>
           </section>
         </div>
@@ -2065,6 +2070,18 @@
           </div>
           <p>Os códigos selecionados indicam contratos a segurar. Código 106 é histórico improdutivo, mas não representa autorização de baixa.</p>
         </details>
+      </div>
+      <div class="backlog-panel hidden" data-backlog-pane="daily">
+        <section class="backlog-card">
+          <h3>Tratativa das atividades do dia</h3>
+          <p>Pendente é atividade não iniciada. Sem código de baixa, não é improdutiva. Divergências ficam separadas para conferência.</p>
+          <div class="backlog-actions">
+            <button type="button" class="button secondary" id="backlogDailyRefresh">Atualizar tratativa</button>
+            <button type="button" class="button secondary" id="backlogCopyImproductive">Copiar improdutivas confirmadas</button>
+          </div>
+          <div id="backlogDailyMetrics" class="backlog-progress" aria-live="polite"></div>
+          <div id="backlogDailyResult" class="backlog-results"></div>
+        </section>
       </div>
       <div class="backlog-panel hidden" data-backlog-pane="result">
         <section class="backlog-card">
@@ -2602,7 +2619,7 @@
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
   <script src="/app.js?v=20261031-backlog-1"></script>
-  <script src="/backlog-analysis.js?v=20261031-1"></script>
+  <script src="/backlog-analysis.js?v=20261103-toa-rotas-1"></script>
   <script src="/quality-control.js?v=20261029-analysis-1"></script>
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261029-analysis-1"></script>

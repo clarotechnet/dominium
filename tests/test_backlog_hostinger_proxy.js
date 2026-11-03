@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 
 const { createBacklogMiddleware } = require('../deploy/hostinger-web/backlog-proxy');
+const { allowedBacklogRoute } = require('../deploy/hostinger-web/operational-policy');
 const TOKEN = 'B'.repeat(56);
 function request(method='GET',url='/api/backlog/year/status',role='controller'){
   return {
@@ -67,6 +68,14 @@ test('uses server-owned bearer and role; strips browser cookies/forged headers',
   assert.deepEqual(JSON.parse(call.init.body),{mode:'probe',profile:'natal'});
   assert.deepEqual(JSON.parse(r.body),{ok:true,rows:[]});
 });
+test('TOA daily workflow reuses existing guarded Backlog API paths',()=>{
+  assert.equal(allowedBacklogRoute('GET','/api/backlog/year/status'),true);
+  assert.equal(allowedBacklogRoute('POST','/api/backlog/year/routes'),true);
+  assert.equal(allowedBacklogRoute('GET','/api/backlog/year/daily-treatment'),false);
+  assert.equal(allowedBacklogRoute('POST','/api/backlog/year/toa-import'),false);
+  assert.equal(allowedBacklogRoute('POST','/api/backlog/year/routes?force=true'),false);
+});
+
 test('read-only query path and upstream outage handled safely',async()=>{
   let target;
   const proxy=createBacklogMiddleware(cfg(async(url)=>{target=url;throw Error('upstream outage')}));

@@ -6,6 +6,7 @@
   const $ = (id) => root.querySelector("#" + id);
   let comparison = [], candidates = [], currentProfile = "natal", busy = false, lastRunning = false;
   let autoFill = false, nextCycleScheduled = false;
+  let routeImportActive = false, dailyRows = [];
   const call = (path, opts={}) => request(path, {timeoutMs:120000,...opts});
   const post = (path, body) => call(path, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   const update = (target, value) => {target.textContent=String(value);};
@@ -39,13 +40,17 @@
     try{
       const s=await call("/api/backlog/year/status"),run=s.run||null;
       const info=run ? [run.status,run.done_tasks+"/"+run.total_tasks+" dias",run.imported+" O.S. confirmadas",run.unconfirmed+" sem código"].join(" • ") : "Nenhuma consulta executada";
-      update($("backlogSyncStatus"),"Histórico importado: "+(s.history.confirmed||0)+" confirmadas, "+(s.history.missing_code||0)+" sem código. "+info);
+      const historyTotal=Object.values(s.history||{}).reduce((sum,n)=>sum+(Number(n)||0),0);
+      update($("backlogSyncStatus"),"Histórico armazenado: "+historyTotal+" ocorrências. "+info);
       const view=$("backlogProgress");view.replaceChildren();
       for(const [key,label] of Object.entries({natal:"Natal/Parnamirim",fortaleza:"Fortaleza",mossoro:"Mossoró",recife:"Recife"})){
         const span=document.createElement("span");span.textContent=label+": "+((s.checkpoints||{})[key]||"a iniciar");view.append(span);
       }
       if(run?.error){const p=document.createElement("p");p.textContent=run.error;p.className="backlog-warning";view.append(p);}
-      $("backlogRun").disabled=true; // Annual importer remains server-locked; never start from the UI.$("backlogPilot").disabled=Boolean(s.running);$("backlogPause").disabled=!s.running;lastRunning=Boolean(s.running);
+      $("backlogRun").disabled=true; // Annual importer remains server-locked.
+      $("backlogPilot").disabled=Boolean(s.running);
+      $("backlogPause").disabled=!s.running;
+      lastRunning=Boolean(s.running);
       if(autoFill && !s.running && !busy && !nextCycleScheduled){
         if(s.run?.status==="failed" || s.run?.status==="interrupted"){
           autoFill=false;
@@ -89,6 +94,58 @@
     autoFill=false;
     const r=await post("/api/backlog/year/pause",{});update($("backlogSyncStatus"),r.message);
   }));
+  async function loadDailyTreatment(){
+    const status=await call("/api/backlog/year/status");
+    const r=status.daily_treatment||{rows:[],counts:{},sources:[],total:0};
+    dailyRows=r.rows||[];
+    const metrics=$("backlogDailyMetrics");metrics.replaceChildren();
+    const files=document.createElement("span");
+    files.textContent=r.total+" atividades • "+(r.sources||[]).length+" rotas";
+    metrics.append(files);
+    for(const [label,count] of Object.entries(r.counts||{})){
+      const metric=document.createElement("span");metric.textContent=label+": "+count;metrics.append(metric);
+    }
+    const priority=(item)=>item.treatment==="IMPRODUTIVA CONFIRMADA"?0:
+      item.treatment.startsWith("DIVERGENCIA")?1:item.treatment==="PENDENTE"?3:2;
+    const sorted=[...dailyRows].sort((a,b)=>priority(a)-priority(b)||
+      String(a.city).localeCompare(String(b.city))||
+      String(a.technician).localeCompare(String(b.technician)));
+    table($("backlogDailyResult"),[["Tratativa","treatment"],["Contrato","contract"],
+      ["Cidade","city"],["Técnico","technician"],["O.S.","os_number"],
+      ["Status TOA","activity_status"],["Código","route_code"]],sorted);
+  }
+  async function pollToaRoutes(){
+    try{
+      const response=await call("/api/backlog/year/status");
+      const state=response.toa_import||{status:"idle",running:false,done:0,total:5};
+      routeImportActive=Boolean(state.running);
+      $("backlogFromTOA").disabled=routeImportActive;
+      update($("backlogAutoStatus"),state.running?
+        "Consultando TOA: "+(state.route||"buckets")+" • "+state.done+"/"+state.total+" arquivos":
+        state.status==="completed"?"Cinco rotas do TOA importadas. Tratativa atualizada.":
+        state.status==="failed"?"Falha na captura TOA: "+(state.error||"verifique a sessão"):
+        "Pronto para consultar as cinco rotas do TOA.");
+      if(state.status==="completed"&&!pollToaRoutes._loaded){
+        pollToaRoutes._loaded=true;await loadDailyTreatment();
+        root.querySelector('[data-backlog-tab="daily"]').click();
+      }
+      if(state.running)pollToaRoutes._loaded=false;
+    }catch(err){
+      routeImportActive=false;
+      update($("backlogAutoStatus"),"Status TOA indisponível: "+err.message);
+    }
+  }
+  $("backlogFromTOA").addEventListener("click",()=>action($("backlogFromTOA"),async()=>{
+    if(routeImportActive)throw Error("Consulta TOA já em andamento");
+    pollToaRoutes._loaded=false;
+    await post("/api/backlog/year/routes",{source:"toa"});
+    routeImportActive=true;
+    await pollToaRoutes();
+  },$("backlogAutoStatus")));
+  $("backlogDailyRefresh").addEventListener("click",()=>action($("backlogDailyRefresh"),loadDailyTreatment,$("backlogAutoStatus")));
+  $("backlogCopyImproductive").addEventListener("click",()=>copy(
+    dailyRows.filter(r=>r.treatment==="IMPRODUTIVA CONFIRMADA")
+      .map(r=>[r.contract,r.city,r.technician,r.os_number,r.validated_code].join("\t")).join("\n")));
   $("backlogUpload").addEventListener("click",()=>action($("backlogUpload"),async()=>{
     const chosen=[...$("backlogRouteFiles").files];
     if(!chosen.length||chosen.length>5)throw Error("Selecione de 1 a 5 planilhas");
@@ -102,6 +159,8 @@
     }
     const r=await post("/api/backlog/year/routes",{files});
     update($("backlogUploadStatus"),"Rotas: "+r.files.map(x=>x.filename+" ("+x.rows+" O.S.)").join("; "));
+    await loadDailyTreatment();
+    root.querySelector('[data-backlog-tab="daily"]').click();
   },$("backlogUploadStatus")));
   $("backlogCompare").addEventListener("click",()=>action($("backlogCompare"),async()=>{
     const codes=[...root.querySelectorAll("[data-backlog-code]:checked")].map(x=>x.dataset.backlogCode);
@@ -140,9 +199,15 @@
       for(const btn of root.querySelectorAll("[data-backlog-tab]"))btn.classList.toggle("active",btn===tab);
       for(const pane of root.querySelectorAll("[data-backlog-pane]"))pane.classList.toggle("hidden",pane.dataset.backlogPane!==selected);
       if(selected==="sent")$("backlogRefreshSent").click();
+      if(selected==="daily")loadDailyTreatment().catch(()=>{});
     });
   }
-  document.addEventListener("dominium:module-change",event=>{if(event.detail?.module==="backlog")refreshStatus();});
+  document.addEventListener("dominium:module-change",event=>{
+    if(event.detail?.module==="backlog"){
+      refreshStatus();pollToaRoutes();loadDailyTreatment().catch(()=>{});
+    }
+  });
   refreshStatus();
   setInterval(()=>{if(!root.classList.contains("hidden")&&lastRunning)refreshStatus();},5000);
+  setInterval(()=>{if(!root.classList.contains("hidden")&&routeImportActive)pollToaRoutes();},5000);
 })();
