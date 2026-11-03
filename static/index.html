@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/styles.css?v=20261030-subtabs-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
-  <link rel="stylesheet" href="/backlog-analysis.css?v=20261031-1">
+  <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-whatsapp-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -2024,6 +2024,19 @@
         <button type="button" class="button secondary" data-backlog-tab="offroute">Fora de Rota</button>
         <button type="button" class="button secondary" data-backlog-tab="sent">Rotas Enviadas</button>
       </nav>
+      <div class="backlog-scope-bar">
+        <label class="backlog-field">Cidades exibidas
+          <select id="backlogCityScope">
+            <option value="top">Conforme cidade selecionada no topo</option>
+            <option value="all">Todas as cidades</option>
+            <option value="natal">Natal / Parnamirim</option>
+            <option value="fortaleza">Fortaleza</option>
+            <option value="mossoro">Mossoró</option>
+            <option value="recife">Recife</option>
+          </select>
+        </label>
+        <span id="backlogScopeLabel" role="status"></span>
+      </div>
       <div class="backlog-panel" data-backlog-pane="entry">
         <div class="backlog-grid">
           <section class="backlog-card">
@@ -2053,7 +2066,7 @@
             <div class="backlog-actions">
               <button type="button" class="button primary" id="backlogFromTOA">Buscar 5 rotas do TOA</button>
               <button type="button" class="button secondary" id="backlogUpload">Carregar arquivos</button>
-              <button type="button" class="button secondary" id="backlogCompare">Analisar histórico</button>
+              <button type="button" class="button primary" id="backlogCompare">Analisar arquivos</button>
             </div>
             <p id="backlogAutoStatus" role="status">Captura TOA somente leitura. Nenhuma O.S. será baixada.</p>
             <p id="backlogUploadStatus" role="status"></p>
@@ -2085,11 +2098,22 @@
       </div>
       <div class="backlog-panel hidden" data-backlog-pane="result">
         <section class="backlog-card">
-          <h3>Resultado tratado</h3>
-          <p>Resultado preliminar enquanto o histórico estiver incompleto. Sem registro histórico não é confirmação de baixa nem de liberação da rota.</p>
-          <div class="backlog-actions"><button type="button" class="button secondary" id="backlogCopyResult">Copiar resultado</button></div>
+          <h3>Comparativo da rota com o histórico</h3>
+          <p>Contratos da rota de hoje que tiveram códigos selecionados no histórico do Imperium. O código 430 indica retirada produtiva e não improdutividade do dia.</p>
+          <div class="backlog-actions">
+            <button type="button" class="button primary" id="backlogCopyResult" disabled>Copiar tudo para WhatsApp</button>
+            <button type="button" class="button secondary" id="backlogCopySummary" disabled>Copiar resumo por cidade</button>
+          </div>
+          <p id="backlogReportStatus" role="status">Selecione ou capture as rotas e clique em Analisar arquivos.</p>
           <div id="backlogMetrics" class="backlog-progress"></div>
-          <div id="backlogResult" class="backlog-results"></div>
+          <h3>Resumo dos códigos por cidade</h3>
+          <div id="backlogReportSummary" class="backlog-report-city-grid"></div>
+          <h3>Contratos agrupados por técnico</h3>
+          <div id="backlogReportDetails" class="backlog-report-detail-list"></div>
+          <details>
+            <summary>Ver tabela técnica do comparativo</summary>
+            <div id="backlogResult" class="backlog-results"></div>
+          </details>
         </section>
       </div>
       <div class="backlog-panel hidden" data-backlog-pane="offroute">
@@ -2619,7 +2643,8 @@
   <script src="/disconnection.js?v=20261013-photo-assist"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
   <script src="/app.js?v=20261031-backlog-1"></script>
-  <script src="/backlog-analysis.js?v=20261103-toa-rotas-1"></script>
+  <script src="/backlog-report.js?v=20261103-whatsapp-1"></script>
+  <script src="/backlog-analysis.js?v=20261103-whatsapp-1"></script>
   <script src="/quality-control.js?v=20261029-analysis-1"></script>
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261029-analysis-1"></script>

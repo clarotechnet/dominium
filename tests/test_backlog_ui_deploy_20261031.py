@@ -14,12 +14,15 @@ assert '"/api/backlog/year/routes",{source:"toa"}' in client
 assert '"/api/backlog/year/status"' in client
 assert '/api/backlog/year/toa-import' not in client
 assert html.count('id="backlogModule"')==1
-assert 'src="/backlog-analysis.js?v=20261103-toa-rotas-1"' in html
-assert 'href="/backlog-analysis.css?v=20261031-1"' in html
+assert 'src="/backlog-analysis.js?v=20261103-whatsapp-1"' in html
+assert 'src="/backlog-report.js?v=20261103-whatsapp-1"' in html
+assert 'href="/backlog-analysis.css?v=20261103-whatsapp-1"' in html
 assert 'src="/app.js?v=20261031-backlog-1"' in html
 for id in ['backlogRun','backlogPilot','backlogPause','backlogProfile',
            'backlogRouteFiles','backlogUpload','backlogCompare','backlogResult',
            'backlogFromTOA','backlogAutoStatus','backlogDailyRefresh',
+           'backlogCityScope','backlogScopeLabel','backlogReportSummary',
+           'backlogReportDetails','backlogReportStatus','backlogCopySummary',
            'backlogCopyImproductive','backlogDailyMetrics','backlogDailyResult',
            'backlogOffRouteResult','backlogSentResult']:
     assert html.count('id="'+id+'"')==1,id
