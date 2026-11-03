@@ -131,7 +131,7 @@
         ctx.strokeStyle = palette.line;
         ctx.strokeRect(x + .5, y + .5, w - 1, totalHeight - 1);
         ctx.beginPath();
-        ctx.moveTo(half, y);
+        ctx.moveTo(half, y + headerHeight);
         ctx.lineTo(half, y + totalHeight);
         ctx.stroke();
 
