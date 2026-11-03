@@ -86,7 +86,6 @@ endpoint	path
 /api/toa/v1/status	app.py
 /api/voice/status	app.py
 /api/voice/synthesize	app.py
-/api/stock/analyses/daily?city=	apply_loading_feedback.py
 /api/atlas-query/	deploy/hostinger-web/atlas-query-policy.js
 /api/atlas-query/jobs	deploy/hostinger-web/atlas-query-policy.js
 /api/backlog/year/routes	deploy/hostinger-web/backlog-proxy.js

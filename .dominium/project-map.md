@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-03T18:35:11+00:00
-- Source fingerprint: `d56fb3145edd3813`
-- Indexed files: 481
+- Generated: 2026-11-03T18:36:00+00:00
+- Source fingerprint: `5a0c2f6849c714f7`
+- Indexed files: 480
 - Indexed symbols: 4103
-- API path references: 502
+- API path references: 501
 
 ## Navigation rule
 
@@ -125,7 +125,6 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `adm_allocation.py` (3 symbols) - Read-only allocation for DESC multi-OS activities.
 - `AGENTS.md` (1 DataSnap methods) - DOMINIUM agent guide
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.
-- `apply_loading_feedback.py` (1 API paths)
 - `auth_store.py` (28 symbols) - Autenticacao local do DOMINIUM.
 - `auth_store_postgres.py` (18 symbols) - Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.
 - `auto_improductive_close.py` (23 symbols)
@@ -184,7 +183,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 153 files
+- shared: 152 files
 - tooling-deploy: 49 files
 - docs: 41 files
 - tests: 147 files
