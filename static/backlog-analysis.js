@@ -83,7 +83,7 @@
     const scope=refreshScopeLabel();
     const summary=$("backlogReportSummary");summary.replaceChildren();
     const detail=$("backlogReportDetails");detail.replaceChildren();
-    const actions=[$("backlogCopyResult"),$("backlogCopySummary")];
+    const actions=[$("backlogCopyResult"),$("backlogCopySummary"),$("backlogDownloadImage")];
     for(const btn of actions)btn.disabled=true;
     if(!comparisonReady||!reportApi)return;
     const selected=reportApi.filterRows(comparison,scope);
@@ -108,6 +108,7 @@
       update($("backlogReportStatus"),report.total+" contrato(s) com os códigos selecionados, agrupados por cidade e técnico. A base histórica atual preserva a data da baixa, mas não o horário.");
       $("backlogCopyResult").disabled=report.total===0;
       $("backlogCopySummary").disabled=report.total===0;
+      $("backlogDownloadImage").disabled=report.total===0;
     }
     if(!report.groups.length){
       const empty=document.createElement("p");empty.textContent="Nenhuma correspondência com os códigos selecionados nesta cidade.";
@@ -158,6 +159,16 @@
   $("backlogCityScope").addEventListener("change",scopeChanged);
   const topTabs=document.querySelector("#profileTabs");
   if(topTabs)new MutationObserver(scopeChanged).observe(topTabs,{childList:true});
+  $("backlogDownloadImage").addEventListener("click",()=>action($("backlogDownloadImage"),async()=>{
+    if(!reportApi||!comparisonReady||comparisonTruncated)
+      throw Error("Analise os arquivos completos antes de baixar a imagem");
+    const imageApi=globalThis.DominiumBacklogReportImage;
+    if(!imageApi)throw Error("Exportador PNG indisponível; atualize a página");
+    const scope=cityScope();
+    const report=reportApi.build(comparison,scope,reportCodes);
+    const filename=await imageApi.download(report,scope);
+    update($("backlogReportStatus"),"Imagem PNG gerada: "+filename+". A cidade selecionada foi respeitada.");
+  },$("backlogReportStatus")));
   $("backlogCopySummary").addEventListener("click",()=>{if(!reportApi||!comparisonReady||comparisonTruncated)return;
     const report=reportApi.build(comparison,cityScope(),reportCodes);
     const lines=["RESUMO DE CÓDIGOS POR CIDADE"];
