@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
   <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-image-1">
+  <link rel="stylesheet" href="/all-cities-scope.css?v=20261103-global-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -223,6 +224,16 @@
     </aside>
 
   <main>
+    <section id="allCityModuleNotice" class="all-city-notice hidden" role="status" aria-live="polite">
+      <p class="section-label">TODAS AS CIDADES · SEGURANÇA OPERACIONAL</p>
+      <h2>Selecione uma cidade para operar neste módulo</h2>
+      <p>O filtro <strong>Todos</strong> permanece ativo. Esta área usa dados e autorizações de uma base por vez;
+      exibir a última cidade como se fosse o consolidado seria incorreto.</p>
+      <p>Para consultar várias bases, use <strong>Todas as operações</strong>, <strong>Análise Backlog</strong>
+      ou <strong>Análise de equipamentos</strong>. Para executar uma ação, selecione Natal/Parnamirim, Fortaleza,
+      Mossoró ou Recife no topo.</p>
+      <button class="button secondary" id="allCityOverviewButton" type="button">Abrir visão consolidada</button>
+    </section>
     <section class="desc-analytics-workspace hidden" id="descAnalyticsWorkspace" aria-label="Visão Claro — indicadores de desconexão">
       <header class="workspace-heading desc-analytics-heading">
         <div>
@@ -845,6 +856,12 @@
         <button id="stockReportsTab" type="button" role="tab" aria-selected="false">Analises e Relatorios</button>
         <button id="stockDailyTab" type="button" role="tab" aria-selected="false">Estoque Diário</button>
       </div>
+      <section id="stockAllScopeHint" class="all-city-stock-notice hidden" role="status">
+        <strong>Modo Todas as cidades</strong>
+        <p>A análise de equipamentos permite consultar o histórico de todas as bases.
+        Estoque por técnico e controle de qualidade exigem selecionar uma cidade; nenhuma movimentação será realizada em Todas.</p>
+        <button type="button" class="button secondary" id="stockAllScopeOpen">Abrir análise consolidada</button>
+      </section>
       <div id="stockInventoryPane" role="tabpanel" aria-labelledby="stockInventoryTab">
       <header class="workspace-heading">
         <div>
@@ -2647,17 +2664,17 @@
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261103-event-guard-1"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
-  <script src="/app.js?v=20261103-backlog-todos-1"></script>
+  <script src="/app.js?v=20261103-global-scope-1"></script>
   <script src="/backlog-report.js?v=20261103-whatsapp-1"></script>
   <script src="/backlog-report-image.js?v=20261103-image-2"></script>
-  <script src="/backlog-analysis.js?v=20261103-image-1"></script>
+  <script src="/backlog-analysis.js?v=20261103-route-buttons-1"></script>
   <script src="/quality-control.js?v=20261029-analysis-1"></script>
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>
-  <script src="/stock-nav.js?v=20261029-analysis-1"></script>
-  <script src="/stock-analysis-ui.js?v=20261030-daily-1"></script>
-  <script src="/stock-daily-analysis-ui.js?v=20261103-loading-1"></script>
-  <script src="/stock-report-preview-ui.js?v=20261030-1"></script>
+  <script src="/stock-nav.js?v=20261103-global-1"></script>
+  <script src="/stock-analysis-ui.js?v=20261103-global-1"></script>
+  <script src="/stock-daily-analysis-ui.js?v=20261103-global-1"></script>
+  <script src="/stock-report-preview-ui.js?v=20261103-global-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>
   <script src="/query-import.js?v=20261023-1"></script>

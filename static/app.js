@@ -21,8 +21,9 @@ const state = {
   profiles: [],
   profile: new URLSearchParams(window.location.search).get("profile") || "natal",
   profileEpoch: 0,
-  // Apenas a Análise Backlog permite manter "Todos" como escopo fora da visão consolidada.
-  backlogAllCities: window.location.hash === "#desconexao-backlog-todos",
+  // Escopo visual global. state.profile permanece a base operacional para impedir escritas multipraca.
+  allCities: new URLSearchParams(window.location.search).get("scope") === "all"
+    || ["#todos", "#desconexao-backlog-todos"].includes(window.location.hash),
   closeEnabled: false,
   officialCloseEnabled: false,
   materialWriteoffEnabled: false,
@@ -881,8 +882,10 @@ function apiUrlForProfile(path, profile) {
 function updateAddress() {
   const url = new URL(window.location.href);
   url.searchParams.set("profile", state.profile);
+  if (state.allCities) url.searchParams.set("scope", "all");
+  else url.searchParams.delete("scope");
   url.hash = state.activeModule === "backlog"
-    ? (state.backlogAllCities ? "desconexao-backlog-todos" : "desconexao-backlog")
+    ? (state.allCities ? "desconexao-backlog-todos" : "desconexao-backlog")
     : state.activeModule === "all-operations"
     ? "todos"
     : state.activeModule === "descAnalytics"
@@ -2433,15 +2436,18 @@ function exportCloseReportXlsx() {
   window.location.href = url;
 }
 
-function showAllOperations() {
+function showAllOperations(forceOverview = false) {
   if (!state.profiles.length || state.running || state.loading || state.profileSwitching
     || state.bulkCreateLoading || state.stockBatchLoading || state.stockWriteoffLoading
     || disconnectIsRunning()) return;
-  if (state.activeModule === "backlog") {
-    // Em Análise Backlog, "Todos" é um filtro, não uma mudança de módulo.
-    state.backlogAllCities = true;
+  state.allCities = true;
+  if (forceOverview !== true && !["dashboard", "all-operations"].includes(state.activeModule)) {
+    // O mesmo escopo acompanha os módulos de consulta multipraça.
     updateAddress();
     render();
+    document.dispatchEvent(new CustomEvent("dominium:scope-change",
+      { detail: { allCities: true, module: state.activeModule } }));
+    if (state.activeModule === "stock") window.DominiumStockNavigation?.openAllCityReadOnly?.();
     return;
   }
   state.activeModule = "all-operations";
@@ -2461,11 +2467,10 @@ function renderProfileTabs() {
   all.className = "profile-tab profile-tab-all";
   all.type = "button";
   all.innerHTML = '<span class="all-ops-icon" aria-hidden="true">▦</span><span>Todos</span>';
-  all.title = state.activeModule === "backlog"
-    ? "Mostrar todas as cidades na Análise Backlog"
-    : "Visão consolidada em leitura de todas as operações";
-  const allSelected = state.activeModule === "all-operations"
-    || (state.activeModule === "backlog" && state.backlogAllCities);
+  all.title = ["backlog", "stock"].includes(state.activeModule)
+    ? "Consultar todas as cidades neste módulo"
+    : "Todas as cidades; ações operacionais exigem uma base";
+  const allSelected = state.allCities || state.activeModule === "all-operations";
   all.classList.toggle("active", allSelected);
   all.setAttribute("aria-pressed", String(allSelected));
   all.disabled = state.running || state.loading || state.profileSwitching
@@ -3444,17 +3449,15 @@ async function loadProfile() {
 }
 
 async function switchProfile(profileKey) {
-  if (state.activeModule === "backlog" && state.backlogAllCities && profileKey === state.profile) {
-    // Retornar à cidade já carregada sem repetir consultas nem sair do Backlog.
-    state.backlogAllCities = false;
+  if (state.allCities && profileKey === state.profile) {
+    // A cidade operacional já está carregada; só remover o escopo Todos.
+    if (state.activeModule === "all-operations") state.activeModule = "dashboard";
+    state.allCities = false;
     updateAddress();
     render();
-    return;
-  }
-  if (state.activeModule === "all-operations" && profileKey === state.profile) {
-    state.activeModule = "dashboard";
-    updateAddress();
-    render();
+    document.dispatchEvent(new CustomEvent("dominium:scope-change",
+      { detail: { allCities: false, module: state.activeModule } }));
+    if(state.activeModule === "stock" && !state.stockTechnicians.length) loadStockTechnicians();
     return;
   }
   if (
@@ -3468,7 +3471,7 @@ async function switchProfile(profileKey) {
   const profile = state.profiles.find((item) => item.key === profileKey);
   if (!profile) return;
   if (state.activeModule === "all-operations") state.activeModule = "dashboard";
-  state.backlogAllCities = false;
+  state.allCities = false;
   state.profileEpoch += 1;
   resetProfileOperationalState();
   state.profile = profileKey;
@@ -3641,9 +3644,11 @@ function setModule(module) {
     state.stockWriteoffBasket.clear();
     state.stockBatchSelected.clear();
   }
-  // A aba "Todos" conserva seu escopo somente na Análise Backlog.
-  state.backlogAllCities = module === "backlog"
-    && (state.activeModule === "all-operations" || (state.activeModule === "backlog" && state.backlogAllCities));
+  // O escopo "Todos" acompanha a navegação e não altera a base operacional.
+  if (module === "dashboard" && state.allCities) {
+    showAllOperations(true);
+    return;
+  }
   state.activeModule = module;
   updateAddress();
   render();
@@ -3651,6 +3656,11 @@ function setModule(module) {
   if (module === "descAnalytics") void loadDescAnalyticsFrame();
   window.scrollTo({ top: 0, left: 0 });
   document.querySelector("main").scrollTo({ top: 0, left: 0 });
+  if (module === "stock" && state.allCities) {
+    window.DominiumStockNavigation?.openAllCityReadOnly?.();
+  }
+  const needsCity = state.allCities && !["all-operations", "backlog", "stock"].includes(module);
+  if (needsCity) return;
   if (["stock", "bulk"].includes(module) && !state.stockTechnicians.length) {
     loadStockTechnicians();
   }
@@ -7265,6 +7275,14 @@ function render() {
   renderHistory();
   renderServerLogs();
   window.DominiumStockNavigation?.sync();
+  const blockedByAllScope = state.allCities
+    && !["all-operations", "backlog", "stock"].includes(state.activeModule);
+  document.querySelector("main")?.classList.toggle("all-city-module-blocked", blockedByAllScope);
+  document.getElementById("allCityModuleNotice")?.classList.toggle("hidden", !blockedByAllScope);
+  const stock = document.getElementById("stockWorkspace");
+  stock?.classList.toggle("stock-all-cities", state.allCities && state.activeModule === "stock");
+  document.getElementById("stockAllScopeHint")?.classList.toggle("hidden",
+    !(state.allCities && state.activeModule === "stock"));
 }
 
 async function loadOrders({ preserveSelection = false, quiet = false, visual = true } = {}) {
@@ -12612,6 +12630,10 @@ elements.serialsInput.addEventListener("keydown", (event) => {
 });
 elements.techniciansModule.addEventListener("click", () => setModule("technicians"));
 elements.backlogModule.addEventListener("click", () => setModule("backlog"));
+document.getElementById("allCityOverviewButton")?.addEventListener("click", () => showAllOperations(true));
+document.getElementById("stockAllScopeOpen")?.addEventListener("click", () => {
+  window.DominiumStockNavigation?.openAllCityReadOnly?.();
+});
 elements.intelligenceModule.addEventListener("click", () => setModule("intelligence"));
 elements.bulkCreateModule.addEventListener("click", () => setModule("bulk"));
 elements.importsModule.addEventListener("click", () => setModule("imports"));

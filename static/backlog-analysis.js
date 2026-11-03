@@ -220,10 +220,33 @@
 
     }catch(err){update($("backlogSyncStatus"),"Status indisponível: "+err.message);$("backlogRun").disabled=true;}
   }
+  function syncRouteButtons(){
+    // A importação e a comparação não devem concorrer; ao concluir, liberar os três botões.
+    const locked=busy||routeImportActive;
+    for(const id of ["backlogFromTOA","backlogUpload","backlogCompare"]){
+      $(id).disabled=locked;
+    }
+  }
   async function action(button,handler,out=$("backlogSyncStatus")){
-    if(busy)return;busy=true;button.disabled=true;
-    try{await handler();}catch(e){update(out,"Erro: "+e.message);}
-    finally{busy=false;await refreshStatus();}
+    if(busy)return;
+    const previouslyDisabled=button.disabled;
+    busy=true;
+    button.disabled=true;
+    syncRouteButtons();
+    try{await handler();}
+    catch(e){update(out,"Erro: "+e.message);}
+    finally{
+      busy=false;
+      try{await refreshStatus();}
+      finally{
+        // Os controles de execução refletem o estado real do servidor.
+        if(button.id==="backlogRun")button.disabled=true;
+        else if(button.id==="backlogPilot")button.disabled=lastRunning;
+        else if(button.id==="backlogPause")button.disabled=!lastRunning;
+        else button.disabled=previouslyDisabled;
+        syncRouteButtons();
+      }
+    }
   }
   $("backlogRun").addEventListener("click",()=>action($("backlogRun"),async()=>{
     autoFill=true;
@@ -250,7 +273,7 @@
       const response=await call("/api/backlog/year/status");
       const state=response.toa_import||{status:"idle",running:false,done:0,total:5};
       routeImportActive=Boolean(state.running);
-      $("backlogFromTOA").disabled=routeImportActive;
+      syncRouteButtons();
       update($("backlogAutoStatus"),state.running?
         "Consultando TOA: "+(state.route||"buckets")+" • "+state.done+"/"+state.total+" arquivos":
         state.status==="completed"?"Cinco rotas do TOA importadas. Tratativa atualizada.":
@@ -263,7 +286,8 @@
       }
       if(state.running)pollToaRoutes._loaded=false;
     }catch(err){
-      routeImportActive=false;
+      // Se a exportação já começou, preservar o bloqueio até confirmar seu fim.
+      syncRouteButtons();
       update($("backlogAutoStatus"),"Status TOA indisponível: "+err.message);
     }
   }

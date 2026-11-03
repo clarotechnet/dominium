@@ -58,6 +58,13 @@
     serials.classList.toggle("active", serialActive);
     if (stockActive || serialActive) expand(true);
   }
+  function openAllCityReadOnly() {
+    if (state.activeModule !== "stock" || !state.allCities) return;
+    // A análise consolidada é a única consulta de estoque compatível com city=all.
+    reportsTab?.click();
+    document.querySelector('[data-stock-analysis-tab="equipamentos"]')?.click();
+    updateHighlight();
+  }
   function setQualityAddress(active) {
     if (state.activeModule !== "stock") return;
     const target = active ? "#controle-qualidade" : "#estoque";
@@ -100,7 +107,7 @@
   });
   document.addEventListener("dominium:module-change", updateHighlight);
   document.addEventListener("dominium:stock-tab-change", updateHighlight);
-  window.DominiumStockNavigation = { sync: updateHighlight };
+  window.DominiumStockNavigation = { sync: updateHighlight, openAllCityReadOnly };
   window.addEventListener("hashchange", () => {
     if (window.location.hash === "#controle-qualidade") qualityTab.click();
       if (window.location.hash === "#estoque-diario") dailyTab?.click();
@@ -111,4 +118,7 @@
   if (window.location.hash === "#estoque-diario") dailyTab?.click();
   if (window.location.hash === "#analises-estoque") reportsTab?.click();
   updateHighlight();
+  window.addEventListener("load", () => {
+    if (state.activeModule === "stock" && state.allCities) openAllCityReadOnly();
+  });
 })();

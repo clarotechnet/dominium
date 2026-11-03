@@ -14,11 +14,24 @@ assert '"/api/backlog/year/routes",{source:"toa"}' in client
 assert '"/api/backlog/year/status"' in client
 assert '/api/backlog/year/toa-import' not in client
 assert html.count('id="backlogModule"')==1
-assert 'src="/backlog-analysis.js?v=20261103-image-1"' in html
+assert 'src="/backlog-analysis.js?v=20261103-route-buttons-1"' in html
 assert 'src="/backlog-report-image.js?v=20261103-image-2"' in html
 assert 'src="/backlog-report.js?v=20261103-whatsapp-1"' in html
 assert 'href="/backlog-analysis.css?v=20261103-image-1"' in html
-assert 'src="/app.js?v=20261103-backlog-todos-1"' in html
+assert 'src="/app.js?v=20261103-global-scope-1"' in html
+assert 'href="/all-cities-scope.css?v=20261103-global-1"' in html
+assert 'src="/stock-nav.js?v=20261103-global-1"' in html
+assert 'src="/stock-daily-analysis-ui.js?v=20261103-global-1"' in html
+assert 'src="/stock-analysis-ui.js?v=20261103-global-1"' in html
+assert 'src="/stock-report-preview-ui.js?v=20261103-global-1"' in html
+assert html.count('id="allCityModuleNotice"')==1
+assert html.count('id="allCityOverviewButton"')==1
+assert html.count('id="stockAllScopeHint"')==1
+assert html.count('id="stockAllScopeOpen"')==1
+assert 'all-city-module-blocked' in (root/'static/all-cities-scope.css').read_text(encoding='utf8')
+assert 'state.allCities' in js
+assert 'globalThis.DominiumStockNavigation?.openAllCityReadOnly' not in js
+assert 'window.DominiumStockNavigation?.openAllCityReadOnly?.()' in js
 for id in ['backlogRun','backlogPilot','backlogPause','backlogProfile',
            'backlogRouteFiles','backlogUpload','backlogCompare','backlogResult',
            'backlogFromTOA','backlogAutoStatus','backlogDailyRefresh',

@@ -9,6 +9,10 @@
   const title={query:"Query",suspeitos:"Suspects"};
   function displayTab(name){
     if(!["query","equipamentos","suspeitos"].includes(name))return;
+    if(state.activeModule==="stock" && state.allCities && name!=="equipamentos"){
+      // Nunca exibir QUERY ou Suspeitos da cidade operacional anterior como dados consolidados.
+      return displayTab("equipamentos");
+    }
     selected=name;
     for(const button of buttons){
       const active=button.dataset.stockAnalysisTab===name;
@@ -54,22 +58,22 @@
   async function showPage(kind,page){
     const ctx=stateByKind[kind];
     const job=ctx.job;
-    if(!job||state.profile!==job.city)return;
+    if(!job||state.allCities||state.profile!==job.city)return;
     const key=title[kind];
     try{
       const result=await request("/api/stock/analyses/jobs/"+job.id+"/data?page="+page,{timeoutMs:60000});
-      if(ctx.job?.id!==job.id || state.profile!==job.city)return;
+      if(ctx.job?.id!==job.id || state.profile!==job.city || state.allCities)return;
       draw(kind,result);
     }catch(error){
       byId("stock"+key+"PageInfo").textContent="Falha ao carregar: "+(error.message||error);
     }
   }
   async function loadLatest(kind){
-    if(!["query","suspeitos"].includes(kind))return;
+    if(state.allCities || !["query","suspeitos"].includes(kind))return;
     const city=state.profile,key=title[kind];
     try{
       const data=await request("/api/stock/analyses/jobs",{timeoutMs:30000});
-      if(city!==state.profile)return;
+      if(city!==state.profile || state.allCities)return;
       const job=(data.jobs||[]).find(x=>x.city===city && x.kind===kind && x.state==="ready"
          && x.summary?.filter_version==="dmv_diniz_me_eireli_v1");
       const ctx=stateByKind[kind];

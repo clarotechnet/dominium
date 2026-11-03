@@ -26,7 +26,8 @@ function setup(activeModule = "dashboard", backlogAllCities = false) {
     profiles: [{ key: "natal", label: "NATAL/PARNAMIRIM" },
       { key: "fortaleza", label: "FORTALEZA" }],
     activeModule,
-    backlogAllCities,
+    allCities: backlogAllCities,
+    stockTechnicians: [],
     activeView: "orders",
     stockSource: "datasnap",
     running: false,
@@ -44,6 +45,7 @@ function setup(activeModule = "dashboard", backlogAllCities = false) {
   const elements = { profileTabs: tabs, date: { value: "2026-11-03" } };
   const opened = [];
   const events = [];
+  const stockOpened = [];
   const win = {
     location: {
       href: "https://dominium.clarotechnet.com.br/?profile=fortaleza#baixar-os",
@@ -56,6 +58,7 @@ function setup(activeModule = "dashboard", backlogAllCities = false) {
       }
     },
     DominiumAllOperations: { activate(args) { opened.push(args); } },
+    DominiumStockNavigation: { openAllCityReadOnly() { stockOpened.push("open"); } },
     scrollTo() {}
   };
   const doc = {
@@ -89,7 +92,7 @@ function setup(activeModule = "dashboard", backlogAllCities = false) {
   };
   vm.runInNewContext(actualMethods + "\nfunction render(){ renderProfileTabs(); }\n", context);
   context.renderProfileTabs();
-  return { context, state, tabs, win, opened, events,
+  return { context, state, tabs, win, opened, events, stockOpened,
     clickAll() { tabs.buttons[0].click(); },
     clickProfile(key) {
       const button = tabs.buttons.find(b => b.textContent ===
@@ -109,7 +112,7 @@ test("Todos -> Análise Backlog retains all cities and leaves consolidated scree
   assert.match(app.win.location.hash, /^#todos$/);
   app.context.setModule("backlog");
   assert.equal(app.state.activeModule, "backlog");
-  assert.equal(app.state.backlogAllCities, true);
+  assert.equal(app.state.allCities, true);
   assert.equal(app.active().className, "profile-tab profile-tab-all");
   assert.equal(app.win.location.hash, "#desconexao-backlog-todos");
   assert.ok(app.events.some(e => e.module === "backlog"));
@@ -119,7 +122,7 @@ test("clicking Todos while already on Backlog changes only its scope", () => {
   const app = setup("backlog");
   app.clickAll();
   assert.equal(app.state.activeModule, "backlog");
-  assert.equal(app.state.backlogAllCities, true);
+  assert.equal(app.state.allCities, true);
   assert.equal(app.opened.length, 0, "Must not activate all-operations queries");
   assert.equal(app.win.location.hash, "#desconexao-backlog-todos");
   assert.equal(app.active().className, "profile-tab profile-tab-all");
@@ -130,25 +133,62 @@ test("switching back to already-loaded Fortaleza clears all scope without leavin
   app.clickProfile("fortaleza");
   await Promise.resolve();
   assert.equal(app.state.activeModule, "backlog");
-  assert.equal(app.state.backlogAllCities, false);
+  assert.equal(app.state.allCities, false);
   assert.equal(app.win.location.hash, "#desconexao-backlog");
   assert.equal(app.active().textContent, "FORTALEZA");
   assert.equal(app.opened.length, 0);
 });
 
-test("leaving Backlog clears all-cities scope; the all-operations screen still works", () => {
+test("Todos persists across modules and dashboard returns to consolidated overview", () => {
   const app = setup("backlog", true);
   app.context.setModule("dashboard");
-  assert.equal(app.state.backlogAllCities, false);
-  assert.equal(app.state.activeModule, "dashboard");
-  assert.equal(app.active().textContent, "FORTALEZA");
-  app.clickAll();
+  assert.equal(app.state.allCities, true);
   assert.equal(app.state.activeModule, "all-operations");
   assert.equal(app.opened.length, 1);
+  assert.equal(app.active().className, "profile-tab profile-tab-all");
+});
+
+test("Todos -> Estoque opens consolidated equipment analysis without changing operational city", () => {
+  const app = setup("dashboard");
+  app.clickAll();
+  app.context.setModule("stock");
+  assert.equal(app.state.activeModule, "stock");
+  assert.equal(app.state.allCities, true);
+  assert.equal(app.state.profile, "fortaleza");
+  assert.equal(app.stockOpened.length, 1);
+});
+
+test("Todos in Estoque changes scope without showing consolidated operations screen", () => {
+  const app = setup("stock");
+  app.clickAll();
+  assert.equal(app.state.activeModule, "stock");
+  assert.equal(app.state.allCities, true);
+  assert.equal(app.opened.length, 0);
+  assert.equal(app.stockOpened.length, 1);
+});
+
+test("Global Todos remains active on unsupported operational modules", () => {
+  const app = setup("backlog", true);
+  app.context.setModule("close");
+  assert.equal(app.state.activeModule, "close");
+  assert.equal(app.state.allCities, true);
+  assert.match(app.win.location.href, /scope=all/);
+  assert.match(source, /all-city-module-blocked/);
+});
+
+test("clicking Todos in a city-only module retains the module and blocks its city-specific workspace", () => {
+  const app = setup("close");
+  app.clickAll();
+  assert.equal(app.state.activeModule, "close");
+  assert.equal(app.state.allCities, true);
+  assert.equal(app.opened.length, 0);
+  assert.equal(app.active().className, "profile-tab profile-tab-all");
+  assert.match(app.win.location.href, /scope=all/);
+  assert.match(source, /all-city-module-blocked/);
 });
 
 test("backlog all-cities URL can be reopened after reload", () => {
-  assert.match(source, /backlogAllCities:\s*window\.location\.hash === "#desconexao-backlog-todos"/);
+  assert.match(source, /allCities:\s*new URLSearchParams\(window\.location\.search\)\.get\("scope"\) === "all"/);
   assert.match(source, /activeModule:\s*\["#desconexao-backlog", "#desconexao-backlog-todos"\]/);
   const app = setup("backlog", true);
   assert.equal(app.active().className, "profile-tab profile-tab-all");

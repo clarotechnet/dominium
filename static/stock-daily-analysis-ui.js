@@ -7,8 +7,8 @@ if(!panel)return;
 const tabs=["Atlas","Chips Atlas","IMPERIUM","CHIP IMPERIUM","Assinantes","Nomes."];
 let selected=null,activeTab=0,fetching=false,refreshQueued=false;
 let allRuns=[];
-const currentCity=()=>state.profile;
-const canWrite=()=>["admin","controller"].includes(state.authUser?.role);
+const currentCity=()=>state.allCities?"all":state.profile;
+const canWrite=()=>!state.allCities&&["admin","controller"].includes(state.authUser?.role);
 function status(msg,error=false){
  const node=el("stockDailyAnalysisMessage");node.textContent=msg;
  node.style.color=error?"#ff8898":"";
@@ -210,6 +210,18 @@ el("stockDailyAnalysisHistory").addEventListener("change",async e=>{
 el("stockDailyAnalysisImport").addEventListener("click",()=>void importWorkbook());
 el("stockDailyAnalysisDownload").addEventListener("click",()=>void download());
 el("stockDailyAnalysisRefresh").addEventListener("click",()=>void loadDaily());
+document.addEventListener("dominium:scope-change",()=>{
+  if(state.activeModule!=="stock" || panel.hidden)return;
+  // Não reter na interface linhas consolidadas ao voltar para uma cidade específica.
+  selected=null;
+  allRuns=[];
+  el("stockDailyAnalysisTable").replaceChildren();
+  el("stockDailyAnalysisTabs").replaceChildren();
+  el("stockDailyAnalysisSheetInfo").textContent="";
+  el("stockDailyAnalysisDownload").disabled=true;
+  el("stockDailyAnalysisImport").hidden=!canWrite()||currentCity()==="all";
+  void loadDaily();
+});
 document.addEventListener("dominium:stock-tab-change",()=>{
  if(state.activeModule!=="stock"||el("stockReportsTab")?.getAttribute("aria-selected")!=="true"){
    panel.hidden=true;
