@@ -21,6 +21,8 @@ const state = {
   profiles: [],
   profile: new URLSearchParams(window.location.search).get("profile") || "natal",
   profileEpoch: 0,
+  // Apenas a Análise Backlog permite manter "Todos" como escopo fora da visão consolidada.
+  backlogAllCities: window.location.hash === "#desconexao-backlog-todos",
   closeEnabled: false,
   officialCloseEnabled: false,
   materialWriteoffEnabled: false,
@@ -47,7 +49,7 @@ const state = {
     { code: "0", description: "CANCELAMENTO", productive: false },
   ],
   failures: [],
-  activeModule: window.location.hash === "#desconexao-backlog"
+  activeModule: ["#desconexao-backlog", "#desconexao-backlog-todos"].includes(window.location.hash)
     ? "backlog"
     : window.location.hash === "#todos"
     ? "all-operations"
@@ -879,7 +881,9 @@ function apiUrlForProfile(path, profile) {
 function updateAddress() {
   const url = new URL(window.location.href);
   url.searchParams.set("profile", state.profile);
-  url.hash = state.activeModule === "backlog" ? "desconexao-backlog" : state.activeModule === "all-operations"
+  url.hash = state.activeModule === "backlog"
+    ? (state.backlogAllCities ? "desconexao-backlog-todos" : "desconexao-backlog")
+    : state.activeModule === "all-operations"
     ? "todos"
     : state.activeModule === "descAnalytics"
     ? "desconexao-indicadores"
@@ -2433,6 +2437,13 @@ function showAllOperations() {
   if (!state.profiles.length || state.running || state.loading || state.profileSwitching
     || state.bulkCreateLoading || state.stockBatchLoading || state.stockWriteoffLoading
     || disconnectIsRunning()) return;
+  if (state.activeModule === "backlog") {
+    // Em Análise Backlog, "Todos" é um filtro, não uma mudança de módulo.
+    state.backlogAllCities = true;
+    updateAddress();
+    render();
+    return;
+  }
   state.activeModule = "all-operations";
   updateAddress();
   render();
@@ -2450,8 +2461,11 @@ function renderProfileTabs() {
   all.className = "profile-tab profile-tab-all";
   all.type = "button";
   all.innerHTML = '<span class="all-ops-icon" aria-hidden="true">▦</span><span>Todos</span>';
-  all.title = "Visao consolidada em leitura de todas as operacoes";
-  const allSelected = state.activeModule === "all-operations";
+  all.title = state.activeModule === "backlog"
+    ? "Mostrar todas as cidades na Análise Backlog"
+    : "Visão consolidada em leitura de todas as operações";
+  const allSelected = state.activeModule === "all-operations"
+    || (state.activeModule === "backlog" && state.backlogAllCities);
   all.classList.toggle("active", allSelected);
   all.setAttribute("aria-pressed", String(allSelected));
   all.disabled = state.running || state.loading || state.profileSwitching
@@ -3430,6 +3444,13 @@ async function loadProfile() {
 }
 
 async function switchProfile(profileKey) {
+  if (state.activeModule === "backlog" && state.backlogAllCities && profileKey === state.profile) {
+    // Retornar à cidade já carregada sem repetir consultas nem sair do Backlog.
+    state.backlogAllCities = false;
+    updateAddress();
+    render();
+    return;
+  }
   if (state.activeModule === "all-operations" && profileKey === state.profile) {
     state.activeModule = "dashboard";
     updateAddress();
@@ -3447,6 +3468,7 @@ async function switchProfile(profileKey) {
   const profile = state.profiles.find((item) => item.key === profileKey);
   if (!profile) return;
   if (state.activeModule === "all-operations") state.activeModule = "dashboard";
+  state.backlogAllCities = false;
   state.profileEpoch += 1;
   resetProfileOperationalState();
   state.profile = profileKey;
@@ -3619,6 +3641,9 @@ function setModule(module) {
     state.stockWriteoffBasket.clear();
     state.stockBatchSelected.clear();
   }
+  // A aba "Todos" conserva seu escopo somente na Análise Backlog.
+  state.backlogAllCities = module === "backlog"
+    && (state.activeModule === "all-operations" || (state.activeModule === "backlog" && state.backlogAllCities));
   state.activeModule = module;
   updateAddress();
   render();

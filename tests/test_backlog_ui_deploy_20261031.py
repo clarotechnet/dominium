@@ -18,7 +18,7 @@ assert 'src="/backlog-analysis.js?v=20261103-image-1"' in html
 assert 'src="/backlog-report-image.js?v=20261103-image-2"' in html
 assert 'src="/backlog-report.js?v=20261103-whatsapp-1"' in html
 assert 'href="/backlog-analysis.css?v=20261103-image-1"' in html
-assert 'src="/app.js?v=20261031-backlog-1"' in html
+assert 'src="/app.js?v=20261103-backlog-todos-1"' in html
 for id in ['backlogRun','backlogPilot','backlogPause','backlogProfile',
            'backlogRouteFiles','backlogUpload','backlogCompare','backlogResult',
            'backlogFromTOA','backlogAutoStatus','backlogDailyRefresh',
