@@ -43,7 +43,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 
 test("period search shows visible loading then explicit empty result and enables a new search",async()=>{
  assert.match(html,/id="stockDailyAnalysisLoading"/);
- assert.match(html,/stock-daily-analysis-ui\.js\?v=20261103-loading-1/);
+ assert.match(html,/stock-daily-analysis-ui\.js\?v=20261103-global-1/);
  let complete,calls=0,url;
  const {get}=mount(next=>{
   calls++;url=next;
