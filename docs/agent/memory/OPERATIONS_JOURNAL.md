@@ -217,3 +217,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 13 testes do modulo passaram em Python312 no servidor; HTTP 200 com 99656 registros; leitura real Natal 30/10 151 DESC, 3 detalhes 430; quality gate total possui 3 erros Atlas nao relacionados.
 
 **Próximo passo/pendência:** Confirmar primeiro lote real depois das 22h 03/11; auditar 2055 linhas rejeitadas e lacuna Recife antes de 05/02; finalizar revisao gate Atlas; considerar UI e merge GitHub.
+
+## 2026-11-03 14:44 UTC — Historico DESC: dia corrente as 22h e resgate de OS ambigua
+
+**Motivo:** Correcao do operador: a backlog do dia deve entrar as 22h do proprio dia, nunca so no dia seguinte.
+
+**Alterado:** Planner e sidecar aceitam include_today somente no batch das 22h; recuperacao 2047 registros XLSX com verificacao xlsx_seed_ambiguous_os; 101703 ocorrencias no servidor; 8 invalidas por contrato; backups preservados.
+
+**Verificação:** 35 testes backlog no PC e 26 testes no servidor aprovados; HTTP 200 confirmou historico 101703, 1 rota e 4 checkpoints; Recife janeiro consultado sem DESC; sem escrita de OS.
+
+**Próximo passo/pendência:** Verificar primeira rodada automatica 03/11 as 22h pelo sync_runs; falta apenas auditoria de 8 contratos invalidos e eventual disponibilidade de historico Recife anterior a fevereiro.

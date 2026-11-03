@@ -27,7 +27,7 @@ DAILY_SCHEMA = """CREATE TABLE IF NOT EXISTS daily_history_attempts (
 class DailyHistoryScheduler:
     """Starts at most once between 22:00 and 22:44 per local calendar day."""
 
-    def __init__(self, service, *, now=None, max_days_per_profile=2, interval=45.0):
+    def __init__(self, service, *, now=None, max_days_per_profile=7, interval=45.0):
         self.service = service
         self.now = now or (lambda: dt.datetime.now(LOCAL_TZ))
         self.max_days_per_profile = max_days_per_profile
@@ -59,7 +59,8 @@ class DailyHistoryScheduler:
             if not cur.rowcount:
                 return "already_started"
         try:
-            result = self.service.start(mode="batch", days_per_profile=self.max_days_per_profile)
+            result = self.service.start(mode="batch", days_per_profile=self.max_days_per_profile,
+                                        include_today=True)
         except RuntimeError:
             # A competing manual run was started after the busy check.
             with self.service._connect() as conn:

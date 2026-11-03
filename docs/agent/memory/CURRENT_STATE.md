@@ -1,13 +1,14 @@
 ## Estado vigente — 03/11/2026: histórico DESC anual e sincronização 22h
 
 Autorizada carga inicial de quatro exportações Imperium **TODOS/DESCONEXÃO**
-e atualização diária às 22h UTC−03:00, sempre até o dia anterior.
+e atualização diária às 22h UTC−03:00 incluindo o próprio dia corrente.
 Serviço isolado de backlog no servidor **DESKTOP-K7J3E1N** (porta localhost
 9342), sem métodos de escrita de O.S. nem alteração da automação DESC 23h.
 
-Carga inicial incorporada ao SQLite do backlog: **99.656 ocorrências**,
-**2.055 linhas rejeitadas** com auditoria somente por arquivo/aba/linha/motivo.
-Natal 54.656, Mossoró 3.297, Fortaleza 32.575, Recife 9.128. Recife/JCR
+Carga inicial + recuperação incorporadas ao SQLite: **101.703 ocorrências**,
+**2.047 O.S. ambíguas preservadas** com identificação original e flag
+`xlsx_seed_ambiguous_os`; somente **8 contratos inválidos** em auditoria.
+Natal 56.051, Mossoró 3.353, Fortaleza 32.985, Recife 9.314. Recife/JCR
 inicia em 05/02/2026, ainda sem cobertura confirmada de meses anteriores.
 Checkpoint de quatro bases em 31/10/2026, registros de rota anteriores
 preservados, PRAGMA integrity_check=ok e backup online:
@@ -16,12 +17,15 @@ Scripts originais também preservados em
 C:\DominiumRuntime\BacklogLab-20261030\backups\20261103-desc-daily-prepatch.
 
 Sidecar reiniciado com --daily-sync; serviço HTTP 200 autenticado,
-99.656 ocorrências e 1 rota preservada; 13 testes específicos passaram
+101.703 ocorrências e 1 rota preservada; 26 testes no servidor passaram
 no Python 3.12 do servidor. Tarefa Windows
 "DOMINIUM - DESC Historico 22h" criada e testada (resultado 0);
 aciona idempotentemente no logon e às 21:55/22:15/22:35.
 Guard de atividade operacional bloqueia DataSnap se baixas estiverem
 em execução. O primeiro lote agendado das 22h ainda não ocorreu.
+A execução 03/11 deve consultar 01/11, 02/11 e 03/11; já passou nos
+35 testes de backlog no PC e 26 no servidor. Backup de recuperação:
+C:\DominiumRuntime\BacklogLab-20261030\backups\pre-ambiguous-recovery-20261103-113920.sqlite3.
 
 Provas reais *somente leitura*: DataSnap Natal 30/10/2026
 TODOS/DESCONEXÃO=151, CONCLUÍDA/DESCONEXÃO=36 e TODOS/TODOS=810;

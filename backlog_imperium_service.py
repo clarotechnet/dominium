@@ -104,15 +104,17 @@ class BacklogHistoryService:
             routes = conn.execute("SELECT coalesce(sum(rows_count),0) FROM route_batches").fetchone()[0]
             return {
                 "ok":True,"window_start":year_window(self.clock()).start.isoformat(),
-                "window_end":year_window(self.clock()).end.isoformat(),
+                "window_end":max([year_window(self.clock()).end.isoformat(), *checkpoints.values()]),
                 "checkpoints":checkpoints,"running":bool(self._runner and self._runner.is_alive()),
                 "run":dict(run) if run else None,
                 "history":{r["verification"]:r["n"] for r in counts},
                 "route_rows":routes
             }
 
-    def start(self, *, mode="batch", days_per_profile=1, only_profile=None, probe_date=None):
+    def start(self, *, mode="batch", days_per_profile=1, only_profile=None,
+              probe_date=None, include_today=False):
         if mode not in ("batch","probe"): raise ValueError("Modo invalido")
+        if include_today and mode != "batch": raise ValueError("include_today exige lote")
         if only_profile and only_profile not in PROFILES: raise ValueError("Perfil invalido")
         if not isinstance(days_per_profile,int) or not 1 <= days_per_profile <= 7:
             raise ValueError("O limite por lote e de 1 a 7 dias por perfil")
@@ -129,7 +131,7 @@ class BacklogHistoryService:
             else:
                 with self._connect() as conn:
                     checkpoints = {r["profile"]:dt.date.fromisoformat(r["date"]) for r in conn.execute("SELECT profile,date FROM checkpoint")}
-                days = plan_days(today=self.clock(),checkpoints=checkpoints,max_days_per_profile=days_per_profile)
+                days = plan_days(today=self.clock(),checkpoints=checkpoints,max_days_per_profile=days_per_profile,include_today=include_today)
                 tasks = [(t.profile,t.date) for t in days if not only_profile or t.profile == only_profile]
             run_id = uuid.uuid4().hex
             with self._connect() as conn:

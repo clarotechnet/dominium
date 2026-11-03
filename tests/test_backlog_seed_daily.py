@@ -20,6 +20,8 @@ def make_xlsx(path):
          "NATAL", "2", "46000", "106", "CLIENTE AUSENTE"],
         ["46001", "1234567", "260000001", "RETIRAR EQUIPAMENTO", "TESTE",
          "NATAL", "4", "46001", "430", "EQUIPAMENTO RETIRADO"],
+        ["46001", "1234567", "260000001  260000002", "RETIRAR EQUIPAMENTO", "TESTE",
+         "NATAL", "2", "46001", "106", "DUAS OS NO CAMPO"],
         ["46001", "RUA EXEMPLO", "RUA EXEMPLO", "RETIRAR EQUIPAMENTO", "TESTE",
          "NATAL", "4", "46001", "106", "INVALIDO"],
     ]
@@ -47,14 +49,15 @@ class SeedTests(unittest.TestCase):
 
     def test_seed_preserves_separate_os_occurrences_and_checkpoint(self):
         result = ingest(self.database, self.xlsx)
-        self.assertEqual(result['rows'], 2)
+        self.assertEqual(result['rows'], 3)
         self.assertEqual(result['skipped'], 1)
         self.assertEqual(result['profile'], 'natal')
         self.assertTrue(ingest(self.database, self.xlsx)['already_imported'])
         with closing(sqlite3.connect(self.database)) as db:
-            self.assertEqual(db.execute('SELECT count(*) FROM history_seed_rows').fetchone()[0], 2)
+            self.assertEqual(db.execute('SELECT count(*) FROM history_seed_rows').fetchone()[0], 3)
             self.assertEqual(db.execute('SELECT count(*) FROM history_seed_rejections').fetchone()[0], 1)
-            self.assertEqual(db.execute('SELECT count(*) FROM history').fetchone()[0], 2)
+            self.assertEqual(db.execute('SELECT count(*) FROM history').fetchone()[0], 3)
+            self.assertEqual(db.execute("SELECT count(*) FROM history WHERE verification='xlsx_seed_ambiguous_os'").fetchone()[0],1)
             self.assertEqual({x[0] for x in db.execute('SELECT code FROM history')}, {'106','430'})
             self.assertEqual(db.execute('SELECT date FROM checkpoint WHERE profile=?',('natal',)).fetchone()[0],
                              (dt.date(1899,12,30)+dt.timedelta(days=46001)).isoformat())
@@ -95,12 +98,13 @@ class ScheduleTests(unittest.TestCase):
         self.current = self.current.replace(hour=22,minute=0)
         self.assertEqual(self.scheduler.tick(),'started')
         self.assertEqual(self.scheduler.tick(),'already_started')
-        self.assertEqual(self.svc.runs,[{'mode':'batch','days_per_profile':2}])
+        self.assertEqual(self.svc.runs[0]['days_per_profile'], 7)
+        self.assertIs(self.svc.runs[0]['include_today'], True)
         self.current += dt.timedelta(days=1)
         self.assertEqual(self.scheduler.tick(),'started')
         self.assertEqual(len(self.svc.runs),2)
     def test_busy_and_cutoff(self):
-        self.current = self.current.replace(hour=22,minute=1)
+        self.current = self.current.replace(hour=22,minute=0)
         self.svc.busy=True
         self.assertEqual(self.scheduler.tick(),'reader_busy')
         self.svc.busy=False

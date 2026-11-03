@@ -167,7 +167,7 @@ def ingest(db_path: Path, xlsx_path: Path) -> dict:
                     activity_date = date_iso(col("activity_date"))
                     contract = re.sub(r"\D", "", col("contract").removesuffix(".0"))
                     os_number = col("os_number").removesuffix(".0").strip()
-                    if not activity_date or not (4 <= len(contract) <= 20) or not re.fullmatch(r"\d+(?: \d+)*", os_number):
+                    if not activity_date or not (4 <= len(contract) <= 20) or not os_number:
                         # No personal data from rejected rows is persisted.
                         reason = ("invalid_date" if not activity_date else
                                   "invalid_contract" if not (4 <= len(contract) <= 20) else
@@ -204,7 +204,9 @@ def ingest(db_path: Path, xlsx_path: Path) -> dict:
                       (profile,id_os,activity_date,os_number,contract,service,code,
                        verification,status,captured_at) VALUES(?,?,?,?,?,?,?,?,?,?)""",
                       (profile,event_id(profile,row),activity_date,os_number,contract,
-                       row["service"],code or None,"xlsx_seed",row["status"],imported_at))
+                       row["service"],code or None,
+                       "xlsx_seed" if re.fullmatch(r"\d+(?: \d+)*",os_number) else "xlsx_seed_ambiguous_os",
+                       row["status"],imported_at))
                     earliest = min(earliest, activity_date) if earliest else activity_date
                     latest = max(latest, activity_date) if latest else activity_date
                     count += 1

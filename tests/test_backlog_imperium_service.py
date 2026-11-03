@@ -82,6 +82,30 @@ class BacklogServiceTests(unittest.TestCase):
         self.assertEqual(self.svc.snapshot()["checkpoints"],{})
         self.assertEqual(self.api.calls,[])
 
+    def test_current_day_batch_advances_checkpoint(self):
+        self.svc.clock=lambda:dt.date(2026,11,3)
+        with self.svc._connect() as conn:
+            conn.execute("INSERT INTO checkpoint(profile,date,updated_at) VALUES(?,?,?)",("natal","2026-10-31","test"))
+            conn.commit()
+        self.svc.start(mode="batch",days_per_profile=7,only_profile="natal",include_today=True)
+        self.join()
+        self.assertEqual(self.svc.snapshot()["checkpoints"]["natal"],"2026-11-03")
+        self.assertEqual(self.svc.snapshot()["history"]["confirmed"],3)
+        self.assertEqual(self.svc.snapshot()["window_end"],"2026-11-03")
+
+    def test_22h_batch_includes_current_day_and_catches_up(self):
+        self.svc.clock=lambda:dt.date(2026,11,3)
+        with self.svc._connect() as conn:
+            conn.execute("INSERT INTO checkpoint(profile,date,updated_at) VALUES(?,?,?)",
+                         ("natal","2026-10-31","2026-11-03T12:00:00Z"))
+            conn.commit()
+        self.svc.start(mode="batch",days_per_profile=7,only_profile="natal",include_today=True)
+        self.join()
+        with self.svc._connect() as conn:
+            days=[r[0] for r in conn.execute("SELECT activity_date FROM history ORDER BY activity_date")]
+        self.assertEqual(days,["2026-11-01","2026-11-02","2026-11-03"])
+        self.assertEqual(self.svc.snapshot()["checkpoints"]["natal"],"2026-11-03")
+
     def test_reject_bad_limits(self):
         with self.assertRaises(ValueError):self.svc.start(mode="batch",days_per_profile=60)
 

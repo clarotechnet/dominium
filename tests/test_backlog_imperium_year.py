@@ -15,10 +15,27 @@ class BacklogYearPlannerTests(unittest.TestCase):
         w = year_window(dt.date(2026, 10, 30))
         self.assertEqual((w.start, w.end, w.days), (dt.date(2025, 10, 30), dt.date(2026, 10, 29), 365))
 
+    def test_today_at_22h_is_included(self):
+        self.assertEqual(year_window(dt.date(2026,11,3),include_today=True).end,dt.date(2026,11,3))
+
+    def test_2200_window_includes_same_day(self):
+        now=dt.date(2026,11,3)
+        self.assertEqual(year_window(now,include_today=True).end,now)
+        tasks=plan_days(today=now,checkpoints={p:dt.date(2026,10,31) for p in PROFILES},include_today=True,max_days_per_profile=7)
+        self.assertEqual(len(tasks),12)
+        self.assertTrue(all(t.date in {dt.date(2026,11,1),dt.date(2026,11,2),now} for t in tasks))
+
     def test_leap_day(self):
         w = year_window(dt.date(2024, 2, 29))
         self.assertEqual(w.start, dt.date(2023, 2, 28))
         self.assertEqual(w.end, dt.date(2024, 2, 28))
+
+    def test_november_1_to_3_recovered_for_all_cities(self):
+        checkpoints={p:dt.date(2026,10,31) for p in PROFILES}
+        tasks=plan_days(today=dt.date(2026,11,3),checkpoints=checkpoints,max_days_per_profile=7,include_today=True)
+        self.assertEqual(len(tasks),12)
+        self.assertTrue(all(len([t for t in tasks if t.profile==p])==3 for p in PROFILES))
+        self.assertEqual(max(t.date for t in tasks),dt.date(2026,11,3))
 
     def test_initial_run_paced_4_profiles(self):
         tasks = plan_days(today=dt.date(2026, 10, 30), max_days_per_profile=2)

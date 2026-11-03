@@ -40,10 +40,10 @@ def _one_year_before(day: dt.date) -> dt.date:
         return day.replace(year=day.year - 1, day=28)
 
 
-def year_window(today: dt.date | None = None) -> YearWindow:
-    """Ultimos 12 meses completos ate ontem; nao consulta o dia corrente."""
+def year_window(today: dt.date | None = None, *, include_today: bool = False) -> YearWindow:
+    """Ultimos 12 meses; o dia corrente exige liberacao explicita."""
     day = today or dt.date.today()
-    return YearWindow(start=_one_year_before(day), end=day - dt.timedelta(days=1))
+    return YearWindow(start=_one_year_before(day), end=day if include_today else day - dt.timedelta(days=1))
 
 
 def plan_days(
@@ -51,6 +51,7 @@ def plan_days(
     today: dt.date,
     checkpoints: Mapping[str, dt.date | None] | None = None,
     max_days_per_profile: int = 7,
+    include_today: bool = False,
 ) -> list[DayTask]:
     """Retoma apenas dias ainda nao confirmados, por perfil.
 
@@ -59,7 +60,7 @@ def plan_days(
     """
     if not 1 <= max_days_per_profile <= 31:
         raise ValueError("max_days_per_profile deve ser de 1 a 31")
-    w = year_window(today)
+    w = year_window(today, include_today=include_today)
     checkpoints = checkpoints or {}
     tasks: list[DayTask] = []
     for profile in PROFILES:
