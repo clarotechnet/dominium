@@ -30,18 +30,16 @@ class AllStatusesContractTests(unittest.TestCase):
                 ) for identifier,contract,code in records.get(status,[])]
             def _fetch_main_payload(api_self, day, *, status, service_type):
                 self.calls.append(("raw_all", status, service_type))
-                assert status=="all" and service_type=="all"
+                assert status=="all" and service_type=="disconnection"
                 return "raw_records"
             def _parse_orders(api_self, payload):
                 assert payload=="raw_records"
                 known={}
                 before=len(self.calls)
                 for status_name in ("field","completed","canceled","rescheduled"):
-                    for order in api_self.list_orders(dt.date(2026,10,29),status=status_name,service_type="all"):
+                    for order in api_self.list_orders(dt.date(2026,10,29),status=status_name,service_type="disconnection"):
                         known[order.id_os]=order
                 del self.calls[before:]
-                known[104]=SimpleNamespace(id_os=104,num_os="104",contract="4000004",
-                    service="ADESAO",status=None)
                 return list(known.values())
             def _fetch_detail(api_self, identifier, timeout):
                 self.calls.append(("detail",identifier))
@@ -62,15 +60,14 @@ class AllStatusesContractTests(unittest.TestCase):
     def test_batch_reads_all_status_filters_and_preserves_status(self):
         self._run("batch")
         self.assertEqual([call[1:] for call in self.calls if call[0]=="list"],
-                         [(s,"all") for s in ("field","completed","canceled","rescheduled")])
+                         [(s,"disconnection") for s in ("field","completed","canceled","rescheduled")])
         with self.svc._connect() as conn:
             stored=conn.execute("SELECT contract,status,code FROM history ORDER BY id_os").fetchall()
             self.assertEqual([(r[0],r[1],r[2]) for r in stored],
                          [("1000001","EM CAMPO","104"),("1000001","CONCLUIDA","430"),
-                          ("2000002","CANCELADA","404"),("3000003","REAGENDADA","306"),
-                          ("4000004","DESCONHECIDO","106")])
-        self.assertEqual(self.svc.snapshot()["history"]["confirmed"],5)
-        self.assertEqual([x[1:] for x in self.calls if x[0]=="raw_all"],[("all","all")])
+                          ("2000002","CANCELADA","404"),("3000003","REAGENDADA","306")])
+        self.assertEqual(self.svc.snapshot()["history"]["confirmed"],4)
+        self.assertEqual([x[1:] for x in self.calls if x[0]=="raw_all"],[("all","disconnection")])
 
     def test_comparison_uses_any_selected_history_not_just_latest(self):
         self._run("batch")

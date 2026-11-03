@@ -53,6 +53,8 @@ class BacklogServiceTests(unittest.TestCase):
         self.assertEqual(state["history"],{})
         self.assertEqual(state["checkpoints"],{})
         self.assertEqual(state["run"]["imported"],1)
+        self.assertIn(("raw_all","all","disconnection"),self.api.calls)
+        self.assertTrue(all(call[-1]=="disconnection" for call in self.api.calls if call[0]=="list"))
 
     def test_incremental_progress_persists_and_deduplicates(self):
         self.svc.start(mode="batch",days_per_profile=1,only_profile="natal")
@@ -69,6 +71,16 @@ class BacklogServiceTests(unittest.TestCase):
             {"natal":SimpleNamespace(api=self.api)},clock=lambda:dt.date(2026,10,30))
         self.assertEqual(new.snapshot()["checkpoints"]["natal"],"2025-10-31")
         self.assertEqual(new.fora_rota(profile="natal")["candidates"][0]["contract"],"1234567")
+
+    def test_read_guard_fails_closed_without_checkpoint(self):
+        def deny():
+            raise RuntimeError("Operacao de baixa em andamento")
+        self.svc.read_guard=deny
+        self.svc.start(mode="batch",days_per_profile=1,only_profile="natal")
+        self.svc._runner.join(4)
+        self.assertEqual(self.svc.snapshot()["run"]["status"],"failed")
+        self.assertEqual(self.svc.snapshot()["checkpoints"],{})
+        self.assertEqual(self.api.calls,[])
 
     def test_reject_bad_limits(self):
         with self.assertRaises(ValueError):self.svc.start(mode="batch",days_per_profile=60)

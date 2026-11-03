@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-30T19:56:27+00:00
-- Source fingerprint: `dbc85f51b25c2521`
-- Indexed files: 500
-- Indexed symbols: 4152
-- API path references: 584
+- Generated: 2026-11-03T13:11:21+00:00
+- Source fingerprint: `7625f45406d5f0da`
+- Indexed files: 492
+- Indexed symbols: 4216
+- API path references: 554
 
 ## Navigation rule
 
@@ -129,6 +129,9 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `auth_store_postgres.py` (18 symbols) - Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.
 - `auto_improductive_close.py` (23 symbols)
 - `backlog_bridge_auth.py` (1 symbols, 7 API paths) - Strict bearer-gated VPC authorization for the DOMINIUM Backlog module.
+- `backlog_daily_scheduler.py` (6 symbols) - Idempotent 22:00 (UTC-03:00) read-only DataSnap history scheduling.
+- `backlog_read_guard.py` (3 symbols) - Fail-closed guard for read-only Imperium history when OS writers are active.
+- `backlog_seed_xlsx.py` (8 symbols) - Initial XLSX bootstrap for DOMINIUM's read-only DESC history.
 - `backlog_sidecar.py` (3 symbols, 7 API paths) - Independent localhost-only Backlog HTTP service.
 - `bulk_orders.py` (2 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `cancel_all_open.py` (3 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -185,10 +188,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 159 files
-- tooling-deploy: 62 files
-- docs: 43 files
-- tests: 145 files
+- shared: 162 files
+- tooling-deploy: 48 files
+- docs: 45 files
+- tests: 146 files
 
 ## Search indexes
 

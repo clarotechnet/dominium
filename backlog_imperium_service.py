@@ -67,13 +67,14 @@ def utcnow():
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
 
 class BacklogHistoryService:
-    def __init__(self, db_path: str | Path, profiles: dict, *, clock=None, sleep=None, operation_gate=None):
+    def __init__(self, db_path: str | Path, profiles: dict, *, clock=None, sleep=None, operation_gate=None, read_guard=None):
         self.db_path = Path(db_path)
         self.profiles = profiles
         self.clock = clock or dt.date.today
         self.sleep = sleep or time.sleep
         self._mutex = threading.RLock()
         self.operation_gate = operation_gate
+        self.read_guard = read_guard
         self._stop = threading.Event()
         self._runner = None
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -145,6 +146,9 @@ class BacklogHistoryService:
         return {"ok":True,"message":"Parada solicitada; dia em andamento sera finalizado antes de parar"}
 
     def _datasnap_read(self, method, *args, **kwargs):
+        # Fail closed when operational closing/batch readers may compete.
+        if self.read_guard is not None:
+            self.read_guard()
         # Shared with operational close gates. Never compete with OS writes.
         if self.operation_gate is None:
             return method(*args, **kwargs)
@@ -168,18 +172,18 @@ class BacklogHistoryService:
                     status="paused";break
                 api=self.profiles[profile_key].api
                 # Read-only status: no close, no stock changes and no TOA bridge.
-                # O conjunto TODOS/TODOS e a fonte oficial.
+                # O conjunto TODOS/DESCONEXAO e a fonte deste historico.
                 # As quatro consultas por status sao somente anotacoes:
                 # o DataSnap pode retornar OS adicionais que nao pertencem
                 # a nenhum dos quatro status conhecidos.
                 all_payload=self._datasnap_read(
-                    api._fetch_main_payload,day,status="all",service_type="all")
+                    api._fetch_main_payload,day,status="all",service_type="disconnection")
                 all_orders=api._parse_orders(all_payload)
                 if len(all_orders)>3000:
                     raise RuntimeError("Mais de 3000 OS num dia: revisar antes de processar")
                 all_by_id={order.id_os:order for order in all_orders}
                 if len(all_by_id)!=len(all_orders):
-                    raise RuntimeError("IDs duplicados na consulta TODOS/TODOS")
+                    raise RuntimeError("IDs duplicados na consulta TODOS/DESCONEXAO")
                 status_labels={
                     "field":"EM CAMPO","completed":"CONCLUIDA",
                     "canceled":"CANCELADA","rescheduled":"REAGENDADA"
@@ -187,10 +191,10 @@ class BacklogHistoryService:
                 known={}
                 for status_name,status_label in status_labels.items():
                     batch=self._datasnap_read(
-                        api.list_orders,day,status=status_name,service_type="all")
+                        api.list_orders,day,status=status_name,service_type="disconnection")
                     for order in batch:
                         if order.id_os not in all_by_id:
-                            raise RuntimeError("OS no filtro de status ausente em TODOS/TODOS")
+                            raise RuntimeError("OS no filtro de status ausente em TODOS/DESCONEXAO")
                         if order.id_os in known and known[order.id_os]!=status_label:
                             raise RuntimeError("DataSnap retornou OS em status conflitantes")
                         known[order.id_os]=status_label

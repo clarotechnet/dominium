@@ -207,3 +207,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 13 hashes SHA-256 conferidos; comparacao AST de cinco metodos centrais; parser reproduzido e consultas TOA/Imperium somente leitura
 
 **Próximo passo/pendência:** Homologar fechamento DESC sem itens das acompanhantes com equipamentos concentrados em uma OS; nao restaurar snapshot como correcao
+
+## 2026-11-03 13:10 UTC — Historico DESC inicial e sincronizacao DataSnap 22h
+
+**Motivo:** Operador autorizou usar 4 XLSX TODOS/DESCONEXAO como carga inicial e consultar o dia anterior automaticamente.
+
+**Alterado:** BacklogHistoryService filtra disconnection; importacao idempotente 99656 ocorrencias; agendador 22h UTC-3; read guard; banco e backup verificados no servidor; tarefa Windows persistente.
+
+**Verificação:** 13 testes do modulo passaram em Python312 no servidor; HTTP 200 com 99656 registros; leitura real Natal 30/10 151 DESC, 3 detalhes 430; quality gate total possui 3 erros Atlas nao relacionados.
+
+**Próximo passo/pendência:** Confirmar primeiro lote real depois das 22h 03/11; auditar 2055 linhas rejeitadas e lacuna Recife antes de 05/02; finalizar revisao gate Atlas; considerar UI e merge GitHub.

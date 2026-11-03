@@ -20,6 +20,8 @@ from urllib.parse import parse_qs, urlparse
 
 from backlog_bridge_auth import _authorized_backlog_bridge
 from backlog_imperium_service import BacklogHistoryService
+from backlog_daily_scheduler import DailyHistoryScheduler
+from backlog_read_guard import OperationalReadGate
 
 _BACKLOG_TOKEN_RE = re.compile(r"^[A-Za-z0-9_-]{43,128}$")
 _PROFILES = {
@@ -149,6 +151,8 @@ def build_handler(service: BacklogHistoryService):
 def main():
     parser=argparse.ArgumentParser(description="Backlog isolado DOMINIUM - apenas localhost")
     parser.add_argument("--port",type=int,default=9342)
+    parser.add_argument("--daily-sync",action="store_true",
+                        help="Ativa consulta DESC ontem as 22h (UTC-3), sem baixas")
     parser.add_argument("--imperium-root",default=r"C:\DominiumRuntime\Imperium\FerramentaImperiumDireto-OLLAMA")
     parser.add_argument("--data-dir",default=r"C:\DominiumRuntime\BacklogRuntime\data")
     parser.add_argument("--token-file",default=r"C:\DominiumRuntime\DescRelay-20261010\state\relay-token.txt")
@@ -166,11 +170,17 @@ def main():
         for profile,(port,city,controller) in _PROFILES.items()
     }
     service=BacklogHistoryService(data/"backlog.sqlite3",profiles,
-        operation_gate=threading.RLock())
+        operation_gate=threading.RLock(),read_guard=OperationalReadGate())
     server=ThreadingHTTPServer(("127.0.0.1",args.port),build_handler(service))
+    scheduler=DailyHistoryScheduler(service) if args.daily_sync else None
+    if scheduler:
+        scheduler.start()
     print("BACKLOG_SERVICE_READY=127.0.0.1:"+str(args.port),flush=True)
+    print("BACKLOG_DAILY_SYNC="+("ENABLED" if scheduler else "DISABLED"),flush=True)
     try:server.serve_forever(poll_interval=0.25)
     except KeyboardInterrupt:pass
-    finally:server.server_close()
+    finally:
+        if scheduler:scheduler.close()
+        server.server_close()
 
 if __name__=="__main__":main()

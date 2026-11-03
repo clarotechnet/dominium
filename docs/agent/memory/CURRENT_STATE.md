@@ -1,4 +1,40 @@
-## Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106
+## Estado vigente — 03/11/2026: histórico DESC anual e sincronização 22h
+
+Autorizada carga inicial de quatro exportações Imperium **TODOS/DESCONEXÃO**
+e atualização diária às 22h UTC−03:00, sempre até o dia anterior.
+Serviço isolado de backlog no servidor **DESKTOP-K7J3E1N** (porta localhost
+9342), sem métodos de escrita de O.S. nem alteração da automação DESC 23h.
+
+Carga inicial incorporada ao SQLite do backlog: **99.656 ocorrências**,
+**2.055 linhas rejeitadas** com auditoria somente por arquivo/aba/linha/motivo.
+Natal 54.656, Mossoró 3.297, Fortaleza 32.575, Recife 9.128. Recife/JCR
+inicia em 05/02/2026, ainda sem cobertura confirmada de meses anteriores.
+Checkpoint de quatro bases em 31/10/2026, registros de rota anteriores
+preservados, PRAGMA integrity_check=ok e backup online:
+C:\DominiumRuntime\BacklogLab-20261030\backups\pre-history-seed-20261103-095113.sqlite3.
+Scripts originais também preservados em
+C:\DominiumRuntime\BacklogLab-20261030\backups\20261103-desc-daily-prepatch.
+
+Sidecar reiniciado com --daily-sync; serviço HTTP 200 autenticado,
+99.656 ocorrências e 1 rota preservada; 13 testes específicos passaram
+no Python 3.12 do servidor. Tarefa Windows
+"DOMINIUM - DESC Historico 22h" criada e testada (resultado 0);
+aciona idempotentemente no logon e às 21:55/22:15/22:35.
+Guard de atividade operacional bloqueia DataSnap se baixas estiverem
+em execução. O primeiro lote agendado das 22h ainda não ocorreu.
+
+Provas reais *somente leitura*: DataSnap Natal 30/10/2026
+TODOS/DESCONEXÃO=151, CONCLUÍDA/DESCONEXÃO=36 e TODOS/TODOS=810;
+três códigos 430 confirmados por detalhe. Em 02/11/2026, Natal
+TODOS/DESCONEXÃO=0 e TODOS/TODOS=28; pilotos para Natal e Mossoró
+concluídos sem avançar checkpoint, resultado zero para DESCONEXÃO.
+Qualidade geral do branch de desenvolvimento ainda acusa três
+erros dos testes Atlas não ligados a este módulo; os 3 testes históricos
+antigos foram atualizados ao filtro DESCONEXÃO e aprovados.
+Nenhum deploy Web/Hostinger ocorreu. Detalhes:
+[DESC_HISTORY_DAILY_20261103.md](../DESC_HISTORY_DAILY_20261103.md).
+
+## Estado anterior — 29/10/2026: DESC por contrato, Adesão e exceção 106
 
 Backup indicado pelo operador `F:\Dominium\Backups\DominiumBackups\KNOWN_GOOD_20261006_155652`
 auditado somente por leitura: 13 hashes válidos; contém núcleo DataSnap antigo,
