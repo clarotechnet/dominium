@@ -272,3 +272,27 @@ test('viewer and unapproved confront paths cannot consume private services', asy
   }
   assert.equal(calls,0);
 });
+
+
+test('monitor snapshot uses DESC backend with internal auth and read-only scope',async()=>{
+  let seen,descCalls=0,importCalls=0;
+  const env={IMPORT_TOKEN:secret,
+    IMPORT_SERVICE:{fetch:async()=>{importCalls++;throw Error('Wrong import backend');}},
+    DESC_SERVICE:{fetch:async req=>{seen=req;descCalls++;return Response.json({ok:true,active:false,snapshot:null});}}};
+  const target='https://bridge.test/api/monitor/snapshot?profile=natal';
+  const viewer={...headers,'X-Dominium-Role':'viewer',Cookie:'browser-session'};
+  const response=await worker.fetch(new Request(target,{headers:viewer}),env);
+  assert.equal(response.status,200);
+  assert.deepEqual(await response.json(),{ok:true,active:false,snapshot:null});
+  assert.equal(descCalls,1);
+  assert.equal(importCalls,0);
+  assert.equal(seen.url,'http://127.0.0.1:8793/api/monitor/snapshot?profile=natal');
+  assert.equal(seen.headers.get('authorization'),'Bearer '+secret);
+  assert.equal(seen.headers.get('x-dominium-role'),'viewer');
+  assert.equal(seen.headers.get('x-dominium-actor'),'Operador');
+  assert.equal(seen.headers.get('cookie'),null);
+  assert.equal(response.headers.get('cache-control'),'no-store');
+  const post=await worker.fetch(new Request(target,{method:'POST',headers,body:'{}'}),env);
+  assert.equal(post.status,404);
+  assert.equal(descCalls,1);
+});

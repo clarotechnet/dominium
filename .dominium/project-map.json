@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-30T15:13:32+00:00",
+  "generated_at": "2026-11-03T17:50:02+00:00",
   "schema": 2,
-  "source_fingerprint": "431b33ac764c55d61ca5e7c6066e25586fc95be997e681b552c3c7b1bbe8c1b6",
+  "source_fingerprint": "c0aa84f9a754069138f99d9cba21620406e6f6e001cd4f6c906d36ee103a7094",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -370,24 +370,6 @@
       "symbol_count": 151
     },
     {
-      "path": "apply_daily_backend.py",
-      "category": "shared",
-      "bytes": 5531,
-      "sha256": "5b767211141b4bbcde7ee2beb7b6637bd5c353c6d860db4d9ad911b4d2f51e8d",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [
-        "/api/stock/analyses/daily/import",
-        "/api/stock/analyses/jobs"
-      ],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 1
-    },
-    {
       "path": "auth_store.py",
       "category": "shared",
       "bytes": 26643,
@@ -736,6 +718,25 @@
       "symbol_count": 1
     },
     {
+      "path": "deploy/hostinger-web/backlog-proxy.js",
+      "category": "tooling-deploy",
+      "bytes": 3619,
+      "sha256": "6bc78dbcfdb73ea8a8cc1bbba9b46f2f847466b15adba17ade47a2a0c978eb11",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/routes"
+      ],
+      "env_vars": [
+        "DOMINIUM_BACKLOG_BRIDGE_TOKEN"
+      ],
+      "datasnap_methods": [
+        "TOKEN_PATTERN.test"
+      ],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
       "path": "deploy/hostinger-web/confront-policy.js",
       "category": "tooling-deploy",
       "bytes": 952,
@@ -821,13 +822,21 @@
     {
       "path": "deploy/hostinger-web/operational-policy.js",
       "category": "tooling-deploy",
-      "bytes": 5722,
-      "sha256": "dc32d50351c96abff91426197f571bdb46fcbde4f966b1e7ddb4f6be263110fa",
+      "bytes": 7428,
+      "sha256": "182efaca7600724c0dfbf99fb1e21ad244ee3293ce4321862f878b55cf2605d2",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/auto-improductive-close",
         "/api/auto-improductive-close/toggle",
+        "/api/backlog/year/",
+        "/api/backlog/year/compare",
+        "/api/backlog/year/fora-rota",
+        "/api/backlog/year/pause",
+        "/api/backlog/year/routes",
+        "/api/backlog/year/sent",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status",
         "/api/close-report",
         "/api/close-report/export.xlsx",
         "/api/disconnect-automation",
@@ -869,7 +878,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 10
+      "symbol_count": 12
     },
     {
       "path": "deploy/hostinger-web/operational-relay.js",
@@ -943,8 +952,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 43742,
-      "sha256": "6f2154ce896cc34b1d885c4bd95ddee8ba798b77d12d721040c4f84664bff559",
+      "bytes": 43933,
+      "sha256": "f83f42996c43048f869eb1b90dd67f2f7933d42363a3a8f543c5e6a6ef5c7a7c",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -957,6 +966,8 @@
         "/api/auth/register",
         "/api/auth/session",
         "/api/auth/users",
+        "/api/backlog/year",
+        "/api/backlog/year/routes",
         "/api/confront/",
         "/api/diagnostics",
         "/api/disconnection",
@@ -2706,12 +2717,13 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 6661,
-      "sha256": "6c29ee0496d4527511d9db8b240bfbce4aba9f0b4a4fb5fa97cab72b6c18f40c",
+      "bytes": 6789,
+      "sha256": "547c9a6d28a75cfc98c56106bfcd42b578cae8f85c30681f5b370dddc0c0199e",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/disconnection/",
+        "/api/monitor/snapshot",
         "/api/orders/bulk-create",
         "/api/serials/consult",
         "/api/stock/analyses/daily/import",
@@ -2725,8 +2737,8 @@
     {
       "path": "integrations/import_bridge/worker.test.mjs",
       "category": "shared",
-      "bytes": 17170,
-      "sha256": "0d702314872586ba5b3534dc668081755f7c626e0cf1d77738fcf90398be60de",
+      "bytes": 18510,
+      "sha256": "d16919600e79d71a7483d13abee3bd8e8c4ebbfc3a2cd7e6f963b0d44f4c749b",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -4237,90 +4249,6 @@
       "symbol_count": 13
     },
     {
-      "path": "patch_daily_period_20261030.py",
-      "category": "shared",
-      "bytes": 5737,
-      "sha256": "d968df2f1b86c239f975105a8fcd0d79b275b4d6732dc462f55b4ebb07ff6f7a",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [
-        "/api/stock/analyses/daily",
-        "/api/stock/analyses/daily?city="
-      ],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 1
-    },
-    {
-      "path": "patch_daily_ui.py",
-      "category": "shared",
-      "bytes": 4612,
-      "sha256": "25ab8f3d841d22bc26cebebb2e4c69cdec281755b6fafb1e729ab12b1496b2bd",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 1
-    },
-    {
-      "path": "patch_front_preview_20261030.py",
-      "category": "shared",
-      "bytes": 1449,
-      "sha256": "24063c6f44a487860165cb963351139ca2294a1c095522a7c9ab10aa36b3e1db",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 1
-    },
-    {
-      "path": "patch_last_reports.py",
-      "category": "shared",
-      "bytes": 2967,
-      "sha256": "c6c300a2ea8df693f780462ddb0fe37e61b1de5ea067dfd89dab9f704088420f",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [
-        "/api/stock/analyses/jobs/"
-      ],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 1
-    },
-    {
-      "path": "patch_query_filter_preview_20261030.py",
-      "category": "shared",
-      "bytes": 5374,
-      "sha256": "dc8152a36758b2f6b317124aeeb380796bea1ba8cca05547b06599493e214f3a",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [
-        "/api/stock/analyses/jobs",
-        "/api/stock/analyses/jobs/(",
-        "/api/stock/analyses/jobs\\"
-      ],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 1
-    },
-    {
       "path": "patch_remote_toa.py",
       "category": "toa",
       "bytes": 4566,
@@ -4344,21 +4272,6 @@
         "TOA_AUTOMATION.trigger",
         "TOA_LIVE.start"
       ],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
-      "path": "patch_subtabs_20261030.py",
-      "category": "shared",
-      "bytes": 6452,
-      "sha256": "a83682cf352f70a5918cb0ff270994351d6ccab3387fa611a0654896c7af10b5",
-      "summary": "",
-      "imports": [
-        "pathlib"
-      ],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
     },
@@ -4578,8 +4491,8 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 4842,
-      "sha256": "e4668aa7ab319feb7dbfff8a906c08d91b8623ed406228909db7e83eafe27ca3",
+      "bytes": 4894,
+      "sha256": "b4aeb47ce6b9f1a0d5ffceae0943c788ff1a4f57800de724b8c35e5e5fba1a3a",
       "summary": "",
       "imports": [
         "__future__",
@@ -5105,6 +5018,40 @@
       "symbol_count": 23
     },
     {
+      "path": "static/backlog-analysis.css",
+      "category": "frontend",
+      "bytes": 2473,
+      "sha256": "bf4fc7d77ca612ce1f34a99c325ecef9cd5b5811c4046e503e1a7c255a68f73c",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "static/backlog-analysis.js",
+      "category": "frontend",
+      "bytes": 13309,
+      "sha256": "f382012b0763c6ec6cdf012b1fa49ea2f8bca70aedebde612f9141dd4d034e35",
+      "summary": "DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/compare?limit=300&codes=",
+        "/api/backlog/year/fora-rota?profile=",
+        "/api/backlog/year/pause",
+        "/api/backlog/year/routes",
+        "/api/backlog/year/sent",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 11
+    },
+    {
       "path": "static/confront.js",
       "category": "frontend",
       "bytes": 11151,
@@ -5137,8 +5084,8 @@
     {
       "path": "static/daily-stock.js",
       "category": "frontend",
-      "bytes": 7284,
-      "sha256": "1f315a27ae8c43b4bcf6eb564b16d017ae2864561465174f9783ada977c0d339",
+      "bytes": 7317,
+      "sha256": "5202763e802b7213a42b07a3ead97ed6083bef2c5ca32386a1bccf1f2af09476",
       "summary": "Estoque diario independente do Imperium; importacao por arquivo e historico. */",
       "imports": [],
       "endpoints": [
@@ -5153,8 +5100,8 @@
     {
       "path": "static/desc-analytics-nav.js",
       "category": "frontend",
-      "bytes": 1161,
-      "sha256": "de2c537e32ac7a0a9459a67da9bde65d15b520fc6ed02a68a3793733f0b019e2",
+      "bytes": 1371,
+      "sha256": "06dccb7e8e84c574a415be7f897106aa762913d1beb0da5e28879d18d874cdfd",
       "summary": "Submenu de desconexao, independente dos fluxos de baixa existentes. */",
       "imports": [],
       "endpoints": [],
@@ -5166,8 +5113,8 @@
     {
       "path": "static/disconnection.js",
       "category": "frontend",
-      "bytes": 37515,
-      "sha256": "0bd6d973955a71c6616a6120e862065abcb264b4b760c29f8c9604a74b3c8802",
+      "bytes": 37516,
+      "sha256": "d0a7123c5e6e47b42957d7d70a8f3dfbb50bdd0f72f189683e956bd512d760ae",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5229,8 +5176,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 146849,
-      "sha256": "86267bf74c0b498a225ff65816337de13071405c1521d78da3a0952249825d9f",
+      "bytes": 154428,
+      "sha256": "eabf3d5017678c87594263ff11c28e09c86479cc61f6a65486846f0613ddcd9a",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6132,6 +6079,46 @@
       "symbol_count": 11
     },
     {
+      "path": "tests/test_backlog_hostinger_proxy.js",
+      "category": "tests",
+      "bytes": 4288,
+      "sha256": "0ffdbca1cc822dd4b081b66c9c22765f2a7f0eda961dcb0f66ee3a9576b43802",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/compare?limit=100&codes=106",
+        "/api/backlog/year/compare?limit=99999",
+        "/api/backlog/year/daily-treatment",
+        "/api/backlog/year/delete",
+        "/api/backlog/year/routes",
+        "/api/backlog/year/routes?force=true",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status",
+        "/api/backlog/year/toa-import"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
+      "path": "tests/test_backlog_ui_deploy_20261031.py",
+      "category": "tests",
+      "bytes": 2989,
+      "sha256": "f13caba015d1ec11235eb2f3722b0339d1f0fba41ec7cf500eeb38841940fa61",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/routes",
+        "/api/backlog/year/status",
+        "/api/backlog/year/toa-import"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "tests/test_build_hostinger_node_release.py",
       "category": "tests",
       "bytes": 1660,
@@ -6941,6 +6928,51 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 33
+    },
+    {
+      "path": "tests/test_material_partial_stock_runtime.js",
+      "category": "tests",
+      "bytes": 3209,
+      "sha256": "7c3c093ee0706147938d66723644ac9b59620d69cadfc7e53ff18ece98b320f3",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
+      "path": "tests/test_material_paste_shortage_guard.py",
+      "category": "tests",
+      "bytes": 1510,
+      "sha256": "3fb4d7a384fcc3211765cb3872215e5f3ee59f4bc306854d1ae7d93bb2c7fd8c",
+      "summary": "TOA paste keeps requested quantities and audits stock-bounded allocations.",
+      "imports": [
+        "pathlib",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 5
+    },
+    {
+      "path": "tests/test_material_selection_guard.py",
+      "category": "tests",
+      "bytes": 2871,
+      "sha256": "a272269f1562896a60f0b0e2cc49ea804599bd258c1e7b80338a8ab17075be58",
+      "summary": "Regression contracts for quantity-limited miscellaneous POSTs.",
+      "imports": [
+        "pathlib",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 9
     },
     {
       "path": "tests/test_material_writeoff.py",
@@ -7789,6 +7821,19 @@
       "symbol_count": 5
     },
     {
+      "path": "tests/test_stock_navigation_monitor.cjs",
+      "category": "tests",
+      "bytes": 1284,
+      "sha256": "aefd6adac71f9b551ec622abe3948fdae3666a78baa5d6883c964b334134f5ed",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "tests/test_stock_pdf.py",
       "category": "tests",
       "bytes": 2303,
@@ -8293,6 +8338,22 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 19
+    },
+    {
+      "path": "tests/verify_backlog_release_20261031.py",
+      "category": "tests",
+      "bytes": 599,
+      "sha256": "16533dd348d6eba1cce2aa588670681d03775a358dd77215e51c03c54af94d21",
+      "summary": "",
+      "imports": [
+        "pathlib",
+        "zipfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "toa-discovery/content.js",
@@ -8969,6 +9030,7 @@
   "env_vars": [
     "DOMINIUM_AUTH_BACKEND",
     "DOMINIUM_AUTH_EMAIL_DOMAIN",
+    "DOMINIUM_BACKLOG_BRIDGE_TOKEN",
     "DOMINIUM_CHROMEDRIVER",
     "DOMINIUM_DATABASE_URL",
     "DOMINIUM_DESC_REVIEW_ACCESS_FILE",
@@ -9095,6 +9157,7 @@
     "TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md",
     "TOA_PROVIDER_TREE_REPAIR_20261027.md",
     "TOA_REPLAY_HEADER_NAMES.has",
+    "TOKEN_PATTERN.test",
     "Tabela_codigo_baixa0711.catalog",
     "Tabela_codigo_baixa0711.pdf",
     "Tecnico.pdf",
