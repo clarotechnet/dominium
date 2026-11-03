@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-10-30T15:13:32+00:00
-- Source fingerprint: `431b33ac764c55d6`
-- Indexed files: 472
-- Indexed symbols: 4046
-- API path references: 477
+- Generated: 2026-11-03T17:52:25+00:00
+- Source fingerprint: `c0aa84f9a7540691`
+- Indexed files: 475
+- Indexed symbols: 4079
+- API path references: 500
 
 ## Navigation rule
 
@@ -89,6 +89,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 - `static/all-operations.js` (14 symbols, 2 API paths) - Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */
 - `static/atlas-query-ui.js` (23 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
+- `static/backlog-analysis.css`
+- `static/backlog-analysis.js` (11 symbols, 7 API paths) - DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */
 - `static/confront.js` (8 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
 - `static/daily-stock-parser.js` (6 symbols) - Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */
 - `static/daily-stock.js` (11 symbols, 2 API paths) - Estoque diario independente do Imperium; importacao por arquivo e historico. */
@@ -121,7 +123,6 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `adm_allocation.py` (3 symbols) - Read-only allocation for DESC multi-OS activities.
 - `AGENTS.md` (1 DataSnap methods) - DOMINIUM agent guide
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.
-- `apply_daily_backend.py` (1 symbols, 2 API paths)
 - `auth_store.py` (28 symbols) - Autenticacao local do DOMINIUM.
 - `auth_store_postgres.py` (18 symbols) - Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.
 - `auto_improductive_close.py` (23 symbols)
@@ -163,12 +164,6 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `official_stock_audit.py` (14 symbols, 2 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_stock_blocker_review.py` (15 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_stock_remediation_plan.py` (25 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
-- `patch_daily_period_20261030.py` (1 symbols, 2 API paths)
-- `patch_daily_ui.py` (1 symbols)
-- `patch_front_preview_20261030.py` (1 symbols)
-- `patch_last_reports.py` (1 symbols, 1 API paths)
-- `patch_query_filter_preview_20261030.py` (1 symbols, 3 API paths)
-- `patch_subtabs_20261030.py`
 - `productive_protocol_templates.json` (3 DataSnap methods)
 - `protocol_templates.json`
 - `quality_control.py` (6 symbols) - Regras de controle de qualidade, independentes do saldo do Imperium.
@@ -186,10 +181,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 159 files
-- tooling-deploy: 48 files
+- shared: 152 files
+- tooling-deploy: 49 files
 - docs: 41 files
-- tests: 137 files
+- tests: 144 files
 
 ## Search indexes
 
@@ -201,4 +196,4 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Environment variable names
 
-`DOMINIUM_AUTH_BACKEND`, `DOMINIUM_AUTH_EMAIL_DOMAIN`, `DOMINIUM_CHROMEDRIVER`, `DOMINIUM_DATABASE_URL`, `DOMINIUM_DESC_REVIEW_ACCESS_FILE`, `DOMINIUM_DESC_REVIEW_CONNECTION`, `DOMINIUM_DESC_REVIEW_ORIGIN`, `DOMINIUM_DESC_REVIEW_TOKEN`, `DOMINIUM_HTTPS`, `DOMINIUM_IMPERIUM_RUNTIME_ROOT`, `DOMINIUM_INGEST_TOKEN`, `DOMINIUM_LOCAL_TOA_AUTOMATION`, `DOMINIUM_MONITOR_SNAPSHOT_ROOT`, `DOMINIUM_NODE`, `DOMINIUM_PROJECT_ROOT`, `DOMINIUM_PROXY_TOKEN`, `DOMINIUM_PUBLIC_ORIGIN`, `DOMINIUM_QA_ARTIFACT_DIR`, `DOMINIUM_QA_BASE_SHA`, `DOMINIUM_QUALITY_ENV_FILE`, `DOMINIUM_SUPABASE_BRIDGE_TOKEN`, `DOMINIUM_TOA_AUTOMATION_REMOTE`, `DOMINIUM_TOA_BRIDGE_LOOKUP_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_POLL_INTERVAL`, `DOMINIUM_TOA_BRIDGE_REQUEST_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_URL`, `DOMINIUM_TOA_COLLECTOR_TOKEN`, `DOMINIUM_TOA_DEBUG_PORT`, `DOMINIUM_TOA_PRIMARY_TOKEN`, `DOMINIUM_TV_INGEST_URL`, `DOMINIUM_WEB_MODE`, `DOMINIUM_WHATSAPP_PORT`, `IMPERIUM_DATASNAP_PASSWORD`, `IMPERIUM_DATASNAP_USERNAME`, `PLAYWRIGHT_MODULE`, `PORT`, `QA_SCREENSHOT_DIR`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`, `SUPABASE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, `USERPROFILE`
+`DOMINIUM_AUTH_BACKEND`, `DOMINIUM_AUTH_EMAIL_DOMAIN`, `DOMINIUM_BACKLOG_BRIDGE_TOKEN`, `DOMINIUM_CHROMEDRIVER`, `DOMINIUM_DATABASE_URL`, `DOMINIUM_DESC_REVIEW_ACCESS_FILE`, `DOMINIUM_DESC_REVIEW_CONNECTION`, `DOMINIUM_DESC_REVIEW_ORIGIN`, `DOMINIUM_DESC_REVIEW_TOKEN`, `DOMINIUM_HTTPS`, `DOMINIUM_IMPERIUM_RUNTIME_ROOT`, `DOMINIUM_INGEST_TOKEN`, `DOMINIUM_LOCAL_TOA_AUTOMATION`, `DOMINIUM_MONITOR_SNAPSHOT_ROOT`, `DOMINIUM_NODE`, `DOMINIUM_PROJECT_ROOT`, `DOMINIUM_PROXY_TOKEN`, `DOMINIUM_PUBLIC_ORIGIN`, `DOMINIUM_QA_ARTIFACT_DIR`, `DOMINIUM_QA_BASE_SHA`, `DOMINIUM_QUALITY_ENV_FILE`, `DOMINIUM_SUPABASE_BRIDGE_TOKEN`, `DOMINIUM_TOA_AUTOMATION_REMOTE`, `DOMINIUM_TOA_BRIDGE_LOOKUP_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_POLL_INTERVAL`, `DOMINIUM_TOA_BRIDGE_REQUEST_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_URL`, `DOMINIUM_TOA_COLLECTOR_TOKEN`, `DOMINIUM_TOA_DEBUG_PORT`, `DOMINIUM_TOA_PRIMARY_TOKEN`, `DOMINIUM_TV_INGEST_URL`, `DOMINIUM_WEB_MODE`, `DOMINIUM_WHATSAPP_PORT`, `IMPERIUM_DATASNAP_PASSWORD`, `IMPERIUM_DATASNAP_USERNAME`, `PLAYWRIGHT_MODULE`, `PORT`, `QA_SCREENSHOT_DIR`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`, `SUPABASE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, `USERPROFILE`

@@ -30,7 +30,7 @@
      const url=new URL(window.location.href);url.hash="estoque-diario";
      window.history.replaceState(null,"",url.pathname+url.search+url.hash);
    }
-   document.dispatchEvent(new Event("dominium:module-change"));
+   document.dispatchEvent(new CustomEvent("dominium:stock-tab-change", {detail:{tab:"daily"}}));
    if(!loading&&!loaded)void load();
  }
  function render(){

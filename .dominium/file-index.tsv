@@ -10,7 +10,6 @@ shared	adm_allocation.py	3			Read-only allocation for DESC multi-OS activities.	
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
 orchestration	app.py	151	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	227ade0c245b77ed
-shared	apply_daily_backend.py	1	2			5b767211141b4bbc
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -30,18 +29,19 @@ shared	consolidate_dominium.ps1			4	DOMINIUM | MAPA DE RESPONSABILIDADE	c82b6b36
 shared	datasnap_client.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	18769b58c990389a
 tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para migracao futura	bbfe97a6ef6f2341
 tooling-deploy	deploy/hostinger-web/atlas-query-policy.js	1	2			5920be286b6b2e0f
+tooling-deploy	deploy/hostinger-web/backlog-proxy.js	3	1	1		6bc78dbcfdb73ea8
 tooling-deploy	deploy/hostinger-web/confront-policy.js	1	3			9834dd541ca9ff51
 tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			b000d7e6a37d1516
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
-tooling-deploy	deploy/hostinger-web/operational-policy.js	10	39			dc32d50351c96abf
+tooling-deploy	deploy/hostinger-web/operational-policy.js	12	47			182efaca7600724c
 tooling-deploy	deploy/hostinger-web/operational-relay.js	3				e22710f451a7083d
 tooling-deploy	deploy/hostinger-web/order-close-proxy.js	2				78fc563fd7b62d77
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	33	1		6f2154ce896cc34b
+tooling-deploy	deploy/hostinger-web/server.js	41	35	1		f83f42996c43048f
 tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	2			e67e015eb4cf8082
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
@@ -146,8 +146,8 @@ shared	integrations/desc_runtime/whatsapp_bridge_service.py	22				931cf8de8b9ce0
 shared	integrations/import_bridge/daily_stock_service.py	7			Leitura e snapshots de estoque diario no Supabase operacional do Dominium.	4bfea8bad6b4d792
 shared	integrations/import_bridge/quality_control_relay.py	7			Private, authenticated Quality Control Supabase bridge (no Imperium writes).	6e21d816d7b3a9fd
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
-shared	integrations/import_bridge/worker.mjs	3	5			6c29ee0496d45275
-shared	integrations/import_bridge/worker.test.mjs		4			0d702314872586ba
+shared	integrations/import_bridge/worker.mjs	3	6			547c9a6d28a75cfc
+shared	integrations/import_bridge/worker.test.mjs		4			d16919600e79d71a
 shared	integrations/import_bridge/worker_create.test.mjs					5f31d81dbeac6a12
 shared	integrations/managed_atlas_toa/claro-login-submit.js	4				cced9c141f48f623
 shared	integrations/managed_atlas_toa/README.md				Login Claro — extensão gerenciada Atlas/TOA	627beb06b01e03d8
@@ -226,13 +226,7 @@ shared	official_stock_remediation_plan.py	25		1	DOMINIUM | MAPA DE RESPONSABILID
 orchestration	operation_scope.py	55			DOMINIUM | MAPA DE RESPONSABILIDADE	3f9d748a18c158b6
 orchestration	operational_store.py	25			DOMINIUM | MAPA DE RESPONSABILIDADE	5676e4f9f3fdab38
 orchestration	operations_intelligence.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	96115509d8e34c26
-shared	patch_daily_period_20261030.py	1	2			d968df2f1b86c239
-shared	patch_daily_ui.py	1				25ab8f3d841d22bc
-shared	patch_front_preview_20261030.py	1				24063c6f44a48786
-shared	patch_last_reports.py	1	1			c6c300a2ea8df693
-shared	patch_query_filter_preview_20261030.py	1	3			dc8152a36758b2f6
 toa	patch_remote_toa.py		2	5		cb6eb87e50eeb356
-shared	patch_subtabs_20261030.py					a83682cf352f70a5
 shared	productive_protocol_templates.json			3		c04b19e6f576ff97
 shared	protocol_templates.json					dea41cc769da2970
 shared	quality_control.py	6			Regras de controle de qualidade, independentes do saldo do Imperium.	bc0380aafb00d2a6
@@ -245,7 +239,7 @@ tooling-deploy	scripts/agent_memory.py	13		1	DOMINIUM portable agent memory: Git
 tooling-deploy	scripts/agent_memory_mcp.py	4			Portable MCP stdio entrypoint for DOMINIUM read/search/record memory.	a198c9aa044acd44
 tooling-deploy	scripts/bootstrap_admin.py	2				578b01fcd9f2bce3
 tooling-deploy	scripts/build_hostinger_frontend.py	3				376de6598486d1b3
-tooling-deploy	scripts/build_hostinger_node_release.py	4				e4668aa7ab319feb
+tooling-deploy	scripts/build_hostinger_node_release.py	4				b4aeb47ce6b9f1a0
 tooling-deploy	scripts/build_web_release.py	8		1		12c3694527509ac1
 tooling-deploy	scripts/check_supabase_ready.py	1				ef416758e6102aca
 tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
@@ -272,15 +266,17 @@ shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/all-operations.js	14	2		Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */	2bc9ea7f772fad01
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
+frontend	static/backlog-analysis.css					bf4fc7d77ca612ce
+frontend	static/backlog-analysis.js	11	7		DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */	f382012b0763c6ec
 frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	0b07900bcc977ee8
 frontend	static/daily-stock-parser.js	6			Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */	62266f55fa3c9f65
-frontend	static/daily-stock.js	11	2		Estoque diario independente do Imperium; importacao por arquivo e historico. */	1f315a27ae8c43b4
-frontend	static/desc-analytics-nav.js	2			Submenu de desconexao, independente dos fluxos de baixa existentes. */	de2c537e32ac7a0a
-frontend	static/disconnection.js	37	10			0bd6d973955a71c6
+frontend	static/daily-stock.js	11	2		Estoque diario independente do Imperium; importacao por arquivo e historico. */	5202763e802b7213
+frontend	static/desc-analytics-nav.js	2			Submenu de desconexao, independente dos fluxos de baixa existentes. */	06dccb7e8e84c574
+frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			86267bf74c0b498a
+frontend	static/index.html		1			eabf3d5017678c87
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
@@ -331,6 +327,8 @@ tests	tests/test_atlas_query_reserve_delay.py	22	1		The user's two-ID policy is 
 tests	tests/test_atlas_query_ui_status.js	4	1			f9172992b8656ecb
 tests	tests/test_auth_store.py	7				2131129f824fbae2
 tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
+tests	tests/test_backlog_hostinger_proxy.js	3	9			0ffdbca1cc822dd4
+tests	tests/test_backlog_ui_deploy_20261031.py		3			f13caba015d1ec11
 tests	tests/test_build_hostinger_node_release.py	3				157aef4ebdf049a3
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87
@@ -372,6 +370,9 @@ tests	tests/test_intelligence_frontend.js	6				ccd4a4f46b3303ac
 tests	tests/test_manual_materials.py	14				13ebf22bf45dd258
 tests	tests/test_manual_serial_installer.py	4				2ffbc70495e2cdcf
 tests	tests/test_material_matching.py	33				f7a01b4226d11747
+tests	tests/test_material_partial_stock_runtime.js	5				7c3c093ee0706147
+tests	tests/test_material_paste_shortage_guard.py	5			TOA paste keeps requested quantities and audits stock-bounded allocations.	3fb4d7a384fcc321
+tests	tests/test_material_selection_guard.py	9			Regression contracts for quantity-limited miscellaneous POSTs.	a272269f1562896a
 tests	tests/test_material_writeoff.py	16				4d6bdafc337eb87a
 tests	tests/test_monitor_snapshot_relay.py	4	5			74743ae84a658a76
 tests	tests/test_native_orders.py	19		2		5c6e534e26a7d8de
@@ -411,6 +412,7 @@ tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_analysis_proxy.cjs	3	10			e2efb9fdbb96ae28
 tests	tests/test_stock_analysis_reports.py	12	7		Tests for safe, cached, actor-scoped stock analysis report generation.	81edf96228f8fb8c
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
+tests	tests/test_stock_navigation_monitor.cjs	1				aefd6adac71f9b55
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35
 tests	tests/test_stock_quality_bridge.mjs		2			3022814e71dead90
 tests	tests/test_stock_report_enrichment.py	6			DataSnap history must enrich reports without inventing physical stock or ownership.	ed28a40e70740d86
@@ -437,6 +439,7 @@ tests	tests/test_toa_secondary_session.py	7				9d5ca5c257461780
 tests	tests/test_toa_worker_cache.py	7				84d409c3fed69bd5
 tests	tests/test_ui_runtime_regression.py	11	2			5f410632ef3473f4
 tests	tests/test_web_auth_config.py	19	3			cc659c0071083bc8
+tests	tests/verify_backlog_release_20261031.py					16533dd348d6eba1
 toa	toa-discovery/content.js	1			DOMINIUM | MAPA DE RESPONSABILIDADE	b8110ec34f849ddb
 toa	toa-discovery/core.js	25			DOMINIUM | MAPA DE RESPONSABILIDADE	9e149f8465bb638e
 toa	toa-discovery/exporter.js	20		1	DOMINIUM | MAPA DE RESPONSABILIDADE	78edda133c880436

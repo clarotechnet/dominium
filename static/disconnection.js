@@ -329,7 +329,7 @@
     });
     const schedule=()=>{clearTimeout(timer);if(active)timer=setTimeout(async()=>{if(!document.hidden)await load();schedule();},15000);};
     controller={activate(){active=true;void load();schedule();},deactivate(){active=false;pendingLoad=false;clearTimeout(timer);closePhoto();}};
-    document.addEventListener('dominium:module-change',event=>event.detail.module==='disconnection'?controller.activate():controller.deactivate());
+    document.addEventListener('dominium:module-change',event=>event.detail?.module==='disconnection'?controller.activate():controller.deactivate());
     document.addEventListener('dominium:auth-cleared',()=>{authEpoch++;controller.deactivate();data=null;selected='';historyDate='';error='';updatedAt=null;notes.clear();find('descPhotoDialog').close();find('descPhotoLarge').removeAttribute('src');find('descTechDialog').close();find('descTechForm').reset();render();});
     render();return controller;
   }

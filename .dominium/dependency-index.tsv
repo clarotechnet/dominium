@@ -70,7 +70,6 @@ toa_secondary_session	app.py
 unicodedata	app.py
 urllib	app.py
 webbrowser	app.py
-pathlib	apply_daily_backend.py
 __future__	auth_store.py
 base64	auth_store.py
 contextlib	auth_store.py
@@ -788,13 +787,7 @@ time	operations_intelligence.py
 toa_capture	operations_intelligence.py
 typing	operations_intelligence.py
 unicodedata	operations_intelligence.py
-pathlib	patch_daily_period_20261030.py
-pathlib	patch_daily_ui.py
-pathlib	patch_front_preview_20261030.py
-pathlib	patch_last_reports.py
-pathlib	patch_query_filter_preview_20261030.py
 pathlib	patch_remote_toa.py
-pathlib	patch_subtabs_20261030.py
 __future__	quality_control.py
 datetime	quality_control.py
 functools	quality_control.py
@@ -1255,6 +1248,10 @@ decimal	tests/test_material_matching.py
 imperium_api	tests/test_material_matching.py
 material_matching	tests/test_material_matching.py
 unittest	tests/test_material_matching.py
+pathlib	tests/test_material_paste_shortage_guard.py
+unittest	tests/test_material_paste_shortage_guard.py
+pathlib	tests/test_material_selection_guard.py
+unittest	tests/test_material_selection_guard.py
 datasnap_client	tests/test_material_writeoff.py
 decimal	tests/test_material_writeoff.py
 hashlib	tests/test_material_writeoff.py
@@ -1557,6 +1554,8 @@ os	tests/test_web_auth_config.py
 pathlib	tests/test_web_auth_config.py
 tempfile	tests/test_web_auth_config.py
 unittest	tests/test_web_auth_config.py
+pathlib	tests/verify_backlog_release_20261031.py
+zipfile	tests/verify_backlog_release_20261031.py
 __future__	toa_adm_task_splitter.py
 csv	toa_adm_task_splitter.py
 dataclasses	toa_adm_task_splitter.py
