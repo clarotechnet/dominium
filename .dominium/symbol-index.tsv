@@ -1103,8 +1103,9 @@ DailyEquipmentCatalog	class	integrations/serial_consult/equipment_daily_catalog.
 __init__	method	integrations/serial_consult/equipment_daily_catalog.py	161	DailyEquipmentCatalog
 _public	method	integrations/serial_consult/equipment_daily_catalog.py	173	DailyEquipmentCatalog
 handle	method	integrations/serial_consult/equipment_daily_catalog.py	177	DailyEquipmentCatalog
-PacketError	class	integrations/serial_consult/midas_reader.py	12	-
-decode_dataset	function	integrations/serial_consult/midas_reader.py	16	-
+PacketError	class	integrations/serial_consult/midas_reader.py	13	-
+_decode_bcd	function	integrations/serial_consult/midas_reader.py	17	-
+decode_dataset	function	integrations/serial_consult/midas_reader.py	39	-
 read_monitor_snapshot	function	integrations/serial_consult/monitor_snapshot_relay.py	17	-
 snapshot_page	function	integrations/serial_consult/report_sheet_preview.py	12	-
 prepare_queries	function	integrations/serial_consult/serial_datasnap.py	36	-
@@ -2966,6 +2967,15 @@ test_quick_writeoff_validates_stock_and_confirms_new_balance	method	tests/test_m
 test_stock_balance_confirms_writeoff_after_apply_timeout	method	tests/test_material_writeoff.py	296	MaterialWriteoffTests
 test_correction_order_uses_fixed_service_and_selected_technician	method	tests/test_material_writeoff.py	340	MaterialWriteoffTests
 test_correction_order_confirms_creation_after_import_timeout	method	tests/test_material_writeoff.py	361	MaterialWriteoffTests
+bcd	function	tests/test_midas_bcd_used_equipment.py	9	-
+packet	function	tests/test_midas_bcd_used_equipment.py	15	-
+BCDTests	class	tests/test_midas_bcd_used_equipment.py	22	-
+test_exact_decimal_string_and_json	method	tests/test_midas_bcd_used_equipment.py	23	BCDTests
+test_negative_and_zero	method	tests/test_midas_bcd_used_equipment.py	28	BCDTests
+test_special_blank_returns_none	method	tests/test_midas_bcd_used_equipment.py	32	BCDTests
+test_rejects_malformed_decimal_nibbles_and_scale	method	tests/test_midas_bcd_used_equipment.py	35	BCDTests
+test_mid_as_reads_all_records_even_if_declared_size_is_10	method	tests/test_midas_bcd_used_equipment.py	45	BCDTests
+test_mid_as_rejects_truncated_bcd	method	tests/test_midas_bcd_used_equipment.py	51	BCDTests
 MonitorSnapshotRelayTests	class	tests/test_monitor_snapshot_relay.py	9	-
 test_absent_snapshot_returns_normal_empty_state	method	tests/test_monitor_snapshot_relay.py	10	MonitorSnapshotRelayTests
 test_read_saved_snapshot_without_guessing	method	tests/test_monitor_snapshot_relay.py	14	MonitorSnapshotRelayTests

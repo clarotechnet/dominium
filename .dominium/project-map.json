@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-04T20:36:34+00:00",
+  "generated_at": "2026-11-04T21:24:02+00:00",
   "schema": 2,
-  "source_fingerprint": "d4955128546ef985bab550e8e525725ad014fec5964c83f89b3cf92a60b24e04",
+  "source_fingerprint": "876010d62ab6ba9fa913e6064796e44b32e122ea919819da8521f6f0db19c5ab",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1426,8 +1426,8 @@
     {
       "path": "docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md",
       "category": "docs",
-      "bytes": 5669,
-      "sha256": "d9b040a888dca121af62487f503b9f1dc689fbcbf3ac537afedba33e5fd2ef68",
+      "bytes": 8086,
+      "sha256": "dd9cd64ef00515d12190b9cbae0cd1d8be9d59eb6b707ad1841c31c080a0825d",
       "summary": "Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)",
       "imports": [],
       "endpoints": [],
@@ -1537,8 +1537,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 14670,
-      "sha256": "9f539d7d348a8646fdd6e8333d33a1ecc811af6b8f9a234f9deb0061585225f5",
+      "bytes": 15362,
+      "sha256": "fe6fdb5fc6d6fe050fd75113a9570f91d18e396bfc34f29121b4fb7af907e37c",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3272,12 +3272,13 @@
     {
       "path": "integrations/serial_consult/midas_reader.py",
       "category": "shared",
-      "bytes": 3619,
-      "sha256": "6f5b01f448826d25a9b5b480f821df53447843dc21c0634b9732a44b0617e305",
+      "bytes": 4669,
+      "sha256": "aad873daa06bbe87e263d8bfb3f3c7420ea0587664df6b8020a9cf0ae713344a",
       "summary": "Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.",
       "imports": [
         "__future__",
         "datetime",
+        "decimal",
         "io",
         "struct"
       ],
@@ -3285,7 +3286,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 2
+      "symbol_count": 3
     },
     {
       "path": "integrations/serial_consult/monitor_snapshot_relay.py",
@@ -7180,6 +7181,24 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 16
+    },
+    {
+      "path": "tests/test_midas_bcd_used_equipment.py",
+      "category": "tests",
+      "bytes": 2290,
+      "sha256": "7d7cb77e78e57db6e79d8ba55cac041217fbf1ff347ecda808abef4a881f0c92",
+      "summary": "Synthetic-only regression: MIDAS BCD fields observed in Imperium used equipment.",
+      "imports": [
+        "integrations",
+        "json",
+        "struct",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 9
     },
     {
       "path": "tests/test_monitor_snapshot_relay.py",

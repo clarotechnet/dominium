@@ -217,3 +217,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 8 testes novos + 8 testes existentes aprovados; CLI offline e compilação aprovadas
 
 **Próximo passo/pendência:** Capturar AS_GetRecords sem segredos da versão instalada, homologar payload, conferir saída por OS e código e integrar com seis abas
+
+## 2026-11-04 21:23 UTC — MIDAS BCD legado 18 bytes e captura real de equipamentos utilizados
+
+**Motivo:** ClientVCL de Natal retornou 89 linhas consolidadas e 1142 por OS mas o decodificador MIDAS nao suportava BCD tipo 5
+
+**Alterado:** Corrigida leitura de BCD fixo 18 bytes com Decimal JSON-safe; documentados cabeçalhos obtidos localmente, privacidade da captura e falta de pacote cliente-para-servidor
+
+**Verificação:** 25 testes dirigidos aprovados; dados reais decodificados em memoria no PC de origem; sem transferir PCAP
+
+**Próximo passo/pendência:** Capturar apenas requisicao AS_GetRecords original e validar filtros/IDs; depois implementar consulta de leitura no Dominium

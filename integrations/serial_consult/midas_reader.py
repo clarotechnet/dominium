@@ -7,10 +7,33 @@ from __future__ import annotations
 import datetime as dt
 import io
 import struct
+from decimal import Decimal
 
 
 class PacketError(ValueError):
     pass
+
+
+def _decode_bcd(raw: bytes) -> str | None:
+    """Decode a Delphi MIDAS BCD cell as a JSON-safe exact decimal string.
+
+    The wire field occupies 18 bytes (precision, sign/scale, 16 packed
+    BCD bytes), even if the field metadata reports a size such as 10.
+    """
+    if len(raw) != 18:
+        raise PacketError("Tamanho BCD invalido")
+    precision, sign_special_places = raw[:2]
+    if sign_special_places & 0x40:
+        return None  # Delphi blank/special marker.
+    scale = sign_special_places & 0x3F
+    if not 1 <= precision <= 32 or scale > precision:
+        raise PacketError("Precisao ou escala BCD invalida")
+    nibbles = [digit for byte in raw[2:] for digit in (byte >> 4, byte & 0x0F)]
+    digits = nibbles[:precision]
+    if any(digit > 9 for digit in digits):
+        raise PacketError("Digito BCD invalido")
+    value = Decimal((int(bool(sign_special_places & 0x80)), tuple(digits), -scale))
+    return format(value, "f")
 
 
 def decode_dataset(blob: bytes) -> list[dict]:
@@ -81,6 +104,8 @@ def decode_dataset(blob: bytes) -> list[dict]:
                 value = bool(uint(size))
             elif base == 4:
                 value = struct.unpack("<d", read(8))[0]
+            elif base == 5:
+                value = _decode_bcd(read(18))
             elif base in (9, 10, 11):
                 n = uint(size) if kind & 0x40 else size
                 raw = read(n)

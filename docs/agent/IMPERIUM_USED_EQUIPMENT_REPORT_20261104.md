@@ -105,3 +105,48 @@ salvo; nenhum botão deve fingir consultar ou baixar dados do Imperium.**
   na branch anterior, sem este módulo. A suíte geral NÃO está aprovada.
 - Nenhuma consulta DataSnap de negócio feita por este checkpoint, nenhum
   registro importado e nenhum deploy de produção.
+
+## Evidência adicional: captura local da consulta real (04/11/2026)
+
+Diagnóstico realizado **somente no DESKTOP-LTGB862**, onde o usuário
+acessou `TFrmConEquipUtilizados` para NET/Natal em 03/11/2026.
+Arquivo `.pcapng` **permanece no computador de origem**, não copiar,
+versionar ou publicar: contém dados de operações e possivelmente dados pessoais.
+
+Foi possível remontar a direção **servidor → cliente** sem lacunas
+(273.557 bytes de mensagens DataSnap) e interpretar sete mensagens:
+uma de preparação e respostas de dois datasets.
+
+| Dataset | Provider correspondente ao contrato | Registros MIDAS | Campos |
+| --- | --- | ---: | ---: |
+| Consolidado | DspConsolidadoEquip | 89 | 5 |
+| Por OS | DspConsolidadoOS | 1142 | 19 |
+
+São **contagens reais do cabeçalho** e também **foram decodificados todos
+os registros em memória** após corrigir o tamanho de BCD. A consulta
+capturada produziu 7.330 bytes do consolidado e 265.679 bytes por OS
+(o segundo dataset chegou dividido em cinco blocos `data`).
+
+O campo `Qtd` é MIDAS tipo 5 / BCD, com metadados size=10, mas cada
+registro usa **18 bytes** (dois bytes precisão/sinal-escala + dezesseis
+bytes de dígitos BCD). Nos 1.231 registros observados a precisão foi 16
+e a escala foi 2, sem nibbles inválidos. O leitor `midas_reader.py`
+agora interpreta o valor como texto decimal exato, JSON-safe, evitando
+perda de precisão. Referência de formato: Embarcadero Data.FmtBcd.TBcd,
+https://docwiki.embarcadero.com/Libraries/Sydney/en/Data.FmtBcd.TBcd.
+
+**Bloqueio ainda vigente:** a captura PktMon de `--comp nics` não
+registrou conteúdo de aplicação da direção **cliente → servidor**
+(somente ACKs), portanto **o pacote original `AS_GetRecords` enviado
+pelo ClientVCL NÃO foi recuperado**. Não é correto gerar consultas
+DataSnap ao vivo apenas a partir dos datasets recebidos.
+
+Próxima etapa: capturar somente depois do login, com mecanismo que
+inclua tráfego de saída, e validar os bytes enviados pelo ClientVCL
+e os IDs específicos de parceiro/grupo/tipo antes de liberar qualquer
+consulta automática no Dominium. Não anexar a captura bruta a PRs.
+
+Validações nesta atualização: 25 testes dirigidos (incluindo
+`tests/test_midas_bcd_used_equipment.py`) aprovados. O quality gate
+completo já tinha três falhas preexistentes de testes Atlas QUERY por
+bloqueio de SQLite temporário no Windows (ver diagnóstico anterior).

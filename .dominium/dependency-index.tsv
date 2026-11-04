@@ -566,6 +566,7 @@ xml	integrations/serial_consult/equipment_daily_catalog.py
 zipfile	integrations/serial_consult/equipment_daily_catalog.py
 __future__	integrations/serial_consult/midas_reader.py
 datetime	integrations/serial_consult/midas_reader.py
+decimal	integrations/serial_consult/midas_reader.py
 io	integrations/serial_consult/midas_reader.py
 struct	integrations/serial_consult/midas_reader.py
 __future__	integrations/serial_consult/monitor_snapshot_relay.py
@@ -1277,6 +1278,10 @@ imperium_api	tests/test_material_writeoff.py
 pathlib	tests/test_material_writeoff.py
 struct	tests/test_material_writeoff.py
 unittest	tests/test_material_writeoff.py
+integrations	tests/test_midas_bcd_used_equipment.py
+json	tests/test_midas_bcd_used_equipment.py
+struct	tests/test_midas_bcd_used_equipment.py
+unittest	tests/test_midas_bcd_used_equipment.py
 json	tests/test_monitor_snapshot_relay.py
 monitor_snapshot_relay	tests/test_monitor_snapshot_relay.py
 pathlib	tests/test_monitor_snapshot_relay.py
