@@ -6,7 +6,7 @@
   <title>DOMINIUM</title>
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="/styles.css?v=20261103-loading-1">
+  <link rel="stylesheet" href="/styles.css?v=20261104-excel-optional-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
   <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-image-1">
@@ -1089,20 +1089,23 @@
           </div>
         <section id="stockDailyAnalysisPanel" hidden class="stock-daily-analysis-panel">
           <h3>Analise diaria de equipamentos</h3>
-          <p class="workspace-description">A fonte diaria e o Imperium, nao a QUERY Atlas. Visualize cada aba e o historico salvo. A consulta por periodo pesquisa arquivos ja registrados. A importacao do Excel final permite registrar dias anteriores enquanto a extracao automatica do Imperium nao estiver integrada.</p>
+          <p class="workspace-description">Consulte análises já registradas por período, sem anexar arquivos. A extração automática do Imperium ainda não está integrada; a importação manual é opcional e serve apenas para registrar históricos.</p>
           <div class="daily-stock-toolbar">
-            <label class="field"><span>Data do Excel a importar</span><input type="date" id="stockDailyAnalysisDate"></label>
             <label class="field"><span>Data inicial</span><input type="date" id="stockDailyRangeStart"></label>
             <label class="field"><span>Data final</span><input type="date" id="stockDailyRangeEnd"></label>
-            <label class="field"><span>Historico da operacao</span><select id="stockDailyAnalysisHistory"></select></label>
+            <label class="field"><span>Histórico da operação</span><select id="stockDailyAnalysisHistory"></select></label>
             <button class="button secondary" type="button" id="stockDailyAnalysisRefresh">Consultar período</button>
-            <button class="button secondary" type="button" disabled title="Depende da consulta Equipamentos Utilizados por período no DataSnap">Executar tratativa no Imperium (aguardando integração)</button>
-          </div>
-          <div class="daily-stock-toolbar">
-            <label class="field"><span>Registrar Excel final de referencia</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
-            <button class="button secondary" id="stockDailyAnalysisImport" type="button">Importar no historico</button>
             <button class="button secondary" id="stockDailyAnalysisDownload" type="button" disabled>Baixar XLSX</button>
           </div>
+          <details id="stockDailyImportDetails" class="stock-daily-import-optional">
+            <summary>Registrar Excel histórico (opcional)</summary>
+            <p class="workspace-description">Utilize apenas para cadastrar uma planilha antiga. Consultar o histórico não exige Excel.</p>
+            <div class="daily-stock-toolbar">
+              <label class="field"><span>Data de referência do Excel</span><input type="date" id="stockDailyAnalysisDate"></label>
+              <label class="field"><span>Arquivo XLSX</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
+              <button class="button secondary" id="stockDailyAnalysisImport" type="button">Importar no histórico</button>
+            </div>
+          </details>
           <div id="stockDailyAnalysisLoading" class="stock-daily-loading-indicator" role="status" aria-live="polite" hidden>
             <span class="stock-daily-loading-spinner" aria-hidden="true"></span>
             <span>Consultando arquivos cadastrados no histórico da operação...</span>
@@ -2673,7 +2676,7 @@
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>
   <script src="/stock-nav.js?v=20261103-global-1"></script>
   <script src="/stock-analysis-ui.js?v=20261103-global-1"></script>
-  <script src="/stock-daily-analysis-ui.js?v=20261103-global-1"></script>
+  <script src="/stock-daily-analysis-ui.js?v=20261104-excel-optional-1"></script>
   <script src="/stock-report-preview-ui.js?v=20261103-global-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>

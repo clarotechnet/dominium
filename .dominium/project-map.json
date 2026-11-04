@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-03T18:36:00+00:00",
+  "generated_at": "2026-11-04T15:41:23+00:00",
   "schema": 2,
-  "source_fingerprint": "5a0c2f6849c714f762ada02122da6ea57b89b9cc7d83484f746e4d68e0ad0959",
+  "source_fingerprint": "c5b5a64f89e1380f6251646bf45750d5af3ce65cb4ee7aa9d80a11d6d711d6e1",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1411,6 +1411,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/GLOBAL_TODOS_SCOPE_20261103.md",
+      "category": "docs",
+      "bytes": 2732,
+      "sha256": "236973d4848064d1c711575d7f123ec6cfc80b551e4db14826e66ecf8c7375f5",
+      "summary": "DOMINIUM — escopo global \"Todos\" e desbloqueio do Backlog (03/11/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md",
       "category": "docs",
       "bytes": 8623,
@@ -1426,8 +1439,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 9251,
-      "sha256": "2eb3f7cfc6336d0a91709d6720a2687df50546e10d8bf40178d2ab62b76ef8bb",
+      "bytes": 10496,
+      "sha256": "2c9c10dda8cf407050bb2a029302ccfa45134009ec142f1391c0a224b14820e2",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -4986,6 +4999,19 @@
       "symbol_count": 1
     },
     {
+      "path": "static/all-cities-scope.css",
+      "category": "frontend",
+      "bytes": 1098,
+      "sha256": "d9fde79cee63719cefb05adb0c56de15ba4468960d3d172b43cba75c153cb912",
+      "summary": "DOMINIUM: \"Todos\" is a cross-module read-only scope, not an operational profile. */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "static/all-operations.js",
       "category": "frontend",
       "bytes": 8197,
@@ -5033,8 +5059,8 @@
     {
       "path": "static/backlog-analysis.js",
       "category": "frontend",
-      "bytes": 20363,
-      "sha256": "aafd78ff5396311ce8b14ccfb88b36de1b78d9557d96058d3e6af735d696546e",
+      "bytes": 21188,
+      "sha256": "80ace379911303d4916d866c0d5e93cf4d7e1832aaf7ae30a55b3a3a625fea27",
       "summary": "DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */",
       "imports": [],
       "endpoints": [
@@ -5049,7 +5075,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 17
+      "symbol_count": 18
     },
     {
       "path": "static/backlog-report-image.js",
@@ -5202,8 +5228,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 156349,
-      "sha256": "1aecf0f4e7f4b0f13454e21a8802679ee18fa8e4ae59574b3c3da846c477a096",
+      "bytes": 157827,
+      "sha256": "75cf1cf15146df366e2cc12aa72c32490b101570c4e496c51dee69637458be80",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5310,8 +5336,8 @@
     {
       "path": "static/stock-analysis-ui.js",
       "category": "frontend",
-      "bytes": 9715,
-      "sha256": "2217d26e2cfc214015855361e8461128af2d67ad7a0ad9fcb722f99384fcab8b",
+      "bytes": 10182,
+      "sha256": "b1919e4fb8a8da4171f0a94451125de85d56833bff203c29f6b0bc29acef9982",
       "summary": "Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */",
       "imports": [],
       "endpoints": [
@@ -5327,8 +5353,8 @@
     {
       "path": "static/stock-daily-analysis-ui.js",
       "category": "frontend",
-      "bytes": 9742,
-      "sha256": "14a1c9c412e8a9dbfae204db9541ac569947c4a2f83758bd825b0a2cb74ec89e",
+      "bytes": 10455,
+      "sha256": "872109576822b3fb9a2df3f1126267b883565a59869ac3be12bdf438de889a77",
       "summary": "Daily equipment: independent period/catalog; Atlas QUERY is not its source. */",
       "imports": [],
       "endpoints": [
@@ -5339,26 +5365,26 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 12
+      "symbol_count": 13
     },
     {
       "path": "static/stock-nav.js",
       "category": "frontend",
-      "bytes": 5191,
-      "sha256": "1cd96c23d87bb70a533d2cf67ab63f7af74d501b86902835c310ca9fa65488de",
+      "bytes": 5666,
+      "sha256": "3263ee4c4be095a4d8ab443f7d7f2cc0dffb75afefd41eb69990cbf6ab44dcee",
       "summary": "Navegacao consolidada de Estoque (mantem os modulos existentes). */",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 6
+      "symbol_count": 7
     },
     {
       "path": "static/stock-report-preview-ui.js",
       "category": "frontend",
-      "bytes": 4651,
-      "sha256": "2939b473e78d754d908b27d4423cd1f424af7b0b41556f87aa5036c19d832d31",
+      "bytes": 4951,
+      "sha256": "09735f63ebcd8565650a2f64930d5175ed39747d8d967a3a6daf40f92687d90d",
       "summary": "The three stock analysis processes have independent, paged workspace views. */",
       "imports": [],
       "endpoints": [
@@ -5373,8 +5399,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 225983,
-      "sha256": "a73066faa0b46aeeff1339db2e5f6740e8b92af9b56b3266dd3b1cb1565fa616",
+      "bytes": 226317,
+      "sha256": "961144fdc65d638d8dd3099af120008c9502e7ef74ceacea6e7781919e9cb60a",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6105,6 +6131,19 @@
       "symbol_count": 11
     },
     {
+      "path": "tests/test_backlog_action_buttons.cjs",
+      "category": "tests",
+      "bytes": 4924,
+      "sha256": "5407a352d0b273a26ad8307153e5f0269b1c723466efeeac060f1fc766511867",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 8
+    },
+    {
       "path": "tests/test_backlog_hostinger_proxy.js",
       "category": "tests",
       "bytes": 4288,
@@ -6141,10 +6180,23 @@
       "symbol_count": 1
     },
     {
+      "path": "tests/test_backlog_todos_navigation.cjs",
+      "category": "tests",
+      "bytes": 7844,
+      "sha256": "fe3d1917db6de65e8efe03032e737d9061e44fb31da0842beca27d2e889f965b",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
       "path": "tests/test_backlog_ui_deploy_20261031.py",
       "category": "tests",
-      "bytes": 3507,
-      "sha256": "403e0914fc6ebdf13efeff7e9c251bef620fd039fbe5581fd7eac01d64838af5",
+      "bytes": 4329,
+      "sha256": "b2ed2cd1cdd3ef017eb96fe98462190576498e3e7da0cdfc0537160315e493b4",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -7797,6 +7849,19 @@
       "symbol_count": 16
     },
     {
+      "path": "tests/test_stock_all_scope.cjs",
+      "category": "tests",
+      "bytes": 3039,
+      "sha256": "e39143f184e27d8607e145a3ff78667ab2aea7f6ae8a6be6af9df452bbd5fa33",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
       "path": "tests/test_stock_analysis_proxy.cjs",
       "category": "tests",
       "bytes": 3539,
@@ -7856,8 +7921,8 @@
     {
       "path": "tests/test_stock_daily_analysis_feedback.cjs",
       "category": "tests",
-      "bytes": 4269,
-      "sha256": "a5102f5c52dd4d56dc7d4c44c6f83633b1c809870857cbee8cbaa9057c775d40",
+      "bytes": 5237,
+      "sha256": "e370908d16cc0d79ba420f861b84fa01a5f6ae3ea85bef0af967a306f4c18f50",
       "summary": "",
       "imports": [],
       "endpoints": [

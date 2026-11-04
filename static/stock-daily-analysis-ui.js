@@ -15,7 +15,9 @@ function status(msg,error=false){
 }
 function referenceDate(){
  const d=new Date(Date.now()-86400000);
- return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Fortaleza",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);
+ const pieces=new Intl.DateTimeFormat("en-US",{timeZone:"America/Fortaleza",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);
+ const part=type=>pieces.find(item=>item.type===type)?.value||"";
+ return [part("year"),part("month"),part("day")].join("-");
 }
 function setVisible(visible){
  panel.hidden=!visible;
@@ -23,7 +25,7 @@ function setVisible(visible){
  el("stockDailyAnalysisDate").value ||= referenceDate();
  el("stockDailyRangeStart").value ||= referenceDate();
  el("stockDailyRangeEnd").value ||= referenceDate();
- el("stockDailyAnalysisImport").hidden=!canWrite()||currentCity()==="all";
+ el("stockDailyImportDetails").hidden=!canWrite()||currentCity()==="all";
  void loadDaily();
 }
 function setLoading(on){
@@ -219,7 +221,7 @@ document.addEventListener("dominium:scope-change",()=>{
   el("stockDailyAnalysisTabs").replaceChildren();
   el("stockDailyAnalysisSheetInfo").textContent="";
   el("stockDailyAnalysisDownload").disabled=true;
-  el("stockDailyAnalysisImport").hidden=!canWrite()||currentCity()==="all";
+  el("stockDailyImportDetails").hidden=!canWrite()||currentCity()==="all";
   void loadDaily();
 });
 document.addEventListener("dominium:stock-tab-change",()=>{

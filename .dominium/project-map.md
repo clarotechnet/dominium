@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-03T18:36:00+00:00
-- Source fingerprint: `5a0c2f6849c714f7`
-- Indexed files: 480
-- Indexed symbols: 4103
+- Generated: 2026-11-04T15:41:23+00:00
+- Source fingerprint: `c5b5a64f89e1380f`
+- Indexed files: 485
+- Indexed symbols: 4119
 - API path references: 501
 
 ## Navigation rule
@@ -87,10 +87,11 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## frontend
 
+- `static/all-cities-scope.css` - DOMINIUM: "Todos" is a cross-module read-only scope, not an operational profile. */
 - `static/all-operations.js` (14 symbols, 2 API paths) - Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */
 - `static/atlas-query-ui.js` (23 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
 - `static/backlog-analysis.css`
-- `static/backlog-analysis.js` (17 symbols, 7 API paths) - DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */
+- `static/backlog-analysis.js` (18 symbols, 7 API paths) - DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */
 - `static/backlog-report-image.js` (4 symbols) - DOMINIUM — export PNG do resumo de códigos históricos por cidade.
 - `static/backlog-report.js` (7 symbols) - Read-only WhatsApp report derived from the route × historical-code comparison.
 - `static/confront.js` (8 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
@@ -110,8 +111,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
 - `static/stock-analysis-ui.js` (13 symbols, 3 API paths) - Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */
-- `static/stock-daily-analysis-ui.js` (12 symbols, 3 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
-- `static/stock-nav.js` (6 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
+- `static/stock-daily-analysis-ui.js` (13 symbols, 3 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
+- `static/stock-nav.js` (7 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
 - `static/stock-report-preview-ui.js` (5 symbols, 2 API paths) - The three stock analysis processes have independent, paged workspace views. */
 - `static/styles.css`
 - `static/theme-init.js`
@@ -185,8 +186,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 - shared: 152 files
 - tooling-deploy: 49 files
-- docs: 41 files
-- tests: 147 files
+- docs: 42 files
+- tests: 150 files
 
 ## Search indexes
 

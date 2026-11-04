@@ -43,7 +43,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 
 test("period search shows visible loading then explicit empty result and enables a new search",async()=>{
  assert.match(html,/id="stockDailyAnalysisLoading"/);
- assert.match(html,/stock-daily-analysis-ui\.js\?v=20261103-global-1/);
+ assert.match(html,/stock-daily-analysis-ui\.js\?v=20261104-excel-optional-1/);
  let complete,calls=0,url;
  const {get}=mount(next=>{
   calls++;url=next;
@@ -90,4 +90,25 @@ test("invalid date interval is visible and never sent to backend",async()=>{
  assert.equal(calls,0);
  assert.equal(get("stockDailyAnalysisRefresh").disabled,false);
  assert.match(get("stockDailyAnalysisMessage").textContent,/data inicial não pode ser posterior/);
+});
+
+test("Excel remains optional for period lookup and is hidden in Todos scope",async()=>{
+ assert.match(html,/<details id="stockDailyImportDetails" class="stock-daily-import-optional">/);
+ assert.match(html,/<summary>Registrar Excel histórico \(opcional\)<\/summary>/);
+ assert.match(html,/<input id="stockDailyAnalysisFile" type="file"/);
+ const urls=[];
+ const {get,state}=mount(url=>{
+   urls.push(url);
+   return Promise.resolve({ok:true,selected:null,latest:null,history:[]});
+ });
+ get("stockDailyAnalysisOpen").click();
+ assert.equal(get("stockDailyImportDetails").hidden,false,"admin can opt in to historical upload");
+ await tick();
+ assert.equal(urls.length,1,"search does not require any file");
+ state.allCities=true;
+ get("stockDailyAnalysisOpen").click();
+ assert.equal(get("stockDailyImportDetails").hidden,true,"upload is not allowed in all-cities read view");
+ await tick();
+ assert.equal(urls.length,2);
+ assert.match(urls[1],/city=all/);
 });

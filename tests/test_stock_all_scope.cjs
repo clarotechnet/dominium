@@ -22,7 +22,7 @@ test("global stock selection reads city=all and disables writes",()=>{
   const model=getScopeModel(true);
   assert.equal(model.currentCity(),"all");
   assert.equal(model.canWrite(),false);
-  assert.match(analysis,/el\("stockDailyAnalysisImport"\)\.hidden=!canWrite\(\)\|\|currentCity\(\)==="all"/);
+  assert.match(analysis,/el\("stockDailyImportDetails"\)\.hidden=!canWrite\(\)\|\|currentCity\(\)==="all"/);
   assert.match(analysis,/if\(city==="all"\)el\("stockDailyAnalysisDownload"\)\.title=/);
 });
 test("selected city still permits normal authorized stock functions",()=>{
@@ -61,5 +61,5 @@ test("old-city QUERY and Suspects cannot display under global selection",()=>{
 test("scope change invalidates and reloads any visible daily equipment view",()=>{
   assert.match(analysis,/document\.addEventListener\("dominium:scope-change"/);
   assert.match(analysis,/el\("stockDailyAnalysisTable"\)\.replaceChildren\(\)/);
-  assert.match(analysis,/el\("stockDailyAnalysisImport"\)\.hidden=!canWrite\(\)\|\|currentCity\(\)==="all"/);
+  assert.match(analysis,/el\("stockDailyImportDetails"\)\.hidden=!canWrite\(\)\|\|currentCity\(\)==="all"/);
 });

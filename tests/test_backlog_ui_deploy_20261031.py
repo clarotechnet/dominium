@@ -21,7 +21,7 @@ assert 'href="/backlog-analysis.css?v=20261103-image-1"' in html
 assert 'src="/app.js?v=20261103-global-scope-1"' in html
 assert 'href="/all-cities-scope.css?v=20261103-global-1"' in html
 assert 'src="/stock-nav.js?v=20261103-global-1"' in html
-assert 'src="/stock-daily-analysis-ui.js?v=20261103-global-1"' in html
+assert 'src="/stock-daily-analysis-ui.js?v=20261104-excel-optional-1"' in html
 assert 'src="/stock-analysis-ui.js?v=20261103-global-1"' in html
 assert 'src="/stock-report-preview-ui.js?v=20261103-global-1"' in html
 assert html.count('id="allCityModuleNotice"')==1

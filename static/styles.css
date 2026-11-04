@@ -7663,6 +7663,10 @@ body.sidebar-collapsed .stock-group-chevron { display:none; }
 .stock-daily-analysis-panel {margin:16px 0;padding:18px;border:1px solid var(--line,#444);border-radius:12px;background:rgba(0,0,0,.17)}
 .stock-daily-analysis-panel[hidden]{display:none !important}
 .stock-daily-analysis-panel .field {min-width:170px;flex:1}
+.stock-daily-import-optional{margin:14px 0;padding:12px 14px;border:1px solid var(--line,#444);border-radius:10px}
+.stock-daily-import-optional[hidden]{display:none!important}
+.stock-daily-import-optional summary{cursor:pointer;font-weight:650;color:var(--ink,#fff)}
+.stock-daily-import-optional .daily-stock-toolbar{margin-bottom:0}
 .stock-daily-analysis-tabs {display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}
 .stock-daily-analysis-tabs button[aria-pressed="true"]{border-color:#ff1744;color:#ff1744}
 #stockDailyAnalysisTable {min-width:750px;width:100%}
