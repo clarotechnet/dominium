@@ -1072,20 +1072,23 @@
           </div>
         <section id="stockDailyAnalysisPanel" hidden class="stock-daily-analysis-panel">
           <h3>Analise diaria de equipamentos</h3>
-          <p class="workspace-description">A fonte diaria e o Imperium, nao a QUERY Atlas. Visualize cada aba e o historico salvo. A importacao do Excel final permite registrar dias anteriores enquanto a extracao automatica por periodo nao estiver integrada.</p>
+          <p class="workspace-description">Consulte o histórico de análises por período sem anexar arquivos. A extração automática diretamente do Imperium ainda não está integrada; somente dados já registrados serão exibidos.</p>
           <div class="daily-stock-toolbar">
-            <label class="field"><span>Data de referencia</span><input type="date" id="stockDailyAnalysisDate"></label>
             <label class="field"><span>Data inicial</span><input type="date" id="stockDailyRangeStart"></label>
             <label class="field"><span>Data final</span><input type="date" id="stockDailyRangeEnd"></label>
-            <label class="field"><span>Historico da operacao</span><select id="stockDailyAnalysisHistory"></select></label>
+            <label class="field"><span>Histórico da operação</span><select id="stockDailyAnalysisHistory"></select></label>
             <button class="button secondary" type="button" id="stockDailyAnalysisRefresh">Consultar período</button>
-            <button class="button secondary" type="button" disabled title="Depende da consulta Equipamentos Utilizados por período no DataSnap">Executar tratativa no Imperium (aguardando integração)</button>
-          </div>
-          <div class="daily-stock-toolbar">
-            <label class="field"><span>Registrar Excel final de referencia</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
-            <button class="button secondary" id="stockDailyAnalysisImport" type="button">Importar no historico</button>
             <button class="button secondary" id="stockDailyAnalysisDownload" type="button" disabled>Baixar XLSX</button>
           </div>
+          <details id="stockDailyImportDetails" class="stock-daily-import-optional">
+            <summary>Registrar Excel histórico (opcional)</summary>
+            <p class="workspace-description">Use esta opção apenas para cadastrar um relatório antigo. Não é necessário importar Excel para consultar um período.</p>
+            <div class="daily-stock-toolbar">
+              <label class="field"><span>Data de referência do Excel</span><input type="date" id="stockDailyAnalysisDate"></label>
+              <label class="field"><span>Arquivo XLSX</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
+              <button class="button secondary" id="stockDailyAnalysisImport" type="button">Importar no histórico</button>
+            </div>
+          </details>
           <p id="stockDailyAnalysisMessage" class="stock-analysis-status" role="status" aria-live="polite"></p>
           <div id="stockDailyAnalysisTabs" class="stock-daily-analysis-tabs" role="group" aria-label="Abas do relatorio"></div>
           <p id="stockDailyAnalysisSheetInfo" class="stock-analysis-status"></p>

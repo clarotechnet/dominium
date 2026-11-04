@@ -10,12 +10,25 @@ let allRuns=[];
 const currentCity=()=>state.profile;
 const canWrite=()=>["admin","controller"].includes(state.authUser?.role);
 function status(msg,error=false){
- const node=el("stockDailyAnalysisMessage");node.textContent=msg;
+ const node=el("stockDailyAnalysisMessage");
+ if(!node)return;
+ node.textContent=msg;
  node.style.color=error?"#ff8898":"";
+}
+function setQueryPending(pending){
+ panel.setAttribute("aria-busy",String(pending));
+ for(const id of ["stockDailyAnalysisOpen","stockDailyAnalysisRefresh"]){
+   const button=el(id);
+   if(!button)continue;
+   button.disabled=pending;
+   button.textContent=pending?"Consultando período...":"Consultar período";
+ }
 }
 function referenceDate(){
  const d=new Date(Date.now()-86400000);
- return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Fortaleza",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);
+ const pieces=new Intl.DateTimeFormat("en-US",{timeZone:"America/Fortaleza",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d);
+ const part=type=>pieces.find(piece=>piece.type===type)?.value||"";
+ return [part("year"),part("month"),part("day")].join("-");
 }
 function setVisible(visible){
  panel.hidden=!visible;
@@ -23,21 +36,28 @@ function setVisible(visible){
  el("stockDailyAnalysisDate").value ||= referenceDate();
  el("stockDailyRangeStart").value ||= referenceDate();
  el("stockDailyRangeEnd").value ||= referenceDate();
- el("stockDailyAnalysisImport").hidden=!canWrite()||currentCity()==="all";
+ el("stockDailyImportDetails").hidden=!canWrite()||currentCity()==="all";
  void loadDaily();
 }
 async function loadDaily(){
- if(fetching)return;
- fetching=true;
+ if(fetching){status("Consulta em andamento. Aguarde o resultado.");return;}
  const city=currentCity(),day=el("stockDailyAnalysisDate").value;
+ const start=el("stockDailyRangeStart").value,end=el("stockDailyRangeEnd").value;
+ if(Boolean(start)!==Boolean(end)){
+   status("Preencha a data inicial e a data final para consultar o período.",true);return;
+ }
+ if(start&&end&&start>end){status("Data inicial maior que a final.",true);return;}
+ fetching=true;
+ setQueryPending(true);
+ status("Consultando histórico de equipamentos para "+city.toUpperCase()+(start&&end?" ("+start+" a "+end+")":"")+"...");
  try{
    let url="/api/stock/analyses/daily?city="+encodeURIComponent(city);
-   const start=el("stockDailyRangeStart").value,end=el("stockDailyRangeEnd").value;
-   if(start&&end){if(start>end)throw new Error("Data inicial maior que a final");url+="&start="+start+"&end="+end;}
+   if(start&&end)url+="&start="+start+"&end="+end;
    else if(day)url+="&date="+encodeURIComponent(day);
    const data=await request(url,{timeoutMs:30000});
    if(city!==currentCity())return;
-   selected=data.selected||data.latest||null;
+   // Nunca mostrar um resultado antigo fora do intervalo consultado.
+   selected=data.selected||((start&&end)?null:data.latest)||null;
    allRuns=[];
    if(city==="all"){
      const latestByCity=new Map();
@@ -65,10 +85,10 @@ async function loadDaily(){
      el("stockDailyAnalysisTable").replaceChildren();
      el("stockDailyAnalysisTabs").replaceChildren();
      el("stockDailyAnalysisDownload").disabled=true;
-     status("Nenhuma análise diária registrada para esta operação. A extração automática por período do Imperium ainda não está integrada. É possível registrar o Excel final histórico.");
+     status("Nenhum registro encontrado no histórico"+(start&&end?" de "+start+" a "+end:"")+" para "+city.toUpperCase()+". A extração automática do Imperium ainda não está integrada; nenhum Excel é exigido para consultar o histórico.");
    }
  }catch(error){status("Erro ao consultar análise diária: "+(error.message||error),true)}
- finally{fetching=false;}
+ finally{fetching=false;setQueryPending(false);}
 }
 async function displaySheet(index){
  if(!selected)return;

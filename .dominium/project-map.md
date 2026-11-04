@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-03T17:50:02+00:00
-- Source fingerprint: `c0aa84f9a7540691`
-- Indexed files: 475
-- Indexed symbols: 4079
+- Generated: 2026-11-04T15:22:39+00:00
+- Source fingerprint: `bd82346a81991feb`
+- Indexed files: 476
+- Indexed symbols: 4083
 - API path references: 500
 
 ## Navigation rule
@@ -108,7 +108,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
 - `static/stock-analysis-ui.js` (13 symbols, 3 API paths) - Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */
-- `static/stock-daily-analysis-ui.js` (10 symbols, 3 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
+- `static/stock-daily-analysis-ui.js` (12 symbols, 3 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
 - `static/stock-nav.js` (6 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
 - `static/stock-report-preview-ui.js` (5 symbols, 2 API paths) - The three stock analysis processes have independent, paged workspace views. */
 - `static/styles.css`
@@ -184,7 +184,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - shared: 152 files
 - tooling-deploy: 49 files
 - docs: 41 files
-- tests: 144 files
+- tests: 145 files
 
 ## Search indexes
 

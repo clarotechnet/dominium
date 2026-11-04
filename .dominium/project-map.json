@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-03T17:50:02+00:00",
+  "generated_at": "2026-11-04T15:22:39+00:00",
   "schema": 2,
-  "source_fingerprint": "c0aa84f9a754069138f99d9cba21620406e6f6e001cd4f6c906d36ee103a7094",
+  "source_fingerprint": "bd82346a81991feb7dd7e5d62d3e9f4a4ce486ef18faad69a353caca20fe550c",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1426,8 +1426,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 9251,
-      "sha256": "2eb3f7cfc6336d0a91709d6720a2687df50546e10d8bf40178d2ab62b76ef8bb",
+      "bytes": 9528,
+      "sha256": "72156c09e5c18b55110c8a0fb02deaa5cc01cd7469fd6c11a529fea4ce67b147",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -5176,8 +5176,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 154428,
-      "sha256": "eabf3d5017678c87594263ff11c28e09c86479cc61f6a65486846f0613ddcd9a",
+      "bytes": 154543,
+      "sha256": "ed1bc34b17ed61ac48b7162b0614308434290ff467244a149911da16e162e597",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5301,8 +5301,8 @@
     {
       "path": "static/stock-daily-analysis-ui.js",
       "category": "frontend",
-      "bytes": 8339,
-      "sha256": "ce5a90aca5ea44e613b8f944d5ad2292901f3ef92ea429c458537efba1c2e230",
+      "bytes": 9325,
+      "sha256": "a1588eb3cc096ed95f9f0c1076b42f29450f3a53d62336ad7173d6c15a7f5322",
       "summary": "Daily equipment: independent period/catalog; Atlas QUERY is not its source. */",
       "imports": [],
       "endpoints": [
@@ -5313,7 +5313,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 10
+      "symbol_count": 12
     },
     {
       "path": "static/stock-nav.js",
@@ -7800,6 +7800,19 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 12
+    },
+    {
+      "path": "tests/test_stock_daily_feedback.cjs",
+      "category": "tests",
+      "bytes": 3534,
+      "sha256": "4980ee2395eee45e14403d985b59cde7b251235767f990e00a8ef294ac122841",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_stock_inventory.py",
