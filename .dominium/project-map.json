@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-03T18:36:00+00:00",
+  "generated_at": "2026-11-04T20:36:34+00:00",
   "schema": 2,
-  "source_fingerprint": "5a0c2f6849c714f762ada02122da6ea57b89b9cc7d83484f746e4d68e0ad0959",
+  "source_fingerprint": "d4955128546ef985bab550e8e525725ad014fec5964c83f89b3cf92a60b24e04",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1411,6 +1411,36 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/GLOBAL_TODOS_SCOPE_20261103.md",
+      "category": "docs",
+      "bytes": 2732,
+      "sha256": "236973d4848064d1c711575d7f123ec6cfc80b551e4db14826e66ecf8c7375f5",
+      "summary": "DOMINIUM — escopo global \"Todos\" e desbloqueio do Backlog (03/11/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md",
+      "category": "docs",
+      "bytes": 5669,
+      "sha256": "d9b040a888dca121af62487f503b9f1dc689fbcbf3ac537afedba33e5fd2ef68",
+      "summary": "Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmOrdemServico.AS_GetRecords",
+        "TDtmOrdemServico.GetEquipamentosUtilizados",
+        "TECHNET_DATASNAP_RELATORIO_1.0"
+      ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md",
       "category": "docs",
       "bytes": 8623,
@@ -1507,8 +1537,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 13974,
-      "sha256": "4335ff06f67679d4e9d9a7d34a2173656f142e60c2132076ef37cfe1a972fafa",
+      "bytes": 14670,
+      "sha256": "9f539d7d348a8646fdd6e8333d33a1ecc811af6b8f9a234f9deb0061585225f5",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3426,6 +3456,49 @@
       "symbol_count": 3
     },
     {
+      "path": "integrations/serial_consult/used_equipment_report.py",
+      "category": "shared",
+      "bytes": 7546,
+      "sha256": "e8c9ba7428c41fec95b28139cd50152808ed837cdb965532ca4852407b8ab420",
+      "summary": "Read-only, fail-closed integration foundation for Imperium Equipamentos Utilizados.",
+      "imports": [
+        "__future__",
+        "datasnap_client",
+        "datetime",
+        "hashlib",
+        "imperium_api",
+        "json",
+        "pathlib",
+        "re",
+        "struct",
+        "typing"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmOrdemServico.AS_GetRecords"
+      ],
+      "entrypoint": false,
+      "symbol_count": 7
+    },
+    {
+      "path": "integrations/serial_consult/used_equipment_report_contract.json",
+      "category": "shared",
+      "bytes": 2349,
+      "sha256": "25e7f6d53198524023684a5ba0e7174fb9e642ccb41d7aa3932078088c17c071",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmOrdemServico.AS_GetRecords",
+        "TDtmOrdemServico.GetEquipamentosUtilizados",
+        "TECHNET_DATASNAP_RELATORIO_1.0"
+      ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/background.js",
       "category": "shared",
       "bytes": 8298,
@@ -4794,6 +4867,28 @@
       "symbol_count": 0
     },
     {
+      "path": "scripts/probe_used_equipment_report.py",
+      "category": "tooling-deploy",
+      "bytes": 2902,
+      "sha256": "ed0fd4dbc5bb198687857b3a6568906b0f28d53c8d50e6bd32eb0ef5d96244f4",
+      "summary": "Read-only DataSnap discovery. Does not download any report or execute SQL.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "datasnap_client",
+        "getpass",
+        "json",
+        "pathlib",
+        "sys",
+        "used_equipment_report"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 1
+    },
+    {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
       "bytes": 6818,
@@ -4986,6 +5081,19 @@
       "symbol_count": 1
     },
     {
+      "path": "static/all-cities-scope.css",
+      "category": "frontend",
+      "bytes": 1098,
+      "sha256": "d9fde79cee63719cefb05adb0c56de15ba4468960d3d172b43cba75c153cb912",
+      "summary": "DOMINIUM: \"Todos\" is a cross-module read-only scope, not an operational profile. */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "static/all-operations.js",
       "category": "frontend",
       "bytes": 8197,
@@ -5033,8 +5141,8 @@
     {
       "path": "static/backlog-analysis.js",
       "category": "frontend",
-      "bytes": 20363,
-      "sha256": "aafd78ff5396311ce8b14ccfb88b36de1b78d9557d96058d3e6af735d696546e",
+      "bytes": 21188,
+      "sha256": "80ace379911303d4916d866c0d5e93cf4d7e1832aaf7ae30a55b3a3a625fea27",
       "summary": "DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */",
       "imports": [],
       "endpoints": [
@@ -5049,7 +5157,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 17
+      "symbol_count": 18
     },
     {
       "path": "static/backlog-report-image.js",
@@ -5202,8 +5310,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 156349,
-      "sha256": "1aecf0f4e7f4b0f13454e21a8802679ee18fa8e4ae59574b3c3da846c477a096",
+      "bytes": 157773,
+      "sha256": "4b1de79447b3187a505c86db53bc170b6fe84aabee57a48faae0bfff7356b737",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5310,8 +5418,8 @@
     {
       "path": "static/stock-analysis-ui.js",
       "category": "frontend",
-      "bytes": 9715,
-      "sha256": "2217d26e2cfc214015855361e8461128af2d67ad7a0ad9fcb722f99384fcab8b",
+      "bytes": 10182,
+      "sha256": "b1919e4fb8a8da4171f0a94451125de85d56833bff203c29f6b0bc29acef9982",
       "summary": "Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */",
       "imports": [],
       "endpoints": [
@@ -5327,8 +5435,8 @@
     {
       "path": "static/stock-daily-analysis-ui.js",
       "category": "frontend",
-      "bytes": 9742,
-      "sha256": "14a1c9c412e8a9dbfae204db9541ac569947c4a2f83758bd825b0a2cb74ec89e",
+      "bytes": 10318,
+      "sha256": "e4f843dcea3ab8d370e8ae936a57a6a1800fffd37543a7631605141fc855770f",
       "summary": "Daily equipment: independent period/catalog; Atlas QUERY is not its source. */",
       "imports": [],
       "endpoints": [
@@ -5344,21 +5452,21 @@
     {
       "path": "static/stock-nav.js",
       "category": "frontend",
-      "bytes": 5191,
-      "sha256": "1cd96c23d87bb70a533d2cf67ab63f7af74d501b86902835c310ca9fa65488de",
+      "bytes": 5666,
+      "sha256": "3263ee4c4be095a4d8ab443f7d7f2cc0dffb75afefd41eb69990cbf6ab44dcee",
       "summary": "Navegacao consolidada de Estoque (mantem os modulos existentes). */",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 6
+      "symbol_count": 7
     },
     {
       "path": "static/stock-report-preview-ui.js",
       "category": "frontend",
-      "bytes": 4651,
-      "sha256": "2939b473e78d754d908b27d4423cd1f424af7b0b41556f87aa5036c19d832d31",
+      "bytes": 4951,
+      "sha256": "09735f63ebcd8565650a2f64930d5175ed39747d8d967a3a6daf40f92687d90d",
       "summary": "The three stock analysis processes have independent, paged workspace views. */",
       "imports": [],
       "endpoints": [
@@ -6105,6 +6213,19 @@
       "symbol_count": 11
     },
     {
+      "path": "tests/test_backlog_action_buttons.cjs",
+      "category": "tests",
+      "bytes": 4924,
+      "sha256": "5407a352d0b273a26ad8307153e5f0269b1c723466efeeac060f1fc766511867",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 8
+    },
+    {
       "path": "tests/test_backlog_hostinger_proxy.js",
       "category": "tests",
       "bytes": 4288,
@@ -6141,10 +6262,23 @@
       "symbol_count": 1
     },
     {
+      "path": "tests/test_backlog_todos_navigation.cjs",
+      "category": "tests",
+      "bytes": 7844,
+      "sha256": "fe3d1917db6de65e8efe03032e737d9061e44fb31da0842beca27d2e889f965b",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
       "path": "tests/test_backlog_ui_deploy_20261031.py",
       "category": "tests",
-      "bytes": 3507,
-      "sha256": "403e0914fc6ebdf13efeff7e9c251bef620fd039fbe5581fd7eac01d64838af5",
+      "bytes": 4321,
+      "sha256": "7e903cf8d3b04a3db3941df66854961486af922e935ba9dd12ed4ba5fe3efcef",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -7797,6 +7931,19 @@
       "symbol_count": 16
     },
     {
+      "path": "tests/test_stock_all_scope.cjs",
+      "category": "tests",
+      "bytes": 3041,
+      "sha256": "1dd1b43e48b9d7ca04212e5d061d1e52faa9ddb820f1fc6e05464c2defd72ba3",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
       "path": "tests/test_stock_analysis_proxy.cjs",
       "category": "tests",
       "bytes": 3539,
@@ -7856,8 +8003,8 @@
     {
       "path": "tests/test_stock_daily_analysis_feedback.cjs",
       "category": "tests",
-      "bytes": 4269,
-      "sha256": "a5102f5c52dd4d56dc7d4c44c6f83633b1c809870857cbee8cbaa9057c775d40",
+      "bytes": 4268,
+      "sha256": "ef5c1c993a1f967c654bdf9e0f25654bbed7da544f5c5c4ab8bc26038b3684e3",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -8382,6 +8529,30 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 11
+    },
+    {
+      "path": "tests/test_used_equipment_report_contract.py",
+      "category": "tests",
+      "bytes": 4843,
+      "sha256": "2b162500978e417c7de6a9bd40dacb98765e8b09caf91711ef73e4f4d237739a",
+      "summary": "Tests for the package supplied on 2026-11-04. Network is NEVER used.",
+      "imports": [
+        "datetime",
+        "json",
+        "pathlib",
+        "struct",
+        "sys",
+        "tempfile",
+        "unittest",
+        "used_equipment_report"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmOrdemServico.AS_GetRecords"
+      ],
+      "entrypoint": true,
+      "symbol_count": 10
     },
     {
       "path": "tests/test_web_auth_config.py",
@@ -9153,12 +9324,14 @@
     "TDtmOrdemServico.AS_ApplyUpdates",
     "TDtmOrdemServico.AS_Execute",
     "TDtmOrdemServico.AS_GetRecords",
+    "TDtmOrdemServico.GetEquipamentosUtilizados",
     "TEAM_PROFILES.get",
     "TECHCAP.queueList",
     "TECHCAP.state",
     "TECHCAP_TOA_V5_6_FLUXO_OS_PARA_OS.txt",
     "TECHNET.xlsx",
     "TECHNET_BAIXA_TOA_UNIVERSAL_2.0",
+    "TECHNET_DATASNAP_RELATORIO_1.0",
     "TECHNET_TOA_Unificado_2.4",
     "TECHNET_TOA_Unificado_v2.4",
     "TECHNICIANS.enrich_preview",

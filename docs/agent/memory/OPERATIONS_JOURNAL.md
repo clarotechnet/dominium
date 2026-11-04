@@ -207,3 +207,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 13 hashes SHA-256 conferidos; comparacao AST de cinco metodos centrais; parser reproduzido e consultas TOA/Imperium somente leitura
 
 **Próximo passo/pendência:** Homologar fechamento DESC sem itens das acompanhantes com equipamentos concentrados em uma OS; nao restaurar snapshot como correcao
+
+## 2026-11-04 20:32 UTC — Contrato e sonda somente leitura do relatório Equipamentos Utilizados
+
+**Motivo:** ZIP do fornecedor contém contrato offline mas não pacotes reais ou extrator; providers anteriores foram confundidos com outro fluxo
+
+**Alterado:** Adicionado contrato com dois providers, validações estritas, verificação de versão ClientVCL e probe DataSnap somente connect+prepare; sem rotas, sem deploy
+
+**Verificação:** 8 testes novos + 8 testes existentes aprovados; CLI offline e compilação aprovadas
+
+**Próximo passo/pendência:** Capturar AS_GetRecords sem segredos da versão instalada, homologar payload, conferir saída por OS e código e integrar com seis abas

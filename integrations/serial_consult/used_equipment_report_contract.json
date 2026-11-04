@@ -1,0 +1,92 @@
+{
+  "product": "Imperium ClientVCL — TFrmConEquipUtilizados",
+  "version": "1.0.0",
+  "source": "TECHNET_DATASNAP_RELATORIO_1.0.zip (análise estática, 2026-11-04)",
+  "evidence_executable_sha256": "44b9e565d1158aa456e55b56a34e2edbb524f2fb2762e427059de0b430545f55",
+  "evidence_executable_bytes": 47284224,
+  "form": "TFrmConEquipUtilizados",
+  "actions": {
+    "search": "BtnConsultarClick",
+    "export": "BtnExportarClick"
+  },
+  "local_method": "TDtmOrdemServico.GetEquipamentosUtilizados",
+  "server_class": "TDtmOrdemServico",
+  "prepare_only_method": "TDtmOrdemServico.AS_GetRecords",
+  "dataset_modes": {
+    "consolidado": {
+      "client_dataset": "CdsConsolidadoEquip",
+      "provider": "DspConsolidadoEquip",
+      "columns": [
+        "Grupo",
+        "CodigoEquipamento",
+        "Equipamento",
+        "Qtd",
+        "Identificado"
+      ]
+    },
+    "por_os": {
+      "client_dataset": "CdsConsolidadoOS",
+      "provider": "DspConsolidadoOS",
+      "columns": [
+        "DataBaixa",
+        "DataBaixaMiscelanea",
+        "Contrato",
+        "NumOs",
+        "CodigoServico",
+        "NomeAbreviado",
+        "CodigoEquipamento",
+        "Qtd",
+        "SerialNumber",
+        "Identificado",
+        "Cidade",
+        "TipoServico",
+        "Equipamento",
+        "Grupo",
+        "NumeroWO",
+        "CODIBGE",
+        "CodParceiraSAP",
+        "Controlador",
+        "Smart"
+      ]
+    }
+  },
+  "params": [
+    {
+      "name": "@RETURN_VALUE",
+      "type": "ftInteger",
+      "direction": "ptResult"
+    },
+    {
+      "name": "@DataIni",
+      "type": "ftTimeStamp",
+      "direction": "ptInput"
+    },
+    {
+      "name": "@DataFim",
+      "type": "ftTimeStamp",
+      "direction": "ptInput"
+    },
+    {
+      "name": "@IdParceiro",
+      "type": "ftInteger",
+      "direction": "ptInput"
+    },
+    {
+      "name": "@IdTipoServico",
+      "type": "ftString",
+      "direction": "ptInput"
+    },
+    {
+      "name": "@IdGrupoEquipamento",
+      "type": "ftString",
+      "direction": "ptInput"
+    }
+  ],
+  "validation_state": "OFFLINE_ONLY",
+  "required_for_live_use": [
+    "signed off captured AS_GetRecords query from target ClientVCL version",
+    "matching partner identifiers and service/group filter encodings",
+    "server dataset/schema validation",
+    "six-tab transformation and reference comparison"
+  ]
+}
