@@ -6,10 +6,11 @@
   <title>DOMINIUM</title>
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="/styles.css?v=20261030-subtabs-1">
+  <link rel="stylesheet" href="/styles.css?v=20261104-excel-optional-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
-  <link rel="stylesheet" href="/backlog-analysis.css?v=20261031-1">
+  <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-image-1">
+  <link rel="stylesheet" href="/all-cities-scope.css?v=20261103-global-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -223,6 +224,16 @@
     </aside>
 
   <main>
+    <section id="allCityModuleNotice" class="all-city-notice hidden" role="status" aria-live="polite">
+      <p class="section-label">TODAS AS CIDADES · SEGURANÇA OPERACIONAL</p>
+      <h2>Selecione uma cidade para operar neste módulo</h2>
+      <p>O filtro <strong>Todos</strong> permanece ativo. Esta área usa dados e autorizações de uma base por vez;
+      exibir a última cidade como se fosse o consolidado seria incorreto.</p>
+      <p>Para consultar várias bases, use <strong>Todas as operações</strong>, <strong>Análise Backlog</strong>
+      ou <strong>Análise de equipamentos</strong>. Para executar uma ação, selecione Natal/Parnamirim, Fortaleza,
+      Mossoró ou Recife no topo.</p>
+      <button class="button secondary" id="allCityOverviewButton" type="button">Abrir visão consolidada</button>
+    </section>
     <section class="desc-analytics-workspace hidden" id="descAnalyticsWorkspace" aria-label="Visão Claro — indicadores de desconexão">
       <header class="workspace-heading desc-analytics-heading">
         <div>
@@ -845,6 +856,12 @@
         <button id="stockReportsTab" type="button" role="tab" aria-selected="false">Analises e Relatorios</button>
         <button id="stockDailyTab" type="button" role="tab" aria-selected="false">Estoque Diário</button>
       </div>
+      <section id="stockAllScopeHint" class="all-city-stock-notice hidden" role="status">
+        <strong>Modo Todas as cidades</strong>
+        <p>A análise de equipamentos permite consultar o histórico de todas as bases.
+        Estoque por técnico e controle de qualidade exigem selecionar uma cidade; nenhuma movimentação será realizada em Todas.</p>
+        <button type="button" class="button secondary" id="stockAllScopeOpen">Abrir análise consolidada</button>
+      </section>
       <div id="stockInventoryPane" role="tabpanel" aria-labelledby="stockInventoryTab">
       <header class="workspace-heading">
         <div>
@@ -1072,7 +1089,7 @@
           </div>
         <section id="stockDailyAnalysisPanel" hidden class="stock-daily-analysis-panel">
           <h3>Analise diaria de equipamentos</h3>
-          <p class="workspace-description">Consulte o histórico de análises por período sem anexar arquivos. A extração automática diretamente do Imperium ainda não está integrada; somente dados já registrados serão exibidos.</p>
+          <p class="workspace-description">Consulte análises já registradas por período, sem anexar arquivos. A extração automática do Imperium ainda não está integrada; a importação manual é opcional e serve apenas para registrar históricos.</p>
           <div class="daily-stock-toolbar">
             <label class="field"><span>Data inicial</span><input type="date" id="stockDailyRangeStart"></label>
             <label class="field"><span>Data final</span><input type="date" id="stockDailyRangeEnd"></label>
@@ -1082,13 +1099,17 @@
           </div>
           <details id="stockDailyImportDetails" class="stock-daily-import-optional">
             <summary>Registrar Excel histórico (opcional)</summary>
-            <p class="workspace-description">Use esta opção apenas para cadastrar um relatório antigo. Não é necessário importar Excel para consultar um período.</p>
+            <p class="workspace-description">Utilize apenas para cadastrar uma planilha antiga. Consultar o histórico não exige Excel.</p>
             <div class="daily-stock-toolbar">
               <label class="field"><span>Data de referência do Excel</span><input type="date" id="stockDailyAnalysisDate"></label>
               <label class="field"><span>Arquivo XLSX</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
               <button class="button secondary" id="stockDailyAnalysisImport" type="button">Importar no histórico</button>
             </div>
           </details>
+          <div id="stockDailyAnalysisLoading" class="stock-daily-loading-indicator" role="status" aria-live="polite" hidden>
+            <span class="stock-daily-loading-spinner" aria-hidden="true"></span>
+            <span>Consultando arquivos cadastrados no histórico da operação...</span>
+          </div>
           <p id="stockDailyAnalysisMessage" class="stock-analysis-status" role="status" aria-live="polite"></p>
           <div id="stockDailyAnalysisTabs" class="stock-daily-analysis-tabs" role="group" aria-label="Abas do relatorio"></div>
           <p id="stockDailyAnalysisSheetInfo" class="stock-analysis-status"></p>
@@ -2027,6 +2048,19 @@
         <button type="button" class="button secondary" data-backlog-tab="offroute">Fora de Rota</button>
         <button type="button" class="button secondary" data-backlog-tab="sent">Rotas Enviadas</button>
       </nav>
+      <div class="backlog-scope-bar">
+        <label class="backlog-field">Cidades exibidas
+          <select id="backlogCityScope">
+            <option value="top">Conforme cidade selecionada no topo</option>
+            <option value="all">Todas as cidades</option>
+            <option value="natal">Natal / Parnamirim</option>
+            <option value="fortaleza">Fortaleza</option>
+            <option value="mossoro">Mossoró</option>
+            <option value="recife">Recife</option>
+          </select>
+        </label>
+        <span id="backlogScopeLabel" role="status"></span>
+      </div>
       <div class="backlog-panel" data-backlog-pane="entry">
         <div class="backlog-grid">
           <section class="backlog-card">
@@ -2056,7 +2090,7 @@
             <div class="backlog-actions">
               <button type="button" class="button primary" id="backlogFromTOA">Buscar 5 rotas do TOA</button>
               <button type="button" class="button secondary" id="backlogUpload">Carregar arquivos</button>
-              <button type="button" class="button secondary" id="backlogCompare">Analisar histórico</button>
+              <button type="button" class="button primary" id="backlogCompare">Analisar arquivos</button>
             </div>
             <p id="backlogAutoStatus" role="status">Captura TOA somente leitura. Nenhuma O.S. será baixada.</p>
             <p id="backlogUploadStatus" role="status"></p>
@@ -2088,11 +2122,23 @@
       </div>
       <div class="backlog-panel hidden" data-backlog-pane="result">
         <section class="backlog-card">
-          <h3>Resultado tratado</h3>
-          <p>Resultado preliminar enquanto o histórico estiver incompleto. Sem registro histórico não é confirmação de baixa nem de liberação da rota.</p>
-          <div class="backlog-actions"><button type="button" class="button secondary" id="backlogCopyResult">Copiar resultado</button></div>
+          <h3>Comparativo da rota com o histórico</h3>
+          <p>Contratos da rota de hoje que tiveram códigos selecionados no histórico do Imperium. O código 430 indica retirada produtiva e não improdutividade do dia.</p>
+          <div class="backlog-actions">
+            <button type="button" class="button primary" id="backlogCopyResult" disabled>Copiar tudo para WhatsApp</button>
+            <button type="button" class="button secondary" id="backlogCopySummary" disabled>Copiar resumo por cidade</button>
+            <button type="button" class="button secondary" id="backlogDownloadImage" disabled>Baixar imagem PNG</button>
+          </div>
+          <p id="backlogReportStatus" role="status">Selecione ou capture as rotas e clique em Analisar arquivos.</p>
           <div id="backlogMetrics" class="backlog-progress"></div>
-          <div id="backlogResult" class="backlog-results"></div>
+          <h3>Resumo dos códigos por cidade</h3>
+          <div id="backlogReportSummary" class="backlog-report-city-grid"></div>
+          <h3>Contratos agrupados por técnico</h3>
+          <div id="backlogReportDetails" class="backlog-report-detail-list"></div>
+          <details>
+            <summary>Ver tabela técnica do comparativo</summary>
+            <div id="backlogResult" class="backlog-results"></div>
+          </details>
         </section>
       </div>
       <div class="backlog-panel hidden" data-backlog-pane="offroute">
@@ -2621,15 +2667,17 @@
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261103-event-guard-1"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
-  <script src="/app.js?v=20261031-backlog-1"></script>
-  <script src="/backlog-analysis.js?v=20261103-toa-rotas-1"></script>
+  <script src="/app.js?v=20261103-global-scope-1"></script>
+  <script src="/backlog-report.js?v=20261103-whatsapp-1"></script>
+  <script src="/backlog-report-image.js?v=20261103-image-2"></script>
+  <script src="/backlog-analysis.js?v=20261103-route-buttons-1"></script>
   <script src="/quality-control.js?v=20261029-analysis-1"></script>
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>
-  <script src="/stock-nav.js?v=20261029-analysis-1"></script>
-  <script src="/stock-analysis-ui.js?v=20261030-daily-1"></script>
-  <script src="/stock-daily-analysis-ui.js?v=20261030-subtabs-1"></script>
-  <script src="/stock-report-preview-ui.js?v=20261030-1"></script>
+  <script src="/stock-nav.js?v=20261103-global-1"></script>
+  <script src="/stock-analysis-ui.js?v=20261103-global-1"></script>
+  <script src="/stock-daily-analysis-ui.js?v=20261104-excel-optional-1"></script>
+  <script src="/stock-report-preview-ui.js?v=20261103-global-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>
   <script src="/query-import.js?v=20261023-1"></script>

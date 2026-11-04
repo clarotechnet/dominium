@@ -36,6 +36,151 @@
     }
     grid.append(body);scroll.append(grid);target.append(scroll);
   }
+  const reportApi=globalThis.DominiumBacklogReport;
+  let comparisonReady=false,comparisonTruncated=false,reportCodes=["101","306","404","430"];
+  function scopeFromTop(){
+    const current=document.querySelector("#profileTabs .profile-tab.active");
+    const label=String(current?.textContent||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
+    if(label.includes("TODOS"))return "all";
+    if(label.includes("FORTALEZA"))return "fortaleza";
+    if(label.includes("MOSSORO"))return "mossoro";
+    if(label.includes("RECIFE"))return "recife";
+    return "natal";
+  }
+  function cityScope(){
+    const chosen=$("backlogCityScope")?.value||"top";
+    return chosen==="top"?scopeFromTop():chosen;
+  }
+  function refreshScopeLabel(){
+    const scope=cityScope();
+    const names={all:"Todas as cidades",natal:"Natal + Parnamirim",
+      fortaleza:"Fortaleza",mossoro:"Mossoró",recife:"Recife"};
+    update($("backlogScopeLabel"),"Exibindo: "+(names[scope]||scope));
+    return scope;
+  }
+  function renderDailyRows(){
+    if(!reportApi)return;
+    const shown=reportApi.filterRows(dailyRows,refreshScopeLabel());
+    const metrics=$("backlogDailyMetrics");metrics.replaceChildren();
+    const files=document.createElement("span");
+    files.textContent=shown.length+" atividades nesta seleção";
+    metrics.append(files);
+    const counts={};
+    for(const row of shown)counts[row.treatment]=(counts[row.treatment]||0)+1;
+    for(const [name,count] of Object.entries(counts)){
+      const metric=document.createElement("span");metric.textContent=name+": "+count;metrics.append(metric);
+    }
+    const priority=item=>item.treatment==="IMPRODUTIVA CONFIRMADA"?0:
+      item.treatment.startsWith("DIVERGENCIA")?1:item.treatment==="PENDENTE"?3:2;
+    const sorted=[...shown].sort((a,b)=>priority(a)-priority(b)||
+      String(a.city).localeCompare(String(b.city))||
+      String(a.technician).localeCompare(String(b.technician)));
+    table($("backlogDailyResult"),[["Tratativa","treatment"],["Contrato","contract"],
+      ["Cidade","city"],["Técnico","technician"],["O.S.","os_number"],
+      ["Status TOA","activity_status"],["Código","route_code"]],sorted);
+  }
+  function renderHistoricalReport(){
+    const scope=refreshScopeLabel();
+    const summary=$("backlogReportSummary");summary.replaceChildren();
+    const detail=$("backlogReportDetails");detail.replaceChildren();
+    const actions=[$("backlogCopyResult"),$("backlogCopySummary"),$("backlogDownloadImage")];
+    for(const btn of actions)btn.disabled=true;
+    if(!comparisonReady||!reportApi)return;
+    const selected=reportApi.filterRows(comparison,scope);
+    const report=reportApi.build(comparison,scope,reportCodes);
+    const counts={SEGURAR:0,"OUTRO HISTÓRICO":0,"NÃO CONFIRMADO":0};
+    for(const item of selected)counts[item.classification]=(counts[item.classification]||0)+1;
+    const metrics=$("backlogMetrics");metrics.replaceChildren();
+    for(const [label,count] of Object.entries(counts)){
+      const item=document.createElement("span");item.textContent=label+": "+count;metrics.append(item);
+    }
+    const total=document.createElement("span");
+    total.textContent="Contratos para segurar: "+report.total;metrics.prepend(total);
+    table($("backlogResult"),[["Análise","classification"],["Contrato","contract"],
+      ["Cidade","report_city"],["Recurso","technician"],["Código","historical_code"],
+      ["Data histórica","historical_date"]],selected);
+    if(comparisonTruncated){
+      update($("backlogReportStatus"),
+        "ATENÇÃO: há mais contratos na rota do que o limite de análise. O relatório está incompleto e a cópia foi bloqueada.");
+      $("backlogReportStatus").classList.add("backlog-warning");
+    }else{
+      $("backlogReportStatus").classList.remove("backlog-warning");
+      update($("backlogReportStatus"),report.total+" contrato(s) com os códigos selecionados, agrupados por cidade e técnico. A base histórica atual preserva a data da baixa, mas não o horário.");
+      $("backlogCopyResult").disabled=report.total===0;
+      $("backlogCopySummary").disabled=report.total===0;
+      $("backlogDownloadImage").disabled=report.total===0;
+    }
+    if(!report.groups.length){
+      const empty=document.createElement("p");empty.textContent="Nenhuma correspondência com os códigos selecionados nesta cidade.";
+      summary.append(empty);return;
+    }
+    for(const city of report.groups){
+      const card=document.createElement("section");card.className="backlog-report-city";
+      const header=document.createElement("h4");header.textContent=city.label;card.append(header);
+      const grid=document.createElement("table"),head=document.createElement("thead");
+      const heading=document.createElement("tr");
+      for(const label of ["Código","Quantidade"]){
+        const cell=document.createElement("th");cell.textContent=label;heading.append(cell);
+      }
+      head.append(heading);grid.append(head);
+      const body=document.createElement("tbody");
+      for(const [code,count] of Object.entries(city.codeCounts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))){
+        const tr=document.createElement("tr");
+        for(const value of [code,count]){const td=document.createElement("td");td.textContent=String(value);tr.append(td);}
+        body.append(tr);
+      }
+      grid.append(body);
+      const foot=document.createElement("tfoot"),row=document.createElement("tr");
+      for(const value of ["TOTAL",city.count]){const td=document.createElement("td");td.textContent=String(value);row.append(td);}
+      foot.append(row);grid.append(foot);card.append(grid);summary.append(card);
+
+      const cityDetails=document.createElement("details");cityDetails.open=true;
+      const headline=document.createElement("summary");headline.textContent=city.label+" • "+city.count+" contrato(s)";
+      cityDetails.append(headline);
+      for(const tech of city.technicians){
+        const sec=document.createElement("section");sec.className="backlog-report-tech";
+        const name=document.createElement("h5");name.textContent=tech.name+" — "+tech.contracts.length+" contrato(s)";sec.append(name);
+        const list=document.createElement("ul");
+        for(const item of tech.contracts){
+          const li=document.createElement("li");
+          const contract=document.createElement("strong");contract.textContent="Contrato "+item.contract;
+          li.append(contract,document.createTextNode(" • Baixa histórica "+item.historical_code+
+            " • "+reportApi.formatDate(item.historical_date)));
+          list.append(li);
+        }
+        sec.append(list);cityDetails.append(sec);
+      }
+      detail.append(cityDetails);
+    }
+  }
+  function scopeChanged(){
+    renderDailyRows();renderHistoricalReport();
+  }
+  $("backlogCityScope").addEventListener("change",scopeChanged);
+  const topTabs=document.querySelector("#profileTabs");
+  if(topTabs)new MutationObserver(scopeChanged).observe(topTabs,{childList:true});
+  $("backlogDownloadImage").addEventListener("click",()=>action($("backlogDownloadImage"),async()=>{
+    if(!reportApi||!comparisonReady||comparisonTruncated)
+      throw Error("Analise os arquivos completos antes de baixar a imagem");
+    const imageApi=globalThis.DominiumBacklogReportImage;
+    if(!imageApi)throw Error("Exportador PNG indisponível; atualize a página");
+    const scope=cityScope();
+    const report=reportApi.build(comparison,scope,reportCodes);
+    const filename=await imageApi.download(report,scope);
+    update($("backlogReportStatus"),"Imagem PNG gerada: "+filename+". A cidade selecionada foi respeitada.");
+  },$("backlogReportStatus")));
+  $("backlogCopySummary").addEventListener("click",()=>{if(!reportApi||!comparisonReady||comparisonTruncated)return;
+    const report=reportApi.build(comparison,cityScope(),reportCodes);
+    const lines=["RESUMO DE CÓDIGOS POR CIDADE"];
+    for(const city of report.groups){
+      lines.push("","📍 "+city.label);
+      for(const [code,count] of Object.entries(city.codeCounts).sort((a,b)=>b[1]-a[1])){
+        lines.push("Código "+code+": "+count);
+      }
+      lines.push("TOTAL: "+city.count);
+    }
+    copy(lines.join("\n"));
+  });
   async function refreshStatus(){
     try{
       const s=await call("/api/backlog/year/status"),run=s.run||null;
@@ -75,10 +220,33 @@
 
     }catch(err){update($("backlogSyncStatus"),"Status indisponível: "+err.message);$("backlogRun").disabled=true;}
   }
+  function syncRouteButtons(){
+    // A importação e a comparação não devem concorrer; ao concluir, liberar os três botões.
+    const locked=busy||routeImportActive;
+    for(const id of ["backlogFromTOA","backlogUpload","backlogCompare"]){
+      $(id).disabled=locked;
+    }
+  }
   async function action(button,handler,out=$("backlogSyncStatus")){
-    if(busy)return;busy=true;button.disabled=true;
-    try{await handler();}catch(e){update(out,"Erro: "+e.message);}
-    finally{busy=false;await refreshStatus();}
+    if(busy)return;
+    const previouslyDisabled=button.disabled;
+    busy=true;
+    button.disabled=true;
+    syncRouteButtons();
+    try{await handler();}
+    catch(e){update(out,"Erro: "+e.message);}
+    finally{
+      busy=false;
+      try{await refreshStatus();}
+      finally{
+        // Os controles de execução refletem o estado real do servidor.
+        if(button.id==="backlogRun")button.disabled=true;
+        else if(button.id==="backlogPilot")button.disabled=lastRunning;
+        else if(button.id==="backlogPause")button.disabled=!lastRunning;
+        else button.disabled=previouslyDisabled;
+        syncRouteButtons();
+      }
+    }
   }
   $("backlogRun").addEventListener("click",()=>action($("backlogRun"),async()=>{
     autoFill=true;
@@ -98,28 +266,14 @@
     const status=await call("/api/backlog/year/status");
     const r=status.daily_treatment||{rows:[],counts:{},sources:[],total:0};
     dailyRows=r.rows||[];
-    const metrics=$("backlogDailyMetrics");metrics.replaceChildren();
-    const files=document.createElement("span");
-    files.textContent=r.total+" atividades • "+(r.sources||[]).length+" rotas";
-    metrics.append(files);
-    for(const [label,count] of Object.entries(r.counts||{})){
-      const metric=document.createElement("span");metric.textContent=label+": "+count;metrics.append(metric);
-    }
-    const priority=(item)=>item.treatment==="IMPRODUTIVA CONFIRMADA"?0:
-      item.treatment.startsWith("DIVERGENCIA")?1:item.treatment==="PENDENTE"?3:2;
-    const sorted=[...dailyRows].sort((a,b)=>priority(a)-priority(b)||
-      String(a.city).localeCompare(String(b.city))||
-      String(a.technician).localeCompare(String(b.technician)));
-    table($("backlogDailyResult"),[["Tratativa","treatment"],["Contrato","contract"],
-      ["Cidade","city"],["Técnico","technician"],["O.S.","os_number"],
-      ["Status TOA","activity_status"],["Código","route_code"]],sorted);
+    renderDailyRows();
   }
   async function pollToaRoutes(){
     try{
       const response=await call("/api/backlog/year/status");
       const state=response.toa_import||{status:"idle",running:false,done:0,total:5};
       routeImportActive=Boolean(state.running);
-      $("backlogFromTOA").disabled=routeImportActive;
+      syncRouteButtons();
       update($("backlogAutoStatus"),state.running?
         "Consultando TOA: "+(state.route||"buckets")+" • "+state.done+"/"+state.total+" arquivos":
         state.status==="completed"?"Cinco rotas do TOA importadas. Tratativa atualizada.":
@@ -127,25 +281,29 @@
         "Pronto para consultar as cinco rotas do TOA.");
       if(state.status==="completed"&&!pollToaRoutes._loaded){
         pollToaRoutes._loaded=true;await loadDailyTreatment();
-        root.querySelector('[data-backlog-tab="daily"]').click();
+        update($("backlogUploadStatus"),
+          "Rotas atualizadas. Clique em Analisar arquivos para gerar o comparativo do grupo.");
       }
       if(state.running)pollToaRoutes._loaded=false;
     }catch(err){
-      routeImportActive=false;
+      // Se a exportação já começou, preservar o bloqueio até confirmar seu fim.
+      syncRouteButtons();
       update($("backlogAutoStatus"),"Status TOA indisponível: "+err.message);
     }
   }
   $("backlogFromTOA").addEventListener("click",()=>action($("backlogFromTOA"),async()=>{
     if(routeImportActive)throw Error("Consulta TOA já em andamento");
     pollToaRoutes._loaded=false;
+    comparisonReady=false;comparison=[];renderHistoricalReport();
     await post("/api/backlog/year/routes",{source:"toa"});
     routeImportActive=true;
     await pollToaRoutes();
   },$("backlogAutoStatus")));
   $("backlogDailyRefresh").addEventListener("click",()=>action($("backlogDailyRefresh"),loadDailyTreatment,$("backlogAutoStatus")));
   $("backlogCopyImproductive").addEventListener("click",()=>copy(
-    dailyRows.filter(r=>r.treatment==="IMPRODUTIVA CONFIRMADA")
-      .map(r=>[r.contract,r.city,r.technician,r.os_number,r.validated_code].join("\t")).join("\n")));
+    reportApi.filterRows(dailyRows,cityScope())
+      .filter(r=>r.treatment==="IMPRODUTIVA CONFIRMADA")
+      .map(r=>[r.contract,reportApi.reportCity(r),r.technician,r.os_number,r.validated_code].join("\t")).join("\n")));
   $("backlogUpload").addEventListener("click",()=>action($("backlogUpload"),async()=>{
     const chosen=[...$("backlogRouteFiles").files];
     if(!chosen.length||chosen.length>5)throw Error("Selecione de 1 a 5 planilhas");
@@ -158,27 +316,28 @@
       files.push({name:file.name,base64:result.split(",")[1]});
     }
     const r=await post("/api/backlog/year/routes",{files});
-    update($("backlogUploadStatus"),"Rotas: "+r.files.map(x=>x.filename+" ("+x.rows+" O.S.)").join("; "));
+    comparisonReady=false;comparison=[];renderHistoricalReport();
+    update($("backlogUploadStatus"),"Rotas: "+r.files.map(x=>x.filename+" ("+x.rows+" O.S.)").join("; ")+
+      ". Clique em Analisar arquivos para gerar o relatório do grupo.");
     await loadDailyTreatment();
-    root.querySelector('[data-backlog-tab="daily"]').click();
   },$("backlogUploadStatus")));
   $("backlogCompare").addEventListener("click",()=>action($("backlogCompare"),async()=>{
     const codes=[...root.querySelectorAll("[data-backlog-code]:checked")].map(x=>x.dataset.backlogCode);
-    const r=await call("/api/backlog/year/compare?limit=300&codes="+encodeURIComponent(codes.join(",")));
+    if(!codes.length)throw Error("Selecione pelo menos um código histórico");
+    const r=await call("/api/backlog/year/compare?limit=1000&codes="+encodeURIComponent(codes.join(",")));
     comparison=r.rows||[];
-    const counts={SEGURAR:0,"OUTRO HISTÓRICO":0,"NÃO CONFIRMADO":0};
-    for(const row of comparison)counts[row.classification]++;
-    const metrics=$("backlogMetrics");metrics.replaceChildren();
-    for(const [label,count] of Object.entries(counts)){
-      const span=document.createElement("span");span.textContent=label+": "+count;metrics.append(span);
-    }
-    comparison.sort((a,b)=>a.classification.localeCompare(b.classification)||
-      a.city.localeCompare(b.city)||a.technician.localeCompare(b.technician));
-    table($("backlogResult"),[["Análise","classification"],["Contrato","contract"],["Cidade","city"],["Recurso","technician"],["Bairro","bairro"],["Janela","window"],["Código","historical_code"],["Status Imperium","historical_status"],["Data","historical_date"]],comparison);
-    update($("backlogUploadStatus"),comparison.length+" itens exibidos. Histórico parcial não prova ausência de baixa.");
+    comparisonTruncated=Boolean(r.truncated||r.route_total>comparison.length);
+    reportCodes=codes;
+    comparisonReady=true;
+    renderHistoricalReport();
+    update($("backlogUploadStatus"),comparison.length+" atividades analisadas. "+
+      (comparisonTruncated?"Relatório acima do limite; cópia bloqueada.":"Relatório pronto para WhatsApp."));
     root.querySelector('[data-backlog-tab="result"]').click();
   },$("backlogUploadStatus")));
-  $("backlogCopyResult").addEventListener("click",()=>copy(comparison.map(r=>[r.contract,r.city,r.technician,r.historical_code||"NÃO CONFIRMADO",r.classification].join("\t")).join("\n")));
+  $("backlogCopyResult").addEventListener("click",()=>{
+    if(!reportApi||!comparisonReady||comparisonTruncated)return;
+    copy(reportApi.toWhatsApp(reportApi.build(comparison,cityScope(),reportCodes)));
+  });
   $("backlogFindOffRoute").addEventListener("click",()=>action($("backlogFindOffRoute"),async()=>{
     currentProfile=$("backlogOffRouteProfile").value;
     const r=await call("/api/backlog/year/fora-rota?profile="+encodeURIComponent(currentProfile)+"&limit=150");candidates=r.candidates||[];

@@ -1,0 +1,19 @@
+/* DOMINIUM: "Todos" is a cross-module read-only scope, not an operational profile. */
+.all-city-notice,.all-city-stock-notice {
+  border: 1px solid rgba(239,28,78,.32);
+  border-radius: 18px;
+  background: linear-gradient(135deg,rgba(27,22,27,.98),rgba(10,10,13,.98));
+  padding: clamp(20px,3vw,36px);
+  color: #f4f1f3;
+}
+.all-city-notice { max-width: 980px; margin: 20px auto; }
+.all-city-notice h2 { font-size: clamp(21px,3vw,32px); margin: 8px 0 12px; }
+.all-city-notice p,.all-city-stock-notice p { max-width: 75ch; line-height: 1.6; color: #d2cbd0; }
+.all-city-notice .section-label { color: #ff4168; font-size: 12px; font-weight: 800; }
+.all-city-notice button { margin-top: 14px; }
+main.all-city-module-blocked > :not(#allCityModuleNotice) { display: none !important; }
+#stockWorkspace.stock-all-cities #stockInventoryPane,
+#stockWorkspace.stock-all-cities #stockQualityPane { display: none !important; }
+.all-city-stock-notice { margin: 12px 0 18px; padding: 18px 22px; }
+.all-city-stock-notice strong { font-size: 16px; }
+.all-city-stock-notice p { font-size: 14px; margin: 6px 0 12px; }

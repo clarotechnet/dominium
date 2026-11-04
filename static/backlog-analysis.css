@@ -23,3 +23,26 @@
 .backlog-code-filters{display:flex;gap:8px;flex-wrap:wrap}
 .backlog-code-filters label{padding:8px 14px;border:1px solid rgba(128,128,128,.3);border-radius:999px;cursor:pointer}
 .backlog-code-filters input{accent-color:#ed1747}
+.backlog-scope-bar{display:flex;gap:16px;align-items:end;flex-wrap:wrap;padding:2px 0}
+.backlog-scope-bar .backlog-field{max-width:340px}
+.backlog-scope-bar #backlogScopeLabel{font-size:.86rem;opacity:.72;padding-bottom:9px}
+.backlog-report-city-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:12px}
+.backlog-report-city{border:1px solid rgba(255,51,94,.27);border-radius:14px;overflow:hidden;background:var(--card-bg,#141416)}
+.backlog-report-city h4{background:linear-gradient(110deg,#ba0029,#f32b4b);color:#fff;font-size:1rem;margin:0;padding:13px 14px;text-align:center}
+.backlog-report-city table{border-collapse:collapse;width:100%;min-width:0;max-width:100%;table-layout:fixed;font-size:.9rem}
+.backlog-report-city th,.backlog-report-city td{width:50%;min-width:0;overflow:visible;white-space:nowrap;font-variant-numeric:tabular-nums}
+.backlog-report-city th{position:static;height:auto;background:transparent;color:inherit}
+.backlog-report-city tfoot td{font-weight:800;color:inherit}
+.backlog-report-city th,.backlog-report-city td{padding:8px 12px;border-top:1px solid rgba(128,128,128,.22);text-align:center}
+.backlog-report-city tfoot{font-weight:750}
+.backlog-report-detail-list{display:grid;gap:12px}
+.backlog-report-detail-list details{border:1px solid rgba(128,128,128,.25);border-radius:12px;padding:12px;min-width:0}
+.backlog-report-detail-list summary{cursor:pointer;font-weight:700}
+.backlog-report-tech{padding:10px 2px;border-top:1px solid rgba(128,128,128,.18)}
+.backlog-report-tech h5{font-size:.94rem;margin:0 0 6px}
+.backlog-report-tech p{font-size:.87rem;line-height:1.55;margin:0}
+.backlog-report-tech ul{margin:0;padding-left:20px}
+.backlog-report-tech li{padding:4px 0;font-size:.88rem;overflow-wrap:anywhere}
+.backlog-report-tech li strong{font-weight:750}
+.backlog-report-hint{font-size:.84rem;opacity:.75}
+@media(max-width:600px){.backlog-report-city-grid{grid-template-columns:1fr}.backlog-scope-bar .backlog-field{width:100%;max-width:none}}

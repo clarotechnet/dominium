@@ -17,7 +17,7 @@
   };
   const isActive = () => state.activeModule === "stock"
     && tab.getAttribute("aria-selected") === "true";
-  const allowed = () => ["admin","controller"].includes(state.authUser?.role) && state.profile!=="all";
+  const allowed = () => ["admin","controller"].includes(state.authUser?.role) && !state.allCities;
   function message(txt, error=false) {
     const n=byId("stockReportsNotice");
     n.textContent=txt||"";
@@ -87,6 +87,13 @@
   async function refresh() {
     if(!isActive()||pending)return;
     stopPoll();
+    if(state.allCities){
+      message("Todas as cidades: utilize Análise de equipamentos, que reúne os arquivos das bases. QUERY e Suspeitos exigem escolher uma cidade.");
+      byId("stockReportsSource").textContent="Escopo consolidado; nenhuma QUERY de uma cidade isolada será apresentada como total.";
+      byId("stockReportsHistory").replaceChildren();
+      pane.querySelectorAll("[data-stock-report]").forEach(button=>button.disabled=true);
+      return;
+    }
     lastProfile=state.profile;
     setBusy(true);
     try {
