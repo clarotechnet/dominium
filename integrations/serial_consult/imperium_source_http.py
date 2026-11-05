@@ -4,8 +4,10 @@ This is NOT the completed six-tab Atlas/Imperium reconciliation. Preserve a
 separate 2-tab source workbook (Consolidado, Por Ordem de Serviço) and expose
 it only through the authenticated operational relay.
 
-Only NET/Natal, partner ID 1, has been validated against actual ClientVCL.
-No other city can run with guessed parameters or the Natal credential scope.
+Natal was validated against ClientVCL captures; Mossoro and Recife additionally
+passed live read-only DataSnap tests with partner ID 1 on their distinct profile
+ports, including verification of the 'Cidade' field in every returned row.
+Fortaleza has not passed a real extraction and remains disabled.
 """
 from __future__ import annotations
 
@@ -26,7 +28,8 @@ from used_equipment_live_datasnap import fetch_read_only
 from used_equipment_report import normalize_range
 
 LOGGER = logging.getLogger(__name__)
-CONFIRMED_PARTNERS = {"natal": 1}
+CONFIRMED_PARTNERS = {"natal": 1, "mossoro": 1, "recife": 1}
+CONFIRMED_CITIES = {"mossoro": {"MOSSORO", "MOSSORÓ"}, "recife": {"RECIFE"}}
 SHEETS = ("Consolidado Imperium", "Por OS Imperium")
 REQUIRED = {
     "consolidado": frozenset(("Grupo","CodigoEquipamento","Equipamento","Qtd","Identificado")),
@@ -155,7 +158,7 @@ class ImperiumSourceCatalog:
         if city not in CONFIRMED_PARTNERS:
             return 409,{"ok":False,"code":"city_not_homologated",
                         "error":"Extração DataSnap ainda não homologada em "+city.upper()+
-                        ". Não utilizaremos o parceiro de Natal em outra cidade."},None
+                        ". O parceiro/resultado de outra cidade não será utilizado."},None
         try:normalize_range(start,end)
         except (TypeError,ValueError) as error:
             return 400,{"ok":False,"error":str(error)},None
@@ -168,6 +171,14 @@ class ImperiumSourceCatalog:
                               credential_path=self.credentials)
             if not isinstance(data,dict) or set(data)!=set(REQUIRED):
                 raise ValueError("Datasets incompletos")
+            # Every row for a homologated independent unit must be scoped to
+            # that unit; never save Natal data under Mossoro/Recife.
+            expected_cities=CONFIRMED_CITIES.get(city)
+            if expected_cities and any(
+                str(row.get("Cidade") or "").strip().upper() not in expected_cities
+                for row in data["por_os"]
+            ):
+                raise ValueError("Cidade do dataset DataSnap divergente do perfil")
             converted=[]
             counts={}
             for index,mode in enumerate(("consolidado","por_os")):

@@ -69,14 +69,43 @@ class TestSource(unittest.TestCase):
   self.assertEqual(code,200,second)
   self.assertTrue(second["reused"])
   self.assertEqual(second["selected"]["id"],one)
- def test_mossoro_never_uses_natal_partner(self):
-  code,resp,_=self.extract({"city":"mossoro","start":"2026-11-03","end":"2026-11-03"})
+ def test_mossoro_uses_distinct_profile_and_validates_city(self):
+  from copy import deepcopy
+  self.fetcher.return_value=deepcopy(DATA)
+  self.fetcher.return_value["por_os"][0]["Cidade"]="MOSSORO"
+  body={"city":"mossoro","start":"2026-11-03","end":"2026-11-03"}
+  code,resp,_=self.extract(body)
+  self.assertEqual(code,201,resp)
+  self.assertEqual(self.fetcher.call_args.kwargs["partner_id"],1)
+  self.assertEqual(self.fetcher.call_args.kwargs["profile"],"mossoro")
+  code,history,_=self.s.handle("GET",URL+"/runs?city=mossoro&start=2026-11-03&end=2026-11-03",self.actor)
+  self.assertEqual(code,200)
+  self.assertTrue(history["extraction_enabled"])
+  self.assertEqual(len(history["history"]),1)
+ def test_recife_is_homologated_but_fortaleza_is_not(self):
+  from copy import deepcopy
+  self.fetcher.return_value=deepcopy(DATA)
+  self.fetcher.return_value["por_os"][0]["Cidade"]="RECIFE"
+  body={"city":"recife","start":"2026-11-03","end":"2026-11-03"}
+  code,resp,_=self.extract(body)
+  self.assertEqual(code,201,resp)
+  self.assertEqual(self.fetcher.call_args.kwargs["profile"],"recife")
+  count=self.fetcher.call_count
+  body["city"]="fortaleza"
+  code,resp,_=self.extract(body)
   self.assertEqual(code,409)
   self.assertEqual(resp["code"],"city_not_homologated")
-  self.fetcher.assert_not_called()
-  code,resp,_=self.s.handle("GET",URL+"/runs?city=mossoro&start=2026-11-03&end=2026-11-03",self.actor)
+  self.assertEqual(self.fetcher.call_count,count)
+ def test_mossoro_rejects_natal_records_without_saving(self):
+  from copy import deepcopy
+  self.fetcher.return_value=deepcopy(DATA)
+  self.fetcher.return_value["por_os"][0]["Cidade"]="NATAL"
+  code,resp,_=self.extract({"city":"mossoro","start":"2026-11-03","end":"2026-11-03"})
+  self.assertEqual(code,503)
+  self.assertEqual(resp["code"],"imperium_source_error")
+  code,history,_=self.s.handle("GET",URL+"/runs?city=mossoro&start=2026-11-03&end=2026-11-03",self.actor)
   self.assertEqual(code,200)
-  self.assertFalse(resp["extraction_enabled"])
+  self.assertEqual(history["history"],[])
  def test_reject_all_and_invalid_period_and_actor(self):
   self.assertEqual(self.extract({"city":"all","start":"2026-11-03","end":"2026-11-03"})[0],400)
   self.assertEqual(self.extract({"city":"natal","start":"2026-11-05","end":"2026-11-03"})[0],400)

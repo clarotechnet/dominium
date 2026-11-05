@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-05T19:29:08+00:00",
+  "generated_at": "2026-11-05T19:55:12+00:00",
   "schema": 2,
-  "source_fingerprint": "e9c6aff3f4cfc92b9668eb6a1b479f774c818c0800e917eeb74c46d023a80528",
+  "source_fingerprint": "8765307cb002e8f456d74dd9fa1d11d4883935c4c2d9b808029024364e7a7f81",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1427,8 +1427,8 @@
     {
       "path": "docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md",
       "category": "docs",
-      "bytes": 13120,
-      "sha256": "13dd0029bee98ea09764ad7096760a20b15a68ceeb788d6f04614c7e0b5cf632",
+      "bytes": 16155,
+      "sha256": "153f67c4a62e07dba593d66a93f3a3c844350357ae08c593fe26b2fbc074a220",
       "summary": "Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)",
       "imports": [],
       "endpoints": [],
@@ -1538,8 +1538,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 16806,
-      "sha256": "05c28baaae9ba56061f3560267bf514a2ae06c76833829db3ab8b5999b659ce2",
+      "bytes": 17608,
+      "sha256": "80946e1f69653d7a934fcb89fdbaedb200818b396ce9c36d57aba1108eacf131",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3271,10 +3271,26 @@
       "symbol_count": 9
     },
     {
+      "path": "integrations/serial_consult/equipment_video_transform.py",
+      "category": "shared",
+      "bytes": 6068,
+      "sha256": "d6139581a2ef1984957c48912c54d7f34cfab7366b6a5b99df41a016371c3dee",
+      "summary": "Verified part of the video-style six-tab equipment reconciliation.",
+      "imports": [
+        "__future__",
+        "collections"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 6
+    },
+    {
       "path": "integrations/serial_consult/imperium_source_http.py",
       "category": "imperium",
-      "bytes": 12235,
-      "sha256": "83bc7bf1c1274a902a5576ba0eac97b31e62e8e5c2d3408b7dbb6de1cb8dc523",
+      "bytes": 12959,
+      "sha256": "993b0c3b3d38a736ff2319dbfd6f667920a578a18084d2fd00ba1cca9567d51c",
       "summary": "Source-specific Imperium used-equipment period extraction with local history.",
       "imports": [
         "__future__",
@@ -5374,8 +5390,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 159010,
-      "sha256": "ea1faec9b0e91cc2c68f7504734a67713dfb9e8243f58ed5f8815abae173bf58",
+      "bytes": 159112,
+      "sha256": "5122399c4513d338281722e4f1fd63303f78a333369e2789b85d7747fb61a83c",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5499,8 +5515,8 @@
     {
       "path": "static/stock-daily-analysis-ui.js",
       "category": "frontend",
-      "bytes": 18109,
-      "sha256": "80cb4c5c4960d3e9d7b0cacabfcd6e3d2baaa96aa3aaf0f8ba7d66de35cb5db5",
+      "bytes": 18255,
+      "sha256": "e59f44d46223c5ea4b0819230365df67ffdb934d9a38de84e50e45f0d5a1f244",
       "summary": "Daily equipment: independent period/catalog; Atlas QUERY is not its source. */",
       "imports": [],
       "endpoints": [
@@ -6897,6 +6913,24 @@
       "symbol_count": 24
     },
     {
+      "path": "tests/test_equipment_video_transform.py",
+      "category": "tests",
+      "bytes": 3948,
+      "sha256": "e0bbc492c75d9e3ad6c94f4781b47dc3814a061916e911969d0efb5699489e8f",
+      "summary": "Synthetic video-workbook transformation tests; no client data in Git.",
+      "imports": [
+        "equipment_video_transform",
+        "pathlib",
+        "sys",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 7
+    },
+    {
       "path": "tests/test_flow_reader.py",
       "category": "tests",
       "bytes": 5875,
@@ -7015,11 +7049,12 @@
     {
       "path": "tests/test_imperium_source_http.py",
       "category": "tests",
-      "bytes": 5235,
-      "sha256": "2e835ca8623adf07d689ca872a7c3ece2ed1a83daf514855eff23313f54e7abb",
+      "bytes": 6659,
+      "sha256": "1106940b94ce685aebaec8e2835f7a4f017cbe476540c92ae011e7a6553524fb",
       "summary": "Source-only, permission-safe Imperium extraction for an authorized Natal profile.",
       "imports": [
         "base64",
+        "copy",
         "equipment_daily_catalog",
         "imperium_source_http",
         "pathlib",
@@ -7034,7 +7069,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 11
+      "symbol_count": 13
     },
     {
       "path": "tests/test_imperium_source_ui.cjs",

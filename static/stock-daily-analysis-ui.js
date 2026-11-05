@@ -209,11 +209,11 @@ function sourceMessage(text,error=false){
 function updateSourceAvailability(){
  const city=currentCity();
  const button=el("stockDailyImperiumExtract");
- const permitted=canWrite()&&city==="natal";
+ const permitted=canWrite()&&["natal","mossoro","recife"].includes(city);
  button.disabled=sourceBusy||!permitted;
  button.setAttribute("aria-busy",String(sourceBusy));
  button.textContent=sourceBusy?"Extraindo no Imperium...":"Extrair fonte Imperium";
- button.title=city==="natal"
+ button.title=["natal","mossoro","recife"].includes(city)
   ?(canWrite()?"Extração real: Consolidado e Por OS; não gera as seis abas finais":"Perfil sem permissão para gerar extração")
   :"Extração ainda não homologada nesta cidade. Não usar parceiros de outra praça.";
 }
@@ -261,7 +261,7 @@ async function loadSourceHistory(){
    await displaySourceSheet(0);
    sourceMessage("Fonte Imperium: "+sourceRuns.length+" extração(ões) registrada(s). "+
     "Este arquivo contém duas abas reais; a análise completa de seis abas é separada.");
-  }else if(city!=="natal"){
+  }else if(!["natal","mossoro","recife"].includes(city)){
    sourceMessage("Nenhuma extração salva em "+city.toUpperCase()+". Consulta direta ainda não homologada nesta cidade.",true);
   }else{
    sourceMessage("Nenhuma extração do Imperium salva nesse período. "+
@@ -316,15 +316,15 @@ async function displaySourceSheet(index){
 }
 async function extractSource(){
  const city=currentCity(),start=el("stockDailyRangeStart").value,end=el("stockDailyRangeEnd").value;
- if(city!=="natal"){
+ if(!["natal","mossoro","recife"].includes(city)){
   sourceMessage("Extração DataSnap não homologada para "+city.toUpperCase()+
-   ". Não utilizaremos o parceiro de Natal.",true);return;
+   ". Nenhum resultado de outra praça será utilizado.",true);return;
  }
  if(!canWrite()){sourceMessage("Somente administrador/controlador pode extrair.",true);return;}
  if(!start||!end||start>end){sourceMessage("Informe data inicial e final válidas.",true);return;}
  if(sourceBusy)return;
  sourceBusy=true;updateSourceAvailability();
- sourceMessage("Conectando ao DataSnap e consultando os dois datasets reais de NATAL ("+
+ sourceMessage("Conectando ao DataSnap e consultando os dois datasets reais de "+city.toUpperCase()+" ("+
   formatDay(start)+" a "+formatDay(end)+")...");
  try{
   const result=await request("/api/stock/analyses/imperium/extract",{

@@ -235,3 +235,57 @@ Validacao: 29 testes Python e 10 testes Node passaram para os novos
 endpoints, UI, guardas de cidade e geracao/leitura de workbook XLSX.
 O fechamento explicito de SQLite evita Windows WinError 32 nos testes
 com Python 3.14. Nenhum PCAP nem segredo foram versionados.
+
+## 05/11/2026 - Validacao adicional das pracas e do modelo do video
+
+**Praças e IDs de parceiro confirmados por leitura real:** as consultas
+AS_GetRecords / DspConsolidadoEquip / DspConsolidadoOS com idParceiro=1,
+sem escrever no Imperium, funcionaram em:
+- Natal (porta 212): 03/11/2026, 89 consolidados e 1.141 por OS.
+- Mossoró (porta 579): 03/11/2026, 16 consolidados e 52 por OS;
+  todas as 52 linhas trazem Cidade=MOSSORO e CodParceiraSAP=139382.
+- Recife (porta 599): 03/11/2026, 60 consolidados e 480 por OS;
+  todas as 480 linhas trazem Cidade=RECIFE e CodParceiraSAP=115229.
+- Fortaleza (porta 596): a tentativa somente leitura de 03/11/2026
+  atingiu timeout no execute. Não homologar nem habilitar extração ali.
+
+O catálogo local e o botão Extração fonte Imperium agora admitem as três
+praças validadas, com proteção fail-closed adicional: se o dataset retornado
+de Mossoró ou Recife contiver Cidade diferente da praça selecionada, não
+persistir nem publicar sucesso. Seis abas ainda NÃO são geradas por esse botão.
+
+### Reversão do modelo do vídeo por comparação direta
+
+Arquivo de referência original preservado no desktop autorizado LTGB862:
+ANALISES NATAL 28.10.2026 ..xlsx (37.174 bytes,
+SHA256 5e6e846f7f61426a93a529ff43717a5f80397190e52d2655d6a49ab89ca85a5d).
+Uma cópia privada de laboratório foi transferida a K7J3E1N, fora do
+repositório e sem postar os dados pessoais no chat.
+
+- Atlas: 2 seriais; Chips Atlas: 3. Os 5 estão na QUERY Atlas
+  e não aparecem na extração Imperium do dia 28/10.
+- IMPERIUM: 40 seriais; CHIP IMPERIUM: 4. Os 44 aparecem no
+  dataset DataSnap real por OS de 28/10, cujo total foi 1.219 linhas,
+  sendo 217 com serial identificado. Os 44 correspondem exatamente
+  à INTERSEÇÃO de seriais usados do DataSnap com a aba Nomes.
+  (deduplicados): 40 de equipamento e 4 de SIM CARD.
+- Assinantes: 65 linhas, com Estoque Físico: 25 SIM, 39 NÃO, 1 NS.
+  Apenas um serial estava no dataset Imperium do dia; portanto
+  conferir estoque físico, assinantes e contratos requer fonte própria
+  ou histórico legado. Nunca inferir SIM de movimento DataSnap.
+- Nomes.: 225 linhas não vazias (seriais/responsáveis) e fórmulas
+  VLOOKUP na aba IMPERIUM, CHIP IMPERIUM e Assinantes.
+  Dos 46 vínculos de linhas do dataset com Nomes., 38 nomes coincidiam
+  com NomeAbreviado do DataSnap, mas outros 8 não. Não substituir
+  a base Nomes. cegamente pelo NomeAbreviado.
+
+Adicionado equipment_video_transform.py para reproduzir a regra
+comprovada serial usado x Nomes. e classificar chips. Este módulo
+não fabrica Assinantes, Atlas nem dados de estoque físico; a
+montagem completa exige todas as seis fontes já verificadas.
+Os vídeos originais estavam em C:\Users\mathe\Videos\AulasYouTube
+no PC matheusdmc0, atualmente offline; o arquivo de referência
+foi inspecionado, mas não houve nova inspeção dos frames aqui.
+
+Nova verificação sintética: 27 testes Python + 10 testes JS aprovaram
+o contrato de seis abas, isolamento de praça e rotas protegidas.

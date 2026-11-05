@@ -247,3 +247,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 29 testes Python, 10 testes JS; Python 3.14 SQLite connections closed explicitamente
 
 **Próximo passo/pendência:** Validar parceiros e operacao Mossoro, homologar seis abas e deploy seguro sem confundir fonte de duas abas com resultado final
+
+## 2026-11-05 19:53 UTC — Video de equipamentos: cruzamento real por serial, Nomes e validacao de Mossoro e Recife
+
+**Motivo:** Planilha de referencia 28/10 e DataSnap per OS do mesmo dia confirmam os 40 equipamentos mais 4 chips como intersecao com Nomes; Mossoro e Recife validaram perfil DataSnap e cidade
+
+**Alterado:** Modulo puro equipment_video_transform, perfis Natal Mossoro Recife homologados, validacao fail-closed da cidade no catalogo e UI; Assinantes e Atlas exigem outras fontes
+
+**Verificação:** 27 Python e 10 JS; data real Mossoro 16 e 52; Recife 60 e 480; Fortaleza timeout; workbook referencia privado na pasta Runtime
+
+**Próximo passo/pendência:** Homologar video original e fontes Atlas/Assinantes, validar seis abas geradas, integrar a tela e fazer deploy apenas completo
