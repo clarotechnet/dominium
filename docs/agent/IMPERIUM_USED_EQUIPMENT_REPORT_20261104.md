@@ -199,3 +199,39 @@ isolamento por unidade; implementar geracao por periodo usando os dois
 datasets Imperium, conciliar com Atlas conforme o video, salvar resultado,
 expor historico/download e progressos reais. O botao Consultar periodo
 atual continua sendo apenas uma busca do historico, nao uma consulta DataSnap.
+
+## 05/11/2026 - Interface da fonte Imperium separada da analise final (branch, sem deploy)
+
+O erro do usuario em MOSSORO na tela publicada e esperado na versao atual:
+Consultar periodo chama somente GET /api/stock/analyses/daily, que pesquisa
+SQLite historico de seis abas. O antigo botao de extrair Imperium estava
+disabled no HTML. O sucesso da extracao isolada em Natal nao representa
+uma implantacao ativa nem homologacao de Mossoro.
+
+Nova implementacao da branch:
+- API local em imperium_source_http.py: POST /api/stock/analyses/imperium/extract,
+  GET /api/stock/analyses/imperium/runs?city=...&start=...&end=...,
+  GET /api/stock/analyses/imperium/runs/<id>/sheets/0 ou /1 e /export.
+- Auth obrigatoria via relay e Hostinger. POST restrito a admin/controller.
+  Usa apenas TDtmOrdemServico.AS_GetRecords, DspConsolidadoEquip e DspConsolidadoOS.
+- Os dois datasets originais do Imperium sao salvos em historico SQLite
+  separado, com planilha XLSX de DUAS abas e visualizacao de 200 linhas.
+  Nao inventar seis abas finais nem substituir o tratamento Atlas.
+- Apenas NATAL, com parceiro 1, foi validado no protocolo real.
+  MOSSORO, FORTALEZA e RECIFE retornam 409 caso tentem extrair,
+  ao inves de assumir o parceiro/resultado de Natal. Todos tambem bloqueado.
+- Novo botao Extrair fonte Imperium em interface separada; outro botao
+  Consultar historico continua lendo somente os XLSX finais de seis abas.
+  Data de referencia do Excel e apenas para importacao de arquivo legado,
+  nunca obrigatoria para extrair no DataSnap.
+- Credenciais continuam protegidas e usadas apenas no worker local.
+  Erros de DataSnap nao criam XLSX vazios nem estado de sucesso.
+- Relatorios completos de seis abas exigem implementacao de transformacao
+  e conciliacao com Atlas conforme os videos e homologacao por cidade.
+- Versao atual permanece SOMENTE na branch, sem deploy na main/Hostinger.
+  Nao declarar que a tela publicada passou a acessar o Imperium.
+
+Validacao: 29 testes Python e 10 testes Node passaram para os novos
+endpoints, UI, guardas de cidade e geracao/leitura de workbook XLSX.
+O fechamento explicito de SQLite evita Windows WinError 32 nos testes
+com Python 3.14. Nenhum PCAP nem segredo foram versionados.

@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-05T18:13:40+00:00
-- Source fingerprint: `2b703323345f327d`
-- Indexed files: 493
-- Indexed symbols: 4160
-- API path references: 501
+- Generated: 2026-11-05T19:29:08+00:00
+- Source fingerprint: `e9c6aff3f4cfc92b`
+- Indexed files: 496
+- Indexed symbols: 4184
+- API path references: 511
 
 ## Navigation rule
 
@@ -80,6 +80,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `imperium_http_plan.py` (9 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `installer_change.py` (5 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md` - DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente
+- `integrations/serial_consult/imperium_source_http.py` (6 symbols, 3 API paths) - Source-specific Imperium used-equipment period extraction with local history.
 - `manual_orders.py` (7 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `native_orders.py` (16 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `serialized_transfer.py` (7 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -111,7 +112,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
 - `static/stock-analysis-ui.js` (13 symbols, 3 API paths) - Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */
-- `static/stock-daily-analysis-ui.js` (12 symbols, 3 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
+- `static/stock-daily-analysis-ui.js` (19 symbols, 6 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
 - `static/stock-nav.js` (7 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
 - `static/stock-report-preview-ui.js` (5 symbols, 2 API paths) - The three stock analysis processes have independent, paged workspace views. */
 - `static/styles.css`
@@ -187,7 +188,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - shared: 155 files
 - tooling-deploy: 50 files
 - docs: 43 files
-- tests: 153 files
+- tests: 155 files
 
 ## Search indexes
 
@@ -199,4 +200,4 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Environment variable names
 
-`DOMINIUM_AUTH_BACKEND`, `DOMINIUM_AUTH_EMAIL_DOMAIN`, `DOMINIUM_BACKLOG_BRIDGE_TOKEN`, `DOMINIUM_CHROMEDRIVER`, `DOMINIUM_DATABASE_URL`, `DOMINIUM_DESC_REVIEW_ACCESS_FILE`, `DOMINIUM_DESC_REVIEW_CONNECTION`, `DOMINIUM_DESC_REVIEW_ORIGIN`, `DOMINIUM_DESC_REVIEW_TOKEN`, `DOMINIUM_HTTPS`, `DOMINIUM_IMPERIUM_RUNTIME_ROOT`, `DOMINIUM_INGEST_TOKEN`, `DOMINIUM_LOCAL_TOA_AUTOMATION`, `DOMINIUM_MONITOR_SNAPSHOT_ROOT`, `DOMINIUM_NODE`, `DOMINIUM_PROJECT_ROOT`, `DOMINIUM_PROXY_TOKEN`, `DOMINIUM_PUBLIC_ORIGIN`, `DOMINIUM_QA_ARTIFACT_DIR`, `DOMINIUM_QA_BASE_SHA`, `DOMINIUM_QUALITY_ENV_FILE`, `DOMINIUM_SUPABASE_BRIDGE_TOKEN`, `DOMINIUM_TOA_AUTOMATION_REMOTE`, `DOMINIUM_TOA_BRIDGE_LOOKUP_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_POLL_INTERVAL`, `DOMINIUM_TOA_BRIDGE_REQUEST_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_URL`, `DOMINIUM_TOA_COLLECTOR_TOKEN`, `DOMINIUM_TOA_DEBUG_PORT`, `DOMINIUM_TOA_PRIMARY_TOKEN`, `DOMINIUM_TV_INGEST_URL`, `DOMINIUM_WEB_MODE`, `DOMINIUM_WHATSAPP_PORT`, `IMPERIUM_DATASNAP_PASSWORD`, `IMPERIUM_DATASNAP_USERNAME`, `PLAYWRIGHT_MODULE`, `PORT`, `QA_SCREENSHOT_DIR`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`, `SUPABASE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, `USERPROFILE`
+`DOMINIUM_AUTH_BACKEND`, `DOMINIUM_AUTH_EMAIL_DOMAIN`, `DOMINIUM_BACKLOG_BRIDGE_TOKEN`, `DOMINIUM_CHROMEDRIVER`, `DOMINIUM_DATABASE_URL`, `DOMINIUM_DATASNAP_CREDENTIALS_FILE`, `DOMINIUM_DESC_REVIEW_ACCESS_FILE`, `DOMINIUM_DESC_REVIEW_CONNECTION`, `DOMINIUM_DESC_REVIEW_ORIGIN`, `DOMINIUM_DESC_REVIEW_TOKEN`, `DOMINIUM_HTTPS`, `DOMINIUM_IMPERIUM_RUNTIME_ROOT`, `DOMINIUM_INGEST_TOKEN`, `DOMINIUM_LOCAL_TOA_AUTOMATION`, `DOMINIUM_MONITOR_SNAPSHOT_ROOT`, `DOMINIUM_NODE`, `DOMINIUM_PROJECT_ROOT`, `DOMINIUM_PROXY_TOKEN`, `DOMINIUM_PUBLIC_ORIGIN`, `DOMINIUM_QA_ARTIFACT_DIR`, `DOMINIUM_QA_BASE_SHA`, `DOMINIUM_QUALITY_ENV_FILE`, `DOMINIUM_SUPABASE_BRIDGE_TOKEN`, `DOMINIUM_TOA_AUTOMATION_REMOTE`, `DOMINIUM_TOA_BRIDGE_LOOKUP_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_POLL_INTERVAL`, `DOMINIUM_TOA_BRIDGE_REQUEST_TIMEOUT`, `DOMINIUM_TOA_BRIDGE_URL`, `DOMINIUM_TOA_COLLECTOR_TOKEN`, `DOMINIUM_TOA_DEBUG_PORT`, `DOMINIUM_TOA_PRIMARY_TOKEN`, `DOMINIUM_TV_INGEST_URL`, `DOMINIUM_WEB_MODE`, `DOMINIUM_WHATSAPP_PORT`, `IMPERIUM_DATASNAP_PASSWORD`, `IMPERIUM_DATASNAP_USERNAME`, `PLAYWRIGHT_MODULE`, `PORT`, `QA_SCREENSHOT_DIR`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF`, `SUPABASE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, `USERPROFILE`

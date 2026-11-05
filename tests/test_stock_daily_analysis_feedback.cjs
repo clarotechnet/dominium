@@ -43,9 +43,12 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 
 test("period search shows visible loading then explicit empty result and enables a new search",async()=>{
  assert.match(html,/id="stockDailyAnalysisLoading"/);
- assert.match(html,/stock-daily-analysis-ui\.js\?v=20261103-global-1/);
+ assert.match(html,/stock-daily-analysis-ui\.js\?v=20261105-imperium-source-1/);
  let complete,calls=0,url;
  const {get}=mount(next=>{
+  if(next.startsWith("/api/stock/analyses/imperium/runs?")){
+   return Promise.resolve({ok:true,history:[],extraction_enabled:true});
+  }
   calls++;url=next;
   return new Promise(resolve=>{complete=resolve;});
  });
@@ -53,7 +56,7 @@ test("period search shows visible loading then explicit empty result and enables
  assert.equal(calls,1);
  assert.equal(url,"/api/stock/analyses/daily?city=natal&start=2026-11-01&end=2026-11-02");
  assert.equal(get("stockDailyAnalysisRefresh").disabled,true);
- assert.equal(get("stockDailyAnalysisRefresh").textContent,"Consultando período...");
+ assert.equal(get("stockDailyAnalysisRefresh").textContent,"Consultando histórico...");
  assert.equal(get("stockDailyAnalysisLoading").hidden,false);
  assert.match(get("stockDailyAnalysisMessage").textContent,/Consultando histórico/);
  complete({ok:true,selected:null,latest:null,history:[]});
@@ -61,7 +64,7 @@ test("period search shows visible loading then explicit empty result and enables
  assert.equal(get("stockDailyAnalysisRefresh").disabled,false);
  assert.equal(get("stockDailyAnalysisLoading").hidden,true);
  assert.match(get("stockDailyAnalysisMessage").textContent,/Consulta concluída/);
- assert.match(get("stockDailyAnalysisMessage").textContent,/nenhum arquivo encontrado/);
+ assert.match(get("stockDailyAnalysisMessage").textContent,/nenhum arquivo final salvo/);
  assert.match(get("stockDailyAnalysisMessage").textContent,/01\/11\/2026 a 02\/11\/2026/);
  get("stockDailyAnalysisRefresh").click();
  assert.equal(calls,2,"clicked search must create a fresh request");

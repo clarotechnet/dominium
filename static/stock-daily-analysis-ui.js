@@ -7,6 +7,7 @@ if(!panel)return;
 const tabs=["Atlas","Chips Atlas","IMPERIUM","CHIP IMPERIUM","Assinantes","Nomes."];
 let selected=null,activeTab=0,fetching=false,refreshQueued=false;
 let allRuns=[];
+let sourceSelected=null,sourceRuns=[],sourceBusy=false,sourceTab=0;
 const currentCity=()=>state.allCities?"all":state.profile;
 const canWrite=()=>!state.allCities&&["admin","controller"].includes(state.authUser?.role);
 function status(msg,error=false){
@@ -24,7 +25,9 @@ function setVisible(visible){
  el("stockDailyRangeStart").value ||= referenceDate();
  el("stockDailyRangeEnd").value ||= referenceDate();
  el("stockDailyAnalysisImport").hidden=!canWrite()||currentCity()==="all";
+ updateSourceAvailability();
  void loadDaily();
+ void loadSourceHistory();
 }
 function setLoading(on){
  const button=el("stockDailyAnalysisRefresh");
@@ -32,7 +35,7 @@ function setLoading(on){
  button.disabled=on;
  button.classList.toggle("stock-daily-search-loading",on);
  button.setAttribute("aria-busy",String(on));
- button.textContent=on?"Consultando período...":"Consultar período";
+ button.textContent=on?"Consultando histórico...":"Consultar histórico";
  indicator.hidden=!on;
  el("stockDailyAnalysisTable").setAttribute("aria-busy",String(on));
 }
@@ -101,9 +104,9 @@ async function loadDaily(){
      el("stockDailyAnalysisTabs").replaceChildren();
      el("stockDailyAnalysisSheetInfo").textContent="";
      el("stockDailyAnalysisDownload").disabled=true;
-     status("Consulta concluída às "+finished+" • nenhum arquivo encontrado em "+
-       place+" ("+period+"). Esta consulta pesquisa o histórico já salvo; "+
-       "a extração automática do Imperium ainda não está integrada.");
+     status("Consulta concluída às "+finished+" • nenhum arquivo final salvo em "+
+       place+" ("+period+"). Este botão busca somente o histórico de seis abas. "+
+       "Para consultar dados novos, use a seção Fonte Imperium abaixo.");
    }
  }catch(error){
    status("Falha na consulta de "+place+" ("+period+"): "+(error.message||error),true);
@@ -198,6 +201,166 @@ async function importWorkbook(){
  }catch(error){status("Falha ao importar: "+(error.message||error),true)}
  finally{button.disabled=false;}
 }
+function sourceMessage(text,error=false){
+ const node=el("stockDailyImperiumMessage");
+ node.textContent=text;
+ node.style.color=error?"#ff8898":"";
+}
+function updateSourceAvailability(){
+ const city=currentCity();
+ const button=el("stockDailyImperiumExtract");
+ const permitted=canWrite()&&city==="natal";
+ button.disabled=sourceBusy||!permitted;
+ button.setAttribute("aria-busy",String(sourceBusy));
+ button.textContent=sourceBusy?"Extraindo no Imperium...":"Extrair fonte Imperium";
+ button.title=city==="natal"
+  ?(canWrite()?"Extração real: Consolidado e Por OS; não gera as seis abas finais":"Perfil sem permissão para gerar extração")
+  :"Extração ainda não homologada nesta cidade. Não usar parceiros de outra praça.";
+}
+function clearSourceView(){
+ sourceSelected=null;
+ el("stockDailyImperiumTabs").replaceChildren();
+ el("stockDailyImperiumTable").replaceChildren();
+ el("stockDailyImperiumSheetInfo").textContent="";
+ el("stockDailyImperiumDownload").disabled=true;
+}
+async function loadSourceHistory(){
+ const city=currentCity();
+ const start=el("stockDailyRangeStart").value,end=el("stockDailyRangeEnd").value;
+ clearSourceView();
+ sourceRuns=[];
+ el("stockDailyImperiumHistory").replaceChildren();
+ updateSourceAvailability();
+ if(city==="all"){
+  sourceMessage("Selecione uma cidade para visualizar as extrações reais; Todos não mistura perfis DataSnap.");
+  return;
+ }
+ if(!start||!end||start>end){
+  sourceMessage("Informe um período válido para consultar a fonte Imperium.",true);
+  return;
+ }
+ try{
+  const url="/api/stock/analyses/imperium/runs?city="+encodeURIComponent(city)+
+   "&start="+encodeURIComponent(start)+"&end="+encodeURIComponent(end);
+  const result=await request(url,{timeoutMs:30000});
+  if(city!==currentCity()||start!==el("stockDailyRangeStart").value||end!==el("stockDailyRangeEnd").value)return;
+  if(!result?.ok)throw new Error(result.error||"Resposta inválida");
+  sourceRuns=Array.isArray(result.history)?result.history:[];
+  const opts=document.createDocumentFragment();
+  for(const run of sourceRuns){
+   const option=document.createElement("option");
+   option.value=run.id;
+   option.textContent=run.city.toUpperCase()+" • "+run.start+" a "+run.end+
+    " • "+new Date(run.created_at).toLocaleString("pt-BR");
+   opts.appendChild(option);
+  }
+  el("stockDailyImperiumHistory").replaceChildren(opts);
+  if(sourceRuns.length){
+   sourceSelected=sourceRuns[0];
+   el("stockDailyImperiumHistory").value=sourceSelected.id;
+   await displaySourceSheet(0);
+   sourceMessage("Fonte Imperium: "+sourceRuns.length+" extração(ões) registrada(s). "+
+    "Este arquivo contém duas abas reais; a análise completa de seis abas é separada.");
+  }else if(city!=="natal"){
+   sourceMessage("Nenhuma extração salva em "+city.toUpperCase()+". Consulta direta ainda não homologada nesta cidade.",true);
+  }else{
+   sourceMessage("Nenhuma extração do Imperium salva nesse período. "+
+    (canWrite()?"Clique em Extrair fonte Imperium para consultar o DataSnap.":"Solicite a extração a um administrador."));
+  }
+ }catch(error){
+  sourceMessage("Não foi possível consultar o histórico da fonte Imperium: "+(error.message||error),true);
+ }
+}
+async function displaySourceSheet(index){
+ if(!sourceSelected)return;
+ sourceTab=index;
+ const run=sourceSelected,city=currentCity();
+ try{
+  const payload=await request("/api/stock/analyses/imperium/runs/"+run.id+
+   "/sheets/"+index,{timeoutMs:30000});
+  if(!payload?.ok)throw new Error(payload.error||"Resposta inválida");
+  if(city!==currentCity()||sourceSelected?.id!==run.id)return;
+  const nav=el("stockDailyImperiumTabs");
+  nav.replaceChildren();
+  ["Consolidado Imperium","Por OS Imperium"].forEach((name,i)=>{
+   const button=document.createElement("button");
+   button.type="button";button.textContent=name;button.className="button secondary";
+   button.classList.toggle("active",index===i);
+   button.setAttribute("aria-pressed",String(index===i));
+   button.addEventListener("click",()=>void displaySourceSheet(i));
+   nav.appendChild(button);
+  });
+  const table=el("stockDailyImperiumTable");
+  table.replaceChildren();
+  const head=document.createElement("thead"),tr=document.createElement("tr");
+  for(const name of payload.header||[]){
+   const th=document.createElement("th");th.textContent=String(name||"");
+   tr.appendChild(th);
+  }
+  head.appendChild(tr);table.appendChild(head);
+  const body=document.createElement("tbody");
+  for(const row of payload.rows||[]){
+   const tr=document.createElement("tr");
+   for(const value of row){
+    const td=document.createElement("td");td.textContent=String(value??"");
+    tr.appendChild(td);
+   }
+   body.appendChild(tr);
+  }
+  table.appendChild(body);
+  el("stockDailyImperiumSheetInfo").textContent=
+   payload.name+" • "+payload.total+" registros"+
+   (payload.preview_limited?" • mostrando os primeiros 200":"");
+  el("stockDailyImperiumDownload").disabled=false;
+ }catch(error){sourceMessage("Falha ao abrir o dataset do Imperium: "+(error.message||error),true);}
+}
+async function extractSource(){
+ const city=currentCity(),start=el("stockDailyRangeStart").value,end=el("stockDailyRangeEnd").value;
+ if(city!=="natal"){
+  sourceMessage("Extração DataSnap não homologada para "+city.toUpperCase()+
+   ". Não utilizaremos o parceiro de Natal.",true);return;
+ }
+ if(!canWrite()){sourceMessage("Somente administrador/controlador pode extrair.",true);return;}
+ if(!start||!end||start>end){sourceMessage("Informe data inicial e final válidas.",true);return;}
+ if(sourceBusy)return;
+ sourceBusy=true;updateSourceAvailability();
+ sourceMessage("Conectando ao DataSnap e consultando os dois datasets reais de NATAL ("+
+  formatDay(start)+" a "+formatDay(end)+")...");
+ try{
+  const result=await request("/api/stock/analyses/imperium/extract",{
+   method:"POST",headers:{"content-type":"application/json"},
+   body:JSON.stringify({city,start,end}),timeoutMs:120000
+  });
+  if(!result?.ok)throw new Error(result?.error||"Extração indisponível");
+  if(city!==currentCity())return;
+  await loadSourceHistory();
+  sourceMessage("Extração concluída: "+result.selected?.counts?.["Consolidado Imperium"]+
+   " consolidados e "+result.selected?.counts?.["Por OS Imperium"]+
+   " por OS. Fonte salva para download; não é o XLSX final de seis abas.");
+ }catch(error){
+  sourceMessage("Extração do Imperium não concluída: "+(error.message||error),true);
+ }finally{sourceBusy=false;updateSourceAvailability();}
+}
+async function downloadSource(){
+ if(!sourceSelected)return;
+ try{
+  const response=await requestBlob("/api/stock/analyses/imperium/runs/"+
+   sourceSelected.id+"/export",{timeoutMs:120000});
+  const bytes=new Uint8Array(await response.blob.slice(0,4).arrayBuffer());
+  if(response.blob.size<300||bytes[0]!==80||bytes[1]!==75||bytes[2]!==3||bytes[3]!==4){
+   throw new Error("Arquivo retornado não é um XLSX");
+  }
+  saveBlob(response.blob,sourceSelected.filename);
+ }catch(error){sourceMessage("Falha no download da fonte Imperium: "+(error.message||error),true);}
+}
+el("stockDailyImperiumExtract").addEventListener("click",()=>void extractSource());
+el("stockDailyImperiumDownload").addEventListener("click",()=>void downloadSource());
+el("stockDailyImperiumHistory").addEventListener("change",e=>{
+ sourceSelected=sourceRuns.find(run=>run.id===e.target.value)||null;
+ if(sourceSelected)void displaySourceSheet(0);
+});
+el("stockDailyRangeStart").addEventListener("change",()=>void loadSourceHistory());
+el("stockDailyRangeEnd").addEventListener("change",()=>void loadSourceHistory());
 el("stockDailyAnalysisOpen").addEventListener("click",()=>setVisible(true));
 el("stockDailyAnalysisHistory").addEventListener("change",async e=>{
  const id=e.target.value;const city=currentCity();
@@ -220,7 +383,10 @@ document.addEventListener("dominium:scope-change",()=>{
   el("stockDailyAnalysisSheetInfo").textContent="";
   el("stockDailyAnalysisDownload").disabled=true;
   el("stockDailyAnalysisImport").hidden=!canWrite()||currentCity()==="all";
+  clearSourceView();
+  updateSourceAvailability();
   void loadDaily();
+  void loadSourceHistory();
 });
 document.addEventListener("dominium:stock-tab-change",()=>{
  if(state.activeModule!=="stock"||el("stockReportsTab")?.getAttribute("aria-selected")!=="true"){

@@ -1089,14 +1089,14 @@
           </div>
         <section id="stockDailyAnalysisPanel" hidden class="stock-daily-analysis-panel">
           <h3>Analise diaria de equipamentos</h3>
-          <p class="workspace-description">A fonte diaria e o Imperium, nao a QUERY Atlas. Visualize cada aba e o historico salvo. A consulta por periodo pesquisa arquivos ja registrados. A importacao do Excel final permite registrar dias anteriores enquanto a extracao automatica do Imperium nao estiver integrada.</p>
+          <p class="workspace-description">O historico final de seis abas e diferente da extracao direta do Imperium. Use Consultar historico para procurar relatorios completos ja salvos. A secao Fonte Imperium consulta os dois datasets reais, sem exigir Excel; a conciliacao com Atlas para gerar as seis abas ainda esta em desenvolvimento.</p>
           <div class="daily-stock-toolbar">
-            <label class="field"><span>Data do Excel a importar</span><input type="date" id="stockDailyAnalysisDate"></label>
+            <label class="field"><span>Data de referencia (somente importacao Excel)</span><input type="date" id="stockDailyAnalysisDate"></label>
             <label class="field"><span>Data inicial</span><input type="date" id="stockDailyRangeStart"></label>
             <label class="field"><span>Data final</span><input type="date" id="stockDailyRangeEnd"></label>
             <label class="field"><span>Historico da operacao</span><select id="stockDailyAnalysisHistory"></select></label>
-            <button class="button secondary" type="button" id="stockDailyAnalysisRefresh">Consultar período</button>
-            <button class="button secondary" type="button" disabled title="Depende da consulta Equipamentos Utilizados por período no DataSnap">Executar tratativa no Imperium (aguardando integração)</button>
+            <button class="button secondary" type="button" id="stockDailyAnalysisRefresh">Consultar historico</button>
+            <button class="button secondary" type="button" id="stockDailyImperiumExtract" disabled title="Extracao direta validada somente em Natal">Extrair fonte Imperium</button>
           </div>
           <div class="daily-stock-toolbar">
             <label class="field"><span>Registrar Excel final de referencia</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
@@ -1108,6 +1108,18 @@
             <span>Consultando arquivos cadastrados no histórico da operação...</span>
           </div>
           <p id="stockDailyAnalysisMessage" class="stock-analysis-status" role="status" aria-live="polite"></p>
+          <section aria-label="Fonte Imperium por periodo">
+            <h4>Fonte Imperium · Consulta direta DataSnap</h4>
+            <p class="workspace-description">Duas abas originais: Consolidado Imperium e Por OS Imperium. Extracao independente de Excel, salva com periodo e cidade. Ainda nao corresponde a analise final de seis abas. Disponivel inicialmente apenas para Natal, com parceiro homologado.</p>
+            <div class="daily-stock-toolbar">
+              <label class="field"><span>Extracoes anteriores</span><select id="stockDailyImperiumHistory"></select></label>
+              <button class="button secondary" id="stockDailyImperiumDownload" type="button" disabled>Baixar fonte Imperium XLSX</button>
+            </div>
+            <p id="stockDailyImperiumMessage" class="stock-analysis-status" role="status" aria-live="polite"></p>
+            <div id="stockDailyImperiumTabs" class="stock-daily-analysis-tabs" role="group" aria-label="Abas originais Imperium"></div>
+            <p id="stockDailyImperiumSheetInfo" class="stock-analysis-status"></p>
+            <div class="table-scroll"><table id="stockDailyImperiumTable" class="daily-stock-table"></table></div>
+          </section>
           <div id="stockDailyAnalysisTabs" class="stock-daily-analysis-tabs" role="group" aria-label="Abas do relatorio"></div>
           <p id="stockDailyAnalysisSheetInfo" class="stock-analysis-status"></p>
           <div class="table-scroll"><table id="stockDailyAnalysisTable" class="daily-stock-table"></table></div>
@@ -2673,7 +2685,7 @@
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>
   <script src="/stock-nav.js?v=20261103-global-1"></script>
   <script src="/stock-analysis-ui.js?v=20261103-global-1"></script>
-  <script src="/stock-daily-analysis-ui.js?v=20261103-global-1"></script>
+  <script src="/stock-daily-analysis-ui.js?v=20261105-imperium-source-1"></script>
   <script src="/stock-report-preview-ui.js?v=20261103-global-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>

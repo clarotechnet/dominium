@@ -237,3 +237,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 28 testes direcionados aprovados; leitura real de Natal em laboratório: 89 consolidado e 1141 por OS, schemas válidos
 
 **Próximo passo/pendência:** Validar adaptador combinado, homologar diferenças de 1 OS, mapear parceiros por cidade, implementar seis abas e download sem quebrar historico
+
+## 2026-11-05 19:28 UTC — API separada de origem Imperium e tela de historico
+
+**Motivo:** Consulta periodo na tela publicada so acessava SQLite e nao o DataSnap; usuario selecionou Mossoro sem arquivos e o botao de extracao estava disabled
+
+**Alterado:** Criados endpoints de extracao com historico e XLSX de duas abas, autentica via relay, UI separa botao Extrair de Consultar historico; apenas Natal parceiro 1 confirmado
+
+**Verificação:** 29 testes Python, 10 testes JS; Python 3.14 SQLite connections closed explicitamente
+
+**Próximo passo/pendência:** Validar parceiros e operacao Mossoro, homologar seis abas e deploy seguro sem confundir fonte de duas abas com resultado final
