@@ -289,3 +289,45 @@ foi inspecionado, mas não houve nova inspeção dos frames aqui.
 
 Nova verificação sintética: 27 testes Python + 10 testes JS aprovaram
 o contrato de seis abas, isolamento de praça e rotas protegidas.
+
+## 05/11/2026 - Validacao golden do Excel e smoke da API de Mossoro
+
+A planilha original de 28/10/2026 foi validada com o modelo puro
+equipment_video_transform.py e o DataSnap real do mesmo periodo,
+em C:\DominiumRuntime\PrivateReference\golden_video_20261105.py
+(laboratorio K7J3E1N, fora do Git). Resultados:
+- DataSnap: 87 consolidados, 1.219 por OS, 217 seriais identificados.
+- 44 seriais presentes em Nomes. foram selecionados sem erro:
+  40 na aba IMPERIUM e quatro na CHIP IMPERIUM.
+- Comparacao da chave serial contra o Excel: 0 seriais ausentes,
+  0 extras; nomes e contratos dos 44 registros corresponderam.
+- Somente 38/40 descricoes de modelo equip. e 2/4 de chip foram
+  identicas a base original (4 divergencias no total); outros
+  nomes canonicos ou campos de classificacao sao necessarios.
+- IMPORTANTE: TODAS as 44 datas da coluna DATA do Excel original
+  DIVERGEM dos valores de DataBaixa do DataSnap. A checagem adicional
+  mostrou 0 correspondencias com DataBaixaMiscelanea. Nao e apenas
+  diferenca de formatacao/hora: os dias podem diferir.
+  Assim DataBaixa nao e a proveniencia comprovada da coluna DATA.
+  O transformador mantem esses valores apenas como metadados de
+  origem/provisorios e indica date_source_matches_video=False.
+- A montagem XLSX de 6 abas com tres abas copiadas da planilha
+  de referencia validou apenas layout/serial, NAO constitui geracao
+  automatica atual nem prova exata da origem temporal ou dos modelos.
+  Nao anunciar como um relatorio final homologado.
+- Os requisitos pendentes continuam sendo obter automaticamente
+  Nomes. e Assinantes (inclui Estoque Fisico SIM/NAO/NS), confirmar
+  criterio especifico dos registros Atlas e Chips Atlas, e localizar
+  a origem da DATA da referencia e mapeamento dos nomes do modelo.
+
+Smoke de ponta a ponta do servico de origem (ainda isolado, sem
+Hostinger) para Mossoro dia 03/11/2026: POST extract => 201,
+Consolidado=16 e Por OS=52; GET history => 200, uma extracao;
+GET sheets/1 => 200, 52 linhas e 19 colunas;
+GET export => 200, XLSX 7.360 bytes, arquivo OpenXML valido.
+Os registros e a planilha ficam apenas no diretorio privado
+C:\DominiumRuntime\PrivateReference\MossoroSourceLiveSmoke.
+
+Os tres perfis validados (Natal, Mossoro, Recife) e a API
+source-only estao na branch; nao houve deploy e o botao
+Consultar periodo da producao continua a buscar o historico.

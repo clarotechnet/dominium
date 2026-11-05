@@ -102,6 +102,11 @@ def imperium_video_sheets(
         "imperium":len(equipments)-1,
         "chip_imperium":len(chips)-1,
         "complete_six_tab_analysis":False,
+        # The 28/10 reference has a different DATA timestamp for all 44
+        # matched serials. DataBaixa/ DataBaixaMiscelanea are not the video
+        # workbook's validated date source; these are provisional source dates.
+        "date_source_matches_video":False,
+        "product_label_mapping_verified":False,
     }
     return equipments,chips,names_tab,summary
 
@@ -115,10 +120,12 @@ def assemble_six_verified_sheets(
     assinantes_rows: list[list] | None,
     nomes_rows: list[list] | None,
 ) -> list[tuple[str,list[list]]]:
-    """Only assemble if all SIX independently sourced tables have been verified.
+    """Structurally assemble SIX independently supplied tables.
 
-    The mere existence of two Imperium datasets is not proof of the source
-    of Atlas selections or of physical stock states in Assinantes.
+    This checks headers, shape, and physical status flags. It DOES NOT
+    certify that the workbook reproduces the video's date provenance,
+    product aliases, Atlas inclusion rules or physical stock evidence.
+    A separate business-level reconciliation is mandatory before release.
     """
     values=(atlas_rows,chips_atlas_rows,imperium_rows,chip_imperium_rows,
             assinantes_rows,nomes_rows)

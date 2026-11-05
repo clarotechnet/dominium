@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-05T19:55:12+00:00",
+  "generated_at": "2026-11-05T20:01:20+00:00",
   "schema": 2,
-  "source_fingerprint": "8765307cb002e8f456d74dd9fa1d11d4883935c4c2d9b808029024364e7a7f81",
+  "source_fingerprint": "06328e34d1604df59ff3e322446e57b3367c77033e836fa0816abb508c2c15be",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1427,8 +1427,8 @@
     {
       "path": "docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md",
       "category": "docs",
-      "bytes": 16155,
-      "sha256": "153f67c4a62e07dba593d66a93f3a3c844350357ae08c593fe26b2fbc074a220",
+      "bytes": 18523,
+      "sha256": "57de7e9b2101b25f5cd381d322e8dcfd17c8856ebc22b7915448d7d5ef1049c9",
       "summary": "Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)",
       "imports": [],
       "endpoints": [],
@@ -3273,8 +3273,8 @@
     {
       "path": "integrations/serial_consult/equipment_video_transform.py",
       "category": "shared",
-      "bytes": 6068,
-      "sha256": "d6139581a2ef1984957c48912c54d7f34cfab7366b6a5b99df41a016371c3dee",
+      "bytes": 6514,
+      "sha256": "d6b1edf9bedc539a5e32bced7db7b468b3f26decbb11f9e8acc291b9c184a714",
       "summary": "Verified part of the video-style six-tab equipment reconciliation.",
       "imports": [
         "__future__",

@@ -1108,7 +1108,7 @@ serial_key	function	integrations/serial_consult/equipment_video_transform.py	30	
 is_chip	function	integrations/serial_consult/equipment_video_transform.py	34	-
 names_first_match	function	integrations/serial_consult/equipment_video_transform.py	40	-
 imperium_video_sheets	function	integrations/serial_consult/equipment_video_transform.py	58	-
-assemble_six_verified_sheets	function	integrations/serial_consult/equipment_video_transform.py	109	-
+assemble_six_verified_sheets	function	integrations/serial_consult/equipment_video_transform.py	114	-
 source_route	function	integrations/serial_consult/imperium_source_http.py	53	-
 ImperiumSourceCatalog	class	integrations/serial_consult/imperium_source_http.py	80	-
 __init__	method	integrations/serial_consult/imperium_source_http.py	81	ImperiumSourceCatalog

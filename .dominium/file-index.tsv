@@ -70,7 +70,7 @@ docs	docs/agent/ATLAS_QUERY_WAITING_HUD_20261026.md				QUERY — distinguir espe
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor de sessão instalado em 26/10/2026	cd87d67d5054efb8
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
 docs	docs/agent/GLOBAL_TODOS_SCOPE_20261103.md				DOMINIUM — escopo global "Todos" e desbloqueio do Backlog (03/11/2026)	236973d4848064d1
-docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	153f67c4a62e07db
+docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
 docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	2eb3f7cfc6336d0a
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
@@ -173,7 +173,7 @@ shared	integrations/serial_consult/confront_job_runner.py	14			Durable, one-step
 imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	3ee171b567d7bafe
 shared	integrations/serial_consult/desc_review_relay.py	8	2		Authenticated relay for DESC review and private read-only Imperium checks.	5a42732796f2450f
 shared	integrations/serial_consult/equipment_daily_catalog.py	9	3		Persisted daily equipment-analysis workbook, independent of the Atlas QUERY.	ee8057fcdb851041
-shared	integrations/serial_consult/equipment_video_transform.py	6			Verified part of the video-style six-tab equipment reconciliation.	d6139581a2ef1984
+shared	integrations/serial_consult/equipment_video_transform.py	6			Verified part of the video-style six-tab equipment reconciliation.	d6b1edf9bedc539a
 imperium	integrations/serial_consult/imperium_source_http.py	6	3		Source-specific Imperium used-equipment period extraction with local history.	993b0c3b3d38a736
 shared	integrations/serial_consult/midas_reader.py	3			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	aad873daa06bbe87
 shared	integrations/serial_consult/monitor_snapshot_relay.py	1	1		Read-only bridge for the existing TOA CSV monitor snapshots.	5202d89531eb4b46
