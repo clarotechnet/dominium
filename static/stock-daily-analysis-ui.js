@@ -8,6 +8,7 @@ const tabs=["Atlas","Chips Atlas","IMPERIUM","CHIP IMPERIUM","Assinantes","Nomes
 let selected=null,activeTab=0,fetching=false,refreshQueued=false;
 let allRuns=[];
 let sourceSelected=null,sourceRuns=[],sourceBusy=false,sourceTab=0;
+let liveRuns=[],liveSelected=null,livePage=1,liveBusy=false;
 const currentCity=()=>state.allCities?"all":state.profile;
 const canWrite=()=>!state.allCities&&["admin","controller"].includes(state.authUser?.role);
 function status(msg,error=false){
@@ -26,16 +27,18 @@ function setVisible(visible){
  el("stockDailyRangeEnd").value ||= referenceDate();
  el("stockDailyAnalysisImport").hidden=!canWrite()||currentCity()==="all";
  updateSourceAvailability();
+ liveButton();
  void loadDaily();
+ void loadLiveHistory();
  void loadSourceHistory();
 }
 function setLoading(on){
- const button=el("stockDailyAnalysisRefresh");
+ const button=el("stockDailyHistoryRefresh");
  const indicator=el("stockDailyAnalysisLoading");
  button.disabled=on;
  button.classList.toggle("stock-daily-search-loading",on);
  button.setAttribute("aria-busy",String(on));
- button.textContent=on?"Consultando histórico...":"Consultar histórico";
+ button.textContent=on?"Buscando histórico...":"Consultar histórico anterior";
  indicator.hidden=!on;
  el("stockDailyAnalysisTable").setAttribute("aria-busy",String(on));
 }
@@ -353,14 +356,175 @@ async function downloadSource(){
   saveBlob(response.blob,sourceSelected.filename);
  }catch(error){sourceMessage("Falha no download da fonte Imperium: "+(error.message||error),true);}
 }
+function liveMessage(text,error=false){
+ const node=el("stockDailyLiveStatus");
+ node.textContent=text;
+ node.style.color=error?"#ff8898":"";
+}
+function liveButton(){
+ const button=el("stockDailyAnalysisRefresh"),city=currentCity();
+ const enabled=canWrite()&&["natal","mossoro","recife"].includes(city);
+ button.disabled=liveBusy||!enabled;
+ button.setAttribute("aria-busy",String(liveBusy));
+ button.textContent=liveBusy?"Consultando Imperium e salvando no Supabase...":
+  "Consultar período (DataSnap → Supabase)";
+ button.title=enabled
+  ?"Buscar dados reais da praça, tratar seriais e salvar no Supabase sem Excel"
+  :"Escolha Natal, Mossoró ou Recife com perfil de administrador/controlador";
+}
+function clearLivePreview(){
+ liveSelected=null;
+ liveRuns=[];
+ livePage=1;
+ el("stockDailyLiveTable").replaceChildren();
+ el("stockDailyLiveHistory").replaceChildren();
+ el("stockDailyLiveCounts").textContent="";
+ el("stockDailyLivePageInfo").textContent="";
+ el("stockDailyLivePrevious").disabled=true;
+ el("stockDailyLiveNext").disabled=true;
+}
+function renderLiveTable(items){
+ const table=el("stockDailyLiveTable");
+ table.replaceChildren();
+ const header=items.length?Object.keys(items[0]):[];
+ const thead=document.createElement("thead"),tr=document.createElement("tr");
+ header.forEach(name=>{
+  const th=document.createElement("th");th.textContent=name;tr.appendChild(th);
+ });
+ thead.appendChild(tr);table.appendChild(thead);
+ const tbody=document.createElement("tbody");
+ items.forEach(item=>{
+  const row=document.createElement("tr");
+  header.forEach(field=>{
+   const td=document.createElement("td");
+   td.textContent=String(item[field]??"");
+   row.appendChild(td);
+  });
+  tbody.appendChild(row);
+ });
+ table.appendChild(tbody);
+}
+async function showLivePage(page){
+ const run=liveSelected,city=currentCity();
+ if(!run)return;
+ const category=el("stockDailyLiveCategory").value;
+ try{
+  const url="/api/stock/analyses/imperium/live/"+run.id+"/data?city="+
+   encodeURIComponent(city)+"&category="+encodeURIComponent(category)+"&page="+page;
+  const data=await request(url,{timeoutMs:30000});
+  if(!data?.ok)throw new Error(data?.error||"Dados indisponíveis");
+  if(city!==currentCity()||run.id!==liveSelected?.id||
+     category!==el("stockDailyLiveCategory").value)return;
+  livePage=page;
+  renderLiveTable(data.rows||[]);
+  const max=Math.max(1,data.page_count||1);
+  el("stockDailyLivePageInfo").textContent="Página "+page+" de "+max+
+   " • "+data.total+" registros em "+category;
+  el("stockDailyLivePrevious").disabled=page<=1;
+  el("stockDailyLiveNext").disabled=page>=max;
+  const c=run.counts||{};
+  el("stockDailyLiveCounts").textContent=
+   "Salvo no Supabase • "+(c.consolidado||0)+" consolidados • "+
+   (c.por_os||0)+" registros por OS • "+(c.seriais_tratados||0)+
+   " seriais tratados ("+(c.equipamentos||0)+" equipamentos e "+
+   (c.chips||0)+" chips). Resultado de origem, ainda não o relatório final de seis abas.";
+ }catch(err){liveMessage("Falha ao visualizar registros no Supabase: "+(err.message||err),true);}
+}
+async function loadLiveHistory(selectId){
+ const city=currentCity(),start=el("stockDailyRangeStart").value,
+       end=el("stockDailyRangeEnd").value;
+ clearLivePreview();
+ liveButton();
+ if(city==="all"){
+  liveMessage("Selecione uma praça para consultar o Imperium. Todos não mistura as bases.");
+  return;
+ }
+ if(!start||!end||start>end){
+  liveMessage("Informe data inicial e final válidas.",true);return;
+ }
+ try{
+  const url="/api/stock/analyses/imperium/live?city="+encodeURIComponent(city)+
+   "&start="+encodeURIComponent(start)+"&end="+encodeURIComponent(end);
+  const payload=await request(url,{timeoutMs:30000});
+  if(city!==currentCity()||start!==el("stockDailyRangeStart").value||
+      end!==el("stockDailyRangeEnd").value)return;
+  if(!payload?.ok)throw new Error(payload?.error||"Histórico Supabase inválido");
+  liveRuns=Array.isArray(payload.history)?payload.history:[];
+  const fragment=document.createDocumentFragment();
+  for(const row of liveRuns){
+   const option=document.createElement("option");
+   option.value=row.id;
+   option.textContent=row.city.toUpperCase()+" • "+row.start+" a "+row.end+
+    " • "+new Date(row.created_at).toLocaleString("pt-BR");
+   fragment.appendChild(option);
+  }
+  el("stockDailyLiveHistory").replaceChildren(fragment);
+  liveSelected=liveRuns.find(row=>row.id===selectId)||liveRuns[0]||null;
+  if(liveSelected){
+   el("stockDailyLiveHistory").value=liveSelected.id;
+   await showLivePage(1);
+   liveMessage("Consulta concluída e persistida no Supabase operacional. "+
+    "Visualize as linhas tratadas ou os datasets originais.");
+  }else{
+   liveMessage("Nenhuma consulta salva para "+city.toUpperCase()+
+    " neste período. Clique em Consultar período para buscar diretamente pelo DataSnap.");
+  }
+ }catch(err){liveMessage("Histórico Supabase: "+(err.message||err),true);}
+}
+async function consultLivePeriod(){
+ const city=currentCity(),start=el("stockDailyRangeStart").value,
+       end=el("stockDailyRangeEnd").value;
+ if(liveBusy)return;
+ if(!["natal","mossoro","recife"].includes(city)){
+  liveMessage("O acesso DataSnap ainda não está homologado nesta praça.",true);return;
+ }
+ if(!canWrite()){liveMessage("Perfil sem permissão para gerar consultas.",true);return;}
+ if(!start||!end||start>end){liveMessage("Informe um período válido.",true);return;}
+ liveBusy=true;liveButton();
+ liveMessage("Consultando o Imperium de "+city.toUpperCase()+" ("+
+  formatDay(start)+" a "+formatDay(end)+
+  "). Tratamento em memória e gravação no Supabase; nenhum Excel é necessário...");
+ try{
+  const payload=await request("/api/stock/analyses/imperium/live",{
+   method:"POST",headers:{"content-type":"application/json"},
+   body:JSON.stringify({city,start,end}),timeoutMs:120000,
+  });
+  if(!payload?.ok)throw new Error(payload?.error||"Consulta não concluída");
+  if(city!==currentCity())return;
+  await loadLiveHistory(payload.selected?.id);
+  if(liveSelected){
+   liveMessage((payload.reused?"Consulta existente recuperada":"Novos dados gravados")+
+    " no Supabase operacional, para "+city.toUpperCase()+". "+
+    "O tratamento da origem foi concluído; a conferência final Atlas/Assinantes/Nomes. continua pendente.");
+  }
+ }catch(err){
+  liveMessage("Consulta não concluída; nenhum resultado parcial será exibido como final: "+
+   (err.message||err),true);
+ }finally{liveBusy=false;liveButton();}
+}
+el("stockDailyAnalysisRefresh").addEventListener("click",()=>void consultLivePeriod());
+el("stockDailyHistoryRefresh").addEventListener("click",()=>void loadDaily());
+el("stockDailyLiveHistory").addEventListener("change",event=>{
+ liveSelected=liveRuns.find(x=>x.id===event.target.value)||null;
+ if(liveSelected)void showLivePage(1);
+});
+el("stockDailyLiveCategory").addEventListener("change",()=>void showLivePage(1));
+el("stockDailyLivePrevious").addEventListener("click",()=>void showLivePage(livePage-1));
+el("stockDailyLiveNext").addEventListener("click",()=>void showLivePage(livePage+1));
 el("stockDailyImperiumExtract").addEventListener("click",()=>void extractSource());
 el("stockDailyImperiumDownload").addEventListener("click",()=>void downloadSource());
 el("stockDailyImperiumHistory").addEventListener("change",e=>{
  sourceSelected=sourceRuns.find(run=>run.id===e.target.value)||null;
  if(sourceSelected)void displaySourceSheet(0);
 });
-el("stockDailyRangeStart").addEventListener("change",()=>void loadSourceHistory());
-el("stockDailyRangeEnd").addEventListener("change",()=>void loadSourceHistory());
+el("stockDailyRangeStart").addEventListener("change",()=>{
+ void loadLiveHistory();
+ void loadSourceHistory();
+});
+el("stockDailyRangeEnd").addEventListener("change",()=>{
+ void loadLiveHistory();
+ void loadSourceHistory();
+});
 el("stockDailyAnalysisOpen").addEventListener("click",()=>setVisible(true));
 el("stockDailyAnalysisHistory").addEventListener("change",async e=>{
  const id=e.target.value;const city=currentCity();
@@ -372,7 +536,6 @@ el("stockDailyAnalysisHistory").addEventListener("change",async e=>{
 });
 el("stockDailyAnalysisImport").addEventListener("click",()=>void importWorkbook());
 el("stockDailyAnalysisDownload").addEventListener("click",()=>void download());
-el("stockDailyAnalysisRefresh").addEventListener("click",()=>void loadDaily());
 document.addEventListener("dominium:scope-change",()=>{
   if(state.activeModule!=="stock" || panel.hidden)return;
   // Não reter na interface linhas consolidadas ao voltar para uma cidade específica.
@@ -384,8 +547,11 @@ document.addEventListener("dominium:scope-change",()=>{
   el("stockDailyAnalysisDownload").disabled=true;
   el("stockDailyAnalysisImport").hidden=!canWrite()||currentCity()==="all";
   clearSourceView();
+  clearLivePreview();
   updateSourceAvailability();
+  liveButton();
   void loadDaily();
+  void loadLiveHistory();
   void loadSourceHistory();
 });
 document.addEventListener("dominium:stock-tab-change",()=>{

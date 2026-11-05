@@ -1089,26 +1089,52 @@
           </div>
         <section id="stockDailyAnalysisPanel" hidden class="stock-daily-analysis-panel">
           <h3>Analise diaria de equipamentos</h3>
-          <p class="workspace-description">O historico final de seis abas e diferente da extracao direta do Imperium. Use Consultar historico para procurar relatorios completos ja salvos. A secao Fonte Imperium consulta os dois datasets reais, sem exigir Excel; a conciliacao com Atlas para gerar as seis abas ainda esta em desenvolvimento.</p>
+          <p class="workspace-description">Consultar período busca imediatamente o Imperium via DataSnap, trata os seriais em memória e grava os resultados no Supabase operacional, por cidade e período. Não precisa baixar nem importar Excel. Os dados de Atlas/Assinantes para concluir as seis abas permanecem separados do relatório de origem.</p>
           <div class="daily-stock-toolbar">
-            <label class="field"><span>Data de referencia (somente importacao Excel)</span><input type="date" id="stockDailyAnalysisDate"></label>
             <label class="field"><span>Data inicial</span><input type="date" id="stockDailyRangeStart"></label>
             <label class="field"><span>Data final</span><input type="date" id="stockDailyRangeEnd"></label>
             <label class="field"><span>Historico da operacao</span><select id="stockDailyAnalysisHistory"></select></label>
-            <button class="button secondary" type="button" id="stockDailyAnalysisRefresh">Consultar historico</button>
-            <button class="button secondary" type="button" id="stockDailyImperiumExtract" disabled title="Extração direta validada em Natal, Mossoró e Recife; Fortaleza ainda depende de homologação">Extrair fonte Imperium</button>
+            <button class="button primary" type="button" id="stockDailyAnalysisRefresh">Consultar período (DataSnap → Supabase)</button>
+            <button class="button secondary" type="button" id="stockDailyHistoryRefresh">Consultar histórico anterior</button>
+            <!-- Extração atual é feita pelo botão Consultar período; o XLSX é opcional abaixo. -->
           </div>
-          <div class="daily-stock-toolbar">
-            <label class="field"><span>Registrar Excel final de referencia</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
-            <button class="button secondary" id="stockDailyAnalysisImport" type="button">Importar no historico</button>
-            <button class="button secondary" id="stockDailyAnalysisDownload" type="button" disabled>Baixar XLSX</button>
-          </div>
+          <details class="daily-stock-legacy-import">
+            <summary>Importação manual de Excel antigo (opcional)</summary>
+            <div class="daily-stock-toolbar">
+              <label class="field"><span>Data de referência do Excel antigo</span><input type="date" id="stockDailyAnalysisDate"></label>
+              <label class="field"><span>Excel final de referência</span><input id="stockDailyAnalysisFile" type="file" accept=".xlsx"></label>
+              <button class="button secondary" id="stockDailyAnalysisImport" type="button">Importar Excel no histórico</button>
+              <button class="button secondary" id="stockDailyAnalysisDownload" type="button" disabled>Baixar XLSX legado</button>
+            </div>
+          </details>
           <div id="stockDailyAnalysisLoading" class="stock-daily-loading-indicator" role="status" aria-live="polite" hidden>
             <span class="stock-daily-loading-spinner" aria-hidden="true"></span>
             <span>Consultando arquivos cadastrados no histórico da operação...</span>
           </div>
           <p id="stockDailyAnalysisMessage" class="stock-analysis-status" role="status" aria-live="polite"></p>
-          <section aria-label="Fonte Imperium por periodo">
+          <section aria-label="Dados atuais Imperium salvos no Supabase">
+            <h4>Consulta atual · Imperium → Supabase</h4>
+            <p class="workspace-description">Consulta os dados sem arquivos intermediários e salva as linhas originais e os seriais tratados. As seis abas finais ainda exigem as fontes Atlas, Assinantes e Nomes. Nenhuma análise incompleta será apresentada como final.</p>
+            <p id="stockDailyLiveStatus" class="stock-analysis-status" role="status" aria-live="polite"></p>
+            <div class="daily-stock-toolbar">
+              <label class="field"><span>Execução salva no Supabase</span><select id="stockDailyLiveHistory"></select></label>
+              <label class="field"><span>Dados para visualizar</span><select id="stockDailyLiveCategory">
+                <option value="seriais_tratados">Seriais tratados</option>
+                <option value="por_os">Dados por OS</option>
+                <option value="consolidado">Consolidado</option>
+              </select></label>
+            </div>
+            <p id="stockDailyLiveCounts" class="stock-analysis-status"></p>
+            <div class="table-scroll"><table id="stockDailyLiveTable" class="daily-stock-table"></table></div>
+            <div class="daily-stock-toolbar">
+              <button id="stockDailyLivePrevious" class="button secondary" type="button" disabled>Anterior</button>
+              <span id="stockDailyLivePageInfo" class="stock-analysis-status"></span>
+              <button id="stockDailyLiveNext" class="button secondary" type="button" disabled>Próxima</button>
+            </div>
+          </section>
+          <details class="daily-stock-legacy-import" aria-label="Exportação opcional de fonte Imperium em Excel">
+            <summary>Exportação XLSX da fonte Imperium (opcional)</summary>
+            <button class="button secondary" type="button" id="stockDailyImperiumExtract" disabled title="Exportação opcional; a consulta principal já salva no Supabase">Extrair XLSX da fonte (opcional)</button>
             <h4>Fonte Imperium · Consulta direta DataSnap</h4>
             <p class="workspace-description">Duas abas originais: Consolidado Imperium e Por OS Imperium. Extracao independente de Excel, salva com periodo e cidade. Ainda nao corresponde a analise final de seis abas. Disponivel em Natal, Mossoró e Recife, com consulta real validada por praça. Fortaleza depende de homologação.</p>
             <div class="daily-stock-toolbar">
@@ -1119,7 +1145,7 @@
             <div id="stockDailyImperiumTabs" class="stock-daily-analysis-tabs" role="group" aria-label="Abas originais Imperium"></div>
             <p id="stockDailyImperiumSheetInfo" class="stock-analysis-status"></p>
             <div class="table-scroll"><table id="stockDailyImperiumTable" class="daily-stock-table"></table></div>
-          </section>
+          </details>
           <div id="stockDailyAnalysisTabs" class="stock-daily-analysis-tabs" role="group" aria-label="Abas do relatorio"></div>
           <p id="stockDailyAnalysisSheetInfo" class="stock-analysis-status"></p>
           <div class="table-scroll"><table id="stockDailyAnalysisTable" class="daily-stock-table"></table></div>
@@ -2685,7 +2711,7 @@
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>
   <script src="/stock-nav.js?v=20261103-global-1"></script>
   <script src="/stock-analysis-ui.js?v=20261103-global-1"></script>
-  <script src="/stock-daily-analysis-ui.js?v=20261105-imperium-source-1"></script>
+  <script src="/stock-daily-analysis-ui.js?v=20261105-datasnap-supabase-2"></script>
   <script src="/stock-report-preview-ui.js?v=20261103-global-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>

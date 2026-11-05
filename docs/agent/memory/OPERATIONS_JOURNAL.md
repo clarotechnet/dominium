@@ -257,3 +257,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 27 Python e 10 JS; data real Mossoro 16 e 52; Recife 60 e 480; Fortaleza timeout; workbook referencia privado na pasta Runtime
 
 **Próximo passo/pendência:** Homologar video original e fontes Atlas/Assinantes, validar seis abas geradas, integrar a tela e fazer deploy apenas completo
+
+## 2026-11-05 20:38 UTC — Consulta periodo DataSnap para Supabase operacional, sem Excel
+
+**Motivo:** O botao anterior so pesquisava SQLite de arquivos importados; usuario requer consulta ao vivo diretamente no clique e persistencia Supabase
+
+**Alterado:** Novo servico imperium_supabase_live com normalizacao, lotes JSONB, estados, idempotencia e revisao por cidade, migracao SQL segura, rotas no proxy e frontend com botao de consulta real; importacao Excel agora opcional
+
+**Verificação:** 36 testes Python e 12 testes Node passaram; Supabase operacional respondeu HTTP 404 pois duas novas tabelas ainda precisam de migracao; nenhuma alteracao de banco ou deploy em producao
+
+**Próximo passo/pendência:** Aplicar SQL em haqzzxpocwzntyudrbch, validar sync no Supabase real e publicar worker+Hostinger juntos
