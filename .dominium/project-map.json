@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-04T21:24:02+00:00",
+  "generated_at": "2026-11-05T18:13:40+00:00",
   "schema": 2,
-  "source_fingerprint": "876010d62ab6ba9fa913e6064796e44b32e122ea919819da8521f6f0db19c5ab",
+  "source_fingerprint": "2b703323345f327d860493eb04138ce29930c3b06b85fbad927b626d218b4cee",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1426,8 +1426,8 @@
     {
       "path": "docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md",
       "category": "docs",
-      "bytes": 8086,
-      "sha256": "dd9cd64ef00515d12190b9cbae0cd1d8be9d59eb6b707ad1841c31c080a0825d",
+      "bytes": 10900,
+      "sha256": "54c8d946194eab3d71ff16f3bede59970eac4928695aaf86ca127831a28b5536",
       "summary": "Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)",
       "imports": [],
       "endpoints": [],
@@ -1537,8 +1537,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 15362,
-      "sha256": "fe6fdb5fc6d6fe050fd75113a9570f91d18e396bfc34f29121b4fb7af907e37c",
+      "bytes": 16114,
+      "sha256": "0014ddd2257f14ac97e824742124c1d4d01e506bb77e9497f0f0875fde86370a",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3457,10 +3457,35 @@
       "symbol_count": 3
     },
     {
+      "path": "integrations/serial_consult/used_equipment_live_datasnap.py",
+      "category": "shared",
+      "bytes": 9197,
+      "sha256": "d94464678263744f34fd8cd9548373d517c8a049696a492227f00a54a6534945",
+      "summary": "Capturably identical READ-ONLY Imperium equipment report requests.",
+      "imports": [
+        "__future__",
+        "base64",
+        "datasnap_client",
+        "datetime",
+        "imperium_api",
+        "json",
+        "midas_reader",
+        "pathlib",
+        "re",
+        "struct",
+        "used_equipment_report"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 6
+    },
+    {
       "path": "integrations/serial_consult/used_equipment_report.py",
       "category": "shared",
-      "bytes": 7546,
-      "sha256": "e8c9ba7428c41fec95b28139cd50152808ed837cdb965532ca4852407b8ab420",
+      "bytes": 7819,
+      "sha256": "fc26265defff25d89053b9451e608557596134a8500c2a0cc5f97cd630c0258d",
       "summary": "Read-only, fail-closed integration foundation for Imperium Equipamentos Utilizados.",
       "imports": [
         "__future__",
@@ -8548,6 +8573,27 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 11
+    },
+    {
+      "path": "tests/test_used_equipment_live_datasnap.py",
+      "category": "tests",
+      "bytes": 5182,
+      "sha256": "94b967d784921e4ab3c8f34960c2694ec7139967e115cf322e0b5df0246f73bb",
+      "summary": "Tests for capture-verified, read-only Equipamentos Utilizados adapter.",
+      "imports": [
+        "hashlib",
+        "inspect",
+        "integrations",
+        "pathlib",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmOrdemServico.AS_GetRecords"
+      ],
+      "entrypoint": true,
+      "symbol_count": 8
     },
     {
       "path": "tests/test_used_equipment_report_contract.py",

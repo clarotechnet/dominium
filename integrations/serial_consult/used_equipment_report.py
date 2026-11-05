@@ -1,8 +1,10 @@
 """Read-only, fail-closed integration foundation for Imperium Equipamentos Utilizados.
 
-This module DOES NOT synthesize DataSnap request bytes, run business queries,
-or claim a read is live. A captured, verified request is still required.
-The probe only calls connect + prepare, never execute.
+This module owns the contract, offline packet inspection and prepare-only
+probe. The separately isolated used_equipment_live_datasnap module now builds
+requests byte-identical to the captured ClientVCL and supports bounded,
+explicit read-only extraction. Nothing here is wired to the public HTTP UI.
+The probe below only calls connect + prepare, never execute.
 """
 from __future__ import annotations
 
@@ -149,9 +151,10 @@ def probe_prepare_only(profile: str, username: str, password: str, *,
 
 
 def require_live_report_capture(*_args,**_kwargs) -> None:
-    """Do not replace lack of a capture with an invented/other report."""
+    """Guard the legacy six-sheet UI until full workflow is homologated."""
     raise LiveReportNotValidated(
-        "Falta captura autenticada e validada de AS_GetRecords do ClientVCL "
-        "para DspConsolidadoEquip e DspConsolidadoOS. "
-        "Preparar o método não equivale a extrair os equipamentos."
+        "As duas consultas reais de Equipamentos Utilizados já foram capturadas "
+        "e validadas. Falta integrar os dados na análise diária, conferir as seis "
+        "abas com o fluxo Atlas e homologar permissões, histórico e download. "
+        "O histórico salvo não equivale a uma extração ao vivo."
     )

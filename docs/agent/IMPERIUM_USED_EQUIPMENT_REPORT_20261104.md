@@ -150,3 +150,52 @@ Validações nesta atualização: 25 testes dirigidos (incluindo
 `tests/test_midas_bcd_used_equipment.py`) aprovados. O quality gate
 completo já tinha três falhas preexistentes de testes Atlas QUERY por
 bloqueio de SQLite temporário no Windows (ver diagnóstico anterior).
+
+## 05/11/2026 — requisicoes originais recuperadas e consultas reais validadas
+
+**Esta atualizacao substitui o bloqueio de captura da direcao cliente-servidor
+descrito acima.** O fluxo de importacao do Excel e as seis abas da interface
+ainda nao foram integrados ao novo adaptador.
+
+- Foi feita captura pontual, depois do login, usando Wireshark + Npcap,
+  exclusivamente na conexao DataSnap do ClientVCL NET/Natal.
+  O arquivo bruto permanece no DESKTOP-LTGB862 e nao foi enviado ao
+  repositorio nem ao chat.
+- Tráfego cliente-servidor: 7 pacotes com conteudo, 1.620 bytes.
+  Uma chamada prepare de 97 bytes para TDtmOrdemServico.AS_GetRecords,
+  duas chamadas execute de 667 e 664 bytes e quatro pedidos more_blob.
+- Provedores confirmados: DspConsolidadoEquip (packet 605 bytes) e
+  DspConsolidadoOS (packet 602 bytes).
+- Filtros observados: @IdParceiro=1, @IdTipoServico=%, @IdGrupoEquipamento=%,
+  @DataIni=03/11/2026 00:00:00 e @DataFim=03/11/2026 23:59:59.999.
+  Este parceiro foi validado APENAS para o perfil Natal/NET.
+- Os seis parametros e o corpo do envelope foram comparados byte por byte.
+  A geracao local e o codigo proposto produziram exatamente a mesma
+  requisicao dos dois providers, sem transferir payloads capturados.
+- SHA256 do pedido consolidado:
+  b593109aad507e5f7296949a553506433af7115b92f198670f2b56168bbb680d.
+- SHA256 do pedido por OS:
+  31ad439e925001de6838f90ad6da2e2e180a3bb4f21869efa0e25b48df7d0a02.
+- Em DESKTOP-K7J3E1N, usando credenciais locais protegidas e metodo
+  AS_GetRecords somente de leitura, a consulta de 03/11/2026 recuperou
+  89 linhas consolidadas (schema aprovado) e 1.141 linhas por OS
+  (schema aprovado). A captura anterior continha 1.142 linhas por OS.
+  A diferenca de uma linha pode ser atualizacao do servidor ou escopo
+  de permissao e ainda nao foi conciliada.
+- O adaptador isolado em integrations/serial_consult/used_equipment_live_datasnap.py
+  oferece build_query (offline) e fetch_read_only (consulta explicita).
+  Nao existe acionamento automatico, endpoint publico, escrita de estoque
+  ou publicacao das seis abas a partir destes dados.
+- O ImperiumV4.exe recebido por upload e presente nos Downloads do LTGB862
+  possui 12.335.104 bytes, SHA256
+  d0a701970b0d0b1cf177435398201167b0775fee7366fe71af963fc3a953db59.
+  Ele nao e o ClientVCL.exe que executa o relatorio; foi examinado
+  estaticamente e nao executado pelo diagnostico.
+
+### Condicoes para a fase de interface
+
+Conferir identificadores de parceiros por cidade, controles de acesso e
+isolamento por unidade; implementar geracao por periodo usando os dois
+datasets Imperium, conciliar com Atlas conforme o video, salvar resultado,
+expor historico/download e progressos reais. O botao Consultar periodo
+atual continua sendo apenas uma busca do historico, nao uma consulta DataSnap.

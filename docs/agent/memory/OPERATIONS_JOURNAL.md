@@ -227,3 +227,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 25 testes dirigidos aprovados; dados reais decodificados em memoria no PC de origem; sem transferir PCAP
 
 **Próximo passo/pendência:** Capturar apenas requisicao AS_GetRecords original e validar filtros/IDs; depois implementar consulta de leitura no Dominium
+
+## 2026-11-05 18:12 UTC — Captura original e requests DataSnap byte a byte de Equipamentos Utilizados
+
+**Motivo:** Duas capturas PktMon omitiam cliente-servidor; Wireshark/Npcap comprovou prepare mais duas chamadas execute
+
+**Alterado:** Novo adaptador de leitura DataSnap com gerador de 605 e 602 bytes idêntico ao ClientVCL, parâmetros explícitos, validações e testes golden SHA256; relatorio em docs sem PCAP nem credenciais
+
+**Verificação:** 28 testes direcionados aprovados; leitura real de Natal em laboratório: 89 consolidado e 1141 por OS, schemas válidos
+
+**Próximo passo/pendência:** Validar adaptador combinado, homologar diferenças de 1 OS, mapear parceiros por cidade, implementar seis abas e download sem quebrar historico
