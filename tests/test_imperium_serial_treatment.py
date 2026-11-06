@@ -35,6 +35,11 @@ class Repo:
                 if self.fail_write:raise LiveSyncError(502,"test_write_error","Not saved")
                 self.records[body["serial"]]=deepcopy(body)
                 return [deepcopy(body)]
+            if method=="PATCH":
+                if self.fail_write:raise LiveSyncError(502,"test_write_error","Not saved")
+                selected=[v for v in self.records.values() if self.matches(v,query)]
+                for item in selected:item.update(deepcopy(body))
+                return [deepcopy(v) for v in selected]
             return [deepcopy(v) for v in self.records.values() if self.matches(v,query)]
         raise AssertionError(table)
     @staticmethod

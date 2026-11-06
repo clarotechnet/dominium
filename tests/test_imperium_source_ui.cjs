@@ -17,8 +17,13 @@ test("the Imperium source has its own explicit controls and does not claim six-t
  assert.match(html,/Consultar histórico anterior/);
  assert.match(html,/id="stockDailyLiveStatus"/);
  assert.match(html,/id="stockDailyLiveTable"/);
+ assert.match(html,/id="stockDailyAtlasVideoPanel"/);
+ assert.match(html,/id="stockDailyAtlasVideoRun"/);
+ assert.match(html,/id="stockDailyAtlasVideoAll"/);
+ assert.match(html,/id="stockDailyAtlasVideoPause"/);
+ assert.match(html,/id="stockDailyAtlasVideoTable"/);
  assert.match(html,/Dados atuais Imperium salvos no Supabase/);
- assert.match(html,/stock-daily-analysis-ui\.js\?v=20261106-serial-two-stage-1/);
+ assert.match(html,/stock-daily-analysis-ui\.js\?v=20261106-atlas-video-3/);
  assert.doesNotMatch(html,/Executar tratativa no Imperium \(aguardando integra/);
 });
 test("only exact authorized source URLs pass the Hostinger allowlist",()=>{
@@ -31,6 +36,10 @@ test("only exact authorized source URLs pass the Hostinger allowlist",()=>{
  assert.equal(policy.allowedStockAnalysisRoute("GET",p+"/live/550e8400-e29b-41d4-a716-446655440000/data?city=mossoro&category=seriais_tratados&page=1"),true);
  assert.equal(policy.allowedStockAnalysisRoute("POST",p+"/live?city=mossoro"),false);
  assert.equal(policy.allowedStockAnalysisRoute("POST",p+"/serial-treatment/next"),true);
+ assert.equal(policy.allowedStockAnalysisRoute("POST",p+"/atlas-video/next"),true);
+ assert.equal(policy.allowedStockAnalysisRoute("GET",p+"/atlas-video/status?city=natal&run=550e8400-e29b-41d4-a716-446655440000"),true);
+ assert.equal(policy.allowedStockAnalysisRoute("GET",p+"/atlas-video/status?city=all&run=550e8400-e29b-41d4-a716-446655440000"),false);
+ assert.equal(policy.allowedStockAnalysisRoute("POST",p+"/atlas-video/next?city=natal"),false);
  assert.equal(policy.allowedStockAnalysisRoute("GET",p+"/serial-treatment/status?city=natal&run=550e8400-e29b-41d4-a716-446655440000"),true);
  assert.equal(policy.allowedStockAnalysisRoute("GET",p+"/serial-treatment/export?city=natal&run=550e8400-e29b-41d4-a716-446655440000"),true);
  assert.equal(policy.allowedStockAnalysisRoute("GET",p+"/serial-treatment/status?city=all&run=550e8400-e29b-41d4-a716-446655440000"),false);

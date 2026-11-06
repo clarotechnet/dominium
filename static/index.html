@@ -1146,6 +1146,21 @@
             <div class="table-scroll"><table id="stockDailyTreatmentTable" class="daily-stock-table"></table></div>
             <p class="stock-analysis-warning">Este relatório apresenta as consultas e as pendências de cada serial. O histórico de movimentação não prova sozinho a posse física atual. A montagem final das seis abas de Atlas/Assinantes/Nomes. continua separada.</p>
           </section>
+          <section id="stockDailyAtlasVideoPanel" aria-label="Etapa 3 - conferência dos seriais no Atlas">
+            <h4>Etapa 3 · Conferir seriais no Atlas</h4>
+            <p class="workspace-description">Conforme o processo do vídeo, confronte os seriais utilizados com a situação apresentada pelo Atlas. Esta etapa usa a ponte local autenticada, registra a consulta e a resposta no Supabase e permite retomar sem reenviar uma fila pendente. O estado ou local histórico do Atlas não comprova baixa nem estoque físico atual.</p>
+            <div class="daily-stock-toolbar">
+              <button class="button primary" type="button" id="stockDailyAtlasVideoRun" disabled>Conferir próximo serial no Atlas</button>
+              <button class="button secondary" type="button" id="stockDailyAtlasVideoAll" disabled>Conferir disponíveis em lote</button>
+              <button class="button secondary" type="button" id="stockDailyAtlasVideoPause" disabled>Pausar após a resposta atual</button>
+              <button class="button secondary" type="button" id="stockDailyAtlasVideoReload" disabled>Atualizar situação Atlas</button>
+            </div>
+            <progress id="stockDailyAtlasVideoProgress" value="0" max="1" style="width:100%;max-width:640px;"></progress>
+            <p id="stockDailyAtlasVideoMessage" class="stock-analysis-status" role="status" aria-live="polite">Pesquise um período e trate os seriais no Imperium antes de consultar o Atlas.</p>
+            <p id="stockDailyAtlasVideoCounts" class="stock-analysis-status"></p>
+            <div class="table-scroll"><table id="stockDailyAtlasVideoTable" class="daily-stock-table"></table></div>
+            <p class="stock-analysis-warning">No vídeo, a conclusão envolve ainda o relatório de posição por equipamento, conferência de baixa, estoque físico e as abas Atlas, Chips Atlas, IMPERIUM, CHIP IMPERIUM, Assinantes e Nomes. A consulta individual acima não substitui essas confirmações nem libera um relatório final de seis abas automaticamente.</p>
+          </section>
           <details class="daily-stock-legacy-import" aria-label="Exportação opcional de fonte Imperium em Excel">
             <summary>Exportação XLSX da fonte Imperium (opcional)</summary>
             <button class="button secondary" type="button" id="stockDailyImperiumExtract" disabled title="Exportação opcional; a consulta principal já salva no Supabase">Extrair XLSX da fonte (opcional)</button>
@@ -2725,7 +2740,7 @@
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>
   <script src="/stock-nav.js?v=20261103-global-1"></script>
   <script src="/stock-analysis-ui.js?v=20261103-global-1"></script>
-  <script src="/stock-daily-analysis-ui.js?v=20261106-serial-two-stage-1"></script>
+  <script src="/stock-daily-analysis-ui.js?v=20261106-atlas-video-3"></script>
   <script src="/stock-report-preview-ui.js?v=20261103-global-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>

@@ -181,6 +181,7 @@ endpoint	path
 /api/toa-live/lookup	deploy/hostinger-web/server.js
 /api/toa-live/status	deploy/hostinger-web/server.js
 /api/stock/analyses/daily/import	deploy/hostinger-web/stock-analysis-policy.js
+/api/stock/analyses/imperium/atlas-video/next	deploy/hostinger-web/stock-analysis-policy.js
 /api/stock/analyses/imperium/extract	deploy/hostinger-web/stock-analysis-policy.js
 /api/stock/analyses/imperium/live	deploy/hostinger-web/stock-analysis-policy.js
 /api/stock/analyses/imperium/serial-treatment/next	deploy/hostinger-web/stock-analysis-policy.js
@@ -217,6 +218,7 @@ endpoint	path
 /api/stock/analyses/daily	integrations/serial_consult/equipment_daily_catalog.py
 /api/stock/analyses/daily/(	integrations/serial_consult/equipment_daily_catalog.py
 /api/stock/analyses/daily/import	integrations/serial_consult/equipment_daily_catalog.py
+/api/stock/analyses/imperium/atlas-video	integrations/serial_consult/imperium_atlas_video.py
 /api/stock/analyses/imperium/serial-treatment	integrations/serial_consult/imperium_serial_treatment.py
 /api/stock/analyses/imperium/extract	integrations/serial_consult/imperium_source_http.py
 /api/stock/analyses/imperium/runs	integrations/serial_consult/imperium_source_http.py
@@ -275,6 +277,8 @@ endpoint	path
 /api/stock/analyses/daily/	static/stock-daily-analysis-ui.js
 /api/stock/analyses/daily/import	static/stock-daily-analysis-ui.js
 /api/stock/analyses/daily?city=	static/stock-daily-analysis-ui.js
+/api/stock/analyses/imperium/atlas-video/next	static/stock-daily-analysis-ui.js
+/api/stock/analyses/imperium/atlas-video/status?city=	static/stock-daily-analysis-ui.js
 /api/stock/analyses/imperium/extract	static/stock-daily-analysis-ui.js
 /api/stock/analyses/imperium/live	static/stock-daily-analysis-ui.js
 /api/stock/analyses/imperium/live/	static/stock-daily-analysis-ui.js
@@ -515,6 +519,8 @@ endpoint	path
 /api/stock/analyses/daily?	tests/test_stock_daily_analysis_feedback.cjs
 /api/stock/analyses/daily?city=mossoro&start=2026-11-01&end=2026-11-02	tests/test_stock_daily_analysis_feedback.cjs
 /api/stock/analyses/imperium/	tests/test_stock_daily_analysis_feedback.cjs
+/api/stock/analyses/imperium/atlas-video/next	tests/test_stock_daily_analysis_feedback.cjs
+/api/stock/analyses/imperium/atlas-video/status?	tests/test_stock_daily_analysis_feedback.cjs
 /api/stock/analyses/imperium/live	tests/test_stock_daily_analysis_feedback.cjs
 /api/stock/analyses/imperium/live/	tests/test_stock_daily_analysis_feedback.cjs
 /api/stock/analyses/imperium/live?	tests/test_stock_daily_analysis_feedback.cjs

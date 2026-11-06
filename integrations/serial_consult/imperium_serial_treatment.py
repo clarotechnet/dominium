@@ -31,6 +31,9 @@ RESULT_STATES={"historico_verificado","sem_movimentos","erro_consulta","formato_
 MAX_SERIALS=1000
 MAX_RETRIES=3
 XLSX_TYPE="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+# Serialize writes to shared Supabase treatment evidence across the Imperium
+# and Atlas read-only stages in this worker process.
+SERIAL_WRITE_LOCK=Lock()
 
 
 def route_for(method:str,target:str):
@@ -59,7 +62,7 @@ class SerialTreatmentService:
         self.repository_factory=repository_factory or SupabasePeriodStore
         # Avoid importing the live DataSnap client until a user starts treatment.
         self.consult=consult
-        self.lock=Lock()
+        self.lock=SERIAL_WRITE_LOCK
 
     def handle(self,method,target,actor,body=None):
         route=route_for(method,target)
@@ -265,6 +268,11 @@ class SerialTreatmentService:
                     evidence={"history_verified":False,"current_owner_verified":False,
                               "history_error":"Consulta individual ao Imperium falhou; não significa serial inexistente",
                               "source":"imperium_datasnap_unconfirmed"}
+            # A retry of Imperium historical records must never erase a confirmed
+            # Atlas lookup stored in the same JSONB evidence field.
+            prior_evidence=(prior or {}).get("evidencia")
+            if isinstance(prior_evidence,dict) and isinstance(prior_evidence.get("atlas_video"),dict):
+                evidence["atlas_video"]=prior_evidence["atlas_video"]
             row={
                 "consulta_id":run,"serial":serial,"situacao":situation,
                 "evidencia":evidence,"tentativas":min(attempts,MAX_RETRIES),

@@ -45,7 +45,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 
 test("legacy history remains an explicit separate action",async()=>{
  assert.match(html,/id="stockDailyAnalysisLoading"/);
- assert.match(html,/stock-daily-analysis-ui\.js\?v=20261106-serial-two-stage-1/);
+ assert.match(html,/stock-daily-analysis-ui\.js\?v=20261106-atlas-video-3/);
  let finish,calls=0,url;
  const {get}=mount(next=>{
   if(next.startsWith("/api/stock/analyses/imperium/"))return Promise.resolve({ok:true,history:[]});
@@ -214,4 +214,66 @@ test("the Natal screen shows collected serials first and only treats after secon
  assert.equal(get("stockDailyTreatmentRun").disabled,false);
  assert.equal(get("stockDailyTreatmentProgress").value,1);
  assert.match(get("stockDailyTreatmentStatus").textContent,/pausada/);
+});
+
+
+test("the Atlas stage is explicit, requires prior serial treatment, and shows progress",async()=>{
+ const id="550e8400-e29b-41d4-a716-446655440000";
+ let resolveQueued;
+ const posted=[];
+ const serial="000000000001";
+ const history={ok:true,history:[{
+   id,city:"natal",start:"2026-11-01",end:"2026-11-02",
+   created_at:"2026-11-06T11:00:00Z",
+   counts:{consolidado:2,por_os:5,seriais_tratados:1,equipamentos:1,chips:0},
+ }]};
+ const treatment={ok:true,counts:{total:1,processados:1,restantes:0,
+     historico_verificado:1,erro_consulta:0},
+     complete:true,download_enabled:true,rows:[{serial,situacao:"historico_verificado"}]};
+ const atlas={ok:true,city:"natal",run:id,
+   counts:{total:1,tratados_imperium:1,atlas_aguardando:1,atlas_verificados:0},
+   atlas_finalizados:0,atlas_pendentes:1,rows:[{
+    serial,modelo_imperium:"GPON",situacao_atlas:"aguardando",
+    estado_atlas:"",localizacao_atlas:""
+   }]
+ };
+ const {get}=mount((url,opts={})=>{
+   if(url.startsWith("/api/stock/analyses/imperium/live?"))return Promise.resolve(history);
+   if(url.includes("/data?"))return Promise.resolve({ok:true,rows:[{serial}],total:1,page_count:1});
+   if(url.startsWith("/api/stock/analyses/imperium/serial-treatment/status?"))return Promise.resolve(treatment);
+   if(url.startsWith("/api/stock/analyses/imperium/atlas-video/status?"))return Promise.resolve(atlas);
+   if(url==="/api/stock/analyses/imperium/atlas-video/next"){
+    posted.push(JSON.parse(opts.body));
+    return new Promise(resolve=>{resolveQueued=resolve;});
+   }
+   if(url.startsWith("/api/stock/analyses/imperium/runs?"))return Promise.resolve({ok:true,history:[]});
+   if(url.startsWith("/api/stock/analyses/daily?"))return Promise.resolve({ok:true,history:[],selected:null});
+   throw new Error("Unexpected "+url);
+ },{profile:"natal"});
+ get("stockDailyAnalysisOpen").click();
+ await tick();await tick();await tick();await tick();
+ assert.equal(posted.length,0,"opening report must not enqueue Atlas automatically");
+ assert.equal(get("stockDailyAtlasVideoRun").disabled,false);
+ get("stockDailyAtlasVideoRun").click();
+ assert.equal(posted.length,1);
+ assert.equal(posted[0].run,id);
+ assert.equal(posted[0].city,"natal");
+ assert.equal(get("stockDailyAtlasVideoPause").disabled,false);
+ resolveQueued({...atlas,updated:{situacao:"verificado"},atlas_finalizados:1,
+   atlas_pendentes:0,counts:{...atlas.counts,atlas_verificados:1,atlas_aguardando:0},
+   rows:[{serial,modelo_imperium:"GPON",situacao_atlas:"verificado",
+     estado_atlas:"INICIALIZADO",localizacao_atlas:"ASSINANTE"}]
+ });
+ await tick();await tick();await tick();
+ assert.equal(get("stockDailyAtlasVideoRun").disabled,true);
+ assert.equal(get("stockDailyAtlasVideoProgress").value,1);
+ assert.match(get("stockDailyAtlasVideoCounts").textContent,/1 de 1 seriais avaliados/);
+ assert.equal(posted.length,1);
+ assert.match(get("stockDailyAtlasVideoMessage").textContent,/Atlas/);
+});
+
+test("Atlas stage remains blocked for unvalidated city",async()=>{
+ const {get}=mount(()=>Promise.resolve({ok:true,history:[]}),{profile:"mossoro"});
+ assert.equal(get("stockDailyAtlasVideoRun").disabled,true);
+ assert.equal(get("stockDailyAtlasVideoAll").disabled,true);
 });

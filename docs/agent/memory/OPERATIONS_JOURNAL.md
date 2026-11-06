@@ -277,3 +277,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Smoke real DataSnap Natal 05-11-2026: 1096 OS e 209 seriais; historico primeiro serial confirmado e progresso 0 para 1 com repo simulado; 45 Python e 13 JS aprovados; nao gravou no Supabase operacional
 
 **Próximo passo/pendência:** Executar migrations no projeto haqzzxpocwzntyudrbch e homologar escrita real; integrar demais fontes para seis abas
+
+## 2026-11-06 19:36 UTC — Vídeos auditados: Atlas por equipamento após consulta DataSnap e seriais
+
+**Motivo:** O vídeo exige conferência de estado/localização no Atlas após coleta de equipamentos utilizados no Imperium e consulta individual; Assinantes e estoque físico independentes
+
+**Alterado:** Novo serviço imperium_atlas_video com fila segura, retorno Atlas persistido no Supabase via evidencia.atlas_video, UI de terceira etapa e rotas Hostinger autenticadas
+
+**Verificação:** 54 Python, 15 Node; um Atlas real resultou verificado e foi gravado no Supabase; nenhuma consulta em massa e nenhuma modificação em estoque
+
+**Próximo passo/pendência:** Auditar relatório Atlas Por Equipamentos em lote, confirmar baixa e estoque físico via fontes próprias, implantar backend e frontend coordenadamente sem sobrescrever main local divergida

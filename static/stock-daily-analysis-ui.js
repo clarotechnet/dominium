@@ -10,6 +10,7 @@ let allRuns=[];
 let sourceSelected=null,sourceRuns=[],sourceBusy=false,sourceTab=0;
 let liveRuns=[],liveSelected=null,livePage=1,liveBusy=false;
 let treatmentBusy=false,treatmentStop=false,treatmentState=null;
+let atlasVideoBusy=false,atlasVideoStop=false,atlasVideoState=null;
 const currentCity=()=>state.allCities?"all":state.profile;
 const canWrite=()=>!state.allCities&&["admin","controller"].includes(state.authUser?.role);
 function status(msg,error=false){
@@ -468,6 +469,7 @@ async function loadLiveHistory(selectId){
    liveMessage("Consulta concluída e persistida no Supabase operacional. "+
     "Os seriais foram coletados; a tratativa individual é uma segunda etapa.");
    await loadTreatmentStatus();
+   await loadAtlasVideoStatus();
   }else{
    clearTreatmentView();
    liveMessage("Nenhuma consulta salva para "+city.toUpperCase()+
@@ -509,6 +511,7 @@ async function consultLivePeriod(){
 function clearTreatmentView(){
  treatmentStop=true;
  treatmentState=null;
+ clearAtlasVideoView();
  const bar=el("stockDailyTreatmentProgress");
  bar.value=0;bar.max=1;
  el("stockDailyTreatmentTable").replaceChildren();
@@ -647,7 +650,11 @@ async function treatCollectedSerials(){
   el("stockDailyTreatmentStatus").textContent=
    "Tratativa interrompida: "+(err.message||err)+
    ". Os seriais já confirmados continuam salvos no Supabase; clique para retomar.";
- }finally{treatmentBusy=false;updateTreatmentButtons();}
+ }finally{
+  treatmentBusy=false;
+  updateTreatmentButtons();
+  if(liveSelected?.id===run.id)void loadAtlasVideoStatus();
+ }
 }
 async function downloadTreatment(){
  const run=liveSelected,city=currentCity();
@@ -666,6 +673,160 @@ async function downloadTreatment(){
    "Falha ao baixar o relatório tratado: "+(err.message||err);
  }
 }
+function clearAtlasVideoView(){
+ atlasVideoStop=true;
+ atlasVideoState=null;
+ el("stockDailyAtlasVideoProgress").value=0;
+ el("stockDailyAtlasVideoProgress").max=1;
+ el("stockDailyAtlasVideoTable").replaceChildren();
+ el("stockDailyAtlasVideoCounts").textContent="";
+ el("stockDailyAtlasVideoMessage").textContent=
+  "Primeiro pesquise o período e confirme a tratativa Imperium.";
+ updateAtlasVideoButtons();
+}
+function updateAtlasVideoButtons(){
+ const city=currentCity(),run=liveSelected;
+ const ready=canWrite()&&city==="natal"&&!!run&&
+  (treatmentState?.counts?.processados||0)>0;
+ const atlas=atlasVideoState?.counts||{};
+ const pending=atlasVideoState?.atlas_pendentes??Infinity;
+ const busy=atlasVideoBusy;
+ el("stockDailyAtlasVideoRun").disabled=busy||!ready||pending<=0;
+ el("stockDailyAtlasVideoAll").disabled=busy||!ready||pending<=0;
+ el("stockDailyAtlasVideoPause").disabled=!busy;
+ el("stockDailyAtlasVideoReload").disabled=busy||!run||city!=="natal";
+ el("stockDailyAtlasVideoRun").textContent=busy?
+  "Conferindo serial no Atlas...":"Conferir próximo serial no Atlas";
+ el("stockDailyAtlasVideoRun").title=city!=="natal"
+  ?"Consulta Atlas por serial homologada somente para Natal":
+  "Usa a ponte autenticada Atlas; preserva fila e progresso no Supabase";
+}
+function showAtlasVideoResult(payload){
+ atlasVideoState=payload;
+ const c=payload.counts||{},total=Math.max(1,c.total||0);
+ const bar=el("stockDailyAtlasVideoProgress");
+ bar.max=total;
+ bar.value=Math.min(total,payload.atlas_finalizados||0);
+ el("stockDailyAtlasVideoCounts").textContent=
+  (payload.atlas_finalizados||0)+" de "+(c.total||0)+" seriais avaliados no Atlas • "+
+  (c.atlas_verificados||0)+" verificados • "+
+  (c.atlas_parciais||0)+" parciais • "+
+  (c.atlas_nao_confirmados||0)+" não confirmados • "+
+  (c.atlas_fila||0)+" na fila • "+
+  (c.atlas_submissao_incerta||0)+" com confirmação pendente • "+
+  (c.atlas_erros||0)+" erros • "+
+  (c.atlas_formatos_pendentes||0)+" formatos pendentes.";
+ const table=el("stockDailyAtlasVideoTable");
+ table.replaceChildren();
+ const fields=[
+  ["serial","Serial"],["modelo_imperium","Equipamento"],
+  ["situacao_atlas","Situação Atlas"],["estado_atlas","Estado"],
+  ["localizacao_atlas","Localização informada"],
+  ["data_alteracao_atlas","Data da alteração"],
+  ["observacao","Observação"]
+ ];
+ const thead=document.createElement("thead"),heading=document.createElement("tr");
+ for(const [,label] of fields){
+  const th=document.createElement("th");th.textContent=label;
+  heading.appendChild(th);
+ }
+ thead.appendChild(heading);table.appendChild(thead);
+ const body=document.createElement("tbody");
+ for(const item of payload.rows||[]){
+  const tr=document.createElement("tr");
+  for(const [name] of fields){
+   const td=document.createElement("td");
+   td.textContent=String(item[name]??"");
+   tr.appendChild(td);
+  }
+  body.appendChild(tr);
+ }
+ table.appendChild(body);
+ el("stockDailyAtlasVideoMessage").textContent=
+  (payload.atlas_pendentes||0)===0
+  ?"Conferência Atlas registrada com pendências explícitas. O estoque físico não está comprovado."
+  :"Conferência Atlas salva no Supabase. Execute ou retome os seriais disponíveis.";
+ updateAtlasVideoButtons();
+}
+async function loadAtlasVideoStatus(){
+ const run=liveSelected,city=currentCity();
+ atlasVideoStop=true;
+ if(!run||city!=="natal"){
+  clearAtlasVideoView();
+  if(run&&city!=="natal"){
+   el("stockDailyAtlasVideoMessage").textContent=
+    "A consulta por período funciona nesta cidade; a ponte Atlas individual está validada somente para Natal.";
+  }
+  return;
+ }
+ try{
+  const result=await request(
+   "/api/stock/analyses/imperium/atlas-video/status?city="+
+   encodeURIComponent(city)+"&run="+encodeURIComponent(run.id),
+   {timeoutMs:30000}
+  );
+  if(currentCity()!==city||liveSelected?.id!==run.id)return;
+  if(!result?.ok)throw new Error(result?.error||"Estado Atlas não disponível");
+  showAtlasVideoResult(result);
+ }catch(err){
+  if(currentCity()===city&&liveSelected?.id===run.id){
+   el("stockDailyAtlasVideoMessage").textContent=
+    "Não foi possível consultar a conferência Atlas: "+(err.message||err);
+  }
+ }finally{updateAtlasVideoButtons();}
+}
+async function runAtlasVideo(limit=1){
+ if(atlasVideoBusy||!canWrite()||currentCity()!=="natal"||!liveSelected)return;
+ if(!(treatmentState?.counts?.processados>0)){
+  el("stockDailyAtlasVideoMessage").textContent=
+   "Trate primeiro pelo menos um serial no Imperium.";
+  return;
+ }
+ const city=currentCity(),run=liveSelected;
+ atlasVideoBusy=true;
+ atlasVideoStop=false;
+ updateAtlasVideoButtons();
+ try{
+  for(let step=0;step<limit&&!atlasVideoStop;step++){
+   if(city!==currentCity()||liveSelected?.id!==run.id)break;
+   el("stockDailyAtlasVideoMessage").textContent=
+    "Consultando a próxima evidência Atlas e persistindo no Supabase...";
+   const result=await request("/api/stock/analyses/imperium/atlas-video/next",{
+    method:"POST",headers:{"content-type":"application/json"},
+    body:JSON.stringify({city,run:run.id}),timeoutMs:60000
+   });
+   if(!result?.ok)throw new Error(result?.error||"Atlas não confirmou o resultado");
+   if(city!==currentCity()||liveSelected?.id!==run.id)break;
+   showAtlasVideoResult(result);
+   if(!result.updated||result.atlas_pendentes===0)break;
+   // A returned queue ID is polled without re-enqueue. Pace calls so the
+   // existing Atlas browser extension can finish each read-only lookup.
+   if(limit>1&&result.updated.situacao==="aguardando_atlas"){
+    await new Promise(resolve=>setTimeout(resolve,1400));
+   }
+  }
+  if(city===currentCity()&&liveSelected?.id===run.id){
+   el("stockDailyAtlasVideoMessage").textContent=atlasVideoStop
+    ?"Conferência pausada. Os resultados e o ID da fila foram preservados para retomar."
+    :"Consulta Atlas concluída ou lote encerrado. Confira os resultados e as pendências.";
+  }
+ }catch(err){
+  el("stockDailyAtlasVideoMessage").textContent=
+   "Consulta Atlas interrompida: "+(err.message||err)+
+   ". IDs de fila já registrados permanecem no Supabase; verifique antes de repetir.";
+ }finally{
+  atlasVideoBusy=false;updateAtlasVideoButtons();
+ }
+}
+clearAtlasVideoView();
+el("stockDailyAtlasVideoRun").addEventListener("click",()=>void runAtlasVideo(1));
+el("stockDailyAtlasVideoAll").addEventListener("click",()=>void runAtlasVideo(900));
+el("stockDailyAtlasVideoPause").addEventListener("click",()=>{
+ atlasVideoStop=true;
+ el("stockDailyAtlasVideoMessage").textContent=
+  "Pausando após salvar/confirmar a resposta Atlas atual...";
+});
+el("stockDailyAtlasVideoReload").addEventListener("click",()=>void loadAtlasVideoStatus());
 clearTreatmentView();
 el("stockDailyTreatmentRun").addEventListener("click",()=>void treatCollectedSerials());
 el("stockDailyTreatmentPause").addEventListener("click",()=>{
@@ -679,11 +840,13 @@ el("stockDailyAnalysisRefresh").addEventListener("click",()=>void consultLivePer
 el("stockDailyHistoryRefresh").addEventListener("click",()=>void loadDaily());
 el("stockDailyLiveHistory").addEventListener("change",event=>{
  treatmentStop=true;
+ atlasVideoStop=true;
  clearTreatmentView();
  liveSelected=liveRuns.find(x=>x.id===event.target.value)||null;
  if(liveSelected){
   void showLivePage(1);
   void loadTreatmentStatus();
+  void loadAtlasVideoStatus();
  }
 });
 el("stockDailyLiveCategory").addEventListener("change",()=>void showLivePage(1));

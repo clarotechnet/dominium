@@ -566,6 +566,15 @@ xml	integrations/serial_consult/equipment_daily_catalog.py
 zipfile	integrations/serial_consult/equipment_daily_catalog.py
 __future__	integrations/serial_consult/equipment_video_transform.py
 collections	integrations/serial_consult/equipment_video_transform.py
+__future__	integrations/serial_consult/imperium_atlas_video.py
+atlas_bridge_client	integrations/serial_consult/imperium_atlas_video.py
+datetime	integrations/serial_consult/imperium_atlas_video.py
+imperium_serial_treatment	integrations/serial_consult/imperium_atlas_video.py
+imperium_supabase_live	integrations/serial_consult/imperium_atlas_video.py
+logging	integrations/serial_consult/imperium_atlas_video.py
+re	integrations/serial_consult/imperium_atlas_video.py
+typing	integrations/serial_consult/imperium_atlas_video.py
+urllib	integrations/serial_consult/imperium_atlas_video.py
 __future__	integrations/serial_consult/imperium_serial_treatment.py
 datetime	integrations/serial_consult/imperium_serial_treatment.py
 imperium_supabase_live	integrations/serial_consult/imperium_serial_treatment.py
@@ -644,6 +653,7 @@ collections	integrations/serial_consult/stock_analysis_http.py
 contextlib	integrations/serial_consult/stock_analysis_http.py
 datetime	integrations/serial_consult/stock_analysis_http.py
 equipment_daily_catalog	integrations/serial_consult/stock_analysis_http.py
+imperium_atlas_video	integrations/serial_consult/stock_analysis_http.py
 imperium_serial_treatment	integrations/serial_consult/stock_analysis_http.py
 imperium_source_http	integrations/serial_consult/stock_analysis_http.py
 imperium_supabase_live	integrations/serial_consult/stock_analysis_http.py
@@ -1284,6 +1294,12 @@ imperium_api	tests/test_imperium_api.py
 struct	tests/test_imperium_api.py
 types	tests/test_imperium_api.py
 unittest	tests/test_imperium_api.py
+copy	tests/test_imperium_atlas_video.py
+imperium_atlas_video	tests/test_imperium_atlas_video.py
+pathlib	tests/test_imperium_atlas_video.py
+sys	tests/test_imperium_atlas_video.py
+tests	tests/test_imperium_atlas_video.py
+unittest	tests/test_imperium_atlas_video.py
 imperium_http_api	tests/test_imperium_http_api.py
 io	tests/test_imperium_http_api.py
 json	tests/test_imperium_http_api.py
