@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
   <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-image-1">
   <link rel="stylesheet" href="/all-cities-scope.css?v=20261103-global-1">
+  <link rel="stylesheet" href="/close-control.css?v=20261106-homolog-1">
+  <link rel="stylesheet" href="/backlog-claro-board.css?v=20261106-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -149,6 +151,10 @@
       <button class="side-nav-item" id="closeModule" type="button">
         <i data-lucide="square-check-big" aria-hidden="true"></i>
         <span><strong>Baixar OS</strong><small id="closeQueueBadge">0 aguardando</small></span>
+      </button>
+      <button class="side-nav-item" id="closeControlModule" type="button">
+        <i data-lucide="list-checks" aria-hidden="true"></i>
+        <span><strong>Controle de baixas</strong><small>Janelas e tratativas</small></span>
       </button>
       <p class="side-nav-label side-nav-section">Recursos</p>
       <button class="side-nav-item stock-group-toggle" id="stockGroupToggle" type="button"
@@ -1472,6 +1478,55 @@
       </div>
     </section>
 
+    <section class="close-control-workspace hidden" id="closeControlWorkspace" aria-label="Controle administrativo de baixas">
+      <div class="cc-top">
+        <div>
+          <p class="cc-eyebrow">DOMINIUM / IMPERIUM / TOA</p>
+          <h2>Controle de baixas</h2>
+          <p class="cc-subtle">Acompanhamento das O.S., janelas de atendimento e fila para tratativa humana.</p>
+        </div>
+        <span class="cc-safe">HOMOLOGAÇÃO · NENHUMA BAIXA OU CONSULTA TOA</span>
+      </div>
+      <div class="cc-toolbar">
+        <button class="cc-btn cc-btn-primary" type="button" id="ccDemo">Cenário 09:37</button>
+        <button class="cc-btn" type="button" id="ccReal">Lista atual do Imperium</button>
+        <button class="cc-btn" type="button" id="ccRefresh">Atualizar painel local</button>
+        <label>Visualizar
+          <select id="ccFilter">
+            <option value="all">Todas as O.S.</option>
+            <option value="due">Consulta elegível</option>
+            <option value="waiting">Aguardando janela ou intervalo</option>
+            <option value="ready">Prontas para revisão da baixa</option>
+            <option value="review">Tratativa humana</option>
+          </select>
+        </label>
+        <label>Localizar O.S. ou contrato
+          <input id="ccSearch" type="search" placeholder="Busca local, sem TOA">
+        </label>
+      </div>
+      <p class="cc-subtle" id="ccSource"></p>
+      <p class="cc-subtle" id="ccCurrentTime"></p>
+      <div class="cc-metrics" id="ccMetrics" aria-label="Indicadores de acompanhamento"></div>
+      <div class="cc-note">
+        <strong>Fluxo de segurança:</strong> confirmar rota importada e O.S. existente no Imperium → validar janela → consultar TOA somente quando vencer o intervalo → validar código, materiais e equipamentos → preparar baixa → confirmar baixa efetiva no Imperium. Em caso de retorno incerto, interromper e enviar para tratativa humana.
+      </div>
+      <div class="cc-actions">
+        <button type="button" class="cc-btn cc-btn-primary" id="ccPreviewImproductive">Prévia das improdutivas</button>
+        <button type="button" class="cc-btn cc-btn-primary" id="ccPreviewProductive">Prévia das produtivas</button>
+        <button type="button" class="cc-btn" disabled title="Exige autorização do backend e validação em produção">Iniciar improdutivas · bloqueado</button>
+        <button type="button" class="cc-btn cc-btn-alert" disabled title="Exige fluxo Adesão próprio e validação em produção">Iniciar produtivas · bloqueado</button>
+      </div>
+      <div class="cc-table-wrap">
+        <table>
+          <thead><tr><th>O.S.</th><th>Contrato</th><th>Técnico</th><th>Janela</th><th>TOA</th><th>Tratativa</th><th>Próxima consulta</th></tr></thead>
+          <tbody id="ccRows"></tbody>
+        </table>
+      </div>
+      <p class="cc-subtle" id="ccTableSummary" role="status"></p>
+      <section class="cc-report" id="ccReport" aria-live="polite"></section>
+      <p class="cc-foot">Não gera consultas externas. O modo “Lista atual do Imperium” lê somente dados já carregados no DOMINIUM e não afirma que uma O.S. está concluída no TOA. Os botões de baixa permanecem inativos até validação do backend e do limite global de requisições.</p>
+    </section>
+
     <section class="close-workspace hidden" id="closeWorkspace" aria-label="Baixar ordem de servico">
       <header class="workspace-heading">
         <div>
@@ -2113,6 +2168,21 @@
             <button type="button" class="button secondary" id="backlogDailyRefresh">Atualizar tratativa</button>
             <button type="button" class="button secondary" id="backlogCopyImproductive">Copiar improdutivas confirmadas</button>
           </div>
+          <section class="claro-treatment" aria-label="Tratativa Claro por cidade">
+            <header class="claro-treatment-top">
+              <div>
+                <h4>Tratativa Claro · Quadro por cidade</h4>
+                <p>Improdutivas confirmadas, pendências e divergências cruzadas com o Imperium. Não executa baixas.</p>
+              </div>
+              <div class="claro-treatment-actions">
+                <button type="button" class="button secondary" id="backlogClaroExportCsv" disabled>Exportar tratativa CSV</button>
+                <button type="button" class="button secondary" id="backlogClaroOpenOffroute">Ver Fora de Rota</button>
+              </div>
+            </header>
+            <p id="backlogClaroStatus" class="claro-treatment-status" role="status">Aguardando base do Imperium.</p>
+            <div id="backlogClaroGrid" class="claro-board-grid"></div>
+            <p class="claro-board-foot">Pendente não é improdutiva. Baixa histórica não equivale a baixa de hoje. Código 430 representa retirada produtiva. Dados ausentes ou divergentes precisam de revisão no Imperium. O botão Fora de Rota abre a ferramenta existente, sem enviar dados à Claro.</p>
+          </section>
           <div id="backlogDailyMetrics" class="backlog-progress" aria-live="polite"></div>
           <div id="backlogDailyResult" class="backlog-results"></div>
         </section>
@@ -2665,9 +2735,13 @@
   <script src="/disconnection.js?v=20261103-event-guard-1"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
   <script src="/app.js?v=20261103-global-scope-1"></script>
+  <script src="/close-control-engine.js?v=20261106-homolog-1"></script>
+  <script src="/close-control-ui.js?v=20261106-homolog-1"></script>
   <script src="/backlog-report.js?v=20261103-whatsapp-1"></script>
   <script src="/backlog-report-image.js?v=20261103-image-2"></script>
   <script src="/backlog-analysis.js?v=20261103-route-buttons-1"></script>
+  <script src="/backlog-claro-board.js?v=20261106-1"></script>
+  <script src="/backlog-claro-board-ui.js?v=20261106-1"></script>
   <script src="/quality-control.js?v=20261029-analysis-1"></script>
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>

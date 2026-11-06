@@ -78,6 +78,10 @@
     table($("backlogDailyResult"),[["Tratativa","treatment"],["Contrato","contract"],
       ["Cidade","city"],["Técnico","technician"],["O.S.","os_number"],
       ["Status TOA","activity_status"],["Código","route_code"]],sorted);
+    // Painel Claro recebe o retrato já calculado. Sem chamadas adicionais à Oracle.
+    document.dispatchEvent(new CustomEvent("dominium:backlog-daily-loaded", {
+      detail: { rows: dailyRows, scope: cityScope() },
+    }));
   }
   function renderHistoricalReport(){
     const scope=refreshScopeLabel();

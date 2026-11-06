@@ -1,0 +1,33 @@
+/* Visão Claro — quatro colunas a partir da tratativa existente, leitura somente. */
+#backlogWorkspace .claro-treatment{margin:17px 0 21px;border:1px solid #34465b;border-radius:15px;padding:16px;background:#10243c}
+#backlogWorkspace .claro-treatment-top{display:flex;flex-wrap:wrap;align-items:start;justify-content:space-between;gap:14px;margin-bottom:12px}
+#backlogWorkspace .claro-treatment-top h4{font-size:19px;letter-spacing:.01em;margin:0 0 7px;color:#f0f5fa}
+#backlogWorkspace .claro-treatment-top p{margin:0;color:#a6bbcf;font-size:12px;line-height:1.5}
+#backlogWorkspace .claro-treatment-actions{display:flex;flex-wrap:wrap;gap:8px}
+#backlogWorkspace .claro-treatment-status{margin:13px 0 16px;line-height:1.55;border-left:3px solid #598bac;border-radius:5px;background:#1b3048;padding:10px 12px;color:#d9e9f5;font-size:12px}
+#backlogWorkspace .claro-board-grid{display:grid;grid-template-columns:repeat(4,minmax(185px,1fr));gap:12px;align-items:stretch}
+#backlogWorkspace .claro-board-col{border:1px solid #3e556c;background:#182b41;border-radius:14px;overflow:hidden;min-width:0}
+#backlogWorkspace .claro-board-head{background:linear-gradient(110deg,#c6001e,#900619);color:#fff;padding:15px 10px;text-align:center;display:flex;align-items:center;flex-direction:column;gap:8px}
+#backlogWorkspace .claro-board-head strong{font-size:13px;letter-spacing:.025em}
+#backlogWorkspace .claro-board-number{font-size:11px;font-weight:700;background:#ffffff2d;padding:4px 10px;border-radius:18px}
+#backlogWorkspace .claro-board-metrics{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:5px;padding:12px 7px;border-bottom:1px solid #2a4257}
+#backlogWorkspace .claro-metric{font-size:10px;padding:4px 7px;border-radius:7px;background:#30445b;color:#c2d4e9;font-weight:650}
+#backlogWorkspace .claro-metric.improductive{background:#1b5548;color:#a3efd7}
+#backlogWorkspace .claro-metric.pending{background:#3c4264;color:#d5d7fe}
+#backlogWorkspace .claro-metric.review{background:#604331;color:#ffd3ab}
+#backlogWorkspace .claro-board-list{padding:9px;max-height:660px;overflow:auto;scrollbar-color:#47627d #182b41}
+#backlogWorkspace .claro-ticket{padding:11px;margin-bottom:8px;border:1px solid #344c64;border-left:3px solid #6a8caa;border-radius:10px;background:#1e334c}
+#backlogWorkspace .claro-ticket.improductive{border-left-color:#4fc19c}
+#backlogWorkspace .claro-ticket.review{border-left-color:#e6a35c}
+#backlogWorkspace .claro-ticket.pending{border-left-color:#99a1f5}
+#backlogWorkspace .claro-ticket.productive{border-left-color:#5fbcea}
+#backlogWorkspace .claro-ticket-title{display:flex;flex-direction:column;gap:7px;align-items:flex-start}
+#backlogWorkspace .claro-ticket-title b{font-size:12px;color:#eaf3fd;word-break:break-word}
+#backlogWorkspace .claro-ticket-tag{font-weight:650;font-size:10px;padding:4px 6px;border-radius:6px;background:#32495f;color:#c5d9ed}
+#backlogWorkspace .claro-ticket p{font-size:11px;line-height:1.45;margin:6px 0 0;color:#ccdbe9;overflow-wrap:anywhere}
+#backlogWorkspace .claro-ticket .claro-ticket-detail{color:#a9bbcf}
+#backlogWorkspace .claro-ticket .claro-ticket-code{color:#99dfc4;font-weight:650}
+#backlogWorkspace .claro-board-empty{text-align:center;font-size:12px;line-height:1.6;padding:15px 5px;color:#9caec6}
+#backlogWorkspace .claro-board-foot{font-size:11px;line-height:1.65;color:#afc3d7;margin:15px 0 0}
+@media(max-width:1250px){#backlogWorkspace .claro-board-grid{grid-template-columns:repeat(2,minmax(220px,1fr))}}
+@media(max-width:690px){#backlogWorkspace .claro-board-grid{grid-template-columns:1fr}#backlogWorkspace .claro-treatment{padding:10px}#backlogWorkspace .claro-board-list{max-height:350px}}
