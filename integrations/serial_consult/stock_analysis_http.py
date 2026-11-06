@@ -24,6 +24,7 @@ from urllib.parse import urlsplit
 from equipment_daily_catalog import DailyEquipmentCatalog,parse_route as parse_daily_route
 from imperium_source_http import ImperiumSourceCatalog, source_route as parse_imperium_source_route
 from imperium_supabase_live import ImperiumLiveSyncService, route_for as parse_imperium_live_route
+from imperium_serial_treatment import SerialTreatmentService, route_for as parse_serial_treatment_route
 from report_sheet_preview import snapshot_page
 from xml.sax.saxutils import escape
 
@@ -62,6 +63,8 @@ def filtered_query_records(records):
 
 
 def route_for(method: str, target: str):
+    if parse_serial_treatment_route(method,target) is not None:
+        return ("serial_treatment",None)
     if parse_imperium_live_route(method,target) is not None:
         return ("imperium_live",None)
     if parse_imperium_source_route(method,target) is not None:
@@ -279,6 +282,7 @@ class StockAnalysisService:
         self.daily_catalog=DailyEquipmentCatalog(root=self.root/"equipment_daily")
         self.imperium_source=ImperiumSourceCatalog(root=self.root/"imperium_source")
         self.imperium_live=ImperiumLiveSyncService()
+        self.serial_treatment=SerialTreatmentService()
         self.atlas_db=Path(atlas_db)
         self.clock=clock
         self._stop=threading.Event()
@@ -340,6 +344,8 @@ class StockAnalysisService:
             return self.imperium_source.handle(method,target,actor,body)
         if action=="imperium_live":
             return self.imperium_live.handle(method,target,actor,body)
+        if action=="serial_treatment":
+            return self.serial_treatment.handle(method,target,actor,body)
         try:
             if action=="available":
                 return 200,{"ok":True,"latest":self.latest(actor,argument)},None

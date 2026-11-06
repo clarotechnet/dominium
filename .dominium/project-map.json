@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-05T20:38:46+00:00",
+  "generated_at": "2026-11-06T15:05:10+00:00",
   "schema": 2,
-  "source_fingerprint": "af466eba96415025b1c6de4b717a8b8dc37cd6b6c69413bceff3e4b28e103ab9",
+  "source_fingerprint": "09f0e532473a91b4e5c5eb01845f3915bea030f96acb0f66b96445527980e833",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1008,14 +1008,15 @@
     {
       "path": "deploy/hostinger-web/stock-analysis-policy.js",
       "category": "tooling-deploy",
-      "bytes": 1922,
-      "sha256": "6cff3d40e45247ad5825bce2f25f0d746d7529caaad8c3a86c64397ad8c21789",
+      "bytes": 2136,
+      "sha256": "887de59490e5956ab5bce8d6a751dc7d47de1a508cce21b96356f2aff75f3b25",
       "summary": "",
       "imports": [],
       "endpoints": [
         "/api/stock/analyses/daily/import",
         "/api/stock/analyses/imperium/extract",
         "/api/stock/analyses/imperium/live",
+        "/api/stock/analyses/imperium/serial-treatment/next",
         "/api/stock/analyses/jobs"
       ],
       "env_vars": [],
@@ -1439,6 +1440,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md",
+      "category": "docs",
+      "bytes": 5392,
+      "sha256": "92f8981a200832000ee0f78b089a72af6f538b096c5fbca507fc89ff43124366",
+      "summary": "Dominium — consulta Imperium em duas etapas (06/11/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md",
       "category": "docs",
       "bytes": 18523,
@@ -1471,8 +1485,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 9251,
-      "sha256": "2eb3f7cfc6336d0a91709d6720a2687df50546e10d8bf40178d2ab62b76ef8bb",
+      "bytes": 10024,
+      "sha256": "d735fd3c591998b12671b24842a81cd1c73750d3c0afd60536dc9fad89fcd3f1",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1552,8 +1566,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 18425,
-      "sha256": "3333ddcd4cff2ab234be7714eba1eac6d6d9299e6d88e647c18cea4dbbeeb232",
+      "bytes": 19198,
+      "sha256": "e43da0cc9000a852f04a84f764390a0bd6155d5926b39d3fe811951b3d858b33",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3301,6 +3315,32 @@
       "symbol_count": 6
     },
     {
+      "path": "integrations/serial_consult/imperium_serial_treatment.py",
+      "category": "imperium",
+      "bytes": 16201,
+      "sha256": "604821850a66eb709380fbe5073340c85f04f39411f276a6da3a94b2e912b2ca",
+      "summary": "Second, explicit stage of daily Imperium equipment workflow: read-only serial treatment.",
+      "imports": [
+        "__future__",
+        "datetime",
+        "imperium_supabase_live",
+        "logging",
+        "re",
+        "serial_service",
+        "stock_analysis_http",
+        "stock_report_enrichment",
+        "threading",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/stock/analyses/imperium/serial-treatment"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 12
+    },
+    {
       "path": "integrations/serial_consult/imperium_source_http.py",
       "category": "imperium",
       "bytes": 12959,
@@ -3339,8 +3379,8 @@
     {
       "path": "integrations/serial_consult/imperium_supabase_live.py",
       "category": "imperium",
-      "bytes": 19426,
-      "sha256": "74b80d077ad2809da0d80977b537b3cc66c6d27b6b729a8eae603391cd23c8c5",
+      "bytes": 20542,
+      "sha256": "5a5dde14acbf26d3b50504425a2aa8bbdfa2bb651add70342de64c782a59ab46",
       "summary": "Live Imperium -> normalized, versioned Supabase snapshots; zero Excel dependency.",
       "imports": [
         "__future__",
@@ -3497,8 +3537,8 @@
     {
       "path": "integrations/serial_consult/stock_analysis_http.py",
       "category": "shared",
-      "bytes": 26599,
-      "sha256": "7164e72d792c603ecf3ab70ccabe41cad73869cf57e536ef2d210e19cad36f31",
+      "bytes": 26976,
+      "sha256": "7c1db72d26189aba9ab7ebce5f7d78140105ab54627fc9f8b667a483e69be47f",
       "summary": "Audited, read-only stock reports from a previously validated Atlas QUERY.",
       "imports": [
         "__future__",
@@ -3506,6 +3546,7 @@
         "contextlib",
         "datetime",
         "equipment_daily_catalog",
+        "imperium_serial_treatment",
         "imperium_source_http",
         "imperium_supabase_live",
         "io",
@@ -5438,8 +5479,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 161288,
-      "sha256": "acf199fa01bd63a591a9b2e207ba983f78de28808cafffe42c803f9cc85e9036",
+      "bytes": 163003,
+      "sha256": "b96a3c4699728f2014b7d25136bf974e4e9dec33456f940f036812be57bf10ba",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5563,8 +5604,8 @@
     {
       "path": "static/stock-daily-analysis-ui.js",
       "category": "frontend",
-      "bytes": 25462,
-      "sha256": "42850f8ffc434030a902d363e9f78ea1319de72c84e06adc770c166cfabbab96",
+      "bytes": 33253,
+      "sha256": "feaa12c9af6eb68d97bd82ae7d0fed0927b9cff4ea20310cb1bd88b0b517ca8d",
       "summary": "Daily equipment: independent period/catalog; Atlas QUERY is not its source. */",
       "imports": [],
       "endpoints": [
@@ -5576,12 +5617,15 @@
         "/api/stock/analyses/imperium/live/",
         "/api/stock/analyses/imperium/live?city=",
         "/api/stock/analyses/imperium/runs/",
-        "/api/stock/analyses/imperium/runs?city="
+        "/api/stock/analyses/imperium/runs?city=",
+        "/api/stock/analyses/imperium/serial-treatment/export?city=",
+        "/api/stock/analyses/imperium/serial-treatment/next",
+        "/api/stock/analyses/imperium/serial-treatment/status?city="
       ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 26
+      "symbol_count": 32
     },
     {
       "path": "static/stock-nav.js",
@@ -5793,6 +5837,19 @@
       "category": "imperium",
       "bytes": 3425,
       "sha256": "22e69ff3f58d8845676ec9ce1ceb5388f90724089906c04c3ba61a0cd4bb35e7",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "supabase/migrations/20261106115000_dominium_imperium_serial_treatments.sql",
+      "category": "imperium",
+      "bytes": 1590,
+      "sha256": "fbaccd244bd479df8271710014432ca81cf990251429a90bed8bd8df0ee3fe94",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7111,6 +7168,28 @@
       "symbol_count": 8
     },
     {
+      "path": "tests/test_imperium_serial_treatment.py",
+      "category": "tests",
+      "bytes": 6949,
+      "sha256": "3996be59e69c70e6799024f79308198a9017d170d8a3838014dc61140e42b590",
+      "summary": "No personal records; deterministic two-stage Imperium treatment tests.",
+      "imports": [
+        "copy",
+        "imperium_serial_treatment",
+        "imperium_supabase_live",
+        "io",
+        "pathlib",
+        "sys",
+        "unittest",
+        "zipfile"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 19
+    },
+    {
       "path": "tests/test_imperium_source_http.py",
       "category": "tests",
       "bytes": 6659,
@@ -7138,8 +7217,8 @@
     {
       "path": "tests/test_imperium_source_ui.cjs",
       "category": "tests",
-      "bytes": 2675,
-      "sha256": "59a4664fed75642f299ca05808e3fa04cfa7c27c0bb5dba221641e7b2120dfe6",
+      "bytes": 3443,
+      "sha256": "5ae03d1fc85a9fe35d8102b5386c20d65c6ba5c7e6280ad3d1bc014fff4f154c",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -8248,8 +8327,8 @@
     {
       "path": "tests/test_stock_daily_analysis_feedback.cjs",
       "category": "tests",
-      "bytes": 6655,
-      "sha256": "47d4636eb86a8293d7f8e087d8db3dae48849cf8cdbd739e7a78896035b0f1e7",
+      "bytes": 9907,
+      "sha256": "aaf457133570a97d6eafb8990d3c5605fb4d97f1b3edec717eae8ae0479e91f1",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -8257,8 +8336,12 @@
         "/api/stock/analyses/daily?city=mossoro&start=2026-11-01&end=2026-11-02",
         "/api/stock/analyses/imperium/",
         "/api/stock/analyses/imperium/live",
+        "/api/stock/analyses/imperium/live/",
         "/api/stock/analyses/imperium/live?",
-        "/api/stock/analyses/imperium/runs?"
+        "/api/stock/analyses/imperium/live?city=natal&start=2026-11-01&end=2026-11-02",
+        "/api/stock/analyses/imperium/runs?",
+        "/api/stock/analyses/imperium/serial-treatment/next",
+        "/api/stock/analyses/imperium/serial-treatment/status?"
       ],
       "env_vars": [],
       "datasnap_methods": [],

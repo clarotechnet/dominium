@@ -30,7 +30,7 @@ function mount(request, options={}){
  get("stockDailyAnalysisDate").value="2026-11-02";
  get("stockDailyAnalysisLoading").hidden=true;
  get("stockDailyLiveCategory").value="seriais_tratados";
- const state={profile:"mossoro",allCities:false,
+ const state={profile:options.profile||"mossoro",allCities:false,
               authUser:{role:options.role||"admin"},activeModule:"stock"};
  const document={
   getElementById:get,
@@ -45,7 +45,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 
 test("legacy history remains an explicit separate action",async()=>{
  assert.match(html,/id="stockDailyAnalysisLoading"/);
- assert.match(html,/stock-daily-analysis-ui\.js\?v=20261105-datasnap-supabase-2/);
+ assert.match(html,/stock-daily-analysis-ui\.js\?v=20261106-serial-two-stage-1/);
  let finish,calls=0,url;
  const {get}=mount(next=>{
   if(next.startsWith("/api/stock/analyses/imperium/"))return Promise.resolve({ok:true,history:[]});
@@ -149,4 +149,69 @@ test("live sync blocked for viewer and global selection",async()=>{
  get("stockDailyAnalysisRefresh").click();
  assert.match(get("stockDailyLiveStatus").textContent,/não está homologado/);
  assert.equal(calls,0);
+});
+
+
+test("the Natal screen shows collected serials first and only treats after second click",async()=>{
+ const id="550e8400-e29b-41d4-a716-446655440000";
+ let stepResolve;
+ const calls=[];
+ const initial={
+  ok:true,city:"natal",run:id,
+  counts:{total:2,processados:0,restantes:2,erro_consulta:0,formato_nao_suportado:0},
+  complete:false,download_enabled:false,rows:[
+   {serial:"000000000001",equipamento:"GPON",situacao:"aguardando"},
+   {serial:"000000000002",equipamento:"GPON",situacao:"aguardando"},
+  ],
+ };
+ const {get}=mount((url,opt={})=>{
+  calls.push({url,opt});
+  if(url==="/api/stock/analyses/imperium/live?city=natal&start=2026-11-01&end=2026-11-02"){
+   return Promise.resolve({ok:true,history:[{
+    id,city:"natal",start:"2026-11-01",end:"2026-11-02",
+    created_at:"2026-11-06T10:00:00Z",
+    counts:{consolidado:10,por_os:20,seriais_tratados:2,equipamentos:2,chips:0}
+   }]});
+  }
+  if(url.includes("/api/stock/analyses/imperium/live/"+id+"/data?")){
+   return Promise.resolve({ok:true,total:2,page_count:1,rows:[
+    {serial:"000000000001",equipamento:"GPON"},
+    {serial:"000000000002",equipamento:"GPON"},
+   ]});
+  }
+  if(url.startsWith("/api/stock/analyses/imperium/serial-treatment/status?")){
+   return Promise.resolve(initial);
+  }
+  if(url==="/api/stock/analyses/imperium/serial-treatment/next"){
+   return new Promise(resolve=>{stepResolve=resolve;});
+  }
+  if(url.startsWith("/api/stock/analyses/imperium/runs?"))return Promise.resolve({ok:true,history:[]});
+  if(url.startsWith("/api/stock/analyses/daily?"))return Promise.resolve({ok:true,history:[],selected:null});
+  throw new Error("Unexpected URL "+url);
+ },{profile:"natal"});
+ get("stockDailyAnalysisOpen").click();
+ await tick();await tick();await tick();await tick();
+ assert.equal(get("stockDailyTreatmentRun").disabled,false,
+   "treatment button is enabled only after choosing an existing stored source");
+ assert.equal(get("stockDailyTreatmentExport").disabled,true);
+ assert.match(get("stockDailyLiveCounts").textContent,/seriais coletados e ainda não tratados/);
+ assert.equal(calls.filter(x=>x.url.endsWith("/serial-treatment/next")).length,0,
+   "opening a collected source must never start historical serial lookups");
+ get("stockDailyTreatmentRun").click();
+ const request=calls.find(x=>x.url==="/api/stock/analyses/imperium/serial-treatment/next");
+ assert.ok(request);
+ assert.equal(request.opt.method,"POST");
+ assert.equal(JSON.parse(request.opt.body).run,id);
+ assert.equal(JSON.parse(request.opt.body).city,"natal");
+ assert.equal(get("stockDailyTreatmentPause").disabled,false);
+ get("stockDailyTreatmentPause").click();
+ stepResolve({...initial,updated:{serial:"000000000001",situacao:"historico_verificado"},
+  counts:{total:2,processados:1,restantes:1,erro_consulta:0,
+          historico_verificado:1,formato_nao_suportado:0}});
+ await tick();await tick();await tick();
+ assert.equal(calls.filter(x=>x.url==="/api/stock/analyses/imperium/serial-treatment/next").length,1,
+  "pause must stop before querying the next serial");
+ assert.equal(get("stockDailyTreatmentRun").disabled,false);
+ assert.equal(get("stockDailyTreatmentProgress").value,1);
+ assert.match(get("stockDailyTreatmentStatus").textContent,/pausada/);
 });

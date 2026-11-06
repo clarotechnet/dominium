@@ -1089,7 +1089,7 @@
           </div>
         <section id="stockDailyAnalysisPanel" hidden class="stock-daily-analysis-panel">
           <h3>Analise diaria de equipamentos</h3>
-          <p class="workspace-description">Consultar período busca imediatamente o Imperium via DataSnap, trata os seriais em memória e grava os resultados no Supabase operacional, por cidade e período. Não precisa baixar nem importar Excel. Os dados de Atlas/Assinantes para concluir as seis abas permanecem separados do relatório de origem.</p>
+          <p class="workspace-description">1. Pesquisar o período no Imperium e salvar os seriais coletados no Supabase. 2. Em outro botão, consultar cada serial no Imperium e acompanhar o progresso. 3. Baixar o relatório da tratativa quando terminar. Nenhum Excel é exigido para pesquisar ou tratar.</p>
           <div class="daily-stock-toolbar">
             <label class="field"><span>Data inicial</span><input type="date" id="stockDailyRangeStart"></label>
             <label class="field"><span>Data final</span><input type="date" id="stockDailyRangeEnd"></label>
@@ -1114,12 +1114,12 @@
           <p id="stockDailyAnalysisMessage" class="stock-analysis-status" role="status" aria-live="polite"></p>
           <section aria-label="Dados atuais Imperium salvos no Supabase">
             <h4>Consulta atual · Imperium → Supabase</h4>
-            <p class="workspace-description">Consulta os dados sem arquivos intermediários e salva as linhas originais e os seriais tratados. As seis abas finais ainda exigem as fontes Atlas, Assinantes e Nomes. Nenhuma análise incompleta será apresentada como final.</p>
+            <p class="workspace-description">Etapa 1: consulta direta ao DataSnap e salva as ordens de serviço, o consolidado e os seriais coletados. Não consulta o histórico individual de cada serial nesta etapa.</p>
             <p id="stockDailyLiveStatus" class="stock-analysis-status" role="status" aria-live="polite"></p>
             <div class="daily-stock-toolbar">
               <label class="field"><span>Execução salva no Supabase</span><select id="stockDailyLiveHistory"></select></label>
               <label class="field"><span>Dados para visualizar</span><select id="stockDailyLiveCategory">
-                <option value="seriais_tratados">Seriais tratados</option>
+                <option value="seriais_tratados">Seriais coletados (ainda não tratados)</option>
                 <option value="por_os">Dados por OS</option>
                 <option value="consolidado">Consolidado</option>
               </select></label>
@@ -1131,6 +1131,20 @@
               <span id="stockDailyLivePageInfo" class="stock-analysis-status"></span>
               <button id="stockDailyLiveNext" class="button secondary" type="button" disabled>Próxima</button>
             </div>
+          </section>
+          <section id="stockDailyTreatmentPanel" aria-label="Etapa 2 - tratativa individual dos seriais no Imperium">
+            <h4>Etapa 2 · Tratar seriais no Imperium</h4>
+            <p class="workspace-description">Depois que a pesquisa for salva no Supabase, clique em Tratar seriais. O sistema consulta um serial por vez na API somente leitura do Imperium, salva cada resposta no Supabase e permite retomar a operação. Seriais de 20 caracteres ficam identificados como formato não suportado, nunca como inexistentes.</p>
+            <div class="daily-stock-toolbar">
+              <button id="stockDailyTreatmentRun" class="button primary" type="button" disabled>Tratar seriais coletados</button>
+              <button id="stockDailyTreatmentPause" class="button secondary" type="button" disabled>Pausar após o serial atual</button>
+              <button id="stockDailyTreatmentExport" class="button secondary" type="button" disabled>Baixar XLSX dos seriais tratados</button>
+            </div>
+            <progress id="stockDailyTreatmentProgress" value="0" max="1" style="width:100%;max-width:640px;"></progress>
+            <p id="stockDailyTreatmentStatus" class="stock-analysis-status" role="status" aria-live="polite">Pesquise um período na etapa 1 para iniciar a tratativa.</p>
+            <p id="stockDailyTreatmentCounts" class="stock-analysis-status"></p>
+            <div class="table-scroll"><table id="stockDailyTreatmentTable" class="daily-stock-table"></table></div>
+            <p class="stock-analysis-warning">Este relatório apresenta as consultas e as pendências de cada serial. O histórico de movimentação não prova sozinho a posse física atual. A montagem final das seis abas de Atlas/Assinantes/Nomes. continua separada.</p>
           </section>
           <details class="daily-stock-legacy-import" aria-label="Exportação opcional de fonte Imperium em Excel">
             <summary>Exportação XLSX da fonte Imperium (opcional)</summary>
@@ -2711,7 +2725,7 @@
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>
   <script src="/stock-nav.js?v=20261103-global-1"></script>
   <script src="/stock-analysis-ui.js?v=20261103-global-1"></script>
-  <script src="/stock-daily-analysis-ui.js?v=20261105-datasnap-supabase-2"></script>
+  <script src="/stock-daily-analysis-ui.js?v=20261106-serial-two-stage-1"></script>
   <script src="/stock-report-preview-ui.js?v=20261103-global-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>

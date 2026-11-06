@@ -9,6 +9,7 @@ let selected=null,activeTab=0,fetching=false,refreshQueued=false;
 let allRuns=[];
 let sourceSelected=null,sourceRuns=[],sourceBusy=false,sourceTab=0;
 let liveRuns=[],liveSelected=null,livePage=1,liveBusy=false;
+let treatmentBusy=false,treatmentStop=false,treatmentState=null;
 const currentCity=()=>state.allCities?"all":state.profile;
 const canWrite=()=>!state.allCities&&["admin","controller"].includes(state.authUser?.role);
 function status(msg,error=false){
@@ -426,7 +427,7 @@ async function showLivePage(page){
   el("stockDailyLiveCounts").textContent=
    "Salvo no Supabase • "+(c.consolidado||0)+" consolidados • "+
    (c.por_os||0)+" registros por OS • "+(c.seriais_tratados||0)+
-   " seriais tratados ("+(c.equipamentos||0)+" equipamentos e "+
+   " seriais coletados e ainda não tratados ("+(c.equipamentos||0)+" equipamentos e "+
    (c.chips||0)+" chips). Resultado de origem, ainda não o relatório final de seis abas.";
  }catch(err){liveMessage("Falha ao visualizar registros no Supabase: "+(err.message||err),true);}
 }
@@ -434,6 +435,7 @@ async function loadLiveHistory(selectId){
  const city=currentCity(),start=el("stockDailyRangeStart").value,
        end=el("stockDailyRangeEnd").value;
  clearLivePreview();
+ clearTreatmentView();
  liveButton();
  if(city==="all"){
   liveMessage("Selecione uma praça para consultar o Imperium. Todos não mistura as bases.");
@@ -455,7 +457,7 @@ async function loadLiveHistory(selectId){
    const option=document.createElement("option");
    option.value=row.id;
    option.textContent=row.city.toUpperCase()+" • "+row.start+" a "+row.end+
-    " • "+new Date(row.created_at).toLocaleString("pt-BR");
+    " • atualizado em "+new Date(row.checked_at||row.created_at).toLocaleString("pt-BR");
    fragment.appendChild(option);
   }
   el("stockDailyLiveHistory").replaceChildren(fragment);
@@ -464,8 +466,10 @@ async function loadLiveHistory(selectId){
    el("stockDailyLiveHistory").value=liveSelected.id;
    await showLivePage(1);
    liveMessage("Consulta concluída e persistida no Supabase operacional. "+
-    "Visualize as linhas tratadas ou os datasets originais.");
+    "Os seriais foram coletados; a tratativa individual é uma segunda etapa.");
+   await loadTreatmentStatus();
   }else{
+   clearTreatmentView();
    liveMessage("Nenhuma consulta salva para "+city.toUpperCase()+
     " neste período. Clique em Consultar período para buscar diretamente pelo DataSnap.");
   }
@@ -493,20 +497,194 @@ async function consultLivePeriod(){
   if(city!==currentCity())return;
   await loadLiveHistory(payload.selected?.id);
   if(liveSelected){
-   liveMessage((payload.reused?"Consulta existente recuperada":"Novos dados gravados")+
+   liveMessage((payload.reused?"Pesquisa confirmada sem mudanças na fonte":"Seriais coletados e gravados")+
     " no Supabase operacional, para "+city.toUpperCase()+". "+
-    "O tratamento da origem foi concluído; a conferência final Atlas/Assinantes/Nomes. continua pendente.");
+    "Confira os seriais da etapa 1 e use o segundo botão para iniciar a tratativa.");
   }
  }catch(err){
   liveMessage("Consulta não concluída; nenhum resultado parcial será exibido como final: "+
    (err.message||err),true);
  }finally{liveBusy=false;liveButton();}
 }
+function clearTreatmentView(){
+ treatmentStop=true;
+ treatmentState=null;
+ const bar=el("stockDailyTreatmentProgress");
+ bar.value=0;bar.max=1;
+ el("stockDailyTreatmentTable").replaceChildren();
+ el("stockDailyTreatmentCounts").textContent="";
+ el("stockDailyTreatmentStatus").textContent="Selecione uma coleta da etapa 1 para iniciar a tratativa.";
+ updateTreatmentButtons();
+}
+function updateTreatmentButtons(){
+ const city=currentCity(),run=liveSelected;
+ const eligible=canWrite()&&city==="natal"&&!!run;
+ const busy=treatmentBusy;
+ const counts=treatmentState?.counts||{};
+ const complete=treatmentState?.complete===true;
+ const runButton=el("stockDailyTreatmentRun");
+ runButton.disabled=busy||!eligible||(complete&&!(counts.erro_consulta>0));
+ runButton.setAttribute("aria-busy",String(busy));
+ runButton.textContent=busy?"Tratando seriais no Imperium...":
+  complete&&counts.erro_consulta>0?"Repetir consultas com falha":
+  complete?"Tratativa concluída":"Tratar seriais coletados";
+ runButton.title=city!=="natal"
+  ?"Tratativa individual ainda homologada somente para Natal"
+  :!run?"Pesquise um período e selecione a coleta salva antes de tratar":"Consultar cada serial e salvar no Supabase";
+ el("stockDailyTreatmentPause").disabled=!busy;
+ el("stockDailyTreatmentExport").disabled=!run||!treatmentState?.download_enabled;
+}
+function showTreatmentResult(result){
+ treatmentState=result;
+ const counts=result.counts||{};
+ const total=Math.max(1,counts.total||0);
+ const bar=el("stockDailyTreatmentProgress");
+ bar.max=total;
+ bar.value=Math.min(total,counts.processados||0);
+ el("stockDailyTreatmentCounts").textContent=
+  (counts.processados||0)+" de "+(counts.total||0)+" seriais consultados/avaliados • "+
+  (counts.historico_verificado||0)+" com histórico • "+
+  (counts.sem_movimentos||0)+" sem movimentos confirmados • "+
+  (counts.erro_consulta||0)+" falhas • "+
+  (counts.formato_nao_suportado||0)+" formatos pendentes.";
+ const table=el("stockDailyTreatmentTable");
+ table.replaceChildren();
+ const header=["Serial","Equipamento","Situação","Histórico","Movimentos","Posse atual","Observação"];
+ const fields=["serial","equipamento","situacao","historico_confirmado",
+  "quantidade_movimentos","posse_atual_comprovada","observacao"];
+ const thead=document.createElement("thead"),tr=document.createElement("tr");
+ for(const text of header){
+  const th=document.createElement("th");th.textContent=text;tr.appendChild(th);
+ }
+ thead.appendChild(tr);table.appendChild(thead);
+ const tbody=document.createElement("tbody");
+ for(const record of result.rows||[]){
+  const row=document.createElement("tr");
+  for(const field of fields){
+   const td=document.createElement("td");
+   const val=record[field];
+   td.textContent=typeof val==="boolean"?(val?"Sim":"Não"):
+    val===null||val===undefined?"":String(val);
+   row.appendChild(td);
+  }
+  tbody.appendChild(row);
+ }
+ table.appendChild(tbody);
+ el("stockDailyTreatmentStatus").textContent=result.complete
+  ?(result.status==="concluido_com_pendencias"
+    ?"Tratativa concluída com pendências identificadas. O relatório pode ser baixado com os avisos."
+    :"Tratativa concluída e salva no Supabase. O relatório está disponível para download.")
+  :"Tratativa "+(counts.processados||0)+"/"+(counts.total||0)+
+   " persistida no Supabase. Use o botão para iniciar ou continuar de onde parou.";
+ updateTreatmentButtons();
+}
+async function loadTreatmentStatus(){
+ const run=liveSelected,city=currentCity();
+ treatmentStop=true;
+ treatmentState=null;
+ updateTreatmentButtons();
+ if(!run){
+  el("stockDailyTreatmentStatus").textContent="Pesquise primeiro os equipamentos utilizados.";
+  return;
+ }
+ if(city!=="natal"){
+  el("stockDailyTreatmentStatus").textContent=
+   "Os seriais foram coletados. A consulta individual DataSnap está homologada apenas em Natal; "+
+   "Mossoró/Recife aguardam validação do método por serial.";
+  return;
+ }
+ try{
+  const data=await request("/api/stock/analyses/imperium/serial-treatment/status?city="+
+   encodeURIComponent(city)+"&run="+encodeURIComponent(run.id),{timeoutMs:30000});
+  if(city!==currentCity()||run.id!==liveSelected?.id)return;
+  if(!data?.ok)throw new Error(data?.error||"Tratativa indisponível");
+  showTreatmentResult(data);
+ }catch(err){
+  if(city===currentCity()&&run.id===liveSelected?.id){
+   el("stockDailyTreatmentStatus").textContent=
+    "Não foi possível carregar a tratativa do Supabase: "+(err.message||err);
+  }
+ }
+}
+async function treatCollectedSerials(){
+ const city=currentCity(),run=liveSelected;
+ if(treatmentBusy)return;
+ if(city!=="natal"||!run){
+  el("stockDailyTreatmentStatus").textContent=
+   "Selecione uma coleta salva de Natal; a tratativa individual de outras praças ainda não foi validada.";
+  return;
+ }
+ if(!canWrite()){
+  el("stockDailyTreatmentStatus").textContent="Somente administrador/controlador pode executar a tratativa.";
+  return;
+ }
+ treatmentBusy=true;treatmentStop=false;updateTreatmentButtons();
+ let retryErrors=Boolean(treatmentState?.complete&&treatmentState?.counts?.erro_consulta);
+ try{
+  while(!treatmentStop&&currentCity()===city&&liveSelected?.id===run.id){
+   el("stockDailyTreatmentStatus").textContent=
+    "Consultando o próximo serial no Imperium e salvando o resultado no Supabase...";
+   const result=await request("/api/stock/analyses/imperium/serial-treatment/next",{
+    method:"POST",headers:{"content-type":"application/json"},
+    body:JSON.stringify({city,run:run.id,retry_errors:retryErrors}),
+    timeoutMs:120000
+   });
+   if(!result?.ok)throw new Error(result?.error||"Consulta do serial não confirmada");
+   if(currentCity()!==city||liveSelected?.id!==run.id)return;
+   showTreatmentResult(result);
+   if(!result.updated){
+    if(!retryErrors&&result.complete&&(result.counts?.erro_consulta||0)>0){
+     retryErrors=true;continue;
+    }
+    break;
+   }
+  }
+  if(treatmentStop){
+   el("stockDailyTreatmentStatus").textContent=
+    "Tratativa pausada. Os resultados já consultados foram salvos; clique novamente para retomar.";
+  }
+ }catch(err){
+  el("stockDailyTreatmentStatus").textContent=
+   "Tratativa interrompida: "+(err.message||err)+
+   ". Os seriais já confirmados continuam salvos no Supabase; clique para retomar.";
+ }finally{treatmentBusy=false;updateTreatmentButtons();}
+}
+async function downloadTreatment(){
+ const run=liveSelected,city=currentCity();
+ if(!run||!treatmentState?.download_enabled)return;
+ try{
+  const result=await requestBlob("/api/stock/analyses/imperium/serial-treatment/export?city="+
+   encodeURIComponent(city)+"&run="+encodeURIComponent(run.id),{timeoutMs:120000});
+  const bytes=new Uint8Array(await result.blob.slice(0,4).arrayBuffer());
+  if(result.blob.size<300||bytes[0]!==80||bytes[1]!==75||bytes[2]!==3||bytes[3]!==4){
+   throw new Error("Relatório retornado não é um XLSX válido");
+  }
+  saveBlob(result.blob,"TRATATIVA-SERIAIS-"+city.toUpperCase()+"-"+
+   (run.start||"periodo")+".xlsx");
+ }catch(err){
+  el("stockDailyTreatmentStatus").textContent=
+   "Falha ao baixar o relatório tratado: "+(err.message||err);
+ }
+}
+clearTreatmentView();
+el("stockDailyTreatmentRun").addEventListener("click",()=>void treatCollectedSerials());
+el("stockDailyTreatmentPause").addEventListener("click",()=>{
+ if(treatmentBusy){
+  treatmentStop=true;
+  el("stockDailyTreatmentStatus").textContent="Pausando após concluir a consulta atual...";
+ }
+});
+el("stockDailyTreatmentExport").addEventListener("click",()=>void downloadTreatment());
 el("stockDailyAnalysisRefresh").addEventListener("click",()=>void consultLivePeriod());
 el("stockDailyHistoryRefresh").addEventListener("click",()=>void loadDaily());
 el("stockDailyLiveHistory").addEventListener("change",event=>{
+ treatmentStop=true;
+ clearTreatmentView();
  liveSelected=liveRuns.find(x=>x.id===event.target.value)||null;
- if(liveSelected)void showLivePage(1);
+ if(liveSelected){
+  void showLivePage(1);
+  void loadTreatmentStatus();
+ }
 });
 el("stockDailyLiveCategory").addEventListener("change",()=>void showLivePage(1));
 el("stockDailyLivePrevious").addEventListener("click",()=>void showLivePage(livePage-1));

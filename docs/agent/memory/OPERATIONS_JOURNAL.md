@@ -267,3 +267,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 36 testes Python e 12 testes Node passaram; Supabase operacional respondeu HTTP 404 pois duas novas tabelas ainda precisam de migracao; nenhuma alteracao de banco ou deploy em producao
 
 **Próximo passo/pendência:** Aplicar SQL em haqzzxpocwzntyudrbch, validar sync no Supabase real e publicar worker+Hostinger juntos
+
+## 2026-11-06 15:04 UTC — Consulta e tratativa de seriais do Imperium separadas em duas etapas
+
+**Motivo:** Operador pesquisa periodo no Imperium, salva seriais no Supabase e so depois clica Tratar seriais para executar historico individual
+
+**Alterado:** Nova migration de itens por serial; servico com next status export; rotas relay autenticadas; UI com progresso pausa retomada; nao obriga Excel
+
+**Verificação:** Smoke real DataSnap Natal 05-11-2026: 1096 OS e 209 seriais; historico primeiro serial confirmado e progresso 0 para 1 com repo simulado; 45 Python e 13 JS aprovados; nao gravou no Supabase operacional
+
+**Próximo passo/pendência:** Executar migrations no projeto haqzzxpocwzntyudrbch e homologar escrita real; integrar demais fontes para seis abas

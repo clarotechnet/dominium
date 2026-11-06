@@ -42,7 +42,7 @@ tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
 tooling-deploy	deploy/hostinger-web/server.js	41	35	1		f83f42996c43048f
-tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	4			6cff3d40e45247ad
+tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	5			887de59490e5956a
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -71,15 +71,16 @@ docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor d
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
 docs	docs/agent/GLOBAL_TODOS_SCOPE_20261103.md				DOMINIUM — escopo global "Todos" e desbloqueio do Backlog (03/11/2026)	236973d4848064d1
 docs	docs/agent/IMPERIUM_DATASNAP_SUPABASE_LIVE_20261105.md				Dominium: Consultar período -> DataSnap -> Supabase (05/11/2026)	cedb896e473eb6f4
+docs	docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md				Dominium — consulta Imperium em duas etapas (06/11/2026)	92f8981a20083200
 docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	2eb3f7cfc6336d0a
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	d735fd3c591998b1
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
 docs	docs/agent/memory/CURRENT_STATE.md			2	Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106	877aebfdd93ae9fe
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	3333ddcd4cff2ab2
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	e43da0cc9000a852
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md				Caso real confirmado e ponte compartilhada preservada	281b6cb6cc46851e
@@ -175,15 +176,16 @@ imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | C
 shared	integrations/serial_consult/desc_review_relay.py	8	2		Authenticated relay for DESC review and private read-only Imperium checks.	5a42732796f2450f
 shared	integrations/serial_consult/equipment_daily_catalog.py	9	3		Persisted daily equipment-analysis workbook, independent of the Atlas QUERY.	ee8057fcdb851041
 shared	integrations/serial_consult/equipment_video_transform.py	6			Verified part of the video-style six-tab equipment reconciliation.	d6b1edf9bedc539a
+imperium	integrations/serial_consult/imperium_serial_treatment.py	12	1		Second, explicit stage of daily Imperium equipment workflow: read-only serial treatment.	604821850a66eb70
 imperium	integrations/serial_consult/imperium_source_http.py	6	3		Source-specific Imperium used-equipment period extraction with local history.	993b0c3b3d38a736
-imperium	integrations/serial_consult/imperium_supabase_live.py	19	1		Live Imperium -> normalized, versioned Supabase snapshots; zero Excel dependency.	74b80d077ad2809d
+imperium	integrations/serial_consult/imperium_supabase_live.py	19	1		Live Imperium -> normalized, versioned Supabase snapshots; zero Excel dependency.	5a5dde14acbf26d3
 shared	integrations/serial_consult/midas_reader.py	3			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	aad873daa06bbe87
 shared	integrations/serial_consult/monitor_snapshot_relay.py	1	1		Read-only bridge for the existing TOA CSV monitor snapshots.	5202d89531eb4b46
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
 shared	integrations/serial_consult/report_sheet_preview.py	1			SQLite materialized, paged views of completed stock-analysis XLSX reports.	59f0d19563f30298
 shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
 shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only serial consultation: real DataSnap history + local evidence.	d9f51c614747ed37
-shared	integrations/serial_consult/stock_analysis_http.py	18	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	7164e72d792c603e
+shared	integrations/serial_consult/stock_analysis_http.py	18	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	7c1db72d26189aba
 shared	integrations/serial_consult/stock_report_enrichment.py	3			Bounded read-only DataSnap enrichment for stock XLSX reports.	dff77b77c7f8eec5
 shared	integrations/serial_consult/used_equipment_live_datasnap.py	6			Capturably identical READ-ONLY Imperium equipment report requests.	d94464678263744f
 shared	integrations/serial_consult/used_equipment_report.py	7		1	Read-only, fail-closed integration foundation for Imperium Equipamentos Utilizados.	fc26265defff25d8
@@ -289,7 +291,7 @@ frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			acf199fa01bd63a5
+frontend	static/index.html		1			b96a3c4699728f20
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
@@ -298,7 +300,7 @@ frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no pain
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
 frontend	static/stock-analysis-ui.js	13	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	b1919e4fb8a8da41
-frontend	static/stock-daily-analysis-ui.js	26	9		Daily equipment: independent period/catalog; Atlas QUERY is not its source. */	42850f8ffc434030
+frontend	static/stock-daily-analysis-ui.js	32	12		Daily equipment: independent period/catalog; Atlas QUERY is not its source. */	feaa12c9af6eb68d
 frontend	static/stock-nav.js	7			Navegacao consolidada de Estoque (mantem os modulos existentes). */	3263ee4c4be095a4
 frontend	static/stock-report-preview-ui.js	5	2		The three stock analysis processes have independent, paged workspace views. */	09735f63ebcd8565
 frontend	static/styles.css					a73066faa0b46aee
@@ -314,6 +316,7 @@ shared	supabase/migrations/20260928132700_harden_dominium_bridge_rpc_grants.sql	
 shared	supabase/migrations/20260928132900_explicit_deny_policies_for_server_owned_tables.sql					ccdcef1918ac45e1
 shared	supabase/migrations/20261028153000_estoque_diario.sql					50e6265d0f2fc5d4
 imperium	supabase/migrations/20261105173000_dominium_imperium_live_periods.sql					22e69ff3f58d8845
+imperium	supabase/migrations/20261106115000_dominium_imperium_serial_treatments.sql					fbaccd244bd479df
 shared	supabase_auth_store.py	28				127a75071634aba0
 shared	supabase_schema.sql					f4c24a6069098221
 shared	technician_directory.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	c428cc21c4d30f17
@@ -380,8 +383,9 @@ tests	tests/test_hostinger_runtime_dependencies.py	2			Prevent Node startup fail
 tests	tests/test_imperium_api.py	86		1		06cc74dc3a92ff00
 tests	tests/test_imperium_http_api.py	25				25ab6758e210eefb
 tests	tests/test_imperium_http_plan.py	8				056547e8c6b8d815
+tests	tests/test_imperium_serial_treatment.py	19			No personal records; deterministic two-stage Imperium treatment tests.	3996be59e69c70e6
 tests	tests/test_imperium_source_http.py	13	1		Source-only, permission-safe Imperium extraction for an authorized Natal profile.	1106940b94ce685a
-tests	tests/test_imperium_source_ui.cjs		1			59a4664fed75642f
+tests	tests/test_imperium_source_ui.cjs		1			5ae03d1fc85a9fe3
 tests	tests/test_imperium_supabase_live.py	16	1		No Excel intermediary: DataSnap -> normalized records -> private Supabase batches.	2a80f60bcb64a857
 tests	tests/test_import_audit_history.py	3				6df23f085d3bdbda
 tests	tests/test_import_hostinger.js	3	7			798f5671d881d663
@@ -435,7 +439,7 @@ tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_all_scope.cjs	3				1dd1b43e48b9d7ca
 tests	tests/test_stock_analysis_proxy.cjs	3	10			e2efb9fdbb96ae28
 tests	tests/test_stock_analysis_reports.py	12	7		Tests for safe, cached, actor-scoped stock analysis report generation.	81edf96228f8fb8c
-tests	tests/test_stock_daily_analysis_feedback.cjs	4	6			47d4636eb86a8293
+tests	tests/test_stock_daily_analysis_feedback.cjs	4	10			aaf457133570a97d
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7
 tests	tests/test_stock_navigation_monitor.cjs	1				aefd6adac71f9b55
 tests	tests/test_stock_pdf.py	5		1		63db548ac3442d35

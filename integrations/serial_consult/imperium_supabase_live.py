@@ -178,8 +178,8 @@ class SupabasePeriodStore:
         self.url=url+"/rest/v1/"
         self.key=key
 
-    def call(self,table,method="GET",*,query=None,body=None):
-        if table not in (RUNS,BATCHES):
+    def call(self,table,method="GET",*,query=None,body=None,upsert=False):
+        if table not in (RUNS,BATCHES,"dominium_imperium_tratamento_itens"):
             raise LiveSyncError(500,"internal_table","Tabela de destino não autorizada")
         if self._requester is not None:
             return self._requester(table,method,query,body)
@@ -188,7 +188,8 @@ class SupabasePeriodStore:
         if raw is not None and len(raw)>3_000_000:
             raise LiveSyncError(413,"batch_too_large","Lote de dados acima do limite seguro")
         headers={"apikey":self.key,"Authorization":"Bearer "+self.key,
-                 "Accept":"application/json","Prefer":"return=representation"}
+                 "Accept":"application/json","Prefer":"return=representation"+(
+                     ",resolution=merge-duplicates" if upsert and method=="POST" else "")}
         if raw is not None:headers["Content-Type"]="application/json"
         req=Request(address,data=raw,method=method,headers=headers)
         try:
@@ -224,9 +225,11 @@ class SupabasePeriodStore:
     def _public(run:dict):
         if run.get("estado")!="concluido":
             raise LiveSyncError(503,"incomplete_run","Consulta Supabase ainda não concluída")
-        counts=(run.get("observacoes") or {}).get("contagens") or {}
+        notes=run.get("observacoes") or {}
+        counts=notes.get("contagens") or {}
         return {"id":run["id"],"city":run["cidade"],"start":run["data_inicio"],
                 "end":run["data_fim"],"created_at":run["criado_em"],
+                "checked_at":notes.get("ultima_verificacao_em") or run["criado_em"],
                 "counts":counts,"status":"concluido","storage":"supabase",
                 "source":"imperium_datasnap","complete_six_tab_analysis":False}
 
@@ -239,13 +242,28 @@ class SupabasePeriodStore:
         })
         if not isinstance(rows,list):
             raise LiveSyncError(502,"supabase_response","Histórico Supabase inválido")
-        return self._public(rows[0]) if rows else None
+        return rows[0] if rows else None
 
     def store(self,city,start,end,actor,data,counts,digest):
         duplicate=self.find_duplicate(city,start,end,digest)
-        if duplicate:return {"ok":True,"reused":True,"selected":duplicate}
+        checked_at=datetime.now(timezone.utc).isoformat()
+        if duplicate:
+            # A fresh DataSnap query happened even when contents are identical.
+            # Keep the same immutable data batches, but record the new check.
+            notes=dict(duplicate.get("observacoes") or {})
+            notes["ultima_verificacao_em"]=checked_at
+            notes["ultima_consulta_por"]=actor
+            verified=self.call(RUNS,"PATCH",query={
+                "id":"eq."+duplicate["id"],"estado":"eq.concluido",
+            },body={"observacoes":notes})
+            if not isinstance(verified,list) or len(verified)!=1:
+                raise LiveSyncError(502,"supabase_write",
+                                    "Supabase não confirmou a atualização da consulta")
+            return {"ok":True,"reused":True,"selected":self._public(verified[0])}
         run_id=str(uuid.uuid4())
-        summary={"contagens":counts,"etapa":"fonte_tratada",
+        summary={"contagens":counts,"etapa":"seriais_coletados",
+                 "ultima_verificacao_em":checked_at,
+                 "ultima_consulta_por":actor,
                  "pendencias_analise_final":["Atlas","Assinantes","Nomes.","data_modelo_video","nomes_modelos"]}
         starting={
             "id":run_id,"cidade":city,"data_inicio":start,"data_fim":end,
