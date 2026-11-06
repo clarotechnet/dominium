@@ -1,62 +1,42 @@
-# DOMINIUM — Controle de baixas e Tratativa Claro (06/11/2026)
+# DOMINIUM — Controle de baixas: fila animada por cidade
 
-## Estado da entrega
+**Registro:** 06/11/2026. **Branch:** `feat/controle-baixas-homolog-20261106`. **Estado:** interface de homologação, sem chamadas TOA ou baixas.
 
-- **Implementado em branch de homologação:** `feat/controle-baixas-homolog-20261106`.
-- **Produção:** não liberar automações de baixa desta branch. Botões "Iniciar improdutivas/produtivas" continuam desabilitados.
-- **Controle de baixas:** menu novo, filas por janela, próxima consulta, tratamento humano e prévia das baixas, dados fictícios ou lista Imperium já carregada.
-- **Tratativa Claro:** quadro com quatro cidades sob Análise Backlog > Tratativa do dia, reutilizando `/api/backlog/year/status` já chamado pelo módulo existente, sem disparar consultas TOA adicionais. Mostra cartões e exportação CSV para os registros previamente tratados.
-- **Fora de Rota:** botão abre aba existente, sem envio externo.
-- **Validação:** Node.js `node --test tests/test_close_control_engine.js tests/test_backlog_claro_board.cjs`; regressões de módulo backlog e semiautomática. Capturas Chrome de homologação em diretório local não versionado.
-- **Dados de clientes:** não foram adicionados ao GitHub ou ao Graphify.
+## Correção de escopo
 
-## Regras de decisão do novo motor
+A visualização de **quatro cidades pertence exclusivamente ao Controle de baixas**, NÃO à Análise Backlog.
 
-1. Exige contrato e O.S., janela válida e hora dentro da janela antes de sugerir consulta.
-2. Exige prova explícita de rota importada, O.S. importada e O.S. presente no Imperium.
-3. Para pendente/em rota, nova consulta após **30 minutos**; para iniciada, **15 → 20 → 30 → 30** a partir das leituras reais.
-4. Ao encontrar TOA concluído, exige código, detalhe da tarefa, identidade, bucket e materiais validados, além de confirmar que a baixa ainda não consta do Imperium.
-5. `confirmationState=sent/uncertain` impede o reenvio e exige conciliação.
-6. Planejamento por contrato gera sugestões deduplicadas; `networkCalls=0`, `closesSent=0`.
-7. Não salva cooldown em banco nem implementa agendamento: **isso está pendente no backend**.
+- **Controle de baixas:** O.S. de Natal/Parnamirim, Fortaleza, Recife e Mossoró, com a fila de trabalho, erro e confirmação no Imperium.
+- **Análise Backlog:** origem Claro, cruzamento com histórico Imperium e Fora de Rota. **Nenhuma alteração funcional** nesse módulo nesta revisão.
+- A tentativa anterior de adicionar `backlog-claro-board.*` foi desfeita; os arquivos foram retirados da branch.
 
-## Regra de negócios de improdutivas
+## Fila visual por cidade
 
-- O código **430 é retirada produtiva**, jamais classificar como improdutiva.
-- Pendente não é improdutiva. Falha de leitura ou ausência de código validado exige tratativa humana.
-- O sistema DESC já possui worker operacional próprio. NÃO substituir, interromper ou alterar a automação atual durante a implantação desta interface.
-- O painel novo é apenas leitura e não executa baixas.
+A separação entre estado operacional e estado visual é explícita.
 
-## Limite de integração com o Worker antigo
+1. **Em tratamento:** a O.S. ativa fica na primeira posição, no topo da cidade.
+2. **Erro:** a O.S. desce para a área de revisão humana, abaixo da O.S. ativa; os erros mais recentes aparecem antes dos anteriores, que descem.
+3. **Confirmada:** só entra no histórico depois de confirmação positiva do Imperium; fica abaixo das O.S. pendentes e com erro.
+4. **Aguardando:** somente atividades elegíveis na janela e importadas podem entrar em tratamento. Pendente/em rota é consultada após 30 min; iniciada em 15, 20, 30 min, mantendo 30.
+5. **Divergência/incerteza:** fica para revisão, sem reenvio automático.
+6. A lista movimenta os cartões com técnica **FLIP**, animação de cerca de 460 ms, somente quando muda posição. Com preferência de movimento reduzido, a animação é omitida.
 
-O Worker Cloudflare `analise-backlog` ainda mantém a base própria de backlog e endpoints:
-- `POST /api/backlog/query`: contratos encontrados na base do Worker;
-- `GET /api/backlog/meta`: estado da base;
-- `GET /api/fora-rota/sent` e endpoints de confirmação de enviados.
+**Importante:** nenhuma dessas transições é acionada pela API real nesta etapa. O protótipo possui botões de **simulação exclusivamente com O.S. fictícias**: Próxima O.S., Erro e Baixa confirmada. Em modo de dados já carregados do Imperium esses botões somem.
 
-O módulo DOMINIUM `Análise Backlog` utiliza `/api/backlog/year/status` e `/api/backlog/year/fora-rota`, com outra origem de dados. Este PR **não importa a base da Claro do Worker**, não substitui os relatórios do Worker e não sincroniza o histórico `sent` entre esses sistemas. Exibir quatro colunas sobre dados diários do DOMINIUM **não** garante paridade com o gerador completo do Worker.
+## Integração futura
 
-**Próxima integração necessária para paridade funcional:**
-- Criar leitura autenticada pelo backend, sem acesso público a contratos/telefones e sem espalhar credenciais no navegador.
-- Consultar de maneira batelada/cached a base do Worker somente com autorização, e cruzar com estado atual confirmado no Imperium; não marcar como improdutiva por histórico isolado.
-- Integrar bairro, quantidade, agenda, técnico, geração de mensagem, registro de enviado e deduplicação persistente no DOMINIUM.
-- Homologar com rotas reais, auditar divergências, preservar acesso ao Worker antigo até validação completa.
+O backend autorizado precisará publicar eventos com IDs de O.S. e contrato, cidade, data/hora e estado de trabalho. Eventos de confirmação devem apontar para evidência de baixa no Imperium. Persistir histórico e tentativas para não perder a ordem da fila ao atualizar a página ou reiniciar o processo.
 
-## Importação repetida em 03/11/2026
+Atribuição de cidade não pode usar "Todos" como localidade. Uma O.S. sem cidade comprovada continua sem classificação.
 
-Logs locais DOMINIUM: **44 importações registradas**, **6 nomes de arquivo distintos**, somente Natal/Parnamirim, em janelas de execução 08:47–17:25. Houve 12 registros na hora 09:00. Somatório de `imported` é **700**, que **não** significa 700 O.S. distintas.
+A interface **não** controla a ordem real de execução no backend, não executa `GET` ao TOA e não executa `POST` ao Imperium. Preserva todos os bloqueios para Adesão e PROD enquanto a homologação de negócio está pendente.
 
-**Risco:** sessões TOA poderiam nem estar abertas em 01/11 e 02/11; ciclos do coletor não provam chamadas Oracle. Não publicar estimativas de requisições Oracle como contagens oficiais.
+## Verificação e deploy
 
-## TOA: 1 sessão versus 5 logins
-
-**Não distribuir consultas para contornar suspensão por detecção de automação.** Primeiro obter o limite autorizado da Claro para a organização e para cada sessão. Preferir:
-- cache compartilhado por contrato/OS com carimbo, janela e status;
-- deduplicação global por contrato e cronograma persistente;
-- teto diário/hora e cancelamento por HTTP 401/403/429;
-- fila central com somente uma leitura simultânea por sessão autorizada;
-- expansão para várias sessões apenas com aprovação e **mesmo orçamento global**, para tolerância a falha, não para elevar volume total.
-
-## Rollback
-
-Branch isolada derivada da `main` de `clarotechnet/dominium`. Basta não fazer merge/deploy. Ações operacionais não foram ativadas. O diretório local `C:\DominiumRuntime\ControleBaixasLab-20261106\backups\controle-baixas-20261106` contém cópias pré-mudança de `app.js` e `index.html` (não comitar).
+- `node --test tests/test_close_control_city_board.cjs tests/test_close_control_engine.js`: aprovados.
+- Testes de regressão do Backlog e semiautomática: aprovados.
+- Chrome headless: capturas do cenário inicial, erro e baixa confirmada, executadas somente no computador de homologação.
+- Acesso local: `http://127.0.0.1:8878/controle-baixas-smoke-preview.html` no PC de trabalho.
+- Código em PR do DOMINIUM; **não publicado na Hostinger**.
+- Os arquivos `smoke_*.png`, `animacao_*.png`, perfis do navegador e geradores de preview local são temporários; **não versionar**.
+- O Worker da Claro e o módulo Análise Backlog existente continuam separados desta funcionalidade.

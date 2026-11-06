@@ -150,6 +150,7 @@
       ...base, os:"DEMO-OS-"+String(i).padStart(2,"0"),
       contract:"DEMO-C"+String(i).padStart(2,"0"),
       technician:"Técnico demonstrativo "+i,
+      city: ["natal","natal","fortaleza","fortaleza","fortaleza","recife","recife","mossoro","mossoro","mossoro"][i-1],
       windowStart:start, windowEnd:end, toaStatus:status, toaObservedAt:obs,
       ...other,
     });

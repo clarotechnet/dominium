@@ -12,7 +12,6 @@
   <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-image-1">
   <link rel="stylesheet" href="/all-cities-scope.css?v=20261103-global-1">
   <link rel="stylesheet" href="/close-control.css?v=20261106-homolog-1">
-  <link rel="stylesheet" href="/backlog-claro-board.css?v=20261106-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -1510,6 +1509,31 @@
       <div class="cc-note">
         <strong>Fluxo de segurança:</strong> confirmar rota importada e O.S. existente no Imperium → validar janela → consultar TOA somente quando vencer o intervalo → validar código, materiais e equipamentos → preparar baixa → confirmar baixa efetiva no Imperium. Em caso de retorno incerto, interromper e enviar para tratativa humana.
       </div>
+      <section class="cc-city-area" aria-label="Baixas por cidade">
+        <div class="cc-city-heading">
+          <div>
+            <h3>Baixas por cidade</h3>
+            <p class="cc-subtle">O.S. acompanhadas, aguardando baixa, confirmadas e com erro. Sem dados de backlog da Claro.</p>
+          </div>
+          <span class="cc-safe" id="ccCitySource">Dados de homologação</span>
+        </div>
+        <div class="cc-demo-actions" id="ccQueueDemoActions">
+          <label for="ccDemoQueueCity">Demonstrar fila da cidade
+            <select id="ccDemoQueueCity">
+              <option value="natal">Natal / Parnamirim</option>
+              <option value="fortaleza">Fortaleza</option>
+              <option value="recife">Recife</option>
+              <option value="mossoro">Mossoró</option>
+            </select>
+          </label>
+          <button type="button" class="cc-btn" id="ccDemoNext">Simular próxima O.S.</button>
+          <button type="button" class="cc-btn" id="ccDemoError">Simular erro</button>
+          <button type="button" class="cc-btn cc-btn-primary" id="ccDemoSuccess">Simular baixa confirmada</button>
+          <span class="cc-subtle">Simulação visual · nenhum comando enviado</span>
+        </div>
+        <div class="cc-city-grid" id="ccCityBoard"></div>
+        <p class="cc-subtle" id="ccCitySummary" role="status"></p>
+      </section>
       <div class="cc-actions">
         <button type="button" class="cc-btn cc-btn-primary" id="ccPreviewImproductive">Prévia das improdutivas</button>
         <button type="button" class="cc-btn cc-btn-primary" id="ccPreviewProductive">Prévia das produtivas</button>
@@ -2168,21 +2192,6 @@
             <button type="button" class="button secondary" id="backlogDailyRefresh">Atualizar tratativa</button>
             <button type="button" class="button secondary" id="backlogCopyImproductive">Copiar improdutivas confirmadas</button>
           </div>
-          <section class="claro-treatment" aria-label="Tratativa Claro por cidade">
-            <header class="claro-treatment-top">
-              <div>
-                <h4>Tratativa Claro · Quadro por cidade</h4>
-                <p>Improdutivas confirmadas, pendências e divergências cruzadas com o Imperium. Não executa baixas.</p>
-              </div>
-              <div class="claro-treatment-actions">
-                <button type="button" class="button secondary" id="backlogClaroExportCsv" disabled>Exportar tratativa CSV</button>
-                <button type="button" class="button secondary" id="backlogClaroOpenOffroute">Ver Fora de Rota</button>
-              </div>
-            </header>
-            <p id="backlogClaroStatus" class="claro-treatment-status" role="status">Aguardando base do Imperium.</p>
-            <div id="backlogClaroGrid" class="claro-board-grid"></div>
-            <p class="claro-board-foot">Pendente não é improdutiva. Baixa histórica não equivale a baixa de hoje. Código 430 representa retirada produtiva. Dados ausentes ou divergentes precisam de revisão no Imperium. O botão Fora de Rota abre a ferramenta existente, sem enviar dados à Claro.</p>
-          </section>
           <div id="backlogDailyMetrics" class="backlog-progress" aria-live="polite"></div>
           <div id="backlogDailyResult" class="backlog-results"></div>
         </section>
@@ -2736,12 +2745,11 @@
   <script src="/all-operations.js?v=20261028-1"></script>
   <script src="/app.js?v=20261103-global-scope-1"></script>
   <script src="/close-control-engine.js?v=20261106-homolog-1"></script>
-  <script src="/close-control-ui.js?v=20261106-homolog-1"></script>
+  <script src="/close-control-city-board.js?v=20261106-city-1"></script>
+  <script src="/close-control-ui.js?v=20261106-city-1"></script>
   <script src="/backlog-report.js?v=20261103-whatsapp-1"></script>
   <script src="/backlog-report-image.js?v=20261103-image-2"></script>
   <script src="/backlog-analysis.js?v=20261103-route-buttons-1"></script>
-  <script src="/backlog-claro-board.js?v=20261106-1"></script>
-  <script src="/backlog-claro-board-ui.js?v=20261106-1"></script>
   <script src="/quality-control.js?v=20261029-analysis-1"></script>
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>

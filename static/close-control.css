@@ -37,3 +37,50 @@
 #closeControlWorkspace .cc-foot{margin-top:18px;color:#9ab0c7;font-size:12px;line-height:1.7}
 @media(max-width:850px){#closeControlWorkspace{padding:12px}#closeControlWorkspace .cc-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#closeControlWorkspace .cc-toolbar label{flex:1 1 130px}}
 @media(prefers-reduced-motion:no-preference){#closeControlWorkspace .cc-btn{transition:background .16s ease}}
+
+/* Painel de baixas por cidade — separado de Análise Backlog */
+#closeControlWorkspace .cc-city-area{margin:20px 0 18px}
+#closeControlWorkspace .cc-city-heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+#closeControlWorkspace .cc-city-heading h3{font-size:20px;font-weight:750;margin:0 0 4px;color:#f4f8ff}
+#closeControlWorkspace .cc-city-grid{display:grid;grid-template-columns:repeat(4,minmax(190px,1fr));gap:12px;align-items:stretch}
+#closeControlWorkspace .cc-city{background:#14253b;border:1px solid #38506b;border-radius:15px;overflow:hidden;min-width:0}
+#closeControlWorkspace .cc-city-head{display:flex;flex-direction:column;align-items:center;gap:7px;background:linear-gradient(115deg,#ba0725,#760d25);padding:15px 10px;color:white}
+#closeControlWorkspace .cc-city-head strong{font-size:13px;font-weight:800;text-align:center}
+#closeControlWorkspace .cc-city-head span{font-size:11px;background:#ffffff24;border-radius:20px;padding:4px 9px}
+#closeControlWorkspace .cc-city-counts{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap;padding:11px 8px;border-bottom:1px solid #334c63}
+#closeControlWorkspace .cc-city-count{font-size:10px;font-weight:700;border-radius:6px;padding:4px 6px;background:#2a405b;color:#c8d9eb}
+#closeControlWorkspace .cc-city-count.confirmed{background:#175747;color:#aaf4dd}
+#closeControlWorkspace .cc-city-count.review{background:#67422d;color:#fbe0a7}
+#closeControlWorkspace .cc-city-count.ready{background:#1c4b72;color:#b6e2ff}
+#closeControlWorkspace .cc-city-rows{padding:9px;min-height:160px;max-height:440px;overflow-y:auto}
+#closeControlWorkspace .cc-city-item{border-radius:9px;border:1px solid #37506b;border-left:3px solid #7f98b1;background:#1c3048;margin-bottom:8px;padding:10px 9px}
+#closeControlWorkspace .cc-city-item.confirmed{border-left-color:#4dce9e}
+#closeControlWorkspace .cc-city-item.review{border-left-color:#f0a65d}
+#closeControlWorkspace .cc-city-item.ready{border-left-color:#64b7f9}
+#closeControlWorkspace .cc-city-item.in_progress{border-left-color:#afa4f8}
+#closeControlWorkspace .cc-city-item.window{border-left-color:#a8b1c2}
+#closeControlWorkspace .cc-city-item h4{font-size:12px;margin:0 0 7px;overflow-wrap:anywhere;color:#f0f6ff}
+#closeControlWorkspace .cc-city-item p{font-size:11px;color:#b7c8db;margin:4px 0;line-height:1.5;overflow-wrap:anywhere}
+#closeControlWorkspace .cc-city-state{display:inline-block;font-size:10px;color:#cfdef0;background:#30445e;padding:4px 7px;border-radius:6px;margin:1px 0 4px}
+#closeControlWorkspace .cc-city-empty{padding:24px 9px;color:#99aec4;text-align:center;font-size:12px;line-height:1.5}
+#closeControlWorkspace #ccCitySummary{margin:12px 0 0}
+@media(max-width:1180px){#closeControlWorkspace .cc-city-grid{grid-template-columns:repeat(2,minmax(190px,1fr))}}
+@media(max-width:620px){#closeControlWorkspace .cc-city-grid{grid-template-columns:1fr}}
+
+/* Simulação de movimento: ativo no topo, erros logo abaixo, confirmadas no rodapé */
+#closeControlWorkspace .cc-demo-actions{display:flex;align-items:end;flex-wrap:wrap;gap:10px;margin:12px 0 16px}
+#closeControlWorkspace .cc-demo-actions label{display:grid;gap:5px;font-size:12px;color:#b7c8dc;min-width:165px}
+#closeControlWorkspace .cc-city-item.active{border-left:4px solid #40c9f5;background:linear-gradient(130deg,#194368,#1b2f4b);box-shadow:inset 0 0 0 1px #3897cc35}
+#closeControlWorkspace .cc-city-item.review{background:#41312485;border-left-color:#f1a45c}
+#closeControlWorkspace .cc-city-item.confirmed{background:#173d3585;border-left-color:#56caa7}
+#closeControlWorkspace .cc-city-rows{overflow-y:auto;scroll-behavior:smooth;overflow-x:hidden}
+#closeControlWorkspace .cc-city-count.active{color:#bdeeff;background:#155878}
+#closeControlWorkspace .cc-city-state.active{background:#145a79;color:#d3f5ff}
+#closeControlWorkspace .cc-city-item{will-change:auto}
+#closeControlWorkspace .cc-city-item.cc-just-changed{outline:1px solid #8caecc}
+@media(prefers-reduced-motion:reduce){
+  #closeControlWorkspace .cc-city-rows{scroll-behavior:auto}
+  #closeControlWorkspace .cc-city-item{transition:none!important;animation:none!important}
+}
+
+#closeControlWorkspace .cc-demo-actions[hidden]{display:none!important}

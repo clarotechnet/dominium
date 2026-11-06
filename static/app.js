@@ -13378,7 +13378,10 @@ window.DominiumCloseControlBridge = Object.freeze({
           windowStart: formatMinute(window.start),
           windowEnd: formatMinute(window.end),
           imperiumStatus: String(order.status || ""),
-          city: state.profile,
+          // Em Todos, usar apenas a base identificada na própria O.S.
+          // Não atribuir artificialmente uma O.S. a Natal ou outra cidade.
+          city: String(order.city || order.report_city || order.profile ||
+            (state.profile && state.profile !== "all" && state.profile !== "todos" ? state.profile : "")),
         };
       }),
     };
