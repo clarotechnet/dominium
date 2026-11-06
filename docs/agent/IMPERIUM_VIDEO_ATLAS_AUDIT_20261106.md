@@ -119,3 +119,56 @@ ou git pull forçado nesse working tree.
 O Supabase operacional é
 `haqzzxpocwzntyudrbch`; as três tabelas
 `dominium_imperium_*` existentes foram validadas.
+
+## 06/11/2026 - Confronto visual adicional dos vídeos e exportação rastreável
+
+Nesta revisão, foram lidos os mosaicos reais das filmagens no
+`matheusdmc0` (16 amostras por gravação), preservados somente no
+diretório privado de revisão da máquina do usuário.
+
+O vídeo de equipamentos demonstra explicitamente:
+- Imperium: consulta `Equipamentos Utilizados` com dois datasets,
+  consolidados e Por Ordem de Serviço, separados do relatório final.
+- Os seriais exportados são investigados pelo Atlas em
+  `Equipamento > Relatórios > Por Equipamentos`, após selecionar o
+  lote, com situação, localização e data da alteração.
+- Planilha final separa `Atlas`, `Imperium`, `CHIP Imperium`,
+  `CHIP Atlas` e `Assinantes`; a base `Nomes.` fornece lookup
+  adicional no exemplo auditado.
+- `Assinantes` tem campos de conferência humana,
+  incluindo `Falta Baixar` e `Fisicamente Estoque`.
+- O relatório `Por Localização` e a QUERY pertencem a outro
+  percurso do vídeo da QUERY (não ao próprio relatório de serial).
+- Análise de suspeitos consulta Atlas + histórico Imperium e
+  verifica ordens no Controlador. Os estados `SUSPEITO`
+  e `ANÁLISE DE INVENTÁRIO` não são baixa confirmada.
+
+**Melhoria implementada e testada nesta revisão:**
+O XLSX de *tratativa individual* inclui quatro abas próprias e
+explicitamente parciais: `Seriais Tratados`, `Pendencias`,
+`Conferencia Atlas` e `Pendencias Atlas`. A última evidencia
+quais consultas Atlas ainda estão pendentes; a data da alteração
+e o contrato só são exibidos quando o Atlas efetivamente os forneceu.
+A planilha sinaliza que estoques físicos NÃO foram confirmados.
+Nunca confundir essas quatro abas auditáveis com as seis abas
+do relatório final do vídeo.
+
+Adicionalmente, o serviço `imperium_atlas_video` agora valida
+na própria camada de serviço que `serial_consultado`
+corresponde ao serial pedido antes de persistir estado/local/contrato,
+mesmo que o cliente bridge ou simulação retorne dados inconsistentes.
+Em caso de divergência, retorna erro de identidade e preserva
+a requisição na fila para auditoria.
+
+Verificações: **55 testes Python** e **15 testes Node**,
+incluindo serial Atlas divergente, XLSX com quatro abas,
+bloqueios de acesso por cidade e pausa/retomada.
+A importação completa do backend passou sob o Python 3.12
+da máquina de produção em uma cópia isolada do relay,
+`C:\DominiumRuntime\DescRelayStockStage20261106`,
+sem alterar o relay ativo em 8793.
+
+**Ainda pendente:** captura Atlas em lote exatamente igual ao vídeo,
+fontes independentes de Assinantes/estoque físico e regras de
+data da aba Imperium. Não habilitar relatório final de seis abas
+como se estivesse homologado.

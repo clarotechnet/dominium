@@ -139,7 +139,10 @@ class AtlasVideoService:
                 "serial": serial,
                 "modelo_imperium": _clean_text(row.get("equipamento")),
                 "estado_atlas": _clean_text(evidence.get("estado")),
+                "operacao_atlas": _clean_text(evidence.get("operacao")),
+                "tipo_localizacao_atlas": _clean_text(evidence.get("tipo_localizacao")),
                 "localizacao_atlas": _clean_text(evidence.get("localizacao")),
+                "contrato_atlas": _clean_text(evidence.get("numero_contrato")),
                 "data_alteracao_atlas": _clean_text(evidence.get("data_alteracao")),
                 "situacao_atlas": state,
                 "fonte": "Atlas via ponte local autenticada" if evidence else "Aguardando",
@@ -173,7 +176,7 @@ class AtlasVideoService:
         return dict(patched[0])
 
     @staticmethod
-    def _capture_result(data):
+    def _capture_result(data, expected_serial):
         if not isinstance(data, dict) or data.get("ok") is not True:
             return {
                 "status": "erro_consulta",
@@ -182,6 +185,16 @@ class AtlasVideoService:
         result = data.get("resultado") or {}
         if not isinstance(result, dict):
             raise LiveSyncError(502, "atlas_result_invalid", "Atlas retornou dados inválidos")
+        # Defense in depth: even a faulty bridge stub must never associate the
+        # Atlas location or contract of a different serial with this record.
+        delivered = _clean_text(result.get("serial_consultado"), 100).upper()
+        if delivered != expected_serial:
+            raise LiveSyncError(502, "atlas_serial_mismatch",
+                                "Atlas retornou evidência de outro serial; nenhum dado foi salvo")
+        envelope_serial = _clean_text(data.get("serial"), 100).upper()
+        if envelope_serial and envelope_serial != expected_serial:
+            raise LiveSyncError(502, "atlas_serial_mismatch",
+                                "Identificador Atlas divergente; nenhum dado foi salvo")
         status = ("parcial" if result.get("partial") is True else
                   "nao_confirmado" if result.get("serial_encontrado") is not True else "verificado")
         evidence = {
@@ -236,7 +249,7 @@ class AtlasVideoService:
                     state = self._status(source, saved)
                     state["updated"] = {"situacao": "aguardando_atlas"}
                     return state
-                final = {**atlas, **self._capture_result(result)}
+                final = {**atlas, **self._capture_result(result, serial)}
                 self._save(repo, run, serial, original, final)
                 saved = SerialTreatmentService._saved(repo, run)
                 state = self._status(source, saved)

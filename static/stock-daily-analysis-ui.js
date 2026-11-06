@@ -721,7 +721,10 @@ function showAtlasVideoResult(payload){
  const fields=[
   ["serial","Serial"],["modelo_imperium","Equipamento"],
   ["situacao_atlas","Situação Atlas"],["estado_atlas","Estado"],
+  ["operacao_atlas","Operação"],
+  ["tipo_localizacao_atlas","Tipo da localização"],
   ["localizacao_atlas","Localização informada"],
+  ["contrato_atlas","Contrato Atlas"],
   ["data_alteracao_atlas","Data da alteração"],
   ["observacao","Observação"]
  ];

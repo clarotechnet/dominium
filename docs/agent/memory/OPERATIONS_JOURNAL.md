@@ -287,3 +287,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 54 Python, 15 Node; um Atlas real resultou verificado e foi gravado no Supabase; nenhuma consulta em massa e nenhuma modificação em estoque
 
 **Próximo passo/pendência:** Auditar relatório Atlas Por Equipamentos em lote, confirmar baixa e estoque físico via fontes próprias, implantar backend e frontend coordenadamente sem sobrescrever main local divergida
+
+## 2026-11-06 20:00 UTC — Video Atlas revisado; export intermediario com evidencias e pendencias
+
+**Motivo:** O video distingue Equipamentos Utilizados do Imperium, Atlas Por Equipamentos, Atlas Por Localizacao e conferencias Assinantes
+
+**Alterado:** Validacao de identidade serial na etapa Atlas, colunas de operacao e local, export de 4 abas auditaveis Seriais Tratados/Pendencias/Conferencia Atlas/Pendencias Atlas, documentacao baseada em videos matheusdmc0
+
+**Verificação:** 55 unittest Python e 15 Node passaram; pacote do relay Python312 importado em staging isolado; sem deploy de producao
+
+**Próximo passo/pendência:** Publicar code review com relay/Hostinger coordenados, homologar Atlas em lote e fontes das seis abas finais

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-06T19:36:53+00:00",
+  "generated_at": "2026-11-06T20:01:10+00:00",
   "schema": 2,
-  "source_fingerprint": "1c453c29787821e7ccf353328f94e53ade9956318759bf0396679fcfaafbbef6",
+  "source_fingerprint": "155b5ccfcc0e9848739a27eed27de4d0ca2343dd468c79b4947019ac5d13e734",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1473,8 +1473,8 @@
     {
       "path": "docs/agent/IMPERIUM_VIDEO_ATLAS_AUDIT_20261106.md",
       "category": "docs",
-      "bytes": 5594,
-      "sha256": "2a998f4977c2c6b6f628df26f39df23b42302178b66a0eba395693ddcb5287c1",
+      "bytes": 8311,
+      "sha256": "d6ab164c441c4db7e001cf2f5371a247d0c6b4887dc20ff6cd05a226042a0c64",
       "summary": "Dominium — Fluxo comprovado nos vídeos operacionais, 06/11/2026",
       "imports": [],
       "endpoints": [],
@@ -1499,8 +1499,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 10752,
-      "sha256": "a0e4f7f270c9ef578c63e67216dddfcbe18db9afdb5db6536d5e8a63e2b35b7c",
+      "bytes": 11287,
+      "sha256": "e53f88788563a135c915ee08fc34bb4f1641fcc3a7cf0081be896849ddd81c85",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1580,8 +1580,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 20061,
-      "sha256": "d0c994f934cc3b1f789b44eaf57cfc741f21052f4ece65a091841e59c8dab45b",
+      "bytes": 20805,
+      "sha256": "bd5d966bf003f1afb2e307bac875b873630d5b5126519384ece04c251e2ffc22",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3331,8 +3331,8 @@
     {
       "path": "integrations/serial_consult/imperium_atlas_video.py",
       "category": "imperium",
-      "bytes": 14057,
-      "sha256": "0b045a8a54555043abb79bc8dd78661f3eb5955eb68a49c8d6bc25579f38f114",
+      "bytes": 15050,
+      "sha256": "36b6a90c20682c268029e3b509eb0f3d4ca2f6118d769e68332967df550b0b43",
       "summary": "Stage 3: verified read-only Atlas lookups, resumable in Dominium Supabase.",
       "imports": [
         "__future__",
@@ -3356,8 +3356,8 @@
     {
       "path": "integrations/serial_consult/imperium_serial_treatment.py",
       "category": "imperium",
-      "bytes": 16748,
-      "sha256": "168dd1c93bd09da28ee2f79d5d833364fbfdb2c860318b7aaa2b5f563c44aa0b",
+      "bytes": 18645,
+      "sha256": "b600b32327a19ffcaa4fca2ab3244488778c5491da287a4655a33b2138a70293",
       "summary": "Second, explicit stage of daily Imperium equipment workflow: read-only serial treatment.",
       "imports": [
         "__future__",
@@ -5519,8 +5519,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 165067,
-      "sha256": "5af24f35f470b6113c5338f73fb21f39bb0a0a6c48e9a9da28de3cfed8d12408",
+      "bytes": 165180,
+      "sha256": "7abe3d921b9b957c58ee06377a47f18e6fe5b47bc7362ef93a0ce90167d468aa",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5644,8 +5644,8 @@
     {
       "path": "static/stock-daily-analysis-ui.js",
       "category": "frontend",
-      "bytes": 40135,
-      "sha256": "597f6a4b12f14470747c160f28cc0da05803f7cb360915953d40e9c1f81099cc",
+      "bytes": 40263,
+      "sha256": "c0e5347c72f9cf2961939047f51432aae7efcd39ae972f8bec72dea7ccc8cfd7",
       "summary": "Daily equipment: independent period/catalog; Atlas QUERY is not its source. */",
       "imports": [],
       "endpoints": [
@@ -7176,8 +7176,8 @@
     {
       "path": "tests/test_imperium_atlas_video.py",
       "category": "tests",
-      "bytes": 7139,
-      "sha256": "3b5cf364dff8e11f1a30405765b4706cfc1e652a3032064f4d1c77d033e16851",
+      "bytes": 7787,
+      "sha256": "4a2c46fc7452ce7fcc513b891d8e9d4b5eaa42bb3fd3e87905c6c473a26b7cb2",
       "summary": "Synthetic tests for resumable Atlas x Imperium video workflow.",
       "imports": [
         "copy",
@@ -7191,7 +7191,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 20
+      "symbol_count": 21
     },
     {
       "path": "tests/test_imperium_http_api.py",
@@ -7232,8 +7232,8 @@
     {
       "path": "tests/test_imperium_serial_treatment.py",
       "category": "tests",
-      "bytes": 7277,
-      "sha256": "323b2b20afd572bae718631922788d7e8f083d302e9ae9a060eea0a01631765d",
+      "bytes": 8092,
+      "sha256": "60c8957fc32438e85576df5b9708a53a90540e8b03d93e648592f5c3a1965b62",
       "summary": "No personal records; deterministic two-stage Imperium treatment tests.",
       "imports": [
         "copy",

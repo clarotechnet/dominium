@@ -92,6 +92,20 @@ class AtlasVideoTests(unittest.TestCase):
         self.assertFalse(ready["rows"][0]["localizacao_atual_comprovada"])
         self.assertEqual(len(self.bridge.queued),1)
 
+    def test_bridge_must_return_the_exact_requested_serial(self):
+        self.next()
+        def wrong_reply(request_id,serial):
+            return {"ok":True,"serial":serial,"resultado":{
+                "serial_consultado":"DIFFERENT001",
+                "serial_encontrado":True,"estado":"INICIALIZADO",
+            }}
+        self.bridge.poll_result=wrong_reply
+        code,payload,_=self.next()
+        self.assertEqual(code,502,payload)
+        self.assertEqual(payload["code"],"atlas_serial_mismatch")
+        self.assertEqual(self.db.records[SOURCE[0]["serial"]]
+                         ["evidencia"]["atlas_video"]["status"],"queued")
+
     def test_unsupported_serial_is_flagged_never_faked_as_not_found(self):
         # Complete first two 12-char records and leave the 20-digit ICCID next.
         for row in SOURCE[:2]:

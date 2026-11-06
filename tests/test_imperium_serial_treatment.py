@@ -138,6 +138,15 @@ class SerialTreatmentTests(unittest.TestCase):
         code,reply,_=self.call("GET",ROOT+"/export?city=natal&run="+ID)
         self.assertEqual(code,409,reply)
         for _ in SERIALS:self.step()
+        self.repo.records[SERIALS[0]]["evidencia"]["atlas_video"]={
+            "status":"verificado",
+            "estado":"INICIALIZADO",
+            "tipo_localizacao":"ASSINANTE",
+            "localizacao":"LOCAL CONFIRMADO",
+            "data_alteracao":"2026-11-05T10:30:00",
+            "numero_contrato":"1234",
+            "observacao":"Consulta verificada; posse física não confirmada",
+        }
         code,payload,mime=self.call("GET",ROOT+"/export?city=natal&run="+ID)
         self.assertEqual(code,200)
         self.assertTrue(payload.startswith(b"PK\x03\x04"))
@@ -146,5 +155,12 @@ class SerialTreatmentTests(unittest.TestCase):
             book=z.read("xl/workbook.xml")
             self.assertIn(b"Seriais Tratados",book)
             self.assertIn(b"Pendencias",book)
+            self.assertIn(b"Conferencia Atlas",book)
+            self.assertIn(b"Pendencias Atlas",book)
+            text="".join(z.read(name).decode("utf-8",errors="replace")
+                         for name in z.namelist() if name.startswith("xl/worksheets/"))
+            self.assertIn("INICIALIZADO",text)
+            self.assertIn("NÃO VERIFICADO",text)
+            self.assertIn("aguardando",text)
 
 if __name__=="__main__":unittest.main()

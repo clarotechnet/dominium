@@ -317,9 +317,47 @@ class SerialTreatmentService:
             data.append(values)
             if row["situacao"] in ("erro_consulta","formato_nao_suportado"):
                 pending.append(values)
+        # Third-stage evidence is independent from Imperium movements.
+        # Include real Atlas responses when they exist and mark every missing
+        # response explicitly. This is NOT the six-tab video final report.
+        saved=cls._saved(repo,source["run"])
+        atlas_header=[
+            "Serial","Equipamento no Imperium","Status de conferência Atlas",
+            "Estado Atlas","Operação Atlas","Tipo de localização Atlas",
+            "Localização informada Atlas","Data de alteração Atlas",
+            "Contrato Atlas","Modelo Atlas","Estoque físico comprovado",
+            "Observação / pendência",
+        ]
+        atlas_data=[atlas_header]
+        atlas_pending=[list(atlas_header)]
+        for original in records:
+            serial=original["serial"]
+            item=saved.get(serial,{})
+            evid=item.get("evidencia") if isinstance(item,dict) else {}
+            atlas=evid.get("atlas_video") if isinstance(evid,dict) else None
+            if not isinstance(atlas,dict):
+                atlas={}
+            state=_txt(atlas.get("status") or "aguardando",50)
+            record=[
+                serial,original["equipamento"],state,
+                _txt(atlas.get("estado")),_txt(atlas.get("operacao")),
+                _txt(atlas.get("tipo_localizacao")),
+                _txt(atlas.get("localizacao")),
+                _txt(atlas.get("data_alteracao")),
+                _txt(atlas.get("numero_contrato")),
+                _txt(atlas.get("modelo_equipamento")),
+                "NÃO VERIFICADO",
+                _txt(atlas.get("observacao") or
+                    "Aguardando consulta Atlas por equipamento",200),
+            ]
+            atlas_data.append(record)
+            if state!="verificado":
+                atlas_pending.append(record)
         # Import lazily: stock_analysis_http imports this module.
         from stock_analysis_http import xlsx
         return xlsx([
             ("Seriais Tratados",data),
             ("Pendencias",pending),
+            ("Conferencia Atlas",atlas_data),
+            ("Pendencias Atlas",atlas_pending),
         ])
