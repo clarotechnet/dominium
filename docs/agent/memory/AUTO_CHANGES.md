@@ -287,3 +287,10 @@ Alterações preparadas para commit (8 arquivos). Para motivação e resultado c
 - `static/stock-daily-analysis-ui.js`
 - `tests/test_imperium_atlas_video.py`
 - `tests/test_imperium_serial_treatment.py`
+
+## 2026-11-06 | staged:1d28bbb83f5cb618
+
+Alterações preparadas para commit (2 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `docs/agent/IMPERIUM_ROLLOUT_20261106.md`
+- `integrations/import_bridge/worker.test.mjs`

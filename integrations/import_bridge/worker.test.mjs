@@ -296,3 +296,59 @@ test('monitor snapshot uses DESC backend with internal auth and read-only scope'
   assert.equal(post.status,404);
   assert.equal(descCalls,1);
 });
+
+
+test('new Imperium DataSnap, Atlas and serial treatment routes are allowed only to authorized DESC backend',async()=>{
+ let calls=0,wrong=0,upstream;
+ const env={IMPORT_TOKEN:secret,
+  IMPORT_SERVICE:{fetch:async()=>{wrong++;throw Error('wrong import backend');}},
+  DESC_SERVICE:{fetch:async req=>{calls++;upstream=req;return Response.json({ok:true,history:[],counts:{total:209}});}}};
+ const base='https://bridge.test';
+ const qs='?city=natal&start=2026-11-05&end=2026-11-05';
+ const uuid='550e8400-e29b-41d4-a716-446655440000';
+ for(const endpoint of [
+  '/api/stock/analyses/imperium/live'+qs,
+  '/api/stock/analyses/imperium/live/'+uuid+'/data?city=natal&category=seriais_tratados&page=1',
+  '/api/stock/analyses/imperium/serial-treatment/status?city=natal&run='+uuid,
+  '/api/stock/analyses/imperium/serial-treatment/export?city=natal&run='+uuid,
+  '/api/stock/analyses/imperium/atlas-video/status?city=natal&run='+uuid,
+ ]){
+  const res=await worker.fetch(new Request(base+endpoint,{
+   headers:{...headers,'X-Dominium-Role':'viewer',Cookie:'browser-secret','X-CSRF-Token':'private'}}),env);
+  assert.equal(res.status,200,endpoint);
+  assert.equal(upstream.url,'http://127.0.0.1:8793'+endpoint);
+  assert.equal(upstream.headers.get('authorization'),'Bearer '+secret);
+  assert.equal(upstream.headers.get('x-dominium-role'),'viewer');
+  assert.equal(upstream.headers.get('cookie'),null);
+  assert.equal(upstream.headers.get('x-csrf-token'),null);
+ }
+ for(const endpoint of [
+  '/api/stock/analyses/imperium/live',
+  '/api/stock/analyses/imperium/serial-treatment/next',
+  '/api/stock/analyses/imperium/atlas-video/next',
+ ]){
+  const body=JSON.stringify({city:'natal',run:uuid,start:'2026-11-05',end:'2026-11-05'});
+  const res=await worker.fetch(new Request(base+endpoint,{
+   method:'POST',headers:{...headers,Cookie:'private','X-CSRF-Token':'private'},body}),env);
+  assert.equal(res.status,200,endpoint);
+  assert.equal(upstream.url,'http://127.0.0.1:8793'+endpoint);
+  assert.equal(await upstream.text(),body);
+  assert.equal(upstream.headers.get('content-type'),'application/json');
+  assert.equal(upstream.headers.get('cookie'),null);
+  assert.equal(upstream.headers.get('x-csrf-token'),null);
+  const viewer=await worker.fetch(new Request(base+endpoint,{
+   method:'POST',headers:{...headers,'X-Dominium-Role':'viewer'},body}),env);
+  assert.equal(viewer.status,403,endpoint);
+ }
+ const before=calls;
+ for(const endpoint of [
+  '/api/stock/analyses/imperium/live?city=all&start=2026-11-05&end=2026-11-05',
+  '/api/stock/analyses/imperium/atlas-video/status?city=natal&run='+uuid+'&debug=yes',
+  '/api/stock/analyses/imperium/serial-treatment/next?unsafe=true',
+ ]){
+  const res=await worker.fetch(new Request(base+endpoint,{headers}),env);
+  assert.equal(res.status,404,endpoint);
+ }
+ assert.equal(calls,before);
+ assert.equal(wrong,0);
+});

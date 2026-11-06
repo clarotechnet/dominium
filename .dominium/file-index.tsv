@@ -71,11 +71,12 @@ docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor d
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
 docs	docs/agent/GLOBAL_TODOS_SCOPE_20261103.md				DOMINIUM — escopo global "Todos" e desbloqueio do Backlog (03/11/2026)	236973d4848064d1
 docs	docs/agent/IMPERIUM_DATASNAP_SUPABASE_LIVE_20261105.md				Dominium: Consultar período -> DataSnap -> Supabase (05/11/2026)	cedb896e473eb6f4
+docs	docs/agent/IMPERIUM_ROLLOUT_20261106.md				DOMINIUM — rollout Imperium DataSnap / Supabase / Atlas (06/11/2026)	cb0558f391f38d2d
 docs	docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md				Dominium — consulta Imperium em duas etapas (06/11/2026)	92f8981a20083200
 docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/IMPERIUM_VIDEO_ATLAS_AUDIT_20261106.md				Dominium — Fluxo comprovado nos vídeos operacionais, 06/11/2026	d6ab164c441c4db7
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	e53f88788563a135
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	4717d7813044c37f
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
 docs	docs/agent/memory/CURRENT_STATE.md			2	Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106	877aebfdd93ae9fe
@@ -152,7 +153,7 @@ shared	integrations/import_bridge/daily_stock_service.py	7			Leitura e snapshots
 shared	integrations/import_bridge/quality_control_relay.py	7			Private, authenticated Quality Control Supabase bridge (no Imperium writes).	6e21d816d7b3a9fd
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
 shared	integrations/import_bridge/worker.mjs	3	6			547c9a6d28a75cfc
-shared	integrations/import_bridge/worker.test.mjs		4			d16919600e79d71a
+shared	integrations/import_bridge/worker.test.mjs		13			aee145f9fcdedc5c
 shared	integrations/import_bridge/worker_create.test.mjs					5f31d81dbeac6a12
 shared	integrations/managed_atlas_toa/claro-login-submit.js	4				cced9c141f48f623
 shared	integrations/managed_atlas_toa/README.md				Login Claro — extensão gerenciada Atlas/TOA	627beb06b01e03d8
