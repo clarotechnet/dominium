@@ -184,14 +184,14 @@
   async function refreshStatus(){
     try{
       const s=await call("/api/backlog/year/status"),run=s.run||null;
-      const info=run ? [run.status,run.done_tasks+"/"+run.total_tasks+" dias",run.imported+" O.S. confirmadas",run.unconfirmed+" sem código"].join(" • ") : "Nenhuma consulta executada";
+      const info=run ? ["Última execução: "+run.status,run.done_tasks+"/"+run.total_tasks+" dias",run.imported+" O.S. confirmadas",run.unconfirmed+" sem código"].join(" • ") : "Nenhuma consulta executada";
       const historyTotal=Object.values(s.history||{}).reduce((sum,n)=>sum+(Number(n)||0),0);
       update($("backlogSyncStatus"),"Histórico armazenado: "+historyTotal+" ocorrências. "+info);
       const view=$("backlogProgress");view.replaceChildren();
       for(const [key,label] of Object.entries({natal:"Natal/Parnamirim",fortaleza:"Fortaleza",mossoro:"Mossoró",recife:"Recife"})){
         const span=document.createElement("span");span.textContent=label+": "+((s.checkpoints||{})[key]||"a iniciar");view.append(span);
       }
-      if(run?.error){const p=document.createElement("p");p.textContent=run.error;p.className="backlog-warning";view.append(p);}
+      if(run?.error){const p=document.createElement("p");p.textContent=(s.running?"Erro da execução: ":"Erro da última tentativa: ")+run.error;p.className="backlog-warning";view.append(p);}
       $("backlogRun").disabled=true; // Annual importer remains server-locked.
       $("backlogPilot").disabled=Boolean(s.running);
       $("backlogPause").disabled=!s.running;
@@ -367,6 +367,10 @@
     }
   });
   refreshStatus();
+  // On a hard reload the Backlog workspace can already be selected. The
+  // module-change event then does not fire, so restore the persisted route
+  // state explicitly. This GET reads the sidecar DB; it does not query TOA.
+  pollToaRoutes();
   setInterval(()=>{if(!root.classList.contains("hidden")&&lastRunning)refreshStatus();},5000);
   setInterval(()=>{if(!root.classList.contains("hidden")&&routeImportActive)pollToaRoutes();},5000);
 })();
