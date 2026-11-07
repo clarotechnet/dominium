@@ -16,6 +16,9 @@
 # =============================================================================
 import argparse
 from desc_review_proxy import DescReviewProxy, ProxyError
+from toa_pool_monitor_proxy import (
+    TOAPoolMonitorError, read_monitor, read_enrollments, review_enrollment,
+)
 import base64
 import csv
 import datetime as dt
@@ -5329,7 +5332,8 @@ class PanelHandler(BaseHTTPRequestHandler):
                 )
                 return False
             user = session["user"]
-            admin_path = path.startswith("/api/auth/users") or path == "/api/auth/pending-count"
+            admin_path = (path.startswith("/api/auth/users") or path == "/api/auth/pending-count"
+                          or path.startswith("/api/toa-pool/"))
             if admin_path and user.get("role") != "admin":
                 self._json(
                     HTTPStatus.FORBIDDEN,
@@ -5493,6 +5497,20 @@ class PanelHandler(BaseHTTPRequestHandler):
                         "csrf_token": session.get("csrf_token") if session else "",
                     },
                 )
+                return
+            if parsed.path == "/api/toa-pool/enrollments":
+                try:
+                    self._json(HTTPStatus.OK, read_enrollments())
+                except TOAPoolMonitorError:
+                    self._json(HTTPStatus.SERVICE_UNAVAILABLE,
+                               {"ok": False, "error": "Cadastro de controladores indisponível"})
+                return
+            if parsed.path == "/api/toa-pool/monitor":
+                try:
+                    self._json(HTTPStatus.OK, read_monitor())
+                except TOAPoolMonitorError:
+                    self._json(HTTPStatus.SERVICE_UNAVAILABLE,
+                               {"ok": False, "error": "Central TOA ainda não conectada ao coordenador"})
                 return
             if parsed.path == "/api/auth/users":
                 self._json(
@@ -6375,6 +6393,21 @@ class PanelHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
         if not self._security_preflight("POST", parsed.path):
+            return
+        match_controller_review = re.fullmatch(
+            r"/api/toa-pool/enrollments/(ctl-[a-f0-9]{24})/(approve|deny)", parsed.path
+        )
+        if match_controller_review:
+            try:
+                self._body(max_length=1024)
+                result = review_enrollment(match_controller_review.group(1),
+                                           match_controller_review.group(2) == "approve")
+                self._auth_audit("toa_controller_review", result["state"],
+                                 target=match_controller_review.group(1))
+                self._json(HTTPStatus.OK, result)
+            except (ValueError, TOAPoolMonitorError):
+                self._json(HTTPStatus.SERVICE_UNAVAILABLE,
+                           {"ok": False, "error": "Não foi possível revisar o dispositivo"})
             return
         if parsed.path.startswith('/api/disconnection/'):
             self._desc_request('POST', self.path)
