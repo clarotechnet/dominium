@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-06T20:31:15+00:00",
+  "generated_at": "2026-11-07T13:31:54+00:00",
   "schema": 2,
-  "source_fingerprint": "c5f94cb3d17bf8e46ab627dd75300fac9f7b578a19cbbb2a5a53b4e63111d99c",
+  "source_fingerprint": "2170884a476e643b07220b556c220ce1dbdd7e515436ab51d320d8ac8dffb2aa",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1512,8 +1512,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 11555,
-      "sha256": "4717d7813044c37f14eec564b7fc0af8402268b6df0516de00b71fe415a2aa03",
+      "bytes": 11776,
+      "sha256": "cb048f89639c97eb8ee2ed3dbb6566cb25657f3796bec43048b76957609b25a0",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -5372,8 +5372,8 @@
     {
       "path": "static/backlog-analysis.js",
       "category": "frontend",
-      "bytes": 21188,
-      "sha256": "80ace379911303d4916d866c0d5e93cf4d7e1832aaf7ae30a55b3a3a625fea27",
+      "bytes": 21521,
+      "sha256": "05d3c0233b40c4af7dc50a1f804e629c5e41720525b32db7c7d70f4337dee22c",
       "summary": "DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */",
       "imports": [],
       "endpoints": [
@@ -5541,8 +5541,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 165180,
-      "sha256": "7abe3d921b9b957c58ee06377a47f18e6fe5b47bc7362ef93a0ce90167d468aa",
+      "bytes": 165194,
+      "sha256": "388f0c71b5356a63ce59dcdc88c5323a8057d19d3aa4b2cbde92f79540f18767",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5723,8 +5723,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 225983,
-      "sha256": "a73066faa0b46aeeff1339db2e5f6740e8b92af9b56b3266dd3b1cb1565fa616",
+      "bytes": 226297,
+      "sha256": "14749da8ad85a46532c451ebe5b38c5cc3e07d605e24a5c6989d135769145918",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6521,6 +6521,19 @@
       "category": "tests",
       "bytes": 2011,
       "sha256": "b8b66a90f2cb8dddf66159042bffb68045db6d3bb777444a385e592a56c71545",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "tests/test_backlog_status_reload_20261107.cjs",
+      "category": "tests",
+      "bytes": 1429,
+      "sha256": "291bcba2431ffe6ed786bbdca75f2551f42bc65d626c87d39d602e4acf6d1a09",
       "summary": "",
       "imports": [],
       "endpoints": [],

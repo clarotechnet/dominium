@@ -2542,6 +2542,7 @@ request	function	tests/test_backlog_hostinger_proxy.js	9	-
 response	function	tests/test_backlog_hostinger_proxy.js	19	-
 cfg	function	tests/test_backlog_hostinger_proxy.js	25	-
 fakeDocument	function	tests/test_backlog_report_image.js	16	-
+pollToaRoutes	function	tests/test_backlog_status_reload_20261107.cjs	10	-
 extract	function	tests/test_backlog_todos_navigation.cjs	10	-
 setup	function	tests/test_backlog_todos_navigation.cjs	23	-
 HostingerNodeReleaseTests	class	tests/test_build_hostinger_node_release.py	9	-

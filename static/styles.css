@@ -7669,7 +7669,17 @@ body.sidebar-collapsed .stock-group-chevron { display:none; }
 #stockDailyAnalysisTable td {padding:9px 12px;white-space:nowrap;border-bottom:1px solid #34343c}
 
 .stock-analysis-subtabbar {display:flex;gap:9px;flex-wrap:wrap;background:#0d0d10;padding:14px;border-radius:12px;margin-bottom:18px}
-.stock-analysis-subtabbar [aria-selected="true"] {border-color:#ff1744;color:#ff1744;background:#1c1016}
+/* Keep process selection above the shared primary/secondary button skins. */
+#stockReportsPane .stock-analysis-subtabbar .button {
+  color:var(--muted,#babac1);
+  background:var(--surface-raised,#19191d);
+  border-color:var(--line,#3a3a3f);
+}
+#stockReportsPane .stock-analysis-subtabbar .button[aria-selected="true"] {
+  border-color:var(--accent,#ff1744);
+  color:var(--ink,#fff);
+  background:rgba(255,23,68,.14);
+}
 .stock-analysis-workspace {border-radius:12px;border:1px solid #37373d;padding:18px;min-height:300px}
 .stock-analysis-workspace[hidden] {display:none!important}
 .stock-analysis-toolbar {display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
