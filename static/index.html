@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-image-1">
   <link rel="stylesheet" href="/all-cities-scope.css?v=20261103-global-1">
   <link rel="stylesheet" href="/close-control.css?v=20261106-homolog-1">
+  <link rel="stylesheet" href="/controller-central.css?v=20261107-homolog-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -1965,6 +1966,79 @@
         </div>
         <div class="intelligence-empty" id="serialAuditEmpty">Execute a auditoria para cruzar o ultimo retrato do TOA com o estoque do Imperium.</div>
       </section>
+      <section class="intelligence-panel tc-central" id="toaCentral" aria-label="Central dos controladores TOA">
+        <header class="tc-central-header">
+          <div>
+            <span class="panel-kicker">INFRAESTRUTURA · PONTES TOA</span>
+            <h3>Central de Controladores</h3>
+            <p>Computadores conectados, buckets da sessão, consultas acompanhadas e fila distribuída.</p>
+          </div>
+          <div class="tc-header-actions">
+            <button type="button" class="button secondary" id="toaCentralRefresh">Atualizar</button>
+            <button type="button" class="button secondary" id="toaCentralDemo">Ver demonstração</button>
+          </div>
+        </header>
+        <p class="tc-status-message" id="toaCentralStatus" role="status">Aguardando coordenador.</p>
+        <div class="tc-metrics" id="toaCentralSummary"></div>
+        <section class="tc-enrollments" aria-label="Aprovação de novos controladores">
+          <div class="tc-subheader">
+            <div><h4>Controladores aguardando aprovação</h4><p>Confira o código no ícone da extensão instalada antes de autorizar.</p></div>
+          </div>
+          <div id="toaCentralEnrollmentList" class="tc-enrollment-list">
+            <p class="tc-empty">Aguardando conexão com o coordenador.</p>
+          </div>
+        </section>
+        <div class="tc-layout">
+          <section>
+            <div class="tc-subheader">
+              <h4>Controladores e sessões</h4>
+              <label>Filtrar bucket
+                <select id="toaCentralFilter">
+                  <option value="all">Todos</option>
+                  <option value="FTZ-DMV_01">FTZ-DMV_01</option>
+                  <option value="FTZ-DMV_ADM">FTZ-DMV_ADM</option>
+                  <option value="FTZ-DMV_01_VT">FTZ-DMV_01_VT</option>
+                  <option value="JCR-DMV">JCR-DMV</option>
+                  <option value="JCR-DMV_ADM">JCR-DMV_ADM</option>
+                  <option value="MRO-DMV">MRO-DMV</option>
+                  <option value="NTL-DMV">NTL-DMV</option>
+                  <option value="NTL-DMV_ADM">NTL-DMV_ADM</option>
+                  <option value="NTL-DMV_VT">NTL-DMV_VT</option>
+                  <option value="PWM-DMV">PWM-DMV</option>
+                  <option value="PWM-DMV_ADM">PWM-DMV_ADM</option>
+                  <option value="PWM-DMV_VT">PWM-DMV_VT</option>
+                </select>
+              </label>
+            </div>
+            <div class="tc-agent-list" id="toaCentralAgents">
+              <p class="tc-empty">Aguardando monitor autenticado.</p>
+            </div>
+          </section>
+          <section>
+            <h4>Cobertura dos 12 buckets</h4>
+            <div class="tc-bucket-list" id="toaCentralBuckets"></div>
+          </section>
+        </div>
+        <section class="tc-simulator" aria-label="Simulação de distribuição, sem consultas">
+          <div class="tc-subheader"><h4>Prévia de distribuição da fila</h4><span>Simulação · sem consultas ao TOA</span></div>
+          <div class="tc-simulator-fields">
+            <label>Bucket <select id="toaCentralSimBucket">
+              <option value="NTL-DMV_ADM">Natal · Desconexão</option>
+              <option value="NTL-DMV">Natal · Adesão</option>
+              <option value="MRO-DMV">Mossoró · Misto</option>
+              <option value="FTZ-DMV_ADM">Fortaleza · Desconexão</option>
+              <option value="FTZ-DMV_01">Fortaleza · Adesão</option>
+              <option value="JCR-DMV_ADM">Recife · Desconexão</option>
+              <option value="PWM-DMV_ADM">Parnamirim · Desconexão</option>
+            </select></label>
+            <label>Contratos <input type="number" id="toaCentralSimQty" min="0" max="5000" value="50"></label>
+          </div>
+          <div class="tc-simulator-result" id="toaCentralSimResult">
+            <p>Atualize ou use a demonstração para simular uma fila.</p>
+          </div>
+          <p class="tc-footnote">Monitor apenas leitura. Aprovação central e limite global continuam obrigatórios. Não é um contador oficial de requisições Oracle.</p>
+        </section>
+      </section>
     </section>
 
     <section class="report-workspace hidden" id="reportWorkspace" aria-label="Relatorio de baixas">
@@ -2747,6 +2821,7 @@
   <script src="/close-control-engine.js?v=20261106-homolog-1"></script>
   <script src="/close-control-city-board.js?v=20261106-city-1"></script>
   <script src="/close-control-ui.js?v=20261106-city-1"></script>
+  <script src="/controller-central.js?v=20261107-homolog-1"></script>
   <script src="/backlog-report.js?v=20261103-whatsapp-1"></script>
   <script src="/backlog-report-image.js?v=20261103-image-2"></script>
   <script src="/backlog-analysis.js?v=20261103-route-buttons-1"></script>
