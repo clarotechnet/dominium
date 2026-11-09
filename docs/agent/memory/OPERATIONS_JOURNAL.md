@@ -297,3 +297,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 55 unittest Python e 15 Node passaram; pacote do relay Python312 importado em staging isolado; sem deploy de producao
 
 **Próximo passo/pendência:** Publicar code review com relay/Hostinger coordenados, homologar Atlas em lote e fontes das seis abas finais
+
+## 2026-11-09 12:40 UTC — Controle de Baixas MRO visual 09-11
+
+**Motivo:** Exibir a fila por cidade com Mossoró em destaque e cache produtivo já coletado, sem ativar baixas
+
+**Alterado:** static/index.html static/app.js close-control-*.js close-control.css e testes; nenhuma escrita ou consulta TOA
+
+**Verificação:** 26 testes Node aprovados; Chrome headless HTTP200 e screenshot; integração autenticada do worker pendente de smoke em Hostinger
+
+**Próximo passo/pendência:** Publicar interface, verificar UI autenticada e, depois, instrumentar eventos duráveis e homologar Adesão Mossoró

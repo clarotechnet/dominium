@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-07T13:31:54+00:00
-- Source fingerprint: `2170884a476e643b`
-- Indexed files: 511
-- Indexed symbols: 4316
+- Generated: 2026-11-09T12:40:24+00:00
+- Source fingerprint: `b876686b2dfdf998`
+- Indexed files: 520
+- Indexed symbols: 4359
 - API path references: 545
 
 ## Navigation rule
@@ -100,6 +100,11 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/backlog-analysis.js` (18 symbols, 7 API paths) - DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */
 - `static/backlog-report-image.js` (4 symbols) - DOMINIUM — export PNG do resumo de códigos históricos por cidade.
 - `static/backlog-report.js` (7 symbols) - Read-only WhatsApp report derived from the route × historical-code comparison.
+- `static/close-control-city-board.js` (4 symbols) - DOMINIUM Controle de baixas — painel por cidade.
+- `static/close-control-engine.js` (11 symbols) - DOMINIUM — Controle de baixas: motor determinístico, somente planejamento.
+- `static/close-control-ui.js` (17 symbols) - Controle de baixas — módulo visual read-only. Zero chamadas ao TOA e zero POST. */
+- `static/close-control-worker.js` (5 symbols) - Controle de baixas — leitura do estado EXISTENTE do worker, sem chamadas TOA.
+- `static/close-control.css` - Controle de baixas — escopo isolado, sem sobrescrever regras operacionais */
 - `static/confront.js` (8 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
 - `static/daily-stock-parser.js` (6 symbols) - Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */
 - `static/daily-stock.js` (11 symbols, 2 API paths) - Estoque diario independente do Imperium; importacao por arquivo e historico. */
@@ -192,8 +197,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 - shared: 156 files
 - tooling-deploy: 50 files
-- docs: 47 files
-- tests: 160 files
+- docs: 48 files
+- tests: 163 files
 
 ## Search indexes
 
