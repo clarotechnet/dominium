@@ -10,7 +10,7 @@ function entry(order,decision){
    decision:decision||{key:"route_not_imported",label:"Aguardar importação"}};
 }
 test("as quatro colunas são cidades de baixa, não backlog Claro",()=>{
- assert.deepEqual(board.CITIES,["mossoro","natal","fortaleza","recife"]);
+ assert.deepEqual(board.CITIES,["natal","fortaleza","recife","mossoro"]);
  assert.equal(board.LABELS.natal,"NATAL / PARNAMIRIM");
  assert.equal(board.LABELS.mossoro,"MOSSORÓ");
 });
@@ -74,7 +74,7 @@ test("demo de janela 09:37 usa quatro cidades, sem requisições",()=>{
  const p=engine.plan(engine.demoOrders(),now);
  const d=board.build(p.rows);
  assert.equal(d.totals.os,10);
- assert.deepEqual(board.CITIES.map(city=>d.cities[city].items.length),[3,2,3,2]);
+ assert.deepEqual(board.CITIES.map(city=>d.cities[city].items.length),[2,3,2,3]);
  assert.equal(p.networkCalls,0);
  assert.equal(p.closesSent,0);
 });

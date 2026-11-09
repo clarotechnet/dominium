@@ -8,7 +8,7 @@
   if(root) root.DominiumCloseCityBoard=api;
 })(typeof window!=="undefined"?window:null,function(){
   "use strict";
-  const CITIES=Object.freeze(["mossoro","natal","fortaleza","recife"]);
+  const CITIES=Object.freeze(["natal","fortaleza","recife","mossoro"]);
   const LABELS=Object.freeze({
     natal:"NATAL / PARNAMIRIM",fortaleza:"FORTALEZA",
     recife:"RECIFE",mossoro:"MOSSORÓ",
