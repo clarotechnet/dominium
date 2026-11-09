@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-07T13:31:54+00:00",
+  "generated_at": "2026-11-09T12:40:24+00:00",
   "schema": 2,
-  "source_fingerprint": "2170884a476e643b07220b556c220ce1dbdd7e515436ab51d320d8ac8dffb2aa",
+  "source_fingerprint": "b876686b2dfdf998459de1ac180a0a5e22a9b40787f781ddd8dd51745e6a8397",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1593,8 +1593,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 20805,
-      "sha256": "bd5d966bf003f1afb2e307bac875b873630d5b5126519384ece04c251e2ffc22",
+      "bytes": 21407,
+      "sha256": "a4f11c46b4607e5a11485ce1734dc9c088e0283a0e5d6eab26b444ae4fce6a78",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -1682,6 +1682,19 @@
       "datasnap_methods": [
         "Time.get"
       ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/features/CONTROLE_BAIXAS_MRO_UI_20261109.md",
+      "category": "docs",
+      "bytes": 2208,
+      "sha256": "da906eebccfbc4b8006a987f9a03f18e50efa68be46ca9ea1d7bd5e60b7a6c1c",
+      "summary": "Controle de Baixas — Mossoró em foco (09/11/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
     },
@@ -5417,6 +5430,71 @@
       "symbol_count": 7
     },
     {
+      "path": "static/close-control-city-board.js",
+      "category": "frontend",
+      "bytes": 5079,
+      "sha256": "b5149a60ead1f33cc060d01d66e3bf99a4292348a6d504f257a0263ddf878659",
+      "summary": "DOMINIUM Controle de baixas — painel por cidade.",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
+      "path": "static/close-control-engine.js",
+      "category": "frontend",
+      "bytes": 9133,
+      "sha256": "77d4e1ff07bd1906983c504f81a754103a3a314cd33441e6c15e5f3d5e659c23",
+      "summary": "DOMINIUM — Controle de baixas: motor determinístico, somente planejamento.",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 11
+    },
+    {
+      "path": "static/close-control-ui.js",
+      "category": "frontend",
+      "bytes": 15255,
+      "sha256": "5eb3cc82cf988336109eb087c8a91618af320fb9af04ffc84d93c98317ac7869",
+      "summary": "Controle de baixas — módulo visual read-only. Zero chamadas ao TOA e zero POST. */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 17
+    },
+    {
+      "path": "static/close-control-worker.js",
+      "category": "frontend",
+      "bytes": 4331,
+      "sha256": "7a51b9bc42002d16665f8a4bcd281950661ef4046b86e1ca8233465303f32fcb",
+      "summary": "Controle de baixas — leitura do estado EXISTENTE do worker, sem chamadas TOA.",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
+      "path": "static/close-control.css",
+      "category": "frontend",
+      "bytes": 10104,
+      "sha256": "d4529e803de2143a818b8a9c80caa18e161b827094ed1a2e8d7a9211ae31013f",
+      "summary": "Controle de baixas — escopo isolado, sem sobrescrever regras operacionais */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "static/confront.js",
       "category": "frontend",
       "bytes": 11151,
@@ -5541,8 +5619,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 165194,
-      "sha256": "388f0c71b5356a63ce59dcdc88c5323a8057d19d3aa4b2cbde92f79540f18767",
+      "bytes": 171487,
+      "sha256": "a93d80023d61b612d87c764e4f51376c82721077a212317ca0818e2acb3f6349",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6661,6 +6739,45 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 18
+    },
+    {
+      "path": "tests/test_close_control_city_board.cjs",
+      "category": "tests",
+      "bytes": 6888,
+      "sha256": "b42cbdfb6780febf74980f9b84dcfe957d2a0f04f9886c2e82c2fa4ec607f22b",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
+      "path": "tests/test_close_control_engine.js",
+      "category": "tests",
+      "bytes": 4888,
+      "sha256": "3d2bb54ac8c0c0763ace3684d3a6d255b81d3cfd721a1553de029b63d57a4ed7",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
+    },
+    {
+      "path": "tests/test_close_control_worker_mro.cjs",
+      "category": "tests",
+      "bytes": 2132,
+      "sha256": "ded07a5210a5a01029b096fe4def2c529014f6cee69628a2c32b52e75cb4c224",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
     },
     {
       "path": "tests/test_close_report.py",
