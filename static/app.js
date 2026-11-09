@@ -56,6 +56,8 @@ const state = {
     ? "all-operations"
     : window.location.hash === "#desconexao-indicadores"
     ? "descAnalytics"
+    : window.location.hash === "#controle-baixas"
+    ? "close-control"
     : window.location.hash === "#pendente"
     ? "confront"
     : window.location.hash === "#consultar-seriais"
@@ -910,7 +912,9 @@ function updateAddress() {
                 ? "estoque"
                 : state.activeModule === "bulk"
                   ? "criar-os"
-                  : state.activeModule === "close"
+                  : state.activeModule === "close-control"
+    ? "controle-baixas"
+    : state.activeModule === "close"
                     ? "baixar-os"
                     : state.activeModule === "report"
                       ? "relatorio"
@@ -3632,7 +3636,7 @@ function setModule(module) {
     || state.stockWriteoffLoading
     || ![
       "dashboard", "monitor", "orders", "stock", "serials", "confront", "technicians", "bulk", "imports",
-      "automation-test", "close", "report", "history", "intelligence", "database", "disconnection", "descAnalytics", "backlog",
+      "automation-test", "close", "close-control", "report", "history", "intelligence", "database", "disconnection", "descAnalytics", "backlog",
     ].includes(module)
   ) return;
   if (module !== "stock" && state.stockSource === "official") {
@@ -3659,7 +3663,7 @@ function setModule(module) {
   if (module === "stock" && state.allCities) {
     window.DominiumStockNavigation?.openAllCityReadOnly?.();
   }
-  const needsCity = state.allCities && !["all-operations", "backlog", "stock"].includes(module);
+  const needsCity = state.allCities && !["all-operations", "backlog", "stock", "close-control"].includes(module);
   if (needsCity) return;
   if (["stock", "bulk"].includes(module) && !state.stockTechnicians.length) {
     loadStockTechnicians();
@@ -7225,6 +7229,7 @@ function render() {
     "hidden", state.activeModule !== "automation-test",
   );
   elements.closeWorkspace.classList.toggle("hidden", state.activeModule !== "close");
+  document.getElementById("closeControlWorkspace")?.classList.toggle("hidden", state.activeModule !== "close-control");
   elements.reportWorkspace.classList.toggle("hidden", state.activeModule !== "report");
   elements.databaseWorkspace.classList.toggle("hidden", state.activeModule !== "database");
   elements.historyWorkspace.classList.toggle("hidden", state.activeModule !== "history");
@@ -7248,6 +7253,7 @@ function render() {
     "active", state.activeModule === "automation-test",
   );
   elements.closeModule.classList.toggle("active", state.activeModule === "close");
+  document.getElementById("closeControlModule")?.classList.toggle("active", state.activeModule === "close-control");
   elements.reportModule.classList.toggle("active", state.activeModule === "report");
   elements.databaseModule.classList.toggle("active", state.activeModule === "database");
   elements.historyModule.classList.toggle("active", state.activeModule === "history");
@@ -7315,6 +7321,7 @@ async function loadOrders({ preserveSelection = false, quiet = false, visual = t
     });
     if (profileKey !== state.profile) return false;
     state.orders = payload.orders;
+    document.dispatchEvent(new CustomEvent("dominium:orders-updated"));
     state.monitorLastUpdatedAt = new Date().toISOString();
     state.monitorSnapshotStale = Boolean(payload.stale);
     state.closeInstallerChecks = {};
@@ -12639,6 +12646,7 @@ elements.bulkCreateModule.addEventListener("click", () => setModule("bulk"));
 elements.importsModule.addEventListener("click", () => setModule("imports"));
 elements.automationTestModule.addEventListener("click", () => setModule("automation-test"));
 elements.closeModule.addEventListener("click", () => setModule("close"));
+document.getElementById("closeControlModule")?.addEventListener("click", () => setModule("close-control"));
 elements.reportModule.addEventListener("click", () => setModule("report"));
 elements.databaseModule.addEventListener("click", () => setModule("database"));
 elements.historyModule.addEventListener("click", () => setModule("history"));
@@ -13349,6 +13357,35 @@ const disconnectionController = globalThis.DominiumDisconnection?.mount({
   request,
   requestBlob: async (...args) => (await requestBlob(...args)).blob,
   getUser: () => state.authUser,
+});
+// Ponte read-only: expõe somente campos da lista Imperium já carregada.
+// Nenhuma consulta extra ao TOA, nem inferência de importação da rota.
+window.DominiumCloseControlBridge = Object.freeze({
+  getSnapshot() {
+    return {
+      profile: state.profile,
+      date: elements.date?.value || "",
+      stale: Boolean(state.monitorSnapshotStale),
+      orders: (state.orders || []).map((order) => {
+        const window = semiAutoOrderWindow(order);
+        const formatMinute = value => Number.isFinite(value) && value >= 0 && value < 1440
+          ? String(Math.floor(value / 60)).padStart(2, "0") + ":" + String(value % 60).padStart(2, "0")
+          : "";
+        return {
+          os: String(order.num_os || order.os_number || order.id_os || ""),
+          contract: String(order.contract || ""),
+          technician: String(order.installer_name || order.technician || order.installer || ""),
+          windowStart: formatMinute(window.start),
+          windowEnd: formatMinute(window.end),
+          imperiumStatus: String(order.status || ""),
+          // Em Todos, usar apenas a base identificada na própria O.S.
+          // Não atribuir artificialmente uma O.S. a Natal ou outra cidade.
+          city: String(order.city || order.report_city || order.profile ||
+            (state.profile && state.profile !== "all" && state.profile !== "todos" ? state.profile : "")),
+        };
+      }),
+    };
+  },
 });
 bootstrapAuthentication();
 window.setTimeout(() => {

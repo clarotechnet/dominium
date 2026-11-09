@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
   <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-image-1">
   <link rel="stylesheet" href="/all-cities-scope.css?v=20261103-global-1">
+  <link rel="stylesheet" href="/close-control.css?v=20261106-homolog-1">
+  <link rel="stylesheet" href="/controller-central.css?v=20261107-homolog-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -149,6 +151,10 @@
       <button class="side-nav-item" id="closeModule" type="button">
         <i data-lucide="square-check-big" aria-hidden="true"></i>
         <span><strong>Baixar OS</strong><small id="closeQueueBadge">0 aguardando</small></span>
+      </button>
+      <button class="side-nav-item" id="closeControlModule" type="button">
+        <i data-lucide="list-checks" aria-hidden="true"></i>
+        <span><strong>Controle de baixas</strong><small>Janelas e tratativas</small></span>
       </button>
       <p class="side-nav-label side-nav-section">Recursos</p>
       <button class="side-nav-item stock-group-toggle" id="stockGroupToggle" type="button"
@@ -1539,6 +1545,80 @@
       </div>
     </section>
 
+    <section class="close-control-workspace hidden" id="closeControlWorkspace" aria-label="Controle administrativo de baixas">
+      <div class="cc-top">
+        <div>
+          <p class="cc-eyebrow">DOMINIUM / IMPERIUM / TOA</p>
+          <h2>Controle de baixas</h2>
+          <p class="cc-subtle">Acompanhamento das O.S., janelas de atendimento e fila para tratativa humana.</p>
+        </div>
+        <span class="cc-safe">HOMOLOGAÇÃO · NENHUMA BAIXA OU CONSULTA TOA</span>
+      </div>
+      <div class="cc-toolbar">
+        <button class="cc-btn cc-btn-primary" type="button" id="ccDemo">Cenário 09:37</button>
+        <button class="cc-btn" type="button" id="ccReal">Lista atual do Imperium</button>
+        <button class="cc-btn" type="button" id="ccRefresh">Atualizar painel local</button>
+        <label>Visualizar
+          <select id="ccFilter">
+            <option value="all">Todas as O.S.</option>
+            <option value="due">Consulta elegível</option>
+            <option value="waiting">Aguardando janela ou intervalo</option>
+            <option value="ready">Prontas para revisão da baixa</option>
+            <option value="review">Tratativa humana</option>
+          </select>
+        </label>
+        <label>Localizar O.S. ou contrato
+          <input id="ccSearch" type="search" placeholder="Busca local, sem TOA">
+        </label>
+      </div>
+      <p class="cc-subtle" id="ccSource"></p>
+      <p class="cc-subtle" id="ccCurrentTime"></p>
+      <div class="cc-metrics" id="ccMetrics" aria-label="Indicadores de acompanhamento"></div>
+      <div class="cc-note">
+        <strong>Fluxo de segurança:</strong> confirmar rota importada e O.S. existente no Imperium → validar janela → consultar TOA somente quando vencer o intervalo → validar código, materiais e equipamentos → preparar baixa → confirmar baixa efetiva no Imperium. Em caso de retorno incerto, interromper e enviar para tratativa humana.
+      </div>
+      <section class="cc-city-area" aria-label="Baixas por cidade">
+        <div class="cc-city-heading">
+          <div>
+            <h3>Baixas por cidade</h3>
+            <p class="cc-subtle">O.S. acompanhadas, aguardando baixa, confirmadas e com erro. Sem dados de backlog da Claro.</p>
+          </div>
+          <span class="cc-safe" id="ccCitySource">Dados de homologação</span>
+        </div>
+        <div class="cc-demo-actions" id="ccQueueDemoActions">
+          <label for="ccDemoQueueCity">Demonstrar fila da cidade
+            <select id="ccDemoQueueCity">
+              <option value="natal">Natal / Parnamirim</option>
+              <option value="fortaleza">Fortaleza</option>
+              <option value="recife">Recife</option>
+              <option value="mossoro">Mossoró</option>
+            </select>
+          </label>
+          <button type="button" class="cc-btn" id="ccDemoNext">Simular próxima O.S.</button>
+          <button type="button" class="cc-btn" id="ccDemoError">Simular erro</button>
+          <button type="button" class="cc-btn cc-btn-primary" id="ccDemoSuccess">Simular baixa confirmada</button>
+          <span class="cc-subtle">Simulação visual · nenhum comando enviado</span>
+        </div>
+        <div class="cc-city-grid" id="ccCityBoard"></div>
+        <p class="cc-subtle" id="ccCitySummary" role="status"></p>
+      </section>
+      <div class="cc-actions">
+        <button type="button" class="cc-btn cc-btn-primary" id="ccPreviewImproductive">Prévia das improdutivas</button>
+        <button type="button" class="cc-btn cc-btn-primary" id="ccPreviewProductive">Prévia das produtivas</button>
+        <button type="button" class="cc-btn" disabled title="Exige autorização do backend e validação em produção">Iniciar improdutivas · bloqueado</button>
+        <button type="button" class="cc-btn cc-btn-alert" disabled title="Exige fluxo Adesão próprio e validação em produção">Iniciar produtivas · bloqueado</button>
+      </div>
+      <div class="cc-table-wrap">
+        <table>
+          <thead><tr><th>O.S.</th><th>Contrato</th><th>Técnico</th><th>Janela</th><th>TOA</th><th>Tratativa</th><th>Próxima consulta</th></tr></thead>
+          <tbody id="ccRows"></tbody>
+        </table>
+      </div>
+      <p class="cc-subtle" id="ccTableSummary" role="status"></p>
+      <section class="cc-report" id="ccReport" aria-live="polite"></section>
+      <p class="cc-foot">Não gera consultas externas. O modo “Lista atual do Imperium” lê somente dados já carregados no DOMINIUM e não afirma que uma O.S. está concluída no TOA. Os botões de baixa permanecem inativos até validação do backend e do limite global de requisições.</p>
+    </section>
+
     <section class="close-workspace hidden" id="closeWorkspace" aria-label="Baixar ordem de servico">
       <header class="workspace-heading">
         <div>
@@ -1952,6 +2032,79 @@
           </table>
         </div>
         <div class="intelligence-empty" id="serialAuditEmpty">Execute a auditoria para cruzar o ultimo retrato do TOA com o estoque do Imperium.</div>
+      </section>
+      <section class="intelligence-panel tc-central" id="toaCentral" aria-label="Central dos controladores TOA">
+        <header class="tc-central-header">
+          <div>
+            <span class="panel-kicker">INFRAESTRUTURA · PONTES TOA</span>
+            <h3>Central de Controladores</h3>
+            <p>Computadores conectados, buckets da sessão, consultas acompanhadas e fila distribuída.</p>
+          </div>
+          <div class="tc-header-actions">
+            <button type="button" class="button secondary" id="toaCentralRefresh">Atualizar</button>
+            <button type="button" class="button secondary" id="toaCentralDemo">Ver demonstração</button>
+          </div>
+        </header>
+        <p class="tc-status-message" id="toaCentralStatus" role="status">Aguardando coordenador.</p>
+        <div class="tc-metrics" id="toaCentralSummary"></div>
+        <section class="tc-enrollments" aria-label="Aprovação de novos controladores">
+          <div class="tc-subheader">
+            <div><h4>Controladores aguardando aprovação</h4><p>Confira o código no ícone da extensão instalada antes de autorizar.</p></div>
+          </div>
+          <div id="toaCentralEnrollmentList" class="tc-enrollment-list">
+            <p class="tc-empty">Aguardando conexão com o coordenador.</p>
+          </div>
+        </section>
+        <div class="tc-layout">
+          <section>
+            <div class="tc-subheader">
+              <h4>Controladores e sessões</h4>
+              <label>Filtrar bucket
+                <select id="toaCentralFilter">
+                  <option value="all">Todos</option>
+                  <option value="FTZ-DMV_01">FTZ-DMV_01</option>
+                  <option value="FTZ-DMV_ADM">FTZ-DMV_ADM</option>
+                  <option value="FTZ-DMV_01_VT">FTZ-DMV_01_VT</option>
+                  <option value="JCR-DMV">JCR-DMV</option>
+                  <option value="JCR-DMV_ADM">JCR-DMV_ADM</option>
+                  <option value="MRO-DMV">MRO-DMV</option>
+                  <option value="NTL-DMV">NTL-DMV</option>
+                  <option value="NTL-DMV_ADM">NTL-DMV_ADM</option>
+                  <option value="NTL-DMV_VT">NTL-DMV_VT</option>
+                  <option value="PWM-DMV">PWM-DMV</option>
+                  <option value="PWM-DMV_ADM">PWM-DMV_ADM</option>
+                  <option value="PWM-DMV_VT">PWM-DMV_VT</option>
+                </select>
+              </label>
+            </div>
+            <div class="tc-agent-list" id="toaCentralAgents">
+              <p class="tc-empty">Aguardando monitor autenticado.</p>
+            </div>
+          </section>
+          <section>
+            <h4>Cobertura dos 12 buckets</h4>
+            <div class="tc-bucket-list" id="toaCentralBuckets"></div>
+          </section>
+        </div>
+        <section class="tc-simulator" aria-label="Simulação de distribuição, sem consultas">
+          <div class="tc-subheader"><h4>Prévia de distribuição da fila</h4><span>Simulação · sem consultas ao TOA</span></div>
+          <div class="tc-simulator-fields">
+            <label>Bucket <select id="toaCentralSimBucket">
+              <option value="NTL-DMV_ADM">Natal · Desconexão</option>
+              <option value="NTL-DMV">Natal · Adesão</option>
+              <option value="MRO-DMV">Mossoró · Misto</option>
+              <option value="FTZ-DMV_ADM">Fortaleza · Desconexão</option>
+              <option value="FTZ-DMV_01">Fortaleza · Adesão</option>
+              <option value="JCR-DMV_ADM">Recife · Desconexão</option>
+              <option value="PWM-DMV_ADM">Parnamirim · Desconexão</option>
+            </select></label>
+            <label>Contratos <input type="number" id="toaCentralSimQty" min="0" max="5000" value="50"></label>
+          </div>
+          <div class="tc-simulator-result" id="toaCentralSimResult">
+            <p>Atualize ou use a demonstração para simular uma fila.</p>
+          </div>
+          <p class="tc-footnote">Monitor apenas leitura. Aprovação central e limite global continuam obrigatórios. Não é um contador oficial de requisições Oracle.</p>
+        </section>
       </section>
     </section>
 
@@ -2732,6 +2885,10 @@
   <script src="/disconnection.js?v=20261103-event-guard-1"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
   <script src="/app.js?v=20261103-global-scope-1"></script>
+  <script src="/close-control-engine.js?v=20261106-homolog-1"></script>
+  <script src="/close-control-city-board.js?v=20261106-city-1"></script>
+  <script src="/close-control-ui.js?v=20261106-city-1"></script>
+  <script src="/controller-central.js?v=20261107-homolog-1"></script>
   <script src="/backlog-report.js?v=20261103-whatsapp-1"></script>
   <script src="/backlog-report-image.js?v=20261103-image-2"></script>
   <script src="/backlog-analysis.js?v=20261107-restore-status-1"></script>
