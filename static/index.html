@@ -2135,6 +2135,16 @@
             <i data-lucide="refresh-cw" aria-hidden="true"></i><span>Atualizar</span>
           </button>
         </div>
+        <section class="database-observation-lookup" aria-label="Adicionar observação em O.S. concluída">
+          <header><h3>Observação em O.S. concluída</h3><p>Consultar diretamente no Imperium, mesmo que o contrato não esteja na Base operacional.</p></header>
+          <div class="database-observation-lookup-fields">
+            <label class="field"><span>Data da O.S.</span><input type="date" id="observationLookupDate"></label>
+            <label class="field"><span>Contrato</span><input type="text" id="observationLookupContract" inputmode="numeric" maxlength="10" placeholder="Ex.: 4332297" autocomplete="off"></label>
+            <label class="field"><span>Número da O.S.</span><input type="text" id="observationLookupOs" inputmode="numeric" maxlength="10" placeholder="Ex.: 2664945723" autocomplete="off"></label>
+            <button class="button secondary" id="observationLookupButton" type="button">Consultar O.S.</button>
+          </div>
+          <p class="observation-dialog-status" id="observationLookupStatus" aria-live="polite">Piloto: Natal, O.S. concluídas nos últimos 90 dias. A consulta não altera o Imperium.</p>
+        </section>
         <div class="database-layout">
           <div class="database-list" id="databaseList"></div>
           <article class="database-detail" id="databaseDetail">
@@ -2142,6 +2152,24 @@
           </article>
         </div>
       </section>
+      <dialog class="observation-dialog" id="postCloseObservationDialog" aria-labelledby="postCloseObservationTitle">
+        <form method="dialog" class="observation-dialog-shell" id="postCloseObservationForm">
+          <header>
+            <h3 id="postCloseObservationTitle">Adicionar observação no Imperium</h3>
+            <p id="postCloseObservationOrder">Selecione uma O.S. concluída.</p>
+          </header>
+          <label class="field" for="postCloseObservationText">
+            <span>Nova observação (será acrescentada ao texto atual)</span>
+            <textarea id="postCloseObservationText" maxlength="500" rows="4" required placeholder="Digite somente o texto adicional."></textarea>
+          </label>
+          <p class="observation-dialog-status" id="postCloseObservationStatus" aria-live="polite">A baixa e os equipamentos não serão alterados.</p>
+          <footer>
+            <button class="button secondary" type="button" id="postCloseObservationCancel">Cancelar</button>
+            <button class="button secondary" type="button" id="postCloseObservationPreview">Verificar O.S.</button>
+            <button class="button" type="button" id="postCloseObservationSave" disabled>Salvar observação</button>
+          </footer>
+        </form>
+      </dialog>
     </section>
 
     <section class="history-workspace hidden" id="historyWorkspace" aria-label="Historico de operacoes">

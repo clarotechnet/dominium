@@ -1873,6 +1873,152 @@ function exportSerialConsultCsv() {
   URL.revokeObjectURL(url);
 }
 
+// IMPERIUM — observação pós-baixa; piloto Natal, edição por administrador.
+const postCloseObservationUi = {
+  order: null, preview: null, sending: false, uncertain: false,
+};
+function postCloseObservationNodes() {
+  return {
+    dialog: document.querySelector("#postCloseObservationDialog"),
+    order: document.querySelector("#postCloseObservationOrder"),
+    text: document.querySelector("#postCloseObservationText"),
+    status: document.querySelector("#postCloseObservationStatus"),
+    preview: document.querySelector("#postCloseObservationPreview"),
+    save: document.querySelector("#postCloseObservationSave"),
+    cancel: document.querySelector("#postCloseObservationCancel"),
+  };
+}
+function openPostCloseObservation(order, contractOverride = "") {
+  if (state.authUser?.role !== "admin" || state.profile !== "natal"
+      || !Number.isSafeInteger(Number(order.id_os)) || Number(order.id_os) <= 0) {
+    showToast("Observações disponíveis apenas ao administrador em Natal.", "warning");
+    return;
+  }
+  const el = postCloseObservationNodes();
+  postCloseObservationUi.order = {
+    id_os: Number(order.id_os), os_number: String(order.os_number),
+    contract: String(contractOverride || order.contract || state.operationalContract?.contract || ""),
+  };
+  postCloseObservationUi.preview = null;
+  postCloseObservationUi.sending = false;
+  postCloseObservationUi.uncertain = false;
+  el.order.textContent = `OS ${order.os_number} · Contrato ${postCloseObservationUi.order.contract}`;
+  el.text.value = "";
+  el.status.textContent = "A observação será acrescentada ao texto atual. Nenhuma baixa será reenviada.";
+  el.save.disabled = true;
+  el.preview.disabled = false;
+  el.cancel.disabled = false;
+  if (!el.dialog.open) el.dialog.showModal();
+  el.text.focus();
+}
+async function resolvePostCloseObservation() {
+  const status = document.querySelector("#observationLookupStatus");
+  const button = document.querySelector("#observationLookupButton");
+  const date = document.querySelector("#observationLookupDate").value;
+  const contract = document.querySelector("#observationLookupContract").value.trim();
+  const number = document.querySelector("#observationLookupOs").value.trim();
+  if (state.authUser?.role !== "admin" || state.profile !== "natal") {
+    status.textContent = "Esta função exige administrador no perfil Natal.";
+    return;
+  }
+  if (!/^\d{6,10}$/.test(contract) || !/^\d{10}$/.test(number) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    status.textContent = "Informe data, contrato e número da O.S. válidos.";
+    return;
+  }
+  button.disabled = true;
+  status.textContent = "Consultando as O.S. concluídas no Imperium, sem alterar dados...";
+  try {
+    const response = await request(apiUrl("/api/observations/resolve"), {
+      method: "POST", body: JSON.stringify({date, contract, os_number: number}),
+      timeoutMs: 125000,
+    });
+    if (response.contract !== contract || response.os_number !== number || !(Number(response.id_os) > 0)) {
+      throw new Error("A consulta não confirmou a identidade da O.S.");
+    }
+    status.textContent = `O.S. ${number} localizada. Informe a nova observação na janela aberta.`;
+    openPostCloseObservation(response, contract);
+  } catch (error) {
+    status.textContent = `Consulta não concluída: ${error.message}`;
+  } finally {
+    button.disabled = false;
+  }
+}
+async function previewPostCloseObservation() {
+  const el = postCloseObservationNodes();
+  const current = postCloseObservationUi.order;
+  const note = el.text.value.trim();
+  if (!current || !note || note.length > 500) {
+    el.status.textContent = "Informe uma observação de até 500 caracteres.";
+    return;
+  }
+  if (postCloseObservationUi.sending || postCloseObservationUi.uncertain) return;
+  el.preview.disabled = true;
+  el.save.disabled = true;
+  el.status.textContent = "Consultando observação e código de baixa no Imperium...";
+  try {
+    const payload = await request(apiUrl(`/api/orders/${current.id_os}/observation/preview`), {
+      method: "POST",
+      body: JSON.stringify({contract: current.contract, os_number: current.os_number, text: note}),
+      timeoutMs: 35000,
+    });
+    if (payload.code !== "409" || payload.preview_only !== true) {
+      throw new Error("A prévia não confirmou a O.S. 409.");
+    }
+    const capability = await request(apiUrl("/api/observations/capabilities"), {timeoutMs: 10000});
+    postCloseObservationUi.preview = {
+      snapshot_sha256: payload.snapshot_sha256,
+      text: note, idempotency_key: crypto.randomUUID(),
+    };
+    const allowed = Boolean(capability.write_enabled && state.authUser?.role === "admin");
+    el.status.textContent = allowed
+      ? `Código 409 confirmado. Texto anterior: ${payload.existing_note_bytes} bytes. Confira e clique em Salvar.`
+      : "Prévia validada. A gravação ainda não está habilitada neste servidor.";
+    el.save.disabled = !allowed;
+  } catch (error) {
+    postCloseObservationUi.preview = null;
+    el.status.textContent = `Não foi possível validar: ${error.message}`;
+  } finally {
+    el.preview.disabled = false;
+  }
+}
+async function savePostCloseObservation() {
+  const el = postCloseObservationNodes();
+  const order = postCloseObservationUi.order;
+  const preview = postCloseObservationUi.preview;
+  if (!order || !preview || preview.text !== el.text.value.trim()
+      || postCloseObservationUi.uncertain || postCloseObservationUi.sending) return;
+  if (!window.confirm(`Adicionar observação à OS ${order.os_number} no Imperium? O código 409 será preservado.`)) return;
+  postCloseObservationUi.sending = true;
+  el.preview.disabled = true;
+  el.save.disabled = true;
+  el.cancel.disabled = true;
+  el.text.readOnly = true;
+  el.status.textContent = "Enviando uma única vez e confirmando no Imperium...";
+  try {
+    const result = await request(apiUrl(`/api/orders/${order.id_os}/observation/append`), {
+      method: "POST",
+      body: JSON.stringify({
+        contract: order.contract, os_number: order.os_number, text: preview.text,
+        snapshot_sha256: preview.snapshot_sha256,
+        idempotency_key: preview.idempotency_key,
+      }), timeoutMs: 65000,
+    });
+    if (!result.confirmed) throw new Error("A gravação ainda não foi confirmada.");
+    el.status.textContent = "Observação confirmada no Imperium sem alterar a baixa.";
+    showToast(`Observação confirmada na OS ${order.os_number}.`, "success");
+    postCloseObservationUi.order = null;
+    el.dialog.close();
+  } catch (error) {
+    postCloseObservationUi.uncertain = true;
+    el.status.textContent = "Envio não confirmado ou recusado. Não repita a gravação. Consulte a O.S. antes de nova tentativa.";
+    showToast(`Observação: ${error.message}`, "warning");
+  } finally {
+    postCloseObservationUi.sending = false;
+    el.text.readOnly = false;
+    el.cancel.disabled = false;
+  }
+}
+
 function renderOperationalContract() {
   const contract = state.operationalContract;
   elements.databaseContractCount.textContent = state.operationalDatabase.total || 0;
@@ -1912,7 +2058,7 @@ function renderOperationalContract() {
     <section class="database-detail-section">
       <header><h3><i data-lucide="list-checks" aria-hidden="true"></i>Ordens e tarefas</h3><span>${contract.orders.length}</span></header>
       <div class="database-order-list">${contract.orders.map((order) => `
-        <div><strong>OS ${escapeHtml(order.os_number)}</strong><span>${escapeHtml(order.service || "Servico nao informado")}</span><small>TOA: ${escapeHtml(order.toa_status || "-")} · IMPERIUM: ${escapeHtml(order.imperium_status || "-")} · Codigo: ${escapeHtml(order.close_code || "-")}</small></div>
+        <div><strong>OS ${escapeHtml(order.os_number)}</strong><span>${escapeHtml(order.service || "Servico nao informado")}</span><small>TOA: ${escapeHtml(order.toa_status || "-")} · IMPERIUM: ${escapeHtml(order.imperium_status || "-")} · Codigo: ${escapeHtml(order.close_code || "-")}</small>${state.authUser?.role === "admin" && state.profile === "natal" && Number(order.id_os) > 0 ? `<button type="button" class="button secondary database-observation-action" data-add-observation="${Number(order.id_os)}">Adicionar observação</button>` : ""}</div>
       `).join("")}</div>
     </section>
     ${inventorySection("Equipamentos instalados", contract.inventory.installed || [], "package-plus")}
@@ -1927,6 +2073,13 @@ function renderOperationalContract() {
           <small>${escapeHtml(formatDateTime(attempt.updated_at))} · ${escapeHtml(attempt.transport || "-")}</small>
         </div>`).join("") : '<span class="database-muted">Nenhuma tentativa registrada.</span>'}</div>
     </section>`;
+  elements.databaseDetail.querySelectorAll("[data-add-observation]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const wanted = Number(button.dataset.addObservation);
+      const selected = contract.orders.find((order) => Number(order.id_os) === wanted);
+      if (selected) openPostCloseObservation(selected);
+    });
+  });
   window.lucide?.createIcons();
 }
 
@@ -1941,6 +2094,9 @@ async function selectOperationalContract(contract) {
 }
 
 function renderOperationalDatabase() {
+  document.querySelector(".database-observation-lookup")?.classList.toggle(
+    "hidden", state.authUser?.role !== "admin" || state.profile !== "natal"
+  );
   const selected = state.operationalContract?.contract;
   const rows = state.operationalDatabase.contracts || [];
   elements.databaseList.innerHTML = rows.length ? rows.map((contract) => `
@@ -12657,6 +12813,20 @@ elements.databaseSearch.addEventListener("input", () => {
 });
 elements.databaseDate.addEventListener("change", () => loadOperationalDatabase());
 elements.databaseRefresh.addEventListener("click", () => loadOperationalDatabase());
+document.querySelector("#observationLookupDate").value = localDate();
+document.querySelector("#observationLookupButton").addEventListener("click", resolvePostCloseObservation);
+document.querySelector("#postCloseObservationCancel").addEventListener("click", () => {
+  if (!postCloseObservationUi.sending) document.querySelector("#postCloseObservationDialog").close();
+});
+document.querySelector("#postCloseObservationPreview").addEventListener("click", previewPostCloseObservation);
+document.querySelector("#postCloseObservationSave").addEventListener("click", savePostCloseObservation);
+document.querySelector("#postCloseObservationText").addEventListener("input", () => {
+  postCloseObservationUi.preview = null;
+  document.querySelector("#postCloseObservationSave").disabled = true;
+});
+document.querySelector("#postCloseObservationDialog").addEventListener("cancel", (event) => {
+  if (postCloseObservationUi.sending) event.preventDefault();
+});
 elements.intelligenceRefresh.addEventListener("click", () => loadIntelligence());
 elements.intelligenceDays.addEventListener("change", () => loadIntelligence());
 elements.intelligenceDate.addEventListener("change", () => {
