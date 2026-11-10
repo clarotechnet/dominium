@@ -83,6 +83,12 @@ from imperium_api import (
     Order,
 )
 from official_close import build_manual_official_plan
+from obs_datasnap_operation_lab import (
+    ObservationConflict,
+    ObservationResultUncertain,
+    preview_readonly as preview_closed_observation,
+    append_once as append_closed_observation_once,
+)
 from operation_scope import (
     ImportScope,
     OSIdentity,
@@ -5889,6 +5895,21 @@ class PanelHandler(BaseHTTPRequestHandler):
                     {"ok": True, "count": len(failures), "failures": failures},
                 )
                 return
+            if parsed.path == "/api/observations/capabilities":
+                current_user = self._current_user() or {}
+                operator = current_user.get("role") in {"admin", "controller"}
+                self._json(HTTPStatus.OK, {
+                    "ok": True,
+                    "preview_enabled": bool(operator),
+                    "write_enabled": bool(
+                        current_user.get("role") == "admin"
+                        and _env_enabled("DOMINIUM_ENABLE_POST_CLOSE_OBSERVATIONS")
+                        and profile.key == "natal"
+                    ),
+                    "profile": profile.key,
+                    "scope": "natal_only",
+                })
+                return
             if parsed.path == "/api/close-report":
                 query = parse_qs(parsed.query)
                 raw_date = str(
@@ -6378,6 +6399,64 @@ class PanelHandler(BaseHTTPRequestHandler):
             return
         if parsed.path.startswith('/api/disconnection/'):
             self._desc_request('POST', self.path)
+            return
+        if parsed.path == "/api/observations/resolve":
+            try:
+                profile = _profile_from_query(parsed.query)
+                operator = self._current_user() or {}
+                if profile.key != "natal" or operator.get("role") not in {"admin", "controller"}:
+                    self._json(HTTPStatus.FORBIDDEN, {
+                        "ok": False, "error": "Consulta de observacoes restrita ao perfil Natal"
+                    })
+                    return
+                body = self._body(max_length=4096)
+                contract = str(body.get("contract") or "").strip()
+                number = str(body.get("os_number") or "").strip()
+                date = dt.date.fromisoformat(str(body.get("date") or ""))
+                if not re.fullmatch(r"\d{6,10}", contract) or not re.fullmatch(r"\d{10}", number):
+                    raise ValueError("Contrato ou numero de OS invalido")
+                if date > dt.date.today() or (dt.date.today() - date).days > 90:
+                    raise ValueError("Informe uma data dos ultimos 90 dias")
+                if not OPERATION_GATE.acquire(blocking=False):
+                    self._json(HTTPStatus.CONFLICT, {
+                        "ok": False, "error": "Outra consulta Imperium esta em andamento"
+                    })
+                    return
+                try:
+                    rows = profile.api.list_orders(
+                        date, status="completed", service_type="all"
+                    )
+                    matches = [
+                        row for row in rows if row.contract == contract
+                        and row.num_os == number
+                    ]
+                    if len(matches) != 1 or int(matches[0].id_os) <= 0:
+                        self._json(HTTPStatus.NOT_FOUND, {
+                            "ok": False, "error": "OS concluida nao encontrada nesta data"
+                        })
+                        return
+                    row = matches[0]
+                    self._json(HTTPStatus.OK, {
+                        "ok": True, "profile": "natal", "date": date.isoformat(),
+                        "id_os": row.id_os, "os_number": row.num_os,
+                        "contract": row.contract, "service": row.service,
+                        "next": "preview_observation",
+                    })
+                finally:
+                    OPERATION_GATE.release()
+            except ValueError as exc:
+                self._json(HTTPStatus.BAD_REQUEST, {
+                    "ok": False, "error": str(exc)
+                })
+            except (DataSnapError, OSError):
+                self._json(HTTPStatus.BAD_GATEWAY, {
+                    "ok": False, "error": "Imperium indisponivel para consulta de OS"
+                })
+            except Exception:
+                LOGGER.exception("Falha inesperada na resolucao de OS")
+                self._json(HTTPStatus.INTERNAL_SERVER_ERROR, {
+                    "ok": False, "error": "Falha na consulta de OS"
+                })
             return
         if parsed.path == "/api/auth/register":
             try:
@@ -8097,6 +8176,99 @@ class PanelHandler(BaseHTTPRequestHandler):
                     HTTPStatus.INTERNAL_SERVER_ERROR,
                     {"ok": False, "error": "Erro interno; consulte o suporte"},
                 )
+            return
+        observation_match = re.fullmatch(
+            r"/api/orders/(\d+)/observation/(preview|append)", parsed.path
+        )
+        if observation_match:
+            id_os = int(observation_match.group(1))
+            action = observation_match.group(2)
+            try:
+                profile = _profile_from_query(parsed.query)
+                operator = self._current_user() or {}
+                if profile.key != "natal":
+                    self._json(HTTPStatus.FORBIDDEN, {
+                        "ok": False, "error": "Observacoes DataSnap: piloto exclusivo de Natal"
+                    })
+                    return
+                if operator.get("role") not in {"admin", "controller"}:
+                    self._json(HTTPStatus.FORBIDDEN, {
+                        "ok": False, "error": "Perfil operacional necessario"
+                    })
+                    return
+                if action == "append" and (
+                    operator.get("role") != "admin"
+                    or not _env_enabled("DOMINIUM_ENABLE_POST_CLOSE_OBSERVATIONS")
+                ):
+                    self._json(HTTPStatus.FORBIDDEN, {
+                        "ok": False, "error": "Gravacao de observacoes nao habilitada"
+                    })
+                    return
+                payload = self._body(max_length=4 * 1024)
+                contract = str(payload.get("contract") or "").strip()
+                number = str(payload.get("os_number") or "").strip()
+                note = payload.get("text")
+                if not (
+                    re.fullmatch(r"\d{6,10}", contract)
+                    and re.fullmatch(r"\d{10}", number)
+                    and isinstance(note, str)
+                    and 0 < len(note.strip()) <= 500
+                ):
+                    raise ValueError("Informe contrato, OS e observacao valida")
+                if not OPERATION_GATE.acquire(blocking=False):
+                    self._json(HTTPStatus.CONFLICT, {
+                        "ok": False, "error": "Outra operacao Imperium esta em andamento"
+                    })
+                    return
+                try:
+                    if action == "preview":
+                        preview = preview_closed_observation(
+                            profile.api, id_os, number, contract, note
+                        )
+                        self._json(HTTPStatus.OK, {"ok": True, **preview})
+                    else:
+                        audit_dir = LOG_ROOT / "post-close-observations" / "natal"
+                        audit_dir.mkdir(parents=True, exist_ok=True)
+                        result = append_closed_observation_once(
+                            profile.api, id_os, number, contract, note,
+                            str(payload.get("snapshot_sha256") or ""),
+                            str(payload.get("idempotency_key") or ""),
+                            audit_dir, enable_live=True
+                        )
+                        self._auth_audit(
+                            "append_closed_observation",
+                            "confirmed" if result.get("confirmed") else "pending",
+                            target=number,
+                            metadata={
+                                "profile": "natal",
+                                "id_os": id_os,
+                                "confirmed": bool(result.get("confirmed")),
+                            },
+                        )
+                        self._json(
+                            HTTPStatus.OK if result.get("confirmed") else HTTPStatus.ACCEPTED,
+                            result
+                        )
+                finally:
+                    OPERATION_GATE.release()
+            except (ValueError, ObservationConflict) as exc:
+                self._json(HTTPStatus.CONFLICT if isinstance(exc, ObservationConflict)
+                    else HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+            except ObservationResultUncertain:
+                self._json(HTTPStatus.ACCEPTED, {
+                    "ok": False, "pending": True, "safe_to_retry": False,
+                    "error": "Resultado nao confirmado. Consulte a OS; nao reenviar."
+                })
+            except (DataSnapError, OSError) as exc:
+                LOGGER.warning("Observacao DataSnap indisponivel: %s", type(exc).__name__)
+                self._json(HTTPStatus.BAD_GATEWAY, {
+                    "ok": False, "error": "Imperium indisponivel para observacao"
+                })
+            except Exception:
+                LOGGER.exception("Falha inesperada na operacao de observacao")
+                self._json(HTTPStatus.INTERNAL_SERVER_ERROR, {
+                    "ok": False, "error": "Nao foi possivel processar a observacao"
+                })
             return
         match = re.fullmatch(r"/api/orders/(\d+)/close", parsed.path)
         if match is None:

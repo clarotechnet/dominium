@@ -7707,3 +7707,84 @@ body.sidebar-collapsed .stock-group-chevron { display:none; }
 .stock-daily-search-loading{cursor:progress;opacity:.88}
 @keyframes stock-daily-spinner{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.stock-daily-loading-spinner{animation:none}}
+
+/* IMPERIUM | Observacao pos-baixa -- piloto Natal */
+.database-observation-action {
+  display: inline-flex;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.8rem;
+  align-self: flex-start;
+}
+.observation-dialog {
+  width: min(92vw, 560px);
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: auto;
+  padding: 0;
+  background: var(--surface, #171b25);
+  color: var(--text, #eef2f8);
+  border: 1px solid var(--border, #414858);
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+}
+.observation-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(5px);
+}
+.observation-dialog-shell {
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.4rem;
+}
+.observation-dialog-shell header h3 { margin: 0 0 0.45rem; font-size: 1.2rem; }
+.observation-dialog-shell header p { margin: 0; opacity: 0.8; }
+.observation-dialog-shell textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 104px;
+  padding: 0.75rem;
+  color: inherit;
+  background: rgba(127, 127, 127, 0.08);
+  border: 1px solid rgba(127, 127, 127, 0.32);
+  border-radius: 10px;
+  resize: vertical;
+  font: inherit;
+}
+.observation-dialog-status { margin: 0; font-size: 0.88rem; line-height: 1.5; }
+.observation-dialog-shell footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; }
+.observation-dialog-shell button:disabled { cursor: not-allowed; opacity: 0.55; }
+
+/* Busca direta de OS concluida no Imperium para observacao pos-baixa */
+.database-observation-lookup {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid rgba(127, 127, 127, 0.26);
+  border-radius: 14px;
+  background: rgba(127, 127, 127, 0.045);
+}
+.database-observation-lookup.hidden { display: none; }
+.database-observation-lookup header h3 { margin: 0 0 0.35rem; font-size: 1rem; }
+.database-observation-lookup header p { margin: 0; opacity: 0.74; }
+.database-observation-lookup-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 0.65rem;
+  align-items: end;
+}
+.database-observation-lookup-fields input {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+.database-observation-lookup-fields button { min-height: 42px; }
+@media (max-width: 920px) {
+  .database-observation-lookup-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 540px) {
+  .database-observation-lookup-fields { grid-template-columns: minmax(0, 1fr); }
+  .database-observation-lookup-fields button { width: 100%; }
+}

@@ -41,6 +41,8 @@ endpoint	path
 /api/logs	app.py
 /api/monitor/snapshot	app.py
 /api/monitor/snapshot/clear	app.py
+/api/observations/capabilities	app.py
+/api/observations/resolve	app.py
 /api/operational/contracts	app.py
 /api/operational/contracts/(\d{5	app.py
 /api/operational/export.json	app.py
@@ -51,6 +53,7 @@ endpoint	path
 /api/orders/(\d+)/material-inventory	app.py
 /api/orders/(\d+)/material-paste	app.py
 /api/orders/(\d+)/move-installer	app.py
+/api/orders/(\d+)/observation/(preview	app.py
 /api/orders/(\d+)/serialized-transfer-preview	app.py
 /api/orders/(\d+)/transfer-serial	app.py
 /api/orders/bulk-create	app.py
@@ -468,6 +471,9 @@ endpoint	path
 /api/orders/123/close?profile=natal	tests/test_order_close_proxy.js
 /api/orders/123/move-installer?profile=natal	tests/test_order_close_proxy.js
 /api/toa-agenda/import	tests/test_order_dataset_hostinger.js
+/api/observations/resolve?profile=	tests/test_post_close_observation_lookup.py
+/api/observations/capabilities?profile=natal	tests/test_post_close_observation_routes.py
+/api/orders/2239585/observation/{action}?profile={profile}	tests/test_post_close_observation_routes.py
 /api/auto-improductive-close/toggle	tests/test_private_operational_migration.cjs
 /api/disconnect-automation/action	tests/test_private_operational_migration.cjs
 /api/disconnect-automation/claim	tests/test_private_operational_migration.cjs

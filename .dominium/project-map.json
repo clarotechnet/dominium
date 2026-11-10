@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-09T12:40:24+00:00",
+  "generated_at": "2026-11-10T20:03:54+00:00",
   "schema": 2,
-  "source_fingerprint": "b876686b2dfdf998459de1ac180a0a5e22a9b40787f781ddd8dd51745e6a8397",
+  "source_fingerprint": "803fcfd7773b38d13862cf354e7688bb7fa75415f7a69387889945f26bc9ed4d",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -162,8 +162,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 360511,
-      "sha256": "227ade0c245b77edd829b6ebe072eec88f7eef133572c9953fcd4e35d7f4e466",
+      "bytes": 369285,
+      "sha256": "b540c035f2de9400e91fb4991f4e26999ae5d53a041ff59380b49b4be0fe0b29",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -193,6 +193,7 @@
         "json",
         "logging",
         "mimetypes",
+        "obs_datasnap_operation_lab",
         "official_close",
         "operation_scope",
         "operational_store",
@@ -262,6 +263,8 @@
         "/api/logs",
         "/api/monitor/snapshot",
         "/api/monitor/snapshot/clear",
+        "/api/observations/capabilities",
+        "/api/observations/resolve",
         "/api/operational/contracts",
         "/api/operational/contracts/(\\d{5",
         "/api/operational/export.json",
@@ -272,6 +275,7 @@
         "/api/orders/(\\d+)/material-inventory",
         "/api/orders/(\\d+)/material-paste",
         "/api/orders/(\\d+)/move-installer",
+        "/api/orders/(\\d+)/observation/(preview",
         "/api/orders/(\\d+)/serialized-transfer-preview",
         "/api/orders/(\\d+)/transfer-serial",
         "/api/orders/bulk-create",
@@ -1512,8 +1516,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 11776,
-      "sha256": "cb048f89639c97eb8ee2ed3dbb6566cb25657f3796bec43048b76957609b25a0",
+      "bytes": 12303,
+      "sha256": "7e1b5e9efaa83e6c6f9f7b5deec3a69d20b4c6adff606dde0858987b4fded059",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1691,6 +1695,19 @@
       "bytes": 2208,
       "sha256": "da906eebccfbc4b8006a987f9a03f18e50efa68be46ca9ea1d7bd5e60b7a6c1c",
       "summary": "Controle de Baixas — Mossoró em foco (09/11/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/OBSERVACAO_POS_BAIXA_DATASNAP.md",
+      "category": "docs",
+      "bytes": 4131,
+      "sha256": "244732f1e13c5777be215376833dfd32f30b7758e2d36ae1b57aa0e353fd099f",
+      "summary": "DOMINIUM — observação pós-baixa via DataSnap",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -4206,6 +4223,54 @@
       "symbol_count": 16
     },
     {
+      "path": "obs_datasnap_lab.py",
+      "category": "shared",
+      "bytes": 6957,
+      "sha256": "cbecd7da05debf131c1c45314de4e097245a52858c588b73f81ababa46c3d161",
+      "summary": "DOMINIUM observation-after-close DataSnap proof of concept.",
+      "imports": [
+        "__future__",
+        "dataclasses",
+        "hashlib",
+        "re",
+        "struct",
+        "typing"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 9
+    },
+    {
+      "path": "obs_datasnap_operation_lab.py",
+      "category": "shared",
+      "bytes": 8432,
+      "sha256": "e0fca5f92fbfd05f634a19928afebb4f4ea9dc2be79060b731b03256e5dc6704",
+      "summary": "Guarded observation-only write for a CLOSED Natal O.S. (lab, not exposed).",
+      "imports": [
+        "__future__",
+        "datetime",
+        "hashlib",
+        "json",
+        "obs_datasnap_lab",
+        "os",
+        "pathlib",
+        "re",
+        "threading",
+        "time",
+        "typing",
+        "uuid"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmOrdemServico.AS_ApplyUpdates"
+      ],
+      "entrypoint": false,
+      "symbol_count": 7
+    },
+    {
       "path": "official_candidate_locator.py",
       "category": "shared",
       "bytes": 8440,
@@ -5433,7 +5498,7 @@
       "path": "static/close-control-city-board.js",
       "category": "frontend",
       "bytes": 5079,
-      "sha256": "b5149a60ead1f33cc060d01d66e3bf99a4292348a6d504f257a0263ddf878659",
+      "sha256": "77a4019a146774d17e4f5cb8caadfd2e03da60d7cb560a47494229561543e31d",
       "summary": "DOMINIUM Controle de baixas — painel por cidade.",
       "imports": [],
       "endpoints": [],
@@ -5619,8 +5684,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 171487,
-      "sha256": "a93d80023d61b612d87c764e4f51376c82721077a212317ca0818e2acb3f6349",
+      "bytes": 173949,
+      "sha256": "96c8e49b10f54bbff944c3fa5411098caab3c9104a17898eed5043e68877ff4b",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5801,8 +5866,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 226297,
-      "sha256": "14749da8ad85a46532c451ebe5b38c5cc3e07d605e24a5c6989d135769145918",
+      "bytes": 228815,
+      "sha256": "42826abf315afc7eebfaaff49ea11a17107b28681eaf527c12bae06a76bc8b37",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6744,7 +6809,7 @@
       "path": "tests/test_close_control_city_board.cjs",
       "category": "tests",
       "bytes": 6888,
-      "sha256": "b42cbdfb6780febf74980f9b84dcfe957d2a0f04f9886c2e82c2fa4ec607f22b",
+      "sha256": "da43c34f4a4d74720e749e2b37dad86ab3b501dc5cad4d1c2149e37ca367b6c2",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7774,6 +7839,53 @@
       "symbol_count": 19
     },
     {
+      "path": "tests/test_obs_datasnap_lab.py",
+      "category": "tests",
+      "bytes": 3071,
+      "sha256": "27924bbd393a4845f10a4425d324b0c8cd253c940abc2f8d6d390369eaa593bc",
+      "summary": "Offline tests: observation-only DataSnap payload builder (no network).",
+      "imports": [
+        "obs_datasnap_lab",
+        "pathlib",
+        "struct",
+        "sys",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 16
+    },
+    {
+      "path": "tests/test_obs_datasnap_operation_lab.py",
+      "category": "tests",
+      "bytes": 3995,
+      "sha256": "d617e2f6dd8063bc0490ea8f6210103a586ad549adde0e23ee1c61b56872cad1",
+      "summary": "No-network integration tests for guarded note update. Synthetic fixtures only.",
+      "imports": [
+        "contextlib",
+        "hashlib",
+        "json",
+        "obs_datasnap_lab",
+        "obs_datasnap_operation_lab",
+        "pathlib",
+        "struct",
+        "tempfile",
+        "test_obs_datasnap_lab",
+        "threading",
+        "unittest",
+        "uuid"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmOrdemServico.AS_ApplyUpdates"
+      ],
+      "entrypoint": true,
+      "symbol_count": 22
+    },
+    {
       "path": "tests/test_official_close.py",
       "category": "tests",
       "bytes": 6074,
@@ -8227,6 +8339,49 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 4
+    },
+    {
+      "path": "tests/test_post_close_observation_lookup.py",
+      "category": "tests",
+      "bytes": 2715,
+      "sha256": "63d69d4d6c184bff0a3cf543c3f5fce7046dd650f0fe21c71af5340c40a0a14f",
+      "summary": "Lookup of completed Natal OS for post-close observation; no real network.",
+      "imports": [
+        "app",
+        "datetime",
+        "types",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/observations/resolve?profile="
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 9
+    },
+    {
+      "path": "tests/test_post_close_observation_routes.py",
+      "category": "tests",
+      "bytes": 5870,
+      "sha256": "c6d15e46a8be9d2633af68c7c640080d60234c86cf9e8b6c787a8f13b4e843d6",
+      "summary": "Controlled HTTP routes for observations after a 409 close.",
+      "imports": [
+        "app",
+        "os",
+        "pathlib",
+        "tempfile",
+        "types",
+        "unittest"
+      ],
+      "endpoints": [
+        "/api/observations/capabilities?profile=natal",
+        "/api/orders/2239585/observation/{action}?profile={profile}"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 10
     },
     {
       "path": "tests/test_private_operational_migration.cjs",

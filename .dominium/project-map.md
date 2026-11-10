@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-09T12:40:24+00:00
-- Source fingerprint: `b876686b2dfdf998`
-- Indexed files: 520
-- Indexed symbols: 4359
-- API path references: 545
+- Generated: 2026-11-10T20:03:54+00:00
+- Source fingerprint: `803fcfd7773b38d1`
+- Indexed files: 527
+- Indexed symbols: 4432
+- API path references: 551
 
 ## Navigation rule
 
@@ -16,7 +16,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (151 symbols, 81 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (151 symbols, 84 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operational_store.py` (25 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -167,6 +167,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `material_matching.py` (9 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `material_protocol_templates.json` (1 DataSnap methods)
 - `native_order_protocol_templates.json` (2 DataSnap methods)
+- `obs_datasnap_lab.py` (9 symbols) - DOMINIUM observation-after-close DataSnap proof of concept.
+- `obs_datasnap_operation_lab.py` (7 symbols, 1 DataSnap methods) - Guarded observation-only write for a CLOSED Natal O.S. (lab, not exposed).
 - `official_candidate_locator.py` (4 symbols) - Read-only offline candidate locator for official API closes.
 - `official_close.py` (5 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `official_close_code_catalog.py` (8 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -195,10 +197,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 156 files
+- shared: 158 files
 - tooling-deploy: 50 files
-- docs: 48 files
-- tests: 163 files
+- docs: 49 files
+- tests: 167 files
 
 ## Search indexes
 
