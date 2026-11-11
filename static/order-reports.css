@@ -16,4 +16,12 @@
 .order-report-error { color: var(--danger, #ff536f); }
 .order-report-note { color: var(--muted); font-size: 13px; line-height: 1.6; }
 [data-theme="light"] .order-report-filters input { color-scheme: light; }
+.order-report-actions { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; margin-top: auto; }
+.order-report-card .button.order-report-button-raw { background: #f31843; color: #fff; border: 1px solid #f31843; }
+.order-report-card .button.order-report-button-raw:hover:not(:disabled) { background: #ca0c33; }
+.order-report-card .button.order-report-button-treated { background: #444751; color: #fff; border: 1px solid #676b76; }
+.order-report-card .button.order-report-button-treated:hover:not(:disabled) { background: #565b66; }
+[data-theme="light"] .order-report-card .button.order-report-button-treated { background: #d7dbe1; color: #252a33; border-color: #bec4cd; }
+[data-theme="light"] .order-report-card .button.order-report-button-treated:hover:not(:disabled) { background: #c5cbd4; }
+.order-report-card .button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (max-width: 720px) { .order-reports-workspace { padding: 18px; } .order-report-cards { grid-template-columns: 1fr; } .order-report-filters label { flex: 1; min-width: 130px; } }
