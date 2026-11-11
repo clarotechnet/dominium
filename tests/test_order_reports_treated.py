@@ -35,22 +35,40 @@ class TreatedOrderReportsTests(unittest.TestCase):
             self.assertEqual(sheet.find("s:autoFilter", NS).get("ref"), "A1:K4")
             self.assertEqual(len(sheet.findall("s:cols/s:col", NS)), 11)
 
-    def test_maintenance_whitelist_blank_wo_and_no_fifteen_row_limit(self):
+    def test_maintenance_excludes_macro_selected_services_and_keeps_visits(self):
+        # The real VBA-treated sample has 77 rows, not three: its selected
+        # TROCA DE EQUIPAMENTO STREAMING rows were deleted by the macro.
         rows = [
-            {"NumeroWO": idx, "Servico": name}
-            for idx, name in enumerate(sorted(reports.MAINTENANCE_SERVICES), 1)
+            {"NumeroWO": f"WO-{idx}", "Servico": "VISITA TECNICA - VIRTUA"}
+            for idx in range(50)
         ]
-        rows += [
-            {"NumeroWO": "", "Servico": "MANUTENCAO CORRETIVA - MDU"},
-            {"NumeroWO": "  ", "Servico": "TROCA DE EQUIPAMENTO STREAMING"},
-            {"NumeroWO": "99", "Servico": "ENTREGA STREAMING"},
-        ]
-        rows.extend(
-            {"NumeroWO": str(100 + idx), "Servico": "MANUTENCAO CORRETIVA - MDU"}
-            for idx in range(25)
-        )
-        self.assertEqual(len(reports.treat_rows(rows, "maintenance")), 31)
+        rows += [{"NumeroWO": f"WO-S-{idx}", "Servico": "MANUTENCAO PREVENTIVA INDOOR I"}
+                 for idx in range(16)]
+        rows += [{"NumeroWO": f"WO-D-{idx}", "Servico": "VISITA TECNICA DIGITAL"}
+                 for idx in range(6)]
+        rows += [{"NumeroWO": f"WO-T-{idx}", "Servico": "VISITA TECNICA STREAMING"}
+                 for idx in range(4)]
+        rows += [{"NumeroWO": "WO-MESH", "Servico": "VISITA TECNICA WIFI MESH"}]
+        rows += [{"NumeroWO": f"WO-X-{idx}", "Servico": "TROCA DE EQUIPAMENTO STREAMING"}
+                 for idx in range(3)]
+        self.assertEqual(len(rows), 80)
+        treated = reports.treat_rows(rows, "maintenance")
+        self.assertEqual(len(treated), 77)
+        self.assertTrue(all(r["Servico"] != "TROCA DE EQUIPAMENTO STREAMING" for r in treated))
+        self.assertEqual(len(reports.treat_rows([], "maintenance")), 0)
         self.assertEqual(len(reports.COLUMNS), 42)
+
+    def test_maintenance_filters_blank_wo_and_each_six_services(self):
+        rows = [{"NumeroWO": idx + 1, "Servico": name}
+                for idx, name in enumerate(sorted(reports.MAINTENANCE_SERVICES))]
+        rows += [
+            {"NumeroWO": "", "Servico": "VISITA TECNICA DIGITAL"},
+            {"NumeroWO": " ", "Servico": "VISITA TECNICA DIGITAL"},
+            {"NumeroWO": "123", "Servico": "VISITA TECNICA DIGITAL"},
+        ]
+        result = reports.treat_rows(rows, "maintenance")
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["NumeroWO"], "123")
 
     def test_raw_is_preserved_and_treated_is_distinct(self):
         rows = [{"NumeroContrato": "00012", "CodigoBaixa": 108,

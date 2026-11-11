@@ -19,17 +19,26 @@ e concorrência permanecem iguais.
 - A macro original apenas ocultava linhas com AutoFilter; o relatório tratado
   contém apenas as linhas correspondentes (o bruto continua completo).
 
-## Macro Rev_Imperium / Manutenção
+## Macro Rev_Imperium / Manutenção — corrigida após comparação com Excel real
 - Exclui registros com Número W.O (K) vazio.
-- Mantém apenas Serviço (R) igual a um dos seis valores:
+- O filtro Excel seleciona os seis tipos abaixo e a sequência de exclusão
+  **remove esses registros selecionados**, conservando os demais serviços:
   MANUTENCAO CORRETIVA - DEGRADACAO MDU;
   MANUTENCAO CORRETIVA - MDU;
   MANUTENCAO PREVENTIVA - MDU;
   MANUTENCAO PREVENTIVA INDOOR;
   SUBSTITUICAO DE CONTROLE REMOTO ANALOGICA;
   TROCA DE EQUIPAMENTO STREAMING.
-- Preserva as 42 colunas. A macro gravada apagava linhas 16 até o final,
-  o que truncaria relatórios maiores; a implementação não aplica esse limite.
+- Preserva as 42 colunas. O código antigo fazia o inverso, mantendo apenas
+  os seis serviços (erro de interpretação da macro).
+- O bloco `Rows("16:1048576")` é uma seleção gravada do Excel, não
+  um limite funcional de 15 linhas. Não truncar linhas 16 em diante.
+- Validação somente leitura de Natal em 10/11/2026: bruto 80 registros;
+  3 registros de TROCA DE EQUIPAMENTO STREAMING excluídos;
+  XLSX VBA fornecido pelo operador com 77 registros, sem filtro ativo;
+  conjunto de 77 números de OS coincide integralmente por SHA-256 do
+  conjunto ordenado (sem armazenar dados operacionais no GitHub).
+
 
 ## Testes
 Executar em worktree isolada:
