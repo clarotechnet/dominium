@@ -212,14 +212,19 @@ def excel_value(value, kind):
 def treat_rows(rows, report_type):
     """Apply the functional filters from the recorded Excel macros.
 
-    Rows hidden by the original AutoFilter are omitted from the treated XLSX.
+    The supervisor AutoFilter selects visible results. In Rev_Imperium, the
+    service AutoFilter selects rows to DELETE (not keep); the final workbook
+    resets the filter and retains the other services.
     The fixed row-16 deletion in the maintenance recording is not replicated.
     """
     if report_type == "maintenance":
+        # Rev_Imperium selects six service types and deletes the visible rows.
+        # The saved VBA workbook therefore EXCLUDES them, retaining other
+        # services (including visits) with a nonblank Número W.O.
         return [
             row for row in rows
             if row.get("NumeroWO") is not None and str(row["NumeroWO"]).strip()
-            and str(row.get("Servico") or "").strip().upper() in MAINTENANCE_SERVICES
+            and str(row.get("Servico") or "").strip().upper() not in MAINTENANCE_SERVICES
         ]
     if report_type != "all":
         raise ValueError("Tipo de relatório inválido")
