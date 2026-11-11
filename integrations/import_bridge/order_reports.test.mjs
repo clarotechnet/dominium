@@ -19,13 +19,18 @@ test('OS export preserves binary content and filename on the fixed read-only ser
  for(const name of ['cookie','x-csrf-token'])assert.equal(seen.headers.get(name),null);
  assert.equal(response.headers.get('content-disposition'),'attachment; filename="OS_Todos.xlsx"');
  assert.deepEqual([...new Uint8Array(await response.arrayBuffer())],[80,75,3,4]);
+ const treatedTarget=target+'&variant=treated';
+ const treated=await worker.fetch(new Request('https://bridge.test'+treatedTarget,{headers}),env);
+ assert.equal(treated.status,200);assert.equal(calls,2);
+ assert.equal(seen.url,'http://127.0.0.1:8793'+treatedTarget);
  for(const [url,extra,method,status] of [
   [target,{'X-Dominium-Role':'viewer'},'GET',403],
   [target+'&profile=recife',{},'GET',404],
   [target,{},'POST',404],
   [target.replace('natal','all'),{},'GET',404],
+  [target+'&variant=raw',{},'GET',404],
  ]) {
   const blocked=await worker.fetch(new Request('https://bridge.test'+url,{headers:{...headers,...extra},method}),env);
-  assert.equal(blocked.status,status);assert.equal(calls,1);
+  assert.equal(blocked.status,status);assert.equal(calls,2);
  }
 });
