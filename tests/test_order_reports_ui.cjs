@@ -8,6 +8,9 @@ const {resolveOperationalRead} = require('../deploy/hostinger-web/operational-re
 
 const target = '/api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all';
 assert(allowedOrderReport('GET', target));
+assert(allowedOrderReport('GET', target+'&variant=treated'));
+assert.equal(allowedOrderReport('GET',target+'&variant=raw'),false);
+assert.equal(allowedOrderReport('GET',target+'&variant=treated&variant=treated'),false);
 for (const bad of [target+'\n', target+'&sql=select', target.replace('natal','all'),target.replace('all','technical'),target.replace('2026-01-01','%32%30')])
   assert.equal(allowedOrderReport('GET',bad),false,bad);
 assert.equal(allowedOrderReport('POST',target),false);
@@ -22,7 +25,8 @@ function element(extra={}) {
     setAttribute(n,v){this.attrs[n]=v;},remove(){},click(){this.clicked=true;}},extra);
 }
 async function testUI() {
-  const buttons=[element({dataset:{orderReport:'all'}}),element({dataset:{orderReport:'maintenance'}})];
+  const buttons=[element({dataset:{orderReport:'all'}}),element({dataset:{orderReport:'all',orderVariant:'treated'}}),
+    element({dataset:{orderReport:'maintenance'}}),element({dataset:{orderReport:'maintenance',orderVariant:'treated'}})];
   const elements={
     orderReportsWorkspace:element({querySelectorAll:()=>buttons}),
     orderReportStart:element(),orderReportEnd:element(),orderReportStatus:element(),orderReportCity:element()
@@ -50,6 +54,11 @@ async function testUI() {
   assert(links[0].clicked);
   assert.match(elements.orderReportStatus.textContent,/Natal/);
   assert(buttons.every(b=>!b.disabled));
+  const treated=controller.download('all','treated');
+  assert.match(requests[1],/profile=recife.*type=all&variant=treated$/);
+  done({blob:{}});await treated;
+  assert.match(links[1].download,/OS_Todos_Tratado_recife_/);
+  assert.match(elements.orderReportStatus.textContent,/tratado pronto/);
   elements.orderReportStart.value='2026-01-03';
   await controller.download('all');assert.equal(requests.length,1);
   assert.match(elements.orderReportStatus.textContent,/período válido/);
