@@ -103,6 +103,7 @@ class OrderReportsTests(unittest.TestCase):
     def test_complete_fragments_only_and_safe_requests(self):
         raw = bytearray(100)
         raw[:3] = b"\xc0\xc0\x62"
+        raw[28:32] = bytes.fromhex("9619e0bd")
         struct.pack_into("<I", raw, 20, len(raw)-28)
         sent = []
         class Client:
@@ -112,8 +113,8 @@ class OrderReportsTests(unittest.TestCase):
             def request(self, method, params):
                 sent.append((method, params))
                 if method == "prepare": return {"result": [{"handle": [42]}]}
-                if method == "execute": return {"result": [None, {"data": [30, bytes(raw[:30])]}]}
-                return {"result": [{"data": [70, bytes(raw[30:])]}]}
+                if method == "execute": return {"result": [None, {"data": [40, bytes(raw[:40])]}]}
+                return {"result": [{"data": [60, bytes(raw[40:])]}]}
         rows = [{**{key: None for _, key, _ in report.COLUMNS}, "IdOs": 1}]
         with tempfile.TemporaryDirectory() as tmp:
             Path(tmp, "protocol_templates.json").write_text(json.dumps(TEMPLATES))
@@ -124,6 +125,14 @@ class OrderReportsTests(unittest.TestCase):
                     self.assertEqual(decode.call_args.args[0], bytes(raw))
                 self.assertEqual([x[0] for x in sent], ["prepare", "execute", "more_blob"])
                 self.assertEqual(sent[0][1][-1], "TDtmOrdemServico.AS_GetRecords")
+                # A response with fewer than 256 rows can still be fragmented.
+                raw[:32] = bytes(32)
+                raw[:3] = b"\xc0\xc0\x61"
+                raw[27:31] = bytes.fromhex("9619e0bd")
+                struct.pack_into("<I", raw, 19, len(raw)-27)
+                with patch.object(report, "decode_dataset", return_value=rows) as decode:
+                    report.fetch_rows("natal", "2026-01-01", "2026-01-01", "maintenance", runtime=Path(tmp), client_factory=Client)
+                    self.assertEqual(decode.call_args.args[0], bytes(raw))
                 class Broken(Client):
                     def request(self, method, params):
                         if method == "more_blob": return {"result": [{"data": [0, b""]}]}

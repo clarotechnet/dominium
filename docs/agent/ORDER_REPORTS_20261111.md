@@ -24,8 +24,13 @@ status e cabeçalhos dos dois originais. Manutenção: igualdade nas 42 colunas.
 Todos: igualdade em 41 colunas completas; diferença na coluna OS somente nos
 identificadores longos preservados. Comparação por hashes de colunas fora do git;
 nenhum XLSX/PCAP, cliente, credencial ou resposta de produção foi versionado.
-HTTP privado de teste: 200, MIME e nomes corretos, 889/80 linhas, 42 colunas;
-viewer 403. Testes Python, UI e ponte com fixtures sintéticas.
+HTTP privado e Worker publicados: 200, MIME e nomes corretos, 889/80 linhas,
+42 colunas; viewer 403. Outras cidades em 10/11: Fortaleza 480, Mossoró 42 e
+Recife 384 OS NET. Período 09–10/11: 156 manutenções (76 + 80), incluindo
+resposta fragmentada com contador de registros de um byte. O deslocamento
+do tamanho do envelope acompanha a largura desse contador; não assumir offset
+fixo 20 ou ausência de fragmentos com menos de 256 linhas.
+Testes Python, UI e ponte com fixtures sintéticas.
 
 Rollout: instalar order_reports.py e midas_reader.py e atualizar apenas o
 desc_review_relay.py no runtime complementar DescRelay-20261010, com backup e

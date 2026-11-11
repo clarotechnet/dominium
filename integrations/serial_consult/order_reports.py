@@ -129,25 +129,26 @@ def fetch_rows(profile, start, end, report_type, *, runtime=RUNTIME,
         payload = bytearray(response["result"][1]["data"][1])
         if len(payload) < 24:
             raise RuntimeError("O Imperium não retornou um relatório completo")
-        fragmented = payload[:3] == b"\xc0\xc0\x62"
-        expected = struct.unpack_from("<I", payload, 20)[0] + 28 if fragmented else len(payload)
+        # The record-count width shifts the entire envelope. Both 1-byte
+        # (<256 rows) and 2-byte counts can have multi-part responses.
+        count_width = payload[2] - 0x60 if payload[:2] == b"\xc0\xc0" else -1
+        signature_at = 26 + count_width
+        if count_width not in range(5) or payload[signature_at:signature_at + 4] != bytes.fromhex("9619e0bd"):
+            raise RuntimeError("Cabeçalho do relatório inválido")
+        expected = (struct.unpack_from("<I", payload, signature_at - 8)[0] + signature_at
+                    if count_width else len(payload))
         if not 28 <= expected <= MAX_BYTES:
             raise RuntimeError("Relatório acima do limite; reduza o período")
-        # Empty packets use a zero row-data length but still contain metadata.
-        if payload[:3] == b"\xc0\xc0\x60":
-            if struct.unpack_from("<I", payload, 20)[0] != 0:
-                raise RuntimeError("Resposta vazia inválida")
-        else:
-            for _ in range(512):
-                if len(payload) >= expected:
-                    break
-                part = client.request("more_blob", [handle, 1, 0, 7, True, 0])
-                chunk = part["result"][0]["data"][1]
-                if not chunk or len(payload) + len(chunk) > expected:
-                    raise RuntimeError("Fragmento incompleto do relatório")
-                payload.extend(chunk)
-            if len(payload) != expected:
-                raise RuntimeError("Relatório incompleto; nenhum arquivo foi gerado")
+        for _ in range(512):
+            if len(payload) >= expected:
+                break
+            part = client.request("more_blob", [handle, 1, 0, 7, True, 0])
+            chunk = part["result"][0]["data"][1]
+            if not chunk or len(payload) + len(chunk) > expected:
+                raise RuntimeError("Fragmento incompleto do relatório")
+            payload.extend(chunk)
+        if len(payload) != expected:
+            raise RuntimeError("Relatório incompleto; nenhum arquivo foi gerado")
     rows = decode_dataset(bytes(payload), max_bytes=MAX_BYTES, max_records=MAX_ROWS)
     required = {field for _, field, _ in COLUMNS}
     if rows and any(not required <= row.keys() for row in rows):

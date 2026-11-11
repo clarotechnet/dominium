@@ -326,3 +326,11 @@ Alterações preparadas para commit (20 arquivos). Para motivação e resultado 
 - `static/order-reports.css`
 - `tests/test_order_reports.py`
 - `tests/test_order_reports_ui.cjs`
+
+## 2026-11-11 | staged:da43cfa120972ae6
+
+Alterações preparadas para commit (3 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `docs/agent/ORDER_REPORTS_20261111.md`
+- `integrations/serial_consult/order_reports.py`
+- `tests/test_order_reports.py`
