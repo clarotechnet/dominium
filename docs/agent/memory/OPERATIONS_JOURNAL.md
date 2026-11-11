@@ -317,3 +317,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 9 testes Python; testes JS de escopo data download e ponte; comparacao 10/11 com XLSX originais 889 Todos e 80 Manutencao
 
 **Próximo passo/pendência:** Publicar relay Worker e site; verificar download protegido em producao
+
+## 2026-11-11 16:31 UTC — Relatorios de OS publicados e verificados
+
+**Motivo:** Registrar disponibilidade real apos validar download diario e por periodo
+
+**Alterado:** Publicacao da main na Hostinger concluida com sucesso; Worker e relay complementar atualizados com backup preservando estoque diario qualidade e REPORTs; ativos publicos iguais ao source e acesso anonimo bloqueado
+
+**Verificação:** Testes Python e JS dos relatorios passaram no CI; dia anterior conferido com os dois XLSX originais; periodo de dois dias validado com arquivo de 156 linhas e 42 colunas; quatro cidades NET consultadas; gate geral mantem quatro erros preexistentes documentados
+
+**Próximo passo/pendência:** Atualizar a pagina e acessar Operacao Relatorios de OS para selecionar cidade periodo e XLSX
