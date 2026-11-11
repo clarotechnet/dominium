@@ -26,7 +26,7 @@ CREDENTIALS = Path(r"C:\DominiumMain\config\credentials.dat")
 MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 ROUTE = re.compile(
     r"/api/order-reports/export\.xlsx\?profile=(natal|fortaleza|mossoro|recife)"
-    r"&start=(\d{4}-\d{2}-\d{2})&end=(\d{4}-\d{2}-\d{2})&type=(all|maintenance)\Z"
+    r"&start=(\d{4}-\d{2}-\d{2})&end=(\d{4}-\d{2}-\d{2})&type=(all|maintenance)(?:&variant=(treated))?\Z"
 )
 # Display caption, original DataSnap field, Excel representation.
 COLUMNS = (
@@ -58,6 +58,17 @@ COLUMNS = (
 )
 MAX_BYTES = 32_000_000
 MAX_ROWS = 100_000
+# Column order in Vistoria_Supervisores after deletes/moves, indexed on the original sheet.
+ALL_TREATED_COLUMNS = tuple(COLUMNS[i - 1] for i in (6, 10, 16, 14, 29, 30, 18, 19, 25, 26, 27))
+SUPERVISOR_CODES = frozenset({108, 206, 205, 303, 305, 110})
+MAINTENANCE_SERVICES = frozenset({
+    "MANUTENCAO CORRETIVA - DEGRADACAO MDU",
+    "MANUTENCAO CORRETIVA - MDU",
+    "MANUTENCAO PREVENTIVA - MDU",
+    "MANUTENCAO PREVENTIVA INDOOR",
+    "SUBSTITUICAO DE CONTROLE REMOTO ANALOGICA",
+    "TROCA DE EQUIPAMENTO STREAMING",
+})
 EXCEL_EPOCH = dt.datetime(1899, 12, 30)
 
 
@@ -198,16 +209,59 @@ def excel_value(value, kind):
     return str(value).replace("\r\n", " | ").strip(), 0
 
 
-def export_xlsx(rows):
+def treat_rows(rows, report_type):
+    """Apply the functional filters from the recorded Excel macros.
+
+    Rows hidden by the original AutoFilter are omitted from the treated XLSX.
+    The fixed row-16 deletion in the maintenance recording is not replicated.
+    """
+    if report_type == "maintenance":
+        return [
+            row for row in rows
+            if row.get("NumeroWO") is not None and str(row["NumeroWO"]).strip()
+            and str(row.get("Servico") or "").strip().upper() in MAINTENANCE_SERVICES
+        ]
+    if report_type != "all":
+        raise ValueError("Tipo de relatório inválido")
+    # VBA RemoveDuplicates Columns:=3 is applied before filtering close code.
+    seen_contracts = set()
+    distinct = []
+    for row in rows:
+        contract = str(row.get("NumeroContrato") or "").strip()
+        if contract in seen_contracts:
+            continue
+        seen_contracts.add(contract)
+        distinct.append(row)
+    result = []
+    for row in distinct:
+        try:
+            code = int(str(row.get("CodigoBaixa") or "").strip())
+        except (ValueError, TypeError):
+            continue
+        if code in SUPERVISOR_CODES:
+            result.append(row)
+    return result
+
+
+def export_xlsx(rows, columns=COLUMNS, autofit=False):
     if len(rows) > MAX_ROWS:
         raise ValueError("Relatório acima do limite")
     sheet = io.StringIO()
     sheet.write('<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
                 '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" '
-                'activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetData>')
+                'activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>')
+    if autofit:
+        sheet.write('<cols>')
+        sample = rows[:500]
+        for idx, (caption, field, _) in enumerate(columns, 1):
+            width = min(65, max(14, len(caption) + 3,
+                                *(min(65, len(str(row.get(field) or "")) + 2) for row in sample)))
+            sheet.write(f'<col min="{idx}" max="{idx}" width="{width}" customWidth="1"/>')
+        sheet.write('</cols>')
+    sheet.write('<sheetData>')
     for row_number, row in enumerate([None, *rows], 1):
         sheet.write(f'<row r="{row_number}">')
-        for index, (caption, field, kind) in enumerate(COLUMNS, 1):
+        for index, (caption, field, kind) in enumerate(columns, 1):
             value, style = (caption, 4) if row is None else excel_value(row.get(field), kind)
             if value is None:
                 continue
@@ -219,7 +273,7 @@ def export_xlsx(rows):
                 sheet.write(f'<c r="{ref}" s="{style}" t="inlineStr"><is><t xml:space="preserve">'
                             f'{_text(value)}</t></is></c>')
         sheet.write('</row>')
-    sheet.write(f'</sheetData><autoFilter ref="A1:AP{max(1, len(rows) + 1)}"/></worksheet>')
+    sheet.write(f'</sheetData><autoFilter ref="A1:{_column(len(columns))}{max(1, len(rows) + 1)}"/></worksheet>')
     ns = "http://schemas.openxmlformats.org"
     files = {
         "[Content_Types].xml": f'<Types xmlns="{ns}/package/2006/content-types">'
@@ -261,14 +315,18 @@ class OrderReportService:
         self.locks = {key: threading.Lock() for key in PORTS}
 
     def download(self, route):
-        profile, start, end, report_type = route.groups()
+        profile, start, end, report_type, treated = route.groups()
         validate_range(start, end)
         lock = self.locks[profile]
         if not lock.acquire(blocking=False):
             raise ValueError("Já há um relatório sendo consultado nesta cidade; aguarde")
         try:
             rows = self.fetcher(profile, start, end, report_type)
-            filename = f"OS_{'Todos' if report_type == 'all' else 'Manutencao'}_{profile}_{start}_{end}.xlsx"
-            return export_xlsx(rows), filename, len(rows)
+            if treated:
+                rows = treat_rows(rows, report_type)
+            filename = (f"OS_{'Todos' if report_type == 'all' else 'Manutencao'}"
+                        f"{'_Tratado' if treated else ''}_{profile}_{start}_{end}.xlsx")
+            columns = ALL_TREATED_COLUMNS if treated and report_type == "all" else COLUMNS
+            return export_xlsx(rows, columns, autofit=bool(treated)), filename, len(rows)
         finally:
             lock.release()
