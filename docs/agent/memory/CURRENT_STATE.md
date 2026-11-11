@@ -1,3 +1,7 @@
+## 11/11/2026 — Relatórios nativos de OS
+
+Implementada a aba Operação > Relatórios de OS: dois XLSX Imperium (Todos e Manutenção / Visita Técnica), período, cidade selecionada, 42 colunas originais. Consulta privada autenticada e somente leitura; preserva status e precisão dos identificadores longos. Natal 10/11 conferido: 889/80 OS. Detalhes e limites em [ORDER_REPORTS_20261111.md](../ORDER_REPORTS_20261111.md).
+
 ## Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106
 
 Backup indicado pelo operador `F:\Dominium\Backups\DominiumBackups\KNOWN_GOOD_20261006_155652`

@@ -49,6 +49,9 @@ jobs:
         run: |
           set -euo pipefail
           node --check deploy/hostinger-web/server.js
+          node --check static/order-reports-ui.js
+          node --test tests/test_order_reports_ui.cjs integrations/import_bridge/order_reports.test.mjs
+          python -m unittest tests.test_order_reports -v
           node --test tests/test_order_dataset_hostinger.js tests/test_operational_relay.js tests/test_disconnection_hostinger.js tests/test_confront_frontend.js tests/test_query_import.js tests/test_atlas_query_policy.js tests/test_atlas_query_ui_status.js tests/test_atlas_query_proxy_json.js
           node --test tests/test_productive_snapshot_frontend.js tests/test_order_close_proxy.js tests/test_import_hostinger.js integrations/import_bridge/worker.test.mjs tests/test_stock_quality_bridge.mjs tests/test_quality_modal_frontend.cjs tests/test_all_operations_view.cjs tests/test_daily_stock.cjs tests/test_stock_analysis_proxy.cjs tests/test_stock_navigation_monitor.cjs tests/test_stock_daily_analysis_feedback.cjs
           npm ci --prefix deploy/hostinger-web --ignore-scripts --no-audit --no-fund

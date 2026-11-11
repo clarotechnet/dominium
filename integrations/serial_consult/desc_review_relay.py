@@ -33,6 +33,7 @@ from confront_http import ConfrontService, parse_confront_route
 from atlas_query_http import AtlasQueryService, parse_query_route
 from stock_analysis_http import StockAnalysisService, route_for as parse_stock_analysis_route
 from monitor_snapshot_relay import read_monitor_snapshot
+from order_reports import OrderReportService, parse_route as parse_order_report, MIME as ORDER_REPORT_MIME
 
 
 class DescRelayHandler(BaseHTTPRequestHandler):
@@ -61,14 +62,15 @@ class DescRelayHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def _binary(self, data, mime):
+    def _binary(self, data, mime, filename=None):
         if not isinstance(data, bytes) or len(data) > 35_000_000:
             self._json(413, {'ok': False, 'error': 'Relatório acima do limite'})
             return
         ext = 'csv' if mime.startswith('text/csv') else 'xlsx'
         self.send_response(200)
         self.send_header('Content-Type', mime)
-        self.send_header('Content-Disposition', 'attachment; filename="dominium-query-atlas.' + ext + '"')
+        filename = filename or ('dominium-query-atlas.' + ext)
+        self.send_header('Content-Disposition', 'attachment; filename="' + filename + '"')
         self.send_header('Content-Length', str(len(data)))
         self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
@@ -92,6 +94,22 @@ class DescRelayHandler(BaseHTTPRequestHandler):
                 self._json(200, read_monitor_snapshot(self.path))
             except ValueError:
                 self._json(400, {'ok':False,'error':'Parametros do monitor invalidos'})
+            return
+        order_report = parse_order_report(self.command, self.path)
+        if order_report is not None:
+            if self.headers.get('X-Dominium-Role') not in {'admin', 'controller'}:
+                self._json(403, {'ok': False, 'error': 'Perfil operacional necessário'})
+                return
+            try:
+                data, filename, count = self.server.order_report_service.download(order_report)
+                self._binary(data, ORDER_REPORT_MIME, filename)
+                logging.info('OS report generated: profile=%s type=%s rows=%s',
+                             order_report.group(1), order_report.group(4), count)
+            except ValueError as error:
+                self._json(400, {'ok': False, 'error': str(error)})
+            except Exception as error:
+                logging.warning('OS report failed: %s', type(error).__name__)
+                self._json(502, {'ok': False, 'error': 'Não foi possível obter o relatório completo do Imperium. Tente novamente ou reduza o período.'})
             return
         stock_analysis_route = parse_stock_analysis_route(self.command, self.path)
         if stock_analysis_route is not None:
@@ -250,6 +268,7 @@ def main():
     server.confront_service = ConfrontService()
     server.atlas_query_service = AtlasQueryService()
     server.stock_analysis_service = StockAnalysisService()
+    server.order_report_service = OrderReportService()
     try:
         server.serve_forever()
     finally:

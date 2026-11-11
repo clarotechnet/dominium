@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-09T12:40:24+00:00",
+  "generated_at": "2026-11-11T16:21:13+00:00",
   "schema": 2,
-  "source_fingerprint": "b876686b2dfdf998459de1ac180a0a5e22a9b40787f781ddd8dd51745e6a8397",
+  "source_fingerprint": "7a11316b8c271c7579cf3c5a57cd0a21834d45711b35ebe5d3920d8a53c89dc4",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -883,8 +883,8 @@
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 3455,
-      "sha256": "e22710f451a7083d37578f276885243884ba7e42687aa0f88ed03ed2a27bd9d3",
+      "bytes": 3592,
+      "sha256": "88ee4b893088a2e67abf2ab015efba8ad4d06b2f4e758f67dff15fbeb26db778",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -909,6 +909,19 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 2
+    },
+    {
+      "path": "deploy/hostinger-web/order-report-policy.js",
+      "category": "tooling-deploy",
+      "bytes": 460,
+      "sha256": "a2f633e35a02315c395a21641ecc72eccfcb1f686586355c7cf5fb59a422fe9d",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
     },
     {
       "path": "deploy/hostinger-web/package-lock.json",
@@ -952,8 +965,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 43933,
-      "sha256": "f83f42996c43048f869eb1b90dd67f2f7933d42363a3a8f543c5e6a6ef5c7a7c",
+      "bytes": 43979,
+      "sha256": "5274c8fed6a0150dd59cf883006567fb5521cd6d86c58671c0a48bd78dd023a1",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -977,6 +990,7 @@
         "/api/imports",
         "/api/imports/commit",
         "/api/imports/preview",
+        "/api/order-reports/",
         "/api/orders",
         "/api/orders/bulk-create",
         "/api/profiles",
@@ -1512,8 +1526,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 11776,
-      "sha256": "cb048f89639c97eb8ee2ed3dbb6566cb25657f3796bec43048b76957609b25a0",
+      "bytes": 12748,
+      "sha256": "7257e3c73ac31ed81f82150a94cb63fbed2b3df9cb7d322c5d2c2445db5e2421",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1551,9 +1565,9 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 67500,
-      "sha256": "877aebfdd93ae9feb160bef6877569cc15811db95fe16241b1d62f2e2660e915",
-      "summary": "Estado vigente — 29/10/2026: DESC por contrato, Adesão e exceção 106",
+      "bytes": 67929,
+      "sha256": "87e75c677ba88763506ccb753ffeee7c5c2609c6598471bd8e4c549c6b326ed2",
+      "summary": "11/11/2026 — Relatórios nativos de OS",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1593,8 +1607,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 21407,
-      "sha256": "a4f11c46b4607e5a11485ce1734dc9c088e0283a0e5d6eab26b444ae4fce6a78",
+      "bytes": 22037,
+      "sha256": "7d2ab46f155a3d851abe3d7768877a1d7c9bfb43165821e68643f75f08cf4e49",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -1624,6 +1638,19 @@
       "bytes": 3084,
       "sha256": "d61e5235d69a0aede45a844061285bd0ec56e1c5cce1633612e5d95483f213af",
       "summary": "Estado atualizado apos autorizacao explicita",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/ORDER_REPORTS_20261111.md",
+      "category": "docs",
+      "bytes": 2451,
+      "sha256": "531d4014d6a1384530bef021a4297b1fe0a8fa62ba65fa007b5c6c89b806f334",
+      "summary": "Relatórios nativos de OS — 11/11/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -2778,6 +2805,21 @@
       "symbol_count": 7
     },
     {
+      "path": "integrations/import_bridge/order_reports.test.mjs",
+      "category": "shared",
+      "bytes": 1783,
+      "sha256": "e2b0e0c28a379303edc195adc1eff7e01292fb01bdb702612f98affec5a92003",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "integrations/import_bridge/quality_control_relay.py",
       "category": "shared",
       "bytes": 5497,
@@ -2816,8 +2858,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 6789,
-      "sha256": "547c9a6d28a75cfc98c56106bfcd42b578cae8f85c30681f5b370dddc0c0199e",
+      "bytes": 7209,
+      "sha256": "e145827a513c8801cf879fb9146d5cac4d3ece9459c62337cffa88db061c9c9f",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3279,8 +3321,8 @@
     {
       "path": "integrations/serial_consult/desc_review_relay.py",
       "category": "shared",
-      "bytes": 12638,
-      "sha256": "5a42732796f2450fa54b2c35481fca15edc9dc1ebf82090d462c5d901edc9816",
+      "bytes": 13902,
+      "sha256": "2b2227fd31b60d7b4fe127704ee604c20cde4621f62941d60b9ea6c654b9a7c7",
       "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
       "imports": [
         "__future__",
@@ -3295,6 +3337,7 @@
         "logging",
         "monitor_snapshot_relay",
         "official_stock_bridge",
+        "order_reports",
         "os",
         "pathlib",
         "secrets",
@@ -3486,8 +3529,8 @@
     {
       "path": "integrations/serial_consult/midas_reader.py",
       "category": "shared",
-      "bytes": 4669,
-      "sha256": "aad873daa06bbe87e263d8bfb3f3c7420ea0587664df6b8020a9cf0ae713344a",
+      "bytes": 4751,
+      "sha256": "8726cc9899870a45491c0fe14da6a7ea11685c3456b316031fde8e7a9065371b",
       "summary": "Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.",
       "imports": [
         "__future__",
@@ -3524,6 +3567,37 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 1
+    },
+    {
+      "path": "integrations/serial_consult/order_reports.py",
+      "category": "shared",
+      "bytes": 14371,
+      "sha256": "6d928acb148c1442cd773f73831224796fc31d511cd47c2aaaa4d8645b6bd050",
+      "summary": "Read-only Imperium OS exports matching the native 42-column Excel layout.",
+      "imports": [
+        "__future__",
+        "base64",
+        "datasnap_client",
+        "datetime",
+        "io",
+        "json",
+        "midas_reader",
+        "pathlib",
+        "re",
+        "struct",
+        "threading",
+        "xml",
+        "zipfile"
+      ],
+      "endpoints": [
+        "/api/order-reports/export\\.xlsx\\?profile=(natal"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmOrdemServico.AS_GetRecords"
+      ],
+      "entrypoint": false,
+      "symbol_count": 12
     },
     {
       "path": "integrations/serial_consult/README.md",
@@ -4808,8 +4882,8 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 4894,
-      "sha256": "b4aeb47ce6b9f1a0d5ffceae0943c788ff1a4f57800de724b8c35e5e5fba1a3a",
+      "bytes": 4924,
+      "sha256": "199380042e0ac38a621a970edb3264c1e639ad69c33108bcc0e2b8450c07094e",
       "summary": "",
       "imports": [
         "__future__",
@@ -5135,8 +5209,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 6818,
-      "sha256": "b5910492ab2f7b8932a52b7d64b354d65bb06b174173bc00fa6ae6f8616164ee",
+      "bytes": 6940,
+      "sha256": "00653fa768bc258239738f79d6a5914b95334a280eb38301c7495a9146d6f391",
       "summary": "",
       "imports": [
         "__future__",
@@ -5433,7 +5507,7 @@
       "path": "static/close-control-city-board.js",
       "category": "frontend",
       "bytes": 5079,
-      "sha256": "b5149a60ead1f33cc060d01d66e3bf99a4292348a6d504f257a0263ddf878659",
+      "sha256": "77a4019a146774d17e4f5cb8caadfd2e03da60d7cb560a47494229561543e31d",
       "summary": "DOMINIUM Controle de baixas — painel por cidade.",
       "imports": [],
       "endpoints": [],
@@ -5619,8 +5693,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 171487,
-      "sha256": "a93d80023d61b612d87c764e4f51376c82721077a212317ca0818e2acb3f6349",
+      "bytes": 173782,
+      "sha256": "30813d7e18ab7571bffe7954c39b42a7c72be056833aaa008be7488dd82551d4",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5682,6 +5756,34 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 34
+    },
+    {
+      "path": "static/order-reports-ui.js",
+      "category": "frontend",
+      "bytes": 3859,
+      "sha256": "76c45f87b5199da4eba87c844549ba5ce0f5fd1c0035fe9ccdbd9db6deebf67d",
+      "summary": "Native Imperium OS reports: scope and request are fixed when download begins. */",
+      "imports": [],
+      "endpoints": [
+        "/api/order-reports/export.xlsx?"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
+      "path": "static/order-reports.css",
+      "category": "frontend",
+      "bytes": 1742,
+      "sha256": "e90a59a5b111ed4b6597f90e542949f87ab03b00b0627c7983e26864985fbf8e",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "static/quality-control.js",
@@ -6744,7 +6846,7 @@
       "path": "tests/test_close_control_city_board.cjs",
       "category": "tests",
       "bytes": 6888,
-      "sha256": "b42cbdfb6780febf74980f9b84dcfe957d2a0f04f9886c2e82c2fa4ec607f22b",
+      "sha256": "da43c34f4a4d74720e749e2b37dad86ab3b501dc5cad4d1c2149e37ca367b6c2",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -8227,6 +8329,51 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 4
+    },
+    {
+      "path": "tests/test_order_reports.py",
+      "category": "tests",
+      "bytes": 8044,
+      "sha256": "82a1246cb02d1e1eff5961f805d2445177ea1dd22c08cbad9df407c71a8b18ca",
+      "summary": "Native OS report contract; synthetic rows only, no customer/credential fixtures.",
+      "imports": [
+        "base64",
+        "datetime",
+        "integrations",
+        "io",
+        "json",
+        "pathlib",
+        "struct",
+        "tempfile",
+        "unittest",
+        "xml",
+        "zipfile"
+      ],
+      "endpoints": [
+        "/api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all",
+        "/api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=maintenance"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmOrdemServico.AS_GetRecords"
+      ],
+      "entrypoint": true,
+      "symbol_count": 10
+    },
+    {
+      "path": "tests/test_order_reports_ui.cjs",
+      "category": "tests",
+      "bytes": 3636,
+      "sha256": "411e791a81f9dc6e2921414c61ab9cc19ca4f0b369607003a1a051dbf228212d",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_private_operational_migration.cjs",

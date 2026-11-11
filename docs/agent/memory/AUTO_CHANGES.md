@@ -301,3 +301,28 @@ Alterações preparadas para commit (2 arquivos). Para motivação e resultado c
 
 - `static/index.html`
 - `static/styles.css`
+
+## 2026-11-11 | staged:36e6d4f501243aca
+
+Alterações preparadas para commit (20 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `.github/workflows/hostinger-account-diagnostic.yml`
+- `deploy/hostinger-web/operational-relay.js`
+- `deploy/hostinger-web/order-report-policy.js`
+- `deploy/hostinger-web/server.js`
+- `docs/agent/ORDER_REPORTS_20261111.md`
+- `docs/agent/memory/CURRENT_STATE.md`
+- `docs/agent/memory/OPERATIONS_JOURNAL.md`
+- `integrations/import_bridge/order_reports.test.mjs`
+- `integrations/import_bridge/worker.mjs`
+- `integrations/serial_consult/desc_review_relay.py`
+- `integrations/serial_consult/midas_reader.py`
+- `integrations/serial_consult/order_reports.py`
+- `scripts/build_hostinger_node_release.py`
+- `scripts/quality_gate.py`
+- `static/app.js`
+- `static/index.html`
+- `static/order-reports-ui.js`
+- `static/order-reports.css`
+- `tests/test_order_reports.py`
+- `tests/test_order_reports_ui.cjs`

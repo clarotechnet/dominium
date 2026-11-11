@@ -17,6 +17,7 @@ DEFAULT_OUTPUT = ROOT / "output" / "hostinger-node-release"
 RUNTIME_FILES = (
     "import-policy.js",
     "import-proxy.js",
+    "order-report-policy.js",
     "operational-policy.js",
     "operational-relay.js",
     "order-close-proxy.js",

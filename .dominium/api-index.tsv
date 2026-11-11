@@ -165,6 +165,7 @@ endpoint	path
 /api/imports	deploy/hostinger-web/server.js
 /api/imports/commit	deploy/hostinger-web/server.js
 /api/imports/preview	deploy/hostinger-web/server.js
+/api/order-reports/	deploy/hostinger-web/server.js
 /api/orders	deploy/hostinger-web/server.js
 /api/orders/bulk-create	deploy/hostinger-web/server.js
 /api/profiles	deploy/hostinger-web/server.js
@@ -197,6 +198,7 @@ endpoint	path
 /api/orders?	integrations/desc_runtime/nightly_backlog_106.py
 /api/profiles	integrations/desc_runtime/nightly_backlog_106.py
 /api/profiles	integrations/desc_runtime/test_nightly_backlog_106.py
+/api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all	integrations/import_bridge/order_reports.test.mjs
 /api/disconnection/	integrations/import_bridge/worker.mjs
 /api/monitor/snapshot	integrations/import_bridge/worker.mjs
 /api/orders/bulk-create	integrations/import_bridge/worker.mjs
@@ -234,6 +236,7 @@ endpoint	path
 /api/stock/analyses/imperium/runs/(	integrations/serial_consult/imperium_source_http.py
 /api/stock/analyses/imperium/live	integrations/serial_consult/imperium_supabase_live.py
 /api/monitor/snapshot	integrations/serial_consult/monitor_snapshot_relay.py
+/api/order-reports/export\.xlsx\?profile=(natal	integrations/serial_consult/order_reports.py
 /api/serials/consult	integrations/serial_consult/serial_service.py
 /api/stock/analyses/available	integrations/serial_consult/stock_analysis_http.py
 /api/stock/analyses/jobs	integrations/serial_consult/stock_analysis_http.py
@@ -279,6 +282,7 @@ endpoint	path
 /api/disconnection/state	static/disconnection.js
 /api/disconnection/technician	static/disconnection.js
 /api/operational/export.json	static/index.html
+/api/order-reports/export.xlsx?	static/order-reports-ui.js
 /api/stock/quality-control	static/quality-control.js
 /api/stock/analyses/available?city=	static/stock-analysis-ui.js
 /api/stock/analyses/jobs	static/stock-analysis-ui.js
@@ -468,6 +472,9 @@ endpoint	path
 /api/orders/123/close?profile=natal	tests/test_order_close_proxy.js
 /api/orders/123/move-installer?profile=natal	tests/test_order_close_proxy.js
 /api/toa-agenda/import	tests/test_order_dataset_hostinger.js
+/api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all	tests/test_order_reports.py
+/api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=maintenance	tests/test_order_reports.py
+/api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all	tests/test_order_reports_ui.cjs
 /api/auto-improductive-close/toggle	tests/test_private_operational_migration.cjs
 /api/disconnect-automation/action	tests/test_private_operational_migration.cjs
 /api/disconnect-automation/claim	tests/test_private_operational_migration.cjs

@@ -881,7 +881,7 @@ app.use(async (req, res, next) => {
     req.dominiumSession = session;
     req.dominiumUser = session.user;
 
-    if ((req.path.startsWith("/api/confront/") || req.path.startsWith("/api/atlas-query/")) &&
+    if ((req.path.startsWith("/api/confront/") || req.path.startsWith("/api/atlas-query/") || req.path.startsWith("/api/order-reports/")) &&
         !["admin","controller"].includes(String(session.user?.role || ""))) {
       return res.status(403).json({ok:false,error:"Apenas perfis operacionais podem consultar confrontos"});
     }

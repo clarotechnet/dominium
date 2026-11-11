@@ -36,8 +36,9 @@ def _decode_bcd(raw: bytes) -> str | None:
     return format(value, "f")
 
 
-def decode_dataset(blob: bytes) -> list[dict]:
-    if len(blob) > 4_000_000:
+def decode_dataset(blob: bytes, *, max_bytes: int = 4_000_000,
+                   max_records: int = 5000) -> list[dict]:
+    if len(blob) > max_bytes:
         raise PacketError("Pacote muito grande")
     sig_offset = blob.find(bytes.fromhex("9619e0bd"))
     if sig_offset < 0:
@@ -45,7 +46,7 @@ def decode_dataset(blob: bytes) -> list[dict]:
     stream = io.BytesIO(blob)
 
     def read(n):
-        if n < 0 or n > 4_000_000:
+        if n < 0 or n > max_bytes:
             raise PacketError("Comprimento invalido")
         b = stream.read(n)
         if len(b) != n:
@@ -72,7 +73,7 @@ def decode_dataset(blob: bytes) -> list[dict]:
     )
     if signature != 0xBDE01996 or not (1 <= version <= 3):
         raise PacketError("Cabecalho MIDAS invalido")
-    if count > 128 or records > 5000:
+    if count > 128 or records > max_records:
         raise PacketError("Limite de colunas/linhas excedido")
     fields = []
     for _ in range(count):

@@ -4,11 +4,13 @@ import operationalPolicy from '../../deploy/hostinger-web/operational-policy.js'
 import confrontPolicy from '../../deploy/hostinger-web/confront-policy.js';
 import atlasPolicy from '../../deploy/hostinger-web/atlas-query-policy.js';
 import stockAnalysisPolicy from '../../deploy/hostinger-web/stock-analysis-policy.js';
+import orderReportPolicy from '../../deploy/hostinger-web/order-report-policy.js';
 const {allowedImportRoute, MAX_IMPORT_BYTES} = policy;
 const {allowedOperationalRead,allowedToaLookup,allowedOrderClose,allowedQualityControl,allowedDailyStock,allowedOperationalWrite,validBulkCreateBody,operationTransportFailure,validOfficialCloseBody,closeTransportFailure} = operationalPolicy;
 const {allowedConfrontRoute} = confrontPolicy;
 const {allowedAtlasQueryRoute} = atlasPolicy;
 const {allowedStockAnalysisRoute} = stockAnalysisPolicy;
+const {allowedOrderReport} = orderReportPolicy;
 function json(status, error) {
   return Response.json({ok:false,error},{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 }
@@ -28,6 +30,7 @@ export default {
     const confrontation=allowedConfrontRoute(request.method,url.pathname+url.search);
     const query=allowedAtlasQueryRoute(request.method,url.pathname+url.search);
     const analysis=allowedStockAnalysisRoute(request.method,url.pathname+url.search);
+    const reports=allowedOrderReport(request.method,url.pathname+url.search);
     const monitor=request.method==='GET' && url.pathname==='/api/monitor/snapshot';
     const operational=allowedOperationalRead(request.method,url.pathname+url.search);
     const toaLookup=allowedToaLookup(request.method,url.pathname+url.search);
@@ -37,21 +40,21 @@ export default {
     const operationalWrite=allowedOperationalWrite(request.method,url.pathname+url.search);
     const bulkCreate=url.pathname==='/api/orders/bulk-create' && operationalWrite;
     const role=request.headers.get('x-dominium-role');
-    if (!(((operational && !officialStock && !serialConsult && !confrontation && !query && !analysis && !toaLookup) || ((quality || daily || analysis) && request.method==='GET')) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
+    if (!(((operational && !officialStock && !serialConsult && !confrontation && !query && !analysis && !reports && !toaLookup) || ((quality || daily || analysis) && request.method==='GET')) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
         !request.headers.get('x-dominium-actor')) return json(403,'Operador não identificado');
     let route;
-    try {route=(operational || confrontation || query || analysis || toaLookup || orderClose || operationalWrite || quality || daily) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
+    try {route=(operational || confrontation || query || analysis || reports || toaLookup || orderClose || operationalWrite || quality || daily) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
     catch {return json(404,'Rota não permitida');}
     const headers=new Headers({Accept:'application/json','X-Dominium-Actor':request.headers.get('x-dominium-actor')});
-    if(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily || monitor)headers.set('Authorization',request.headers.get('authorization'));
-    if(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily || monitor)headers.set('X-Dominium-Role',role);
+    if(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor)headers.set('Authorization',request.headers.get('authorization'));
+    if(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor)headers.set('X-Dominium-Role',role);
     let body;
     if (request.method==='POST') {
       if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return json(415,'Envie JSON');
       const maxBytes=url.pathname==='/api/toa-agenda/import' ? 24*1024*1024 :
         operationalWrite ? 256*1024 :
         (analysis && url.pathname==='/api/stock/analyses/daily/import') ? 5*1024*1024 :
-        (desc || confrontation || query || analysis || toaLookup || orderClose || quality || daily) ? 64*1024 : MAX_IMPORT_BYTES;
+        (desc || confrontation || query || analysis || reports || toaLookup || orderClose || quality || daily) ? 64*1024 : MAX_IMPORT_BYTES;
       if (Number(request.headers.get('content-length')||0)>maxBytes) return json(413,'Arquivo acima do limite');
       body=await request.arrayBuffer();
       if(body.byteLength>maxBytes)return json(413,'Arquivo acima do limite');
@@ -70,8 +73,8 @@ export default {
       headers.set('Content-Type','application/json');
     }
     try {
-      const service=(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily || monitor) ? env.DESC_SERVICE : env.IMPORT_SERVICE;
-      const origin=(desc || officialStock || serialConsult || confrontation || query || analysis || quality || daily || monitor) ? 'http://127.0.0.1:8793' : 'http://127.0.0.1:8765';
+      const service=(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor) ? env.DESC_SERVICE : env.IMPORT_SERVICE;
+      const origin=(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor) ? 'http://127.0.0.1:8793' : 'http://127.0.0.1:8765';
       const upstream=await service.fetch(new Request(origin+route,
         {method:request.method,headers,body,redirect:'manual'}));
       if (upstream.status>=300 && upstream.status<400) return (orderClose || operationalWrite)
@@ -79,6 +82,7 @@ export default {
         : json(502,'Redirecionamento interno bloqueado');
       return new Response(upstream.body,{status:upstream.status,headers:{
         'Content-Type':upstream.headers.get('content-type')||'application/json',
+        ...(upstream.headers.has('content-disposition') ? {'Content-Disposition':upstream.headers.get('content-disposition')} : {}),
         'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Dominium-Backend':'private-import-bridge'}});
     } catch {return (orderClose || operationalWrite)
       ? Response.json(orderClose ? closeTransportFailure() : operationTransportFailure(),{status:502,headers:{'cache-control':'no-store'}})

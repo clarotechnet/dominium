@@ -14,6 +14,7 @@
 // Mapa completo: MAPA_DOMINIUM_IMPERIUM_TOA.md
 // A ordem executavel abaixo foi preservada para evitar regressao.
 // =============================================================================
+let orderReportsController = null;
 const state = {
   authUser: null,
   authCsrfToken: "",
@@ -56,6 +57,8 @@ const state = {
     ? "all-operations"
     : window.location.hash === "#desconexao-indicadores"
     ? "descAnalytics"
+    : window.location.hash === "#relatorios-os"
+    ? "order-reports"
     : window.location.hash === "#controle-baixas"
     ? "close-control"
     : window.location.hash === "#pendente"
@@ -912,6 +915,8 @@ function updateAddress() {
                 ? "estoque"
                 : state.activeModule === "bulk"
                   ? "criar-os"
+                  : state.activeModule === "order-reports"
+                    ? "relatorios-os"
                   : state.activeModule === "close-control"
                     ? "controle-baixas"
                     : state.activeModule === "close"
@@ -3636,7 +3641,7 @@ function setModule(module) {
     || state.stockWriteoffLoading
     || ![
       "dashboard", "monitor", "orders", "stock", "serials", "confront", "technicians", "bulk", "imports",
-      "automation-test", "close", "close-control", "report", "history", "intelligence", "database", "disconnection", "descAnalytics", "backlog",
+      "automation-test", "close", "close-control", "order-reports", "report", "history", "intelligence", "database", "disconnection", "descAnalytics", "backlog",
     ].includes(module)
   ) return;
   if (module !== "stock" && state.stockSource === "official") {
@@ -7217,6 +7222,8 @@ function render() {
   elements.dashboardWorkspace.classList.toggle("hidden", state.activeModule !== "dashboard");
   elements.monitorWorkspace.classList.toggle("hidden", state.activeModule !== "monitor");
   elements.ordersWorkspace.classList.toggle("hidden", state.activeModule !== "orders");
+  document.getElementById("orderReportsWorkspace")?.classList.toggle("hidden", state.activeModule !== "order-reports");
+  orderReportsController?.render();
   elements.stockWorkspace.classList.toggle("hidden", state.activeModule !== "stock");
   elements.serialsWorkspace.classList.toggle("hidden", state.activeModule !== "serials");
   document.getElementById("confrontWorkspace").classList.toggle("hidden", state.activeModule !== "confront");
@@ -7239,6 +7246,7 @@ function render() {
   elements.dashboardModule.classList.toggle("active", state.activeModule === "dashboard");
   elements.monitorModule?.classList.toggle("active", state.activeModule === "monitor");
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
+  document.getElementById("orderReportsModule")?.classList.toggle("active", state.activeModule === "order-reports");
   elements.stockModule.classList.toggle("active",
     state.activeModule === "stock"
     && document.getElementById("stockInventoryTab")?.getAttribute("aria-selected") === "true");
@@ -12620,6 +12628,7 @@ document.getElementById("disconnectionModule").addEventListener("click", () => s
 document.getElementById("descAnalyticsModule").addEventListener("click", () => setModule("descAnalytics"));
 elements.monitorModule?.addEventListener("click", () => setModule("monitor"));
 elements.ordersModule.addEventListener("click", () => setModule("orders"));
+document.getElementById("orderReportsModule")?.addEventListener("click", () => setModule("order-reports"));
 elements.stockModule.addEventListener("click", () => setModule("stock"));
 elements.serialsModule.addEventListener("click", () => setModule("serials"));
 elements.serialsRun.addEventListener("click", runSerialConsult);
@@ -13419,6 +13428,10 @@ window.DominiumCloseControlBridge = Object.freeze({
       }),
     };
   },
+});
+orderReportsController = window.DominiumOrderReports?.mount({
+  getContext: () => ({profile: state.profile, allCities: state.allCities, switching: state.profileSwitching}),
+  requestBlob,
 });
 bootstrapAuthentication();
 window.setTimeout(() => {

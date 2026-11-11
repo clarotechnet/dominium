@@ -307,3 +307,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 26 testes Node aprovados; Chrome headless HTTP200 e screenshot; integração autenticada do worker pendente de smoke em Hostinger
 
 **Próximo passo/pendência:** Publicar interface, verificar UI autenticada e, depois, instrumentar eventos duráveis e homologar Adesão Mossoró
+
+## 2026-11-11 16:12 UTC — Exportacoes nativas de OS do Imperium
+
+**Motivo:** Disponibilizar os dois XLSX originais Todos e Manutencao VT com periodo na interface
+
+**Alterado:** Nova aba Relatorios de OS; rota privada autenticada somente leitura DspGetOs; 42 colunas com datas e memo iguais ao Excel nativo, IDs longos preservados como texto; politica compartilhada Worker Hostinger
+
+**Verificação:** 9 testes Python; testes JS de escopo data download e ponte; comparacao 10/11 com XLSX originais 889 Todos e 80 Manutencao
+
+**Próximo passo/pendência:** Publicar relay Worker e site; verificar download protegido em producao

@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-09T12:40:24+00:00
-- Source fingerprint: `b876686b2dfdf998`
-- Indexed files: 520
-- Indexed symbols: 4359
-- API path references: 545
+- Generated: 2026-11-11T16:21:13+00:00
+- Source fingerprint: `7a11316b8c271c75`
+- Indexed files: 528
+- Indexed symbols: 4388
+- API path references: 552
 
 ## Navigation rule
 
@@ -118,6 +118,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/lucide.min.js` (1 symbols)
 - `static/motion-ui.js` (12 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `static/operations-monitor.js` (34 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `static/order-reports-ui.js` (4 symbols, 1 API paths) - Native Imperium OS reports: scope and request are fixed when download begins. */
+- `static/order-reports.css`
 - `static/quality-control.js` (11 symbols, 1 API paths) - Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */
 - `static/query-import-ui.js` (5 symbols) - DOMINIUM Pendente — import/query workflow from stock training recordings. */
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
@@ -195,10 +197,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 156 files
-- tooling-deploy: 50 files
-- docs: 48 files
-- tests: 163 files
+- shared: 158 files
+- tooling-deploy: 51 files
+- docs: 49 files
+- tests: 165 files
 
 ## Search indexes
 

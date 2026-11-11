@@ -9,6 +9,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 JS_TESTS = (
+    ROOT / "tests" / "test_order_reports_ui.cjs",
+    ROOT / "integrations" / "import_bridge" / "order_reports.test.mjs",
     ROOT / "tests" / "test_desc_message_formats.cjs",
     ROOT / "integrations" / "toa_cloud_bridge" / "extension-central-2.6.3" / "test-toa-route-tree.cjs",
     ROOT / "tests" / "test_productive_snapshot_frontend.js",
