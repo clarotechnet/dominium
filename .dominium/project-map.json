@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-11T16:31:08+00:00",
+  "generated_at": "2026-11-11T19:03:30+00:00",
   "schema": 2,
-  "source_fingerprint": "1487058ea2d57e6448b388448b92f2ec132e624eee1fcf595b0b3bd24510c167",
+  "source_fingerprint": "b7bae4ad8932678bbe843781e2746ee9e4ea82b87b4ceee017e2981719cdefb6",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1526,8 +1526,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 13268,
-      "sha256": "32140c31a97e1fdb2ad2055cc86223a085adcadf2617be24eab841e5476c290a",
+      "bytes": 14138,
+      "sha256": "0617d3d45a9a66433819d7f72b3415a9a7fbb42dd5e02478458e9eceb0e3feaf",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -2317,6 +2317,21 @@
       "symbol_count": 0
     },
     {
+      "path": "integrations/desc_review_bot/src/descReview/backlogLegacy.js",
+      "category": "shared",
+      "bytes": 7068,
+      "sha256": "3da036f47cb65924905ad6181dfea1195e509494d5a463abfe435b802b3432ef",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TERMINAL_CODES.has"
+      ],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
       "path": "integrations/desc_review_bot/src/descReview/core.js",
       "category": "shared",
       "bytes": 19151,
@@ -2380,6 +2395,19 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 19
+    },
+    {
+      "path": "integrations/desc_review_bot/src/descReview/tests/backlog-legacy.test.js",
+      "category": "shared",
+      "bytes": 4439,
+      "sha256": "fe48e3974f665465bd12859a237fcbb910d174f0e27c638f52b796bee8310ab6",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
     },
     {
       "path": "integrations/desc_review_bot/src/descReview/tests/manual-http.test.js",
@@ -2471,6 +2499,119 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "integrations/desc_runtime/backlog_matheus_bridge.py",
+      "category": "shared",
+      "bytes": 5174,
+      "sha256": "29cfb6642abd6512638d75c9073bd065ea06f25cd800350fdd08d6d3252ae9a6",
+      "summary": "Optional read-only daily Imperium overlay for existing Backlog sidecar.",
+      "imports": [
+        "__future__",
+        "backlog_imperium_service",
+        "backlog_matheus_current",
+        "backlog_route_today_compare",
+        "datetime",
+        "pathlib",
+        "sqlite3",
+        "threading",
+        "zoneinfo"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 6
+    },
+    {
+      "path": "integrations/desc_runtime/backlog_matheus_current.py",
+      "category": "shared",
+      "bytes": 9423,
+      "sha256": "07fc6e524814fb5ed6e8d98a61825a32fc12bf169146443ecd388284df1bf010",
+      "summary": "Read-only daily Imperium TODOS/TODOS snapshot for DOMINIUM DESC.",
+      "imports": [
+        "__future__",
+        "collections",
+        "contextlib",
+        "datetime",
+        "hashlib",
+        "json",
+        "pathlib",
+        "re",
+        "sqlite3",
+        "threading",
+        "unicodedata"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 12
+    },
+    {
+      "path": "integrations/desc_runtime/backlog_route_today_compare.py",
+      "category": "shared",
+      "bytes": 6369,
+      "sha256": "5e099fd6008d267e95651304748b9bbf0960c598f994d6b0f6886db02a5e2cf0",
+      "summary": "Join today's five TOA route batches with Matheus's current native report.",
+      "imports": [
+        "__future__",
+        "collections",
+        "contextlib",
+        "datetime",
+        "pathlib",
+        "re",
+        "sqlite3",
+        "unicodedata"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
+      "path": "integrations/desc_runtime/backlog_sidecar_matheus_stage.py",
+      "category": "shared",
+      "bytes": 10250,
+      "sha256": "52a61f767f096c92bbf0fd305e7310755331a021752b6e18b616500aeab63e35",
+      "summary": "Independent localhost-only Backlog HTTP service.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "backlog_bridge_auth",
+        "backlog_daily_scheduler",
+        "backlog_imperium_service",
+        "backlog_matheus_bridge",
+        "backlog_read_guard",
+        "http",
+        "imperium_api",
+        "json",
+        "order_reports",
+        "os",
+        "pathlib",
+        "re",
+        "sys",
+        "threading",
+        "types",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/backlog/year/compare",
+        "/api/backlog/year/fora-rota",
+        "/api/backlog/year/pause",
+        "/api/backlog/year/routes",
+        "/api/backlog/year/sent",
+        "/api/backlog/year/start",
+        "/api/backlog/year/status"
+      ],
+      "env_vars": [
+        "DOMINIUM_BACKLOG_BRIDGE_TOKEN",
+        "DOMINIUM_BACKLOG_YEAR_ENABLE"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 3
     },
     {
       "path": "integrations/desc_runtime/bot/disconnectPilot.js",
@@ -2611,6 +2752,123 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "integrations/desc_runtime/refresh_matheus_backlog.py",
+      "category": "shared",
+      "bytes": 2175,
+      "sha256": "e5f40efbe377f77e658747aa8065c7565d499b58edca0176066ea58534c6d279",
+      "summary": "Update four native TODOS/TODOS snapshots, read-only, in an isolated SQLite DB.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "backlog_matheus_current",
+        "backlog_read_guard",
+        "json",
+        "order_reports",
+        "pathlib",
+        "sys"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 1
+    },
+    {
+      "path": "integrations/desc_runtime/test_backlog_matheus_bridge.py",
+      "category": "tests",
+      "bytes": 3930,
+      "sha256": "b2c8b4e01a5eaecabc72e52c3adfa68a0b623c3f322702c62207050dc7169d42",
+      "summary": "Synthetic bridge tests. Preserve the existing sidecar import behavior.",
+      "imports": [
+        "backlog_imperium_service",
+        "backlog_matheus_bridge",
+        "contextlib",
+        "datetime",
+        "pathlib",
+        "sqlite3",
+        "tempfile",
+        "threading",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TIME.replace"
+      ],
+      "entrypoint": true,
+      "symbol_count": 8
+    },
+    {
+      "path": "integrations/desc_runtime/test_backlog_matheus_current.py",
+      "category": "tests",
+      "bytes": 5264,
+      "sha256": "9edf764b477d20a4515505a42c681d80a3506bf2478347bf0d28c02ca8b432f0",
+      "summary": "Synthetic-only regression tests: no DataSnap or production DB access.",
+      "imports": [
+        "backlog_matheus_current",
+        "contextlib",
+        "datetime",
+        "json",
+        "pathlib",
+        "sqlite3",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 13
+    },
+    {
+      "path": "integrations/desc_runtime/test_backlog_route_today_compare.py",
+      "category": "tests",
+      "bytes": 4662,
+      "sha256": "38615d548195b6302ebffc533d7257b4774e0f520ebacd342d7e64209fad4262",
+      "summary": "Synthetic reconciliation tests, no real DataSnap, no live backlog writes.",
+      "imports": [
+        "backlog_route_today_compare",
+        "contextlib",
+        "datetime",
+        "pathlib",
+        "sqlite3",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TOA.csv"
+      ],
+      "entrypoint": true,
+      "symbol_count": 5
+    },
+    {
+      "path": "integrations/desc_runtime/test_backlog_sidecar_matheus_http.py",
+      "category": "tests",
+      "bytes": 2263,
+      "sha256": "ce580607d06f823ea48d03a093900fc5b88d3fe6c2d8adf57d7968c98aefdf31",
+      "summary": "Isolated authenticated HTTP smoke tests, no production listeners.",
+      "imports": [
+        "backlog_sidecar_matheus_stage",
+        "http",
+        "json",
+        "os",
+        "threading",
+        "unittest",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/backlog/year/status"
+      ],
+      "env_vars": [
+        "DOMINIUM_BACKLOG_BRIDGE_TOKEN"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 10
     },
     {
       "path": "integrations/desc_runtime/test_desc_multi_owner_runtime.py",
@@ -9986,6 +10244,7 @@
     "DOMINIUM_AUTH_BACKEND",
     "DOMINIUM_AUTH_EMAIL_DOMAIN",
     "DOMINIUM_BACKLOG_BRIDGE_TOKEN",
+    "DOMINIUM_BACKLOG_YEAR_ENABLE",
     "DOMINIUM_CHROMEDRIVER",
     "DOMINIUM_DATABASE_URL",
     "DOMINIUM_DATASNAP_CREDENTIALS_FILE",
@@ -10058,8 +10317,11 @@
     "TEMPLATE_PATH.read_text",
     "TENANT_PATHS.items",
     "TENANT_PATHS.values",
+    "TERMINAL_CODES.has",
+    "TIME.replace",
     "TNTOAAutoExport.discoverBuckets",
     "TNTOAAutoExport.exportRoute",
+    "TOA.csv",
     "TOACaptureLot.from_dict",
     "TOACaptureLot.from_path",
     "TOACloudClient.from_environment",

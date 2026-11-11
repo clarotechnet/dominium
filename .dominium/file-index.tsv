@@ -77,7 +77,7 @@ docs	docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md				Dominium — consul
 docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/IMPERIUM_VIDEO_ATLAS_AUDIT_20261106.md				Dominium — Fluxo comprovado nos vídeos operacionais, 06/11/2026	d6ab164c441c4db7
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	32140c31a97e1fdb
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	0617d3d45a9a6643
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
 docs	docs/agent/memory/CURRENT_STATE.md			2	11/11/2026 — Relatórios nativos de OS	87e75c677ba88763
@@ -125,11 +125,13 @@ shared	integrations/desc_reports/operator_reports.py	7			Persistent operator fee
 shared	integrations/desc_reports/README.md				DESC — contratos, revisão manual e REPORT	7b2f2308f26140fa
 shared	integrations/desc_review_bot/install_manual_serial.py	4			Install the manual Atlas helper without replacing the live history implementation.	5e49ca4405d422f7
 shared	integrations/desc_review_bot/README.md				DESC — vínculo WhatsApp / Imperium	4442e88a9275793d
+shared	integrations/desc_review_bot/src/descReview/backlogLegacy.js	5		1		3da036f47cb65924
 shared	integrations/desc_review_bot/src/descReview/core.js	19				8bac5edd1b8475a9
 shared	integrations/desc_review_bot/src/descReview/manualSerial.js	6				8012c46cba4ab7e6
 shared	integrations/desc_review_bot/src/descReview/orderClient.js	1				c058133fa2d5f124
 shared	integrations/desc_review_bot/src/descReview/orderEvidence.js	1				c2cde9ca6e3e700d
 shared	integrations/desc_review_bot/src/descReview/server.js	19				78d4ae62cb0c9be8
+shared	integrations/desc_review_bot/src/descReview/tests/backlog-legacy.test.js	1				fe48e3974f665465
 shared	integrations/desc_review_bot/src/descReview/tests/manual-http.test.js	1				d8f787170585b6d1
 shared	integrations/desc_review_bot/src/descReview/tests/manual-serial.test.js	3				b9617aac67878d35
 shared	integrations/desc_review_bot/src/descReview/tests/order-client.test.js					e594aea531054fb6
@@ -137,6 +139,10 @@ shared	integrations/desc_review_bot/src/descReview/tests/order-evidence.test.js	
 shared	integrations/desc_review_photo/photoLookup.js	5				2af2fd85596b356e
 shared	integrations/desc_review_photo/README.md				Leitor existente do Atlas na captura DESC	8fc9d77ff256d4f9
 shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f4cfacfb
+shared	integrations/desc_runtime/backlog_matheus_bridge.py	6			Optional read-only daily Imperium overlay for existing Backlog sidecar.	29cfb6642abd6512
+shared	integrations/desc_runtime/backlog_matheus_current.py	12			Read-only daily Imperium TODOS/TODOS snapshot for DOMINIUM DESC.	07fc6e524814fb5e
+shared	integrations/desc_runtime/backlog_route_today_compare.py	5			Join today's five TOA route batches with Matheus's current native report.	5e099fd6008d267e
+shared	integrations/desc_runtime/backlog_sidecar_matheus_stage.py	3	7		Independent localhost-only Backlog HTTP service.	52a61f767f096c92
 shared	integrations/desc_runtime/bot/disconnectPilot.js	20				198dc0a3510591c8
 shared	integrations/desc_runtime/bot/disconnectPilotCoordinator.js	33				18b277d1cceb6ac0
 shared	integrations/desc_runtime/disconnect_local_runner.py	36		1	Executa um único job de desconexão recebido do BotDMV no PC local.	9a3c4f51a3d89409
@@ -144,6 +150,11 @@ shared	integrations/desc_runtime/nightly_backlog_106.py	7	3		Operator-authorized
 shared	integrations/desc_runtime/nightly_backlog_service.py	10			Daily backlog scheduling owned by the Dominium HTTP server, not by a browser.	0746da639cac79e4
 shared	integrations/desc_runtime/patch_runtime_safety.py	4			Small source transformations for the legacy server; no network or writes.	6c799a4b273d49eb
 shared	integrations/desc_runtime/README.md				Runtime DESC do servidor TECHNET	6de7a9f8f279c560
+shared	integrations/desc_runtime/refresh_matheus_backlog.py	1			Update four native TODOS/TODOS snapshots, read-only, in an isolated SQLite DB.	e5f40efbe377f77e
+tests	integrations/desc_runtime/test_backlog_matheus_bridge.py	8		1	Synthetic bridge tests. Preserve the existing sidecar import behavior.	b2c8b4e01a5eaeca
+tests	integrations/desc_runtime/test_backlog_matheus_current.py	13			Synthetic-only regression tests: no DataSnap or production DB access.	9edf764b477d20a4
+tests	integrations/desc_runtime/test_backlog_route_today_compare.py	5		1	Synthetic reconciliation tests, no real DataSnap, no live backlog writes.	38615d548195b630
+tests	integrations/desc_runtime/test_backlog_sidecar_matheus_http.py	10	1		Isolated authenticated HTTP smoke tests, no production listeners.	ce580607d06f823e
 tests	integrations/desc_runtime/test_desc_multi_owner_runtime.py	2		1		b7c145e05d4781d6
 tests	integrations/desc_runtime/test_desc_sector_scope.py	10			Read-only sector scope regression for BotDMV DESC -> DataSnap executor.	0fa5396e16d5d30f
 tests	integrations/desc_runtime/test_nightly_backlog_106.py	13	1			5fc4ff778ec23768

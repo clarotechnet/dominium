@@ -340,3 +340,19 @@ Alterações preparadas para commit (3 arquivos). Para motivação e resultado c
 Alterações preparadas para commit (1 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
 
 - `docs/agent/memory/OPERATIONS_JOURNAL.md`
+
+## 2026-11-11 | staged:154ebdc10efa4645
+
+Alterações preparadas para commit (11 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `integrations/desc_review_bot/src/descReview/backlogLegacy.js`
+- `integrations/desc_review_bot/src/descReview/tests/backlog-legacy.test.js`
+- `integrations/desc_runtime/backlog_matheus_bridge.py`
+- `integrations/desc_runtime/backlog_matheus_current.py`
+- `integrations/desc_runtime/backlog_route_today_compare.py`
+- `integrations/desc_runtime/backlog_sidecar_matheus_stage.py`
+- `integrations/desc_runtime/refresh_matheus_backlog.py`
+- `integrations/desc_runtime/test_backlog_matheus_bridge.py`
+- `integrations/desc_runtime/test_backlog_matheus_current.py`
+- `integrations/desc_runtime/test_backlog_route_today_compare.py`
+- `integrations/desc_runtime/test_backlog_sidecar_matheus_http.py`

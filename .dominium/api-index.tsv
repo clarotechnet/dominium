@@ -194,9 +194,17 @@ endpoint	path
 /api/health	flow_reader/server.py
 /api/analyze	flow_reader/static/app.js
 /api/disconnection/reports	integrations/desc_reports/desc_review_relay.py
+/api/backlog/year/compare	integrations/desc_runtime/backlog_sidecar_matheus_stage.py
+/api/backlog/year/fora-rota	integrations/desc_runtime/backlog_sidecar_matheus_stage.py
+/api/backlog/year/pause	integrations/desc_runtime/backlog_sidecar_matheus_stage.py
+/api/backlog/year/routes	integrations/desc_runtime/backlog_sidecar_matheus_stage.py
+/api/backlog/year/sent	integrations/desc_runtime/backlog_sidecar_matheus_stage.py
+/api/backlog/year/start	integrations/desc_runtime/backlog_sidecar_matheus_stage.py
+/api/backlog/year/status	integrations/desc_runtime/backlog_sidecar_matheus_stage.py
 /api/orders/{int(row	integrations/desc_runtime/nightly_backlog_106.py
 /api/orders?	integrations/desc_runtime/nightly_backlog_106.py
 /api/profiles	integrations/desc_runtime/nightly_backlog_106.py
+/api/backlog/year/status	integrations/desc_runtime/test_backlog_sidecar_matheus_http.py
 /api/profiles	integrations/desc_runtime/test_nightly_backlog_106.py
 /api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all	integrations/import_bridge/order_reports.test.mjs
 /api/disconnection/	integrations/import_bridge/worker.mjs
