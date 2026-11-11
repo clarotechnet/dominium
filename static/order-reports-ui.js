@@ -24,7 +24,7 @@
       start.disabled = end.disabled = busy;
       panel.setAttribute('aria-busy', String(busy));
     }
-    async function download(type) {
+    async function download(type, variant = 'raw') {
       if (busy) return;
       const context = { ...getContext() };
       if (context.allCities || context.switching || !labels[context.profile]) return;
@@ -37,18 +37,19 @@
         if (days >= 31) throw new Error('Selecione até 31 dias por download.');
         busy = true;
         render();
-        status.textContent = 'Consultando ' + labels[context.profile] + ' no Imperium e preparando o Excel…';
+        status.textContent = 'Consultando ' + labels[context.profile] + ' no Imperium e preparando o Excel ' + (variant === 'treated' ? 'tratado' : 'bruto') + '…';
         const query = new URLSearchParams({profile:context.profile, start:start.value, end:end.value, type});
+        if (variant === 'treated') query.set('variant', 'treated');
         const result = await requestBlob('/api/order-reports/export.xlsx?' + query, {timeoutMs:180000});
         const url = URL.createObjectURL(result.blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'OS_' + (type === 'all' ? 'Todos' : 'Manutencao') + '_' + context.profile + '_' + query.get('start') + '_' + query.get('end') + '.xlsx';
+        link.download = 'OS_' + (type === 'all' ? 'Todos' : 'Manutencao') + (variant === 'treated' ? '_Tratado' : '') + '_' + context.profile + '_' + query.get('start') + '_' + query.get('end') + '.xlsx';
         document.body.append(link);
         link.click();
         link.remove();
         setTimeout(() => URL.revokeObjectURL(url), 60000);
-        status.textContent = 'Excel pronto: ' + (type === 'all' ? 'Todos os serviços' : 'Manutenção / Visita Técnica') + ' · ' + labels[context.profile] + ' · ' + query.get('start').split('-').reverse().join('/') + ' a ' + query.get('end').split('-').reverse().join('/') + '.';
+        status.textContent = 'Excel ' + (variant === 'treated' ? 'tratado' : 'bruto') + ' pronto: ' + (type === 'all' ? 'Todos os serviços' : 'Manutenção / Visita Técnica') + ' · ' + labels[context.profile] + ' · ' + query.get('start').split('-').reverse().join('/') + ' a ' + query.get('end').split('-').reverse().join('/') + '.';
       } catch (error) {
         status.textContent = error.message || 'Não foi possível gerar o relatório. Tente novamente.';
         status.classList.add('order-report-error');
@@ -57,7 +58,7 @@
         render();
       }
     }
-    buttons.forEach(button => button.addEventListener('click', () => download(button.dataset.orderReport)));
+    buttons.forEach(button => button.addEventListener('click', () => download(button.dataset.orderReport, button.dataset.orderVariant || 'raw')));
     document.addEventListener('dominium:scope-change', render);
     document.addEventListener('dominium:module-change', render);
     document.addEventListener('dominium:auth-cleared', () => { status.textContent = ''; render(); });
