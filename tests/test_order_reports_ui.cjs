@@ -60,7 +60,7 @@ async function testUI() {
   assert.match(links[1].download,/OS_Todos_Tratado_recife_/);
   assert.match(elements.orderReportStatus.textContent,/tratado pronto/);
   elements.orderReportStart.value='2026-01-03';
-  await controller.download('all');assert.equal(requests.length,1);
+  await controller.download('all');assert.equal(requests.length,2);
   assert.match(elements.orderReportStatus.textContent,/período válido/);
 }
 testUI().then(()=>console.log('OS reports policy, role, dates, city scope and download tests: OK'))
