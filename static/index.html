@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
   <link rel="stylesheet" href="/styles.css?v=20261107-stock-tabs-1">
-  <link rel="stylesheet" href="/order-reports.css?v=20261111-1">
+  <link rel="stylesheet" href="/order-reports.css?v=20261111-treated-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
   <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-image-1">
@@ -238,7 +238,7 @@
       <header class="workspace-heading">
         <div>
           <h2>Relatórios de OS</h2>
-          <p class="workspace-description">Consulte o Imperium e baixe os relatórios em Excel no mesmo formato da exportação original.</p>
+          <p class="workspace-description">Exporte os arquivos originais ou baixe a versão tratada automaticamente, sem executar macros no Excel.</p>
         </div>
       </header>
       <div class="order-report-filters">
@@ -250,16 +250,22 @@
         <article class="order-report-card">
           <h3>Todos os serviços</h3>
           <p>Todas as OS do período, incluindo em campo, concluídas, canceladas e reagendadas.</p>
-          <button class="button primary" data-order-report="all" type="button"><i data-lucide="download" aria-hidden="true"></i> Baixar Todos · XLSX</button>
+          <div class="order-report-actions">
+            <button class="button order-report-button-raw" data-order-report="all" type="button"><i data-lucide="download" aria-hidden="true"></i> Baixar Bruto · XLSX</button>
+            <button class="button order-report-button-treated" data-order-report="all" data-order-variant="treated" type="button"><i data-lucide="file-check" aria-hidden="true"></i> Baixar Todos · Tratado</button>
+          </div>
         </article>
         <article class="order-report-card">
           <h3>Manutenção / Visita Técnica</h3>
           <p>OS da categoria MANUTENÇÃO do Imperium, incluindo visitas técnicas, preventivas e trocas de equipamento.</p>
-          <button class="button secondary" data-order-report="maintenance" type="button"><i data-lucide="download" aria-hidden="true"></i> Baixar Manutenção · XLSX</button>
+          <div class="order-report-actions">
+            <button class="button order-report-button-raw" data-order-report="maintenance" type="button"><i data-lucide="download" aria-hidden="true"></i> Baixar Bruto · XLSX</button>
+            <button class="button order-report-button-treated" data-order-report="maintenance" data-order-variant="treated" type="button"><i data-lucide="file-check" aria-hidden="true"></i> Baixar Manutenção · Tratado</button>
+          </div>
         </article>
       </div>
       <p class="order-report-status" id="orderReportStatus" role="status" aria-live="polite"></p>
-      <p class="order-report-note">Parceria NET · Todos os status · 42 colunas originais · Até 31 dias por download. As informações refletem a consulta no momento da exportação.</p>
+      <p class="order-report-note">Vermelho: arquivo original de 42 colunas. Cinza: versão tratada pelas regras das macros. Parceria NET · Todos os status · Até 31 dias por download. Os dados refletem a consulta no momento da exportação.</p>
     </section>
     <section id="allCityModuleNotice" class="all-city-notice hidden" role="status" aria-live="polite">
       <p class="section-label">TODAS AS CIDADES · SEGURANÇA OPERACIONAL</p>
@@ -2858,7 +2864,7 @@
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261103-event-guard-1"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
-  <script src="/order-reports-ui.js?v=20261111-1"></script>
+  <script src="/order-reports-ui.js?v=20261111-treated-1"></script>
   <script src="/app.js?v=20261111-order-reports-1"></script>
   <script src="/close-control-engine.js?v=20261109-mro-ui-1"></script>
   <script src="/close-control-city-board.js?v=20261109-mro-ui-1"></script>
