@@ -67,6 +67,25 @@ class TestCommissionReports(unittest.TestCase):
                 for caption,_,_ in columns:
                     self.assertIn(caption,texts)
             self.assertIn(b"Comiss",archive.read("xl/workbook.xml"))
+    def test_monetary_cells_keep_two_decimals_without_thousands_separator(self):
+        data=sample()
+        data[DATASETS[0]][0]["Valor"]=1607.73
+        workbook=export_xlsx(data)
+        ns={"m":"http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+        with zipfile.ZipFile(io.BytesIO(workbook)) as archive:
+            styles=ET.fromstring(archive.read("xl/styles.xml"))
+            formats=styles.findall(".//m:cellXfs/m:xf",ns)
+            # Excel built-in number format 2 is 0.00 (no thousands grouping).
+            self.assertEqual(formats[3].attrib["numFmtId"],"2")
+            for idx,ref in ((1,"C2"),(2,"G2"),(3,"H2")):
+                root=ET.fromstring(archive.read(f"xl/worksheets/sheet{idx}.xml"))
+                cell=root.find(f".//m:c[@r='{ref}']",ns)
+                self.assertIsNotNone(cell)
+                self.assertEqual(cell.attrib["s"],"3")
+                self.assertIsNotNone(cell.find("m:v",ns))
+            root=ET.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+            cell=root.find(".//m:c[@r='C2']/m:v",ns)
+            self.assertEqual(cell.text,"1607.73")
     def test_reject_partial_export(self):
         data=sample()
         del data[DATASETS[2]]
