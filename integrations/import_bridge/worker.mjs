@@ -5,12 +5,14 @@ import confrontPolicy from '../../deploy/hostinger-web/confront-policy.js';
 import atlasPolicy from '../../deploy/hostinger-web/atlas-query-policy.js';
 import stockAnalysisPolicy from '../../deploy/hostinger-web/stock-analysis-policy.js';
 import orderReportPolicy from '../../deploy/hostinger-web/order-report-policy.js';
+import commissionReportPolicy from '../../deploy/hostinger-web/commission-report-policy.js';
 const {allowedImportRoute, MAX_IMPORT_BYTES} = policy;
 const {allowedOperationalRead,allowedToaLookup,allowedOrderClose,allowedQualityControl,allowedDailyStock,allowedOperationalWrite,validBulkCreateBody,operationTransportFailure,validOfficialCloseBody,closeTransportFailure} = operationalPolicy;
 const {allowedConfrontRoute} = confrontPolicy;
 const {allowedAtlasQueryRoute} = atlasPolicy;
 const {allowedStockAnalysisRoute} = stockAnalysisPolicy;
 const {allowedOrderReport} = orderReportPolicy;
+const {allowedCommissionReport} = commissionReportPolicy;
 function json(status, error) {
   return Response.json({ok:false,error},{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 }
@@ -30,7 +32,8 @@ export default {
     const confrontation=allowedConfrontRoute(request.method,url.pathname+url.search);
     const query=allowedAtlasQueryRoute(request.method,url.pathname+url.search);
     const analysis=allowedStockAnalysisRoute(request.method,url.pathname+url.search);
-    const reports=allowedOrderReport(request.method,url.pathname+url.search);
+    const reports=allowedOrderReport(request.method,url.pathname+url.search) ||
+      allowedCommissionReport(request.method,url.pathname+url.search);
     const monitor=request.method==='GET' && url.pathname==='/api/monitor/snapshot';
     const operational=allowedOperationalRead(request.method,url.pathname+url.search);
     const toaLookup=allowedToaLookup(request.method,url.pathname+url.search);
