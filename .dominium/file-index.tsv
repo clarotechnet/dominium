@@ -30,19 +30,20 @@ shared	datasnap_client.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	18769b58c9903
 tooling-deploy	deploy/hostinger-future/README.md				Hostinger - preparo para migracao futura	bbfe97a6ef6f2341
 tooling-deploy	deploy/hostinger-web/atlas-query-policy.js	1	2			5920be286b6b2e0f
 tooling-deploy	deploy/hostinger-web/backlog-proxy.js	3	1	1		6bc78dbcfdb73ea8
+tooling-deploy	deploy/hostinger-web/commission-report-policy.js	1				041563d6afe915ae
 tooling-deploy	deploy/hostinger-web/confront-policy.js	1	3			9834dd541ca9ff51
 tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			b000d7e6a37d1516
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
 tooling-deploy	deploy/hostinger-web/operational-policy.js	12	47			182efaca7600724c
-tooling-deploy	deploy/hostinger-web/operational-relay.js	3				88ee4b893088a2e6
+tooling-deploy	deploy/hostinger-web/operational-relay.js	3				eb0dce70ba0925fe
 tooling-deploy	deploy/hostinger-web/order-close-proxy.js	2				78fc563fd7b62d77
-tooling-deploy	deploy/hostinger-web/order-report-policy.js	1				a2f633e35a02315c
+tooling-deploy	deploy/hostinger-web/order-report-policy.js	1				d634fc2aab4a6d9f
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	36	1		5274c8fed6a0150d
+tooling-deploy	deploy/hostinger-web/server.js	41	37	1		ac7f1f342ba3ef5d
 tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	6			55ba737af78a81fe
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
@@ -70,6 +71,7 @@ docs	docs/agent/ATLAS_QUERY_VIDEO_RECOVERY_20261026.md				Natal — vídeo, comp
 docs	docs/agent/ATLAS_QUERY_WAITING_HUD_20261026.md				QUERY — distinguir espera de processamento	cfd355576cf2880e
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor de sessão instalado em 26/10/2026	cd87d67d5054efb8
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
+docs	docs/agent/COMMISSION_REPORTS_20261112.md			1	Relatórios de Comissão – Imperium DataSnap (12/11/2026)	1e94a4bd2562d64b
 docs	docs/agent/GLOBAL_TODOS_SCOPE_20261103.md				DOMINIUM — escopo global "Todos" e desbloqueio do Backlog (03/11/2026)	236973d4848064d1
 docs	docs/agent/IMPERIUM_DATASNAP_SUPABASE_LIVE_20261105.md				Dominium: Consultar período -> DataSnap -> Supabase (05/11/2026)	cedb896e473eb6f4
 docs	docs/agent/IMPERIUM_ROLLOUT_20261106.md				DOMINIUM — rollout Imperium DataSnap / Supabase / Atlas (06/11/2026)	cb0558f391f38d2d
@@ -87,6 +89,7 @@ docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisõ
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
+docs	docs/agent/ORDER_REPORTS_TREATED_20261111.md				Relatórios de OS — versões bruta e tratada (11/11/2026)	a17db8f17c9fc959
 docs	docs/agent/PRODUCTIVE_SNAPSHOT_REPAIR_20261027.md				Caso real confirmado e ponte compartilhada preservada	281b6cb6cc46851e
 docs	docs/agent/TASK_ROUTER.md				DOMINIUM task router	ea4171c7459d3f29
 docs	docs/agent/TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md				Buscar no TOA — correção do transporte em 27/10/2026	96edd6356856440e
@@ -152,11 +155,12 @@ tests	integrations/desc_runtime/test_persisted_removed_movements.py	22			Legacy 
 tests	integrations/desc_runtime/test_runtime_official_materials.py	2				7f7709987deaf79c
 tests	integrations/desc_runtime/test_whatsapp_bridge_service.py	13				156846f081cd3a97
 shared	integrations/desc_runtime/whatsapp_bridge_service.py	22				931cf8de8b9ce09b
+shared	integrations/import_bridge/commission_reports.test.mjs		1			3e755d67c5f79d30
 shared	integrations/import_bridge/daily_stock_service.py	7			Leitura e snapshots de estoque diario no Supabase operacional do Dominium.	4bfea8bad6b4d792
-shared	integrations/import_bridge/order_reports.test.mjs		1			e2b0e0c28a379303
+shared	integrations/import_bridge/order_reports.test.mjs		1			090b92e9055c18fb
 shared	integrations/import_bridge/quality_control_relay.py	7			Private, authenticated Quality Control Supabase bridge (no Imperium writes).	6e21d816d7b3a9fd
 shared	integrations/import_bridge/README.md				DOMINIUM site import bridge	008be34f69436552
-shared	integrations/import_bridge/worker.mjs	3	6			e145827a513c8801
+shared	integrations/import_bridge/worker.mjs	3	6			be00eaeafe47fbac
 shared	integrations/import_bridge/worker.test.mjs		13			aee145f9fcdedc5c
 shared	integrations/import_bridge/worker_create.test.mjs					5f31d81dbeac6a12
 shared	integrations/managed_atlas_toa/claro-login-submit.js	4				cced9c141f48f623
@@ -174,12 +178,14 @@ shared	integrations/serial_consult/atlas_query_health.py	3			Read-only Atlas ses
 shared	integrations/serial_consult/atlas_query_http.py	14	2		Authenticated DOMINIUM QUERY Atlas service, isolated by operator.	4fb1eec9be98b3ee
 shared	integrations/serial_consult/atlas_query_pipeline.py	10			Private Atlas QUERY queue/attachment orchestrator (CLI foundation).	6f12cce2e5711945
 shared	integrations/serial_consult/atlas_query_report.py	16			Atlas read-only equipment report generator in a dedicated managed Chrome tab.	e11cf3ddfb207a19
+shared	integrations/serial_consult/commission_protocol_templates_20261112.json			1		a8bcf26a83a83dea
+shared	integrations/serial_consult/commission_reports.py	9	1	2	Read-only Imperium service commissions (four DataSnap bases).	cc4f3ae3d6799ca8
 shared	integrations/serial_consult/confront_engine.py	7			Read-only Atlas x Imperium reconciliation. Never infer current custody from movements.	c8a5eece9b26cd06
 shared	integrations/serial_consult/confront_export.py	2			CSV exporter for read-only Atlas x Imperium confrontation results.	70854357c13c117e
 shared	integrations/serial_consult/confront_http.py	7	3		Private HTTP interface and supervised background job scheduler.	86da7071f7da0062
 shared	integrations/serial_consult/confront_job_runner.py	14			Durable, one-step-at-a-time confrontation worker (not a public HTTP endpoint).	46db8339b45b1bf4
 imperium	integrations/serial_consult/CONFRONTO_ATLAS_IMPERIUM.md				DOMINIUM | Confronto Atlas × IMPERIUM — Recursos → Pendente	3ee171b567d7bafe
-shared	integrations/serial_consult/desc_review_relay.py	8	2		Authenticated relay for DESC review and private read-only Imperium checks.	2b2227fd31b60d7b
+shared	integrations/serial_consult/desc_review_relay.py	8	2		Authenticated relay for DESC review and private read-only Imperium checks.	a35e5f2efadc4aaf
 shared	integrations/serial_consult/equipment_daily_catalog.py	9	3		Persisted daily equipment-analysis workbook, independent of the Atlas QUERY.	ee8057fcdb851041
 shared	integrations/serial_consult/equipment_video_transform.py	6			Verified part of the video-style six-tab equipment reconciliation.	d6b1edf9bedc539a
 imperium	integrations/serial_consult/imperium_atlas_video.py	11	1		Stage 3: verified read-only Atlas lookups, resumable in Dominium Supabase.	36b6a90c20682c26
@@ -188,7 +194,7 @@ imperium	integrations/serial_consult/imperium_source_http.py	6	3		Source-specifi
 imperium	integrations/serial_consult/imperium_supabase_live.py	19	1		Live Imperium -> normalized, versioned Supabase snapshots; zero Excel dependency.	5a5dde14acbf26d3
 shared	integrations/serial_consult/midas_reader.py	3			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	8726cc9899870a45
 shared	integrations/serial_consult/monitor_snapshot_relay.py	1	1		Read-only bridge for the existing TOA CSV monitor snapshots.	5202d89531eb4b46
-shared	integrations/serial_consult/order_reports.py	12	1	1	Read-only Imperium OS exports matching the native 42-column Excel layout.	0331173f3adb1ed8
+shared	integrations/serial_consult/order_reports.py	13	1	1	Read-only Imperium OS exports matching the native 42-column Excel layout.	8e6f6b8ca7929f62
 shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais — historico DataSnap	6ee2b0d6a6b56813
 shared	integrations/serial_consult/report_sheet_preview.py	1			SQLite materialized, paged views of completed stock-analysis XLSX reports.	59f0d19563f30298
 shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
@@ -258,7 +264,7 @@ tooling-deploy	scripts/agent_memory.py	13		1	DOMINIUM portable agent memory: Git
 tooling-deploy	scripts/agent_memory_mcp.py	4			Portable MCP stdio entrypoint for DOMINIUM read/search/record memory.	a198c9aa044acd44
 tooling-deploy	scripts/bootstrap_admin.py	2				578b01fcd9f2bce3
 tooling-deploy	scripts/build_hostinger_frontend.py	3				376de6598486d1b3
-tooling-deploy	scripts/build_hostinger_node_release.py	4				199380042e0ac38a
+tooling-deploy	scripts/build_hostinger_node_release.py	4				cccea0f3a3236239
 tooling-deploy	scripts/build_web_release.py	8		1		12c3694527509ac1
 tooling-deploy	scripts/check_supabase_ready.py	1				ef416758e6102aca
 tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
@@ -274,7 +280,7 @@ tooling-deploy	scripts/install_atlas_session_watchdog.ps1			2		7b17ecaf06189449
 tooling-deploy	scripts/install_confront_relay.py	3	1		Minimal, backup-first insertion of the confront read-only API into live DESC relay.	4ae20a35e3eeb9d3
 tooling-deploy	scripts/probe_atlas_synthetic.py				Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.	865b81e754d5a762
 tooling-deploy	scripts/probe_used_equipment_report.py	1			Read-only DataSnap discovery. Does not download any report or execute SQL.	ed0fd4dbc5bb1986
-tooling-deploy	scripts/quality_gate.py	5				00653fa768bc2582
+tooling-deploy	scripts/quality_gate.py	5				d866fdb9136c3d53
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 tooling-deploy	scripts/restart_confront_relay.ps1					de8c58415028c25c
 tooling-deploy	scripts/smoke_confront_cloudflare.mjs		3		Verify private Worker route with the same Node fetch transport used by Hostinger. */	5d9320441c44eea2
@@ -296,6 +302,7 @@ frontend	static/close-control-engine.js	11			DOMINIUM — Controle de baixas: mo
 frontend	static/close-control-ui.js	17			Controle de baixas — módulo visual read-only. Zero chamadas ao TOA e zero POST. */	5eb3cc82cf988336
 frontend	static/close-control-worker.js	5			Controle de baixas — leitura do estado EXISTENTE do worker, sem chamadas TOA.	7a51b9bc42002d16
 frontend	static/close-control.css				Controle de baixas — escopo isolado, sem sobrescrever regras operacionais */	d4529e803de2143a
+frontend	static/commission-reports-ui.js	4	1		Four-base DataSnap commissions; exports only authorized read-only reports. */	013a1bbb81201dc1
 frontend	static/confront.js	8	3		DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */	0b07900bcc977ee8
 frontend	static/daily-stock-parser.js	6			Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */	62266f55fa3c9f65
 frontend	static/daily-stock.js	11	2		Estoque diario independente do Imperium; importacao por arquivo e historico. */	5202763e802b7213
@@ -304,13 +311,13 @@ frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			30813d7e18ab7571
+frontend	static/index.html		1			e72f5f0a5d2e925c
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
-frontend	static/order-reports-ui.js	4	1		Native Imperium OS reports: scope and request are fixed when download begins. */	76c45f87b5199da4
-frontend	static/order-reports.css					e90a59a5b111ed4b
+frontend	static/order-reports-ui.js	4	1		Native Imperium OS reports: scope and request are fixed when download begins. */	e893696b99e7f104
+frontend	static/order-reports.css					71d154f97eb2e33b
 frontend	static/quality-control.js	11	1		Controle de qualidade: pesquisa no painel, cadastro/edicao em modal. */	fd462fc168e71c03
 frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workflow from stock training recordings. */	b62e24a0e52bb803
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
@@ -375,6 +382,8 @@ tests	tests/test_close_control_engine.js	2				3d2bb54ac8c0c076
 tests	tests/test_close_control_worker_mro.cjs	1				ded07a5210a5a010
 tests	tests/test_close_report.py	15				125242a6d2cff245
 tests	tests/test_close_report_excel.py	5				36de3899cae4ba75
+tests	tests/test_commission_reports.py	8	2		Synthetic read-only test suite for four-base Imperium commissions.	96af88fe61c8d45d
+tests	tests/test_commission_reports_ui.cjs	2	1			62d5a56598566549
 tests	tests/test_configure_imperium_credentials.py	4				931f61ff4157fbfa
 tests	tests/test_confront_frontend.js	4	3			7d19b6c801d8072b
 tests	tests/test_confront_http.py	15	8		Authorization, actor isolation and passive confrontation API regression tests.	2e7e3e3b64652874
@@ -445,7 +454,8 @@ tests	tests/test_operations_monitor.js					6e5f6241957f3296
 tests	tests/test_order_close_proxy.js	2	4			8b35993fda8b9e57
 tests	tests/test_order_dataset_hostinger.js	4	1			bca127bdd7f87bcf
 tests	tests/test_order_reports.py	10	2	1	Native OS report contract; synthetic rows only, no customer/credential fixtures.	bef6e620b6c06f9c
-tests	tests/test_order_reports_ui.cjs	2	1			411e791a81f9dc6e
+tests	tests/test_order_reports_treated.py	6	1		Synthetic end-to-end tests for recorded macro transformations (no customer rows).	56cbeab6d987ddf2
+tests	tests/test_order_reports_ui.cjs	2	1			953e34c29128aa54
 tests	tests/test_private_operational_migration.cjs	1	37			525ad4a300a42cd1
 tests	tests/test_productive_snapshot_frontend.js	18				40c79179779f6702
 tests	tests/test_quality_control.py	4				4a628243ef04afb5
