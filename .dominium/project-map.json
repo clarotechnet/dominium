@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-11T16:31:08+00:00",
+  "generated_at": "2026-11-12T13:10:51+00:00",
   "schema": 2,
-  "source_fingerprint": "1487058ea2d57e6448b388448b92f2ec132e624eee1fcf595b0b3bd24510c167",
+  "source_fingerprint": "0a95bef9f5b0d436fce4200e669bcf67d74dc77cd4cc1e9e798b6d7aee384c3e",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -737,6 +737,19 @@
       "symbol_count": 3
     },
     {
+      "path": "deploy/hostinger-web/commission-report-policy.js",
+      "category": "tooling-deploy",
+      "bytes": 441,
+      "sha256": "041563d6afe915aeb463641129a714bf368e4f3de3c93bb9425567bb53bead99",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "deploy/hostinger-web/confront-policy.js",
       "category": "tooling-deploy",
       "bytes": 952,
@@ -883,8 +896,8 @@
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 3592,
-      "sha256": "88ee4b893088a2e67abf2ab015efba8ad4d06b2f4e758f67dff15fbeb26db778",
+      "bytes": 3723,
+      "sha256": "eb0dce70ba0925fe7bd3783e87530d4fd09308038c5445cff76fe544516c5932",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -913,8 +926,8 @@
     {
       "path": "deploy/hostinger-web/order-report-policy.js",
       "category": "tooling-deploy",
-      "bytes": 460,
-      "sha256": "a2f633e35a02315c395a21641ecc72eccfcb1f686586355c7cf5fb59a422fe9d",
+      "bytes": 481,
+      "sha256": "d634fc2aab4a6d9f899d438de5a9ad76472979fc839eb9bcd38f8a7f6c8a26c6",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -965,8 +978,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 43979,
-      "sha256": "5274c8fed6a0150dd59cf883006567fb5521cd6d86c58671c0a48bd78dd023a1",
+      "bytes": 44030,
+      "sha256": "ac7f1f342ba3ef5d71e17c749f02480c737291df06205dd92fcb1cec7fcdf6f8",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -981,6 +994,7 @@
         "/api/auth/users",
         "/api/backlog/year",
         "/api/backlog/year/routes",
+        "/api/commission-reports/",
         "/api/confront/",
         "/api/diagnostics",
         "/api/disconnection",
@@ -1429,6 +1443,21 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/COMMISSION_REPORTS_20261112.md",
+      "category": "docs",
+      "bytes": 2431,
+      "sha256": "1e94a4bd2562d64be3b2f859b7ea262b367fc569daff422bbffc71628d5bd6cd",
+      "summary": "Relatórios de Comissão – Imperium DataSnap (12/11/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmComissionamentoServicos.AS_GetRecords"
+      ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/GLOBAL_TODOS_SCOPE_20261103.md",
       "category": "docs",
       "bytes": 2732,
@@ -1651,6 +1680,19 @@
       "bytes": 2808,
       "sha256": "797243aa5135cbdb08501118fae7dbad4af6b2cbc5ab095217ec4009c905eabe",
       "summary": "Relatórios nativos de OS — 11/11/2026",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/ORDER_REPORTS_TREATED_20261111.md",
+      "category": "docs",
+      "bytes": 3171,
+      "sha256": "a17db8f17c9fc9594ed9d01bea0e622a98e1f9a98428101b892c9beb23663de4",
+      "summary": "Relatórios de OS — versões bruta e tratada (11/11/2026)",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -2783,6 +2825,21 @@
       "symbol_count": 22
     },
     {
+      "path": "integrations/import_bridge/commission_reports.test.mjs",
+      "category": "shared",
+      "bytes": 1862,
+      "sha256": "3e755d67c5f79d308a25eeac49d537bf5f0b07ded2ad3e24437cf3d4eb547a1c",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/commission-reports/export.xlsx?profile=mossoro&start=2026-11-01&end=2026-11-11"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "integrations/import_bridge/daily_stock_service.py",
       "category": "shared",
       "bytes": 5789,
@@ -2807,8 +2864,8 @@
     {
       "path": "integrations/import_bridge/order_reports.test.mjs",
       "category": "shared",
-      "bytes": 1783,
-      "sha256": "e2b0e0c28a379303edc195adc1eff7e01292fb01bdb702612f98affec5a92003",
+      "bytes": 2090,
+      "sha256": "090b92e9055c18fbe9fca32a97826429abe282f2765aeaae23fb0a188d706a30",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -2858,8 +2915,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 7209,
-      "sha256": "e145827a513c8801cf879fb9146d5cac4d3ece9459c62337cffa88db061c9c9f",
+      "bytes": 7433,
+      "sha256": "be00eaeafe47fbac35dc7af1cde499ae91103cd279378772c0d4ceb566dc2a7c",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3214,6 +3271,54 @@
       "symbol_count": 16
     },
     {
+      "path": "integrations/serial_consult/commission_protocol_templates_20261112.json",
+      "category": "shared",
+      "bytes": 2472,
+      "sha256": "a8bcf26a83a83deac03e5fb94c2785ef7c9c2b38ff3b3a2ef74250a376ed52c6",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmComissionamentoServicos.AS_GetRecords"
+      ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/serial_consult/commission_reports.py",
+      "category": "shared",
+      "bytes": 12852,
+      "sha256": "cc4f3ae3d6799ca8a130606f786e16ead36da2a4f69f6974f9f5ddb3cebf2795",
+      "summary": "Read-only Imperium service commissions (four DataSnap bases).",
+      "imports": [
+        "__future__",
+        "base64",
+        "datasnap_client",
+        "datetime",
+        "io",
+        "json",
+        "midas_reader",
+        "order_reports",
+        "pathlib",
+        "re",
+        "struct",
+        "threading",
+        "xml",
+        "zipfile"
+      ],
+      "endpoints": [
+        "/api/commission-reports/export\\.xlsx\\?profile=(natal"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmComissionamentoServicos.AS_GetRecords",
+        "TEMPLATES_PATH.read_text"
+      ],
+      "entrypoint": false,
+      "symbol_count": 9
+    },
+    {
       "path": "integrations/serial_consult/confront_engine.py",
       "category": "shared",
       "bytes": 8580,
@@ -3321,13 +3426,14 @@
     {
       "path": "integrations/serial_consult/desc_review_relay.py",
       "category": "shared",
-      "bytes": 13902,
-      "sha256": "2b2227fd31b60d7b4fe127704ee604c20cde4621f62941d60b9ea6c654b9a7c7",
+      "bytes": 15148,
+      "sha256": "a35e5f2efadc4aaf305291701f9eb93b1b0e33cdcabad2fcbadf45ed65545f30",
       "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
       "imports": [
         "__future__",
         "argparse",
         "atlas_query_http",
+        "commission_reports",
         "confront_http",
         "desc_order_verifier",
         "desc_review_proxy",
@@ -3571,8 +3677,8 @@
     {
       "path": "integrations/serial_consult/order_reports.py",
       "category": "shared",
-      "bytes": 14507,
-      "sha256": "0331173f3adb1ed887d179b10b724e8703cd476db93f8ea6b73bbdb55d544b2b",
+      "bytes": 17382,
+      "sha256": "8e6f6b8ca7929f62dd16c616b1d79a14c332a19e9f1648ab2af3f2f29ecd7538",
       "summary": "Read-only Imperium OS exports matching the native 42-column Excel layout.",
       "imports": [
         "__future__",
@@ -3597,7 +3703,7 @@
         "TDtmOrdemServico.AS_GetRecords"
       ],
       "entrypoint": false,
-      "symbol_count": 12
+      "symbol_count": 13
     },
     {
       "path": "integrations/serial_consult/README.md",
@@ -4882,8 +4988,8 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 4924,
-      "sha256": "199380042e0ac38a621a970edb3264c1e639ad69c33108bcc0e2b8450c07094e",
+      "bytes": 4959,
+      "sha256": "cccea0f3a32362396a91480557c3f90281c180e6216790264d17de944f95a332",
       "summary": "",
       "imports": [
         "__future__",
@@ -5209,8 +5315,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 6940,
-      "sha256": "00653fa768bc258239738f79d6a5914b95334a280eb38301c7495a9146d6f391",
+      "bytes": 7072,
+      "sha256": "d866fdb9136c3d5315f89fe7ff12811fd58a507ae4cd17a033cfcba0e58f6b0a",
       "summary": "",
       "imports": [
         "__future__",
@@ -5569,6 +5675,21 @@
       "symbol_count": 0
     },
     {
+      "path": "static/commission-reports-ui.js",
+      "category": "frontend",
+      "bytes": 3702,
+      "sha256": "013a1bbb81201dc1071bbe9f222cf83c4eb941932b417891c6a6d93810a18ce5",
+      "summary": "Four-base DataSnap commissions; exports only authorized read-only reports. */",
+      "imports": [],
+      "endpoints": [
+        "/api/commission-reports/export.xlsx?"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
       "path": "static/confront.js",
       "category": "frontend",
       "bytes": 11151,
@@ -5693,8 +5814,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 173782,
-      "sha256": "30813d7e18ab7571bffe7954c39b42a7c72be056833aaa008be7488dd82551d4",
+      "bytes": 176291,
+      "sha256": "e72f5f0a5d2e925c9d04e363f1f5430615404a514152f435ad481a6f1273bc22",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5760,8 +5881,8 @@
     {
       "path": "static/order-reports-ui.js",
       "category": "frontend",
-      "bytes": 3859,
-      "sha256": "76c45f87b5199da4eba87c844549ba5ce0f5fd1c0035fe9ccdbd9db6deebf67d",
+      "bytes": 4134,
+      "sha256": "e893696b99e7f1045252b4d264a47f0f21ae13e718c923da62590e140900b938",
       "summary": "Native Imperium OS reports: scope and request are fixed when download begins. */",
       "imports": [],
       "endpoints": [
@@ -5775,8 +5896,8 @@
     {
       "path": "static/order-reports.css",
       "category": "frontend",
-      "bytes": 1742,
-      "sha256": "e90a59a5b111ed4b6597f90e542949f87ab03b00b0627c7983e26864985fbf8e",
+      "bytes": 2629,
+      "sha256": "71d154f97eb2e33b3137e6a6d720a12bed46ffbc7c25df0fd975b6ad691f5259",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6919,6 +7040,47 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 5
+    },
+    {
+      "path": "tests/test_commission_reports.py",
+      "category": "tests",
+      "bytes": 4761,
+      "sha256": "96af88fe61c8d45d97e569ac53ff65432dc60dd932a2371269db692ddc1f5ef7",
+      "summary": "Synthetic read-only test suite for four-base Imperium commissions.",
+      "imports": [
+        "__future__",
+        "commission_reports",
+        "io",
+        "pathlib",
+        "sys",
+        "threading",
+        "unittest",
+        "xml",
+        "zipfile"
+      ],
+      "endpoints": [
+        "/api/commission-reports/export.xlsx?profile=natal&start=2026-11-01&end=2026-11-11",
+        "/api/commission-reports/export.xlsx?profile=recife&start=2026-11-01&end=2026-11-11"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 8
+    },
+    {
+      "path": "tests/test_commission_reports_ui.cjs",
+      "category": "tests",
+      "bytes": 3632,
+      "sha256": "62d5a56598566549b64510fb7da6cbfe5673e4de8737a5e1dd6504e7a10c56e6",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/commission-reports/export.xlsx?profile=natal&start=2026-11-01&end=2026-11-11"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_configure_imperium_credentials.py",
@@ -8361,10 +8523,31 @@
       "symbol_count": 10
     },
     {
+      "path": "tests/test_order_reports_treated.py",
+      "category": "tests",
+      "bytes": 5923,
+      "sha256": "56cbeab6d987ddf249b68481ca963f1f7125abece80973256507bcd49e7baf5a",
+      "summary": "Synthetic end-to-end tests for recorded macro transformations (no customer rows).",
+      "imports": [
+        "integrations",
+        "io",
+        "unittest",
+        "xml",
+        "zipfile"
+      ],
+      "endpoints": [
+        "/api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 6
+    },
+    {
       "path": "tests/test_order_reports_ui.cjs",
       "category": "tests",
-      "bytes": 3636,
-      "sha256": "411e791a81f9dc6e2921414c61ab9cc19ca4f0b369607003a1a051dbf228212d",
+      "bytes": 4288,
+      "sha256": "953e34c29128aa54022aec37a0d115fdf35565d574c538b666be2e5df9e88c66",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -10034,6 +10217,7 @@
     "TASK_LAYOUTS.map",
     "TASK_ROUTER.md",
     "TASK_SLOTS.get",
+    "TDtmComissionamentoServicos.AS_GetRecords",
     "TDtmEquipamentos.AS_GetRecords",
     "TDtmMarca.AS_GetRecords",
     "TDtmMovEstoque.AS_ApplyUpdates",
@@ -10055,6 +10239,7 @@
     "TECHNICIANS.enrich_preview",
     "TECHNICIANS.public_dict",
     "TECHNICIANS.resolve",
+    "TEMPLATES_PATH.read_text",
     "TEMPLATE_PATH.read_text",
     "TENANT_PATHS.items",
     "TENANT_PATHS.values",

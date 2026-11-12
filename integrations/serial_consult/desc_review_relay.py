@@ -34,6 +34,7 @@ from atlas_query_http import AtlasQueryService, parse_query_route
 from stock_analysis_http import StockAnalysisService, route_for as parse_stock_analysis_route
 from monitor_snapshot_relay import read_monitor_snapshot
 from order_reports import OrderReportService, parse_route as parse_order_report, MIME as ORDER_REPORT_MIME
+from commission_reports import CommissionReportService, parse_route as parse_commission_report
 
 
 class DescRelayHandler(BaseHTTPRequestHandler):
@@ -110,6 +111,22 @@ class DescRelayHandler(BaseHTTPRequestHandler):
             except Exception as error:
                 logging.warning('OS report failed: %s', type(error).__name__)
                 self._json(502, {'ok': False, 'error': 'Não foi possível obter o relatório completo do Imperium. Tente novamente ou reduza o período.'})
+            return
+        commission_report = parse_commission_report(self.command, self.path)
+        if commission_report is not None:
+            if self.headers.get('X-Dominium-Role') not in {'admin', 'controller'}:
+                self._json(403, {'ok': False, 'error': 'Perfil operacional necessário'})
+                return
+            try:
+                data, filename, counts = self.server.commission_report_service.download(commission_report)
+                self._binary(data, ORDER_REPORT_MIME, filename)
+                logging.info('Commissions exported: profile=%s datasets=%s',
+                             commission_report.group(1), {k:int(v) for k,v in counts.items()})
+            except ValueError as error:
+                self._json(400, {'ok': False, 'error': str(error)})
+            except Exception as error:
+                logging.warning('Commission report failed: %s', type(error).__name__)
+                self._json(502, {'ok': False, 'error': 'Não foi possível obter o relatório completo de comissões. Reduza o período ou tente novamente.'})
             return
         stock_analysis_route = parse_stock_analysis_route(self.command, self.path)
         if stock_analysis_route is not None:
@@ -269,6 +286,7 @@ def main():
     server.atlas_query_service = AtlasQueryService()
     server.stock_analysis_service = StockAnalysisService()
     server.order_report_service = OrderReportService()
+    server.commission_report_service = CommissionReportService()
     try:
         server.serve_forever()
     finally:

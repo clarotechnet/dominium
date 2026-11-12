@@ -15,6 +15,7 @@
 // A ordem executavel abaixo foi preservada para evitar regressao.
 // =============================================================================
 let orderReportsController = null;
+let commissionReportsController = null;
 const state = {
   authUser: null,
   authCsrfToken: "",
@@ -59,6 +60,8 @@ const state = {
     ? "descAnalytics"
     : window.location.hash === "#relatorios-os"
     ? "order-reports"
+    : window.location.hash === "#relatorios-comissao"
+    ? "commission-reports"
     : window.location.hash === "#controle-baixas"
     ? "close-control"
     : window.location.hash === "#pendente"
@@ -3641,7 +3644,7 @@ function setModule(module) {
     || state.stockWriteoffLoading
     || ![
       "dashboard", "monitor", "orders", "stock", "serials", "confront", "technicians", "bulk", "imports",
-      "automation-test", "close", "close-control", "order-reports", "report", "history", "intelligence", "database", "disconnection", "descAnalytics", "backlog",
+      "automation-test", "close", "close-control", "order-reports", "commission-reports", "report", "history", "intelligence", "database", "disconnection", "descAnalytics", "backlog",
     ].includes(module)
   ) return;
   if (module !== "stock" && state.stockSource === "official") {
@@ -7224,6 +7227,8 @@ function render() {
   elements.ordersWorkspace.classList.toggle("hidden", state.activeModule !== "orders");
   document.getElementById("orderReportsWorkspace")?.classList.toggle("hidden", state.activeModule !== "order-reports");
   orderReportsController?.render();
+  document.getElementById("commissionReportsWorkspace")?.classList.toggle("hidden", state.activeModule !== "commission-reports");
+  commissionReportsController?.render();
   elements.stockWorkspace.classList.toggle("hidden", state.activeModule !== "stock");
   elements.serialsWorkspace.classList.toggle("hidden", state.activeModule !== "serials");
   document.getElementById("confrontWorkspace").classList.toggle("hidden", state.activeModule !== "confront");
@@ -7247,6 +7252,7 @@ function render() {
   elements.monitorModule?.classList.toggle("active", state.activeModule === "monitor");
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
   document.getElementById("orderReportsModule")?.classList.toggle("active", state.activeModule === "order-reports");
+  document.getElementById("commissionReportsModule")?.classList.toggle("active", state.activeModule === "commission-reports");
   elements.stockModule.classList.toggle("active",
     state.activeModule === "stock"
     && document.getElementById("stockInventoryTab")?.getAttribute("aria-selected") === "true");
@@ -12629,6 +12635,7 @@ document.getElementById("descAnalyticsModule").addEventListener("click", () => s
 elements.monitorModule?.addEventListener("click", () => setModule("monitor"));
 elements.ordersModule.addEventListener("click", () => setModule("orders"));
 document.getElementById("orderReportsModule")?.addEventListener("click", () => setModule("order-reports"));
+document.getElementById("commissionReportsModule")?.addEventListener("click", () => setModule("commission-reports"));
 elements.stockModule.addEventListener("click", () => setModule("stock"));
 elements.serialsModule.addEventListener("click", () => setModule("serials"));
 elements.serialsRun.addEventListener("click", runSerialConsult);
@@ -13430,6 +13437,10 @@ window.DominiumCloseControlBridge = Object.freeze({
   },
 });
 orderReportsController = window.DominiumOrderReports?.mount({
+  getContext: () => ({profile: state.profile, allCities: state.allCities, switching: state.profileSwitching}),
+  requestBlob,
+});
+commissionReportsController = window.DominiumCommissionReports?.mount({
   getContext: () => ({profile: state.profile, allCities: state.allCities, switching: state.profileSwitching}),
   requestBlob,
 });

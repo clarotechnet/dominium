@@ -120,6 +120,10 @@
         <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
         <span><strong>Relatórios de OS</strong><small>Exportar do Imperium</small></span>
       </button>
+      <button class="side-nav-item" id="commissionReportsModule" type="button">
+        <i data-lucide="receipt-text" aria-hidden="true"></i>
+        <span><strong>Relatórios de Comissão</strong><small>DataSnap · 4 bases</small></span>
+      </button>
       <p class="side-nav-label side-nav-section">Producao</p>
       <button class="side-nav-item stock-group-toggle desc-group-toggle" id="disconnectionGroupToggle" type="button" aria-expanded="false" aria-controls="disconnectionNavChildren">
         <i data-lucide="unplug" aria-hidden="true"></i>
@@ -266,6 +270,28 @@
       </div>
       <p class="order-report-status" id="orderReportStatus" role="status" aria-live="polite"></p>
       <p class="order-report-note">Vermelho: arquivo original de 42 colunas. Cinza: versão tratada pelas regras das macros. Parceria NET · Todos os status · Até 31 dias por download. Os dados refletem a consulta no momento da exportação.</p>
+    </section>
+    <section class="order-reports-workspace hidden" id="commissionReportsWorkspace" aria-label="Relatórios de comissões do Imperium">
+      <header class="workspace-heading">
+        <div>
+          <h2>Relatórios de Comissão</h2>
+          <p class="workspace-description">Consulte diretamente o DataSnap e baixe o Excel com as três abas originais.</p>
+        </div>
+      </header>
+      <div class="order-report-filters">
+        <div class="order-report-base"><small>Cidade selecionada</small><strong id="commissionReportCity">Selecione uma cidade</strong></div>
+        <label for="commissionReportStart">Data inicial<input id="commissionReportStart" type="date" required></label>
+        <label for="commissionReportEnd">Data final<input id="commissionReportEnd" type="date" required></label>
+      </div>
+      <div class="order-report-cards">
+        <article class="order-report-card">
+          <h3>Comissões por instalador</h3>
+          <p>Resumo sintético, detalhamento por produto e contratos comissionados — por cidade e período.</p>
+          <button class="button primary" id="commissionReportDownload" type="button"><i data-lucide="download" aria-hidden="true"></i> Baixar Comissões · XLSX</button>
+        </article>
+      </div>
+      <p class="order-report-status" id="commissionReportStatus" role="status" aria-live="polite"></p>
+      <p class="order-report-note">Somente leitura · DataSnap nativo · Até 31 dias por exportação. Não altera nenhuma O.S.</p>
     </section>
     <section id="allCityModuleNotice" class="all-city-notice hidden" role="status" aria-live="polite">
       <p class="section-label">TODAS AS CIDADES · SEGURANÇA OPERACIONAL</p>
@@ -2865,7 +2891,8 @@
   <script src="/disconnection.js?v=20261103-event-guard-1"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
   <script src="/order-reports-ui.js?v=20261111-treated-1"></script>
-  <script src="/app.js?v=20261111-order-reports-1"></script>
+  <script src="/commission-reports-ui.js?v=20261112-1"></script>
+  <script src="/app.js?v=20261112-commission-1"></script>
   <script src="/close-control-engine.js?v=20261109-mro-ui-1"></script>
   <script src="/close-control-city-board.js?v=20261109-mro-ui-1"></script>
   <script src="/close-control-ui.js?v=20261109-mro-ui-1"></script>

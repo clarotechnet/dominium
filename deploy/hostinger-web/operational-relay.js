@@ -6,6 +6,7 @@ const { allowedConfrontRoute } = require('./confront-policy');
 const {allowedAtlasQueryRoute}=require('./atlas-query-policy');
 const {allowedStockAnalysisRoute}=require('./stock-analysis-policy');
 const {allowedOrderReport}=require('./order-report-policy');
+const {allowedCommissionReport}=require('./commission-report-policy');
 
 const WORKER_ORIGIN = 'https://dominium-import-bridge.jogador743.workers.dev';
 function readPrivateConnection() {
@@ -15,7 +16,8 @@ function readPrivateConnection() {
 }
 
 function resolveOperationalRead(req, connection = readPrivateConnection) {
-  const report = allowedOrderReport(req.method, req.originalUrl);
+  const report = allowedOrderReport(req.method, req.originalUrl) ||
+    allowedCommissionReport(req.method, req.originalUrl);
   const confrontation = report || allowedConfrontRoute(req.method, req.originalUrl) ||
     allowedAtlasQueryRoute(req.method, req.originalUrl) ||
     allowedStockAnalysisRoute(req.method, req.originalUrl);

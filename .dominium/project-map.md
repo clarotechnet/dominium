@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-11T16:31:08+00:00
-- Source fingerprint: `1487058ea2d57e64`
-- Indexed files: 528
-- Indexed symbols: 4388
-- API path references: 552
+- Generated: 2026-11-12T13:10:51+00:00
+- Source fingerprint: `0a95bef9f5b0d436`
+- Indexed files: 538
+- Indexed symbols: 4419
+- API path references: 560
 
 ## Navigation rule
 
@@ -105,6 +105,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/close-control-ui.js` (17 symbols) - Controle de baixas — módulo visual read-only. Zero chamadas ao TOA e zero POST. */
 - `static/close-control-worker.js` (5 symbols) - Controle de baixas — leitura do estado EXISTENTE do worker, sem chamadas TOA.
 - `static/close-control.css` - Controle de baixas — escopo isolado, sem sobrescrever regras operacionais */
+- `static/commission-reports-ui.js` (4 symbols, 1 API paths) - Four-base DataSnap commissions; exports only authorized read-only reports. */
 - `static/confront.js` (8 symbols, 3 API paths) - DOMINIUM / Recursos / Pendente — secure UI for Atlas × Imperium jobs. */
 - `static/daily-stock-parser.js` (6 symbols) - Parser local de planilhas SAPUI5: usa apenas C(Material), D(Descr.) e F(Utilizacao Livre). */
 - `static/daily-stock.js` (11 symbols, 2 API paths) - Estoque diario independente do Imperium; importacao por arquivo e historico. */
@@ -197,10 +198,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 158 files
-- tooling-deploy: 51 files
-- docs: 49 files
-- tests: 165 files
+- shared: 161 files
+- tooling-deploy: 52 files
+- docs: 51 files
+- tests: 168 files
 
 ## Search indexes
 
