@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-12T13:10:51+00:00
-- Source fingerprint: `0a95bef9f5b0d436`
-- Indexed files: 538
-- Indexed symbols: 4419
-- API path references: 560
+- Generated: 2026-11-14T12:33:22+00:00
+- Source fingerprint: `0cc78db871265f4d`
+- Indexed files: 541
+- Indexed symbols: 4436
+- API path references: 568
 
 ## Navigation rule
 
@@ -151,6 +151,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `consolidate_dominium.ps1` (4 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `datasnap_client.py` (23 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `desc_order_verifier.py` (7 symbols) - Fail-closed, read-only Imperium order/installer checks for the DESC relay.
+- `desc_relay_technet_staged.py` (8 symbols, 6 API paths) - Authenticated relay for DESC review and private read-only Imperium checks.
 - `desc_review_proxy.py` (10 symbols, 1 API paths) - Authenticated Dominium boundary to the Bot's existing DESC review service.
 - `desc_review_relay.py` (6 symbols, 2 API paths) - Authenticated relay for DESC review and private read-only Imperium checks.
 - `edge_voice.py` (8 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -194,11 +195,12 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `stock_protocol_templates.json` (2 DataSnap methods)
 - `supabase_auth_store.py` (28 symbols)
 - `supabase_schema.sql`
+- `technet_review_bridge.py` (6 symbols) - Read-only DataSnap evidence for the TECHNET extension.
 - `technician_directory.py` (7 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 
 ## Indexed areas not expanded here
 
-- shared: 161 files
+- shared: 164 files
 - tooling-deploy: 52 files
 - docs: 51 files
 - tests: 168 files

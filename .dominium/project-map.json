@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-12T13:10:51+00:00",
+  "generated_at": "2026-11-14T12:33:22+00:00",
   "schema": 2,
-  "source_fingerprint": "0a95bef9f5b0d436fce4200e669bcf67d74dc77cd4cc1e9e798b6d7aee384c3e",
+  "source_fingerprint": "0cc78db871265f4d087e0debbae6599dbc70e06996977584842e886a47ce2b7f",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -835,8 +835,8 @@
     {
       "path": "deploy/hostinger-web/operational-policy.js",
       "category": "tooling-deploy",
-      "bytes": 7428,
-      "sha256": "182efaca7600724c0dfbf99fb1e21ad244ee3293ce4321862f878b55cf2605d2",
+      "bytes": 7578,
+      "sha256": "c226c85143e3767a7a44ad779a341dd16a84c8ba2ebf329a6f65bd9af2950823",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -876,6 +876,7 @@
         "/api/stock/serial-owner",
         "/api/stock/technicians",
         "/api/stock/writeoff",
+        "/api/technet/review?profile=natal",
         "/api/technicians",
         "/api/toa-agenda/import",
         "/api/toa-automation",
@@ -891,13 +892,13 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 12
+      "symbol_count": 13
     },
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 3723,
-      "sha256": "eb0dce70ba0925fe7bd3783e87530d4fd09308038c5445cff76fe544516c5932",
+      "bytes": 3892,
+      "sha256": "b970603e681fb4f3a33ed48090575e25df3412c3ffe42d13b68531f9e500303d",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -1164,6 +1165,54 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 7
+    },
+    {
+      "path": "desc_relay_technet_staged.py",
+      "category": "shared",
+      "bytes": 19288,
+      "sha256": "97376aae524cf0178cae0c9aec1916ac6f008b0c10cd9e00d51d2dbb9625ed1d",
+      "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
+      "imports": [
+        "__future__",
+        "argparse",
+        "atlas_query_http",
+        "commission_reports",
+        "confront_http",
+        "daily_stock_service",
+        "desc_order_verifier",
+        "desc_review_proxy",
+        "hmac",
+        "http",
+        "json",
+        "logging",
+        "monitor_snapshot_relay",
+        "official_stock_bridge",
+        "operator_reports",
+        "order_reports",
+        "os",
+        "pathlib",
+        "quality_control_relay",
+        "secrets",
+        "serial_service",
+        "stock_analysis_http",
+        "sys",
+        "technet_review_bridge",
+        "urllib"
+      ],
+      "endpoints": [
+        "/api/disconnection/reports",
+        "/api/monitor/snapshot",
+        "/api/stock/analyses/daily/import",
+        "/api/stock/daily",
+        "/api/stock/quality-control",
+        "/api/technet/review"
+      ],
+      "env_vars": [
+        "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 8
     },
     {
       "path": "desc_review_proxy.py",
@@ -1555,8 +1604,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 13268,
-      "sha256": "32140c31a97e1fdb2ad2055cc86223a085adcadf2617be24eab841e5476c290a",
+      "bytes": 13635,
+      "sha256": "a058ef7333f7e004ca0cfd63c82eedd0da7c5544e0595f51bbeac5d42a897dcf",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -2913,10 +2962,25 @@
       "symbol_count": 0
     },
     {
+      "path": "integrations/import_bridge/technet_review.test.mjs",
+      "category": "shared",
+      "bytes": 1783,
+      "sha256": "19364ab038e6f4bab7a274f9dca7a85ac2a9e6abfd9e53c685fac3df60f05845",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/technet/review?profile=natal"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 7433,
-      "sha256": "be00eaeafe47fbac35dc7af1cde499ae91103cd279378772c0d4ceb566dc2a7c",
+      "bytes": 7665,
+      "sha256": "18c95685f9b65ede116c99b15a54bb29f995085c67a7ebdcf24682a987d78d71",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3289,7 +3353,7 @@
       "path": "integrations/serial_consult/commission_reports.py",
       "category": "shared",
       "bytes": 12852,
-      "sha256": "cc4f3ae3d6799ca8a130606f786e16ead36da2a4f69f6974f9f5ddb3cebf2795",
+      "sha256": "907fdece361d9f5ad973b4141c7465d35751fced5fdef804107895493122ed88",
       "summary": "Read-only Imperium service commissions (four DataSnap bases).",
       "imports": [
         "__future__",
@@ -6268,6 +6332,29 @@
       "symbol_count": 0
     },
     {
+      "path": "technet_review_bridge.py",
+      "category": "shared",
+      "bytes": 14390,
+      "sha256": "8d7c3885a99398df2e97a7061136cb43f208392bab288eac8a120ee64bd0027e",
+      "summary": "Read-only DataSnap evidence for the TECHNET extension.",
+      "imports": [
+        "datasnap_client",
+        "datetime",
+        "decimal",
+        "imperium_api",
+        "json",
+        "material_matching",
+        "pathlib",
+        "re",
+        "unicodedata"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 6
+    },
+    {
       "path": "technician_directory.py",
       "category": "shared",
       "bytes": 5879,
@@ -7044,8 +7131,8 @@
     {
       "path": "tests/test_commission_reports.py",
       "category": "tests",
-      "bytes": 4761,
-      "sha256": "96af88fe61c8d45d97e569ac53ff65432dc60dd932a2371269db692ddc1f5ef7",
+      "bytes": 5878,
+      "sha256": "b18bb2bccedb8eb1a4cfe633e43b6b0ec4caa7622f85dc733478fced40e64e26",
       "summary": "Synthetic read-only test suite for four-base Imperium commissions.",
       "imports": [
         "__future__",
@@ -7065,7 +7152,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 8
+      "symbol_count": 9
     },
     {
       "path": "tests/test_commission_reports_ui.cjs",

@@ -134,6 +134,7 @@ endpoint	path
 /api/stock/serial-owner	deploy/hostinger-web/operational-policy.js
 /api/stock/technicians	deploy/hostinger-web/operational-policy.js
 /api/stock/writeoff	deploy/hostinger-web/operational-policy.js
+/api/technet/review?profile=natal	deploy/hostinger-web/operational-policy.js
 /api/technicians	deploy/hostinger-web/operational-policy.js
 /api/toa-agenda/import	deploy/hostinger-web/operational-policy.js
 /api/toa-automation	deploy/hostinger-web/operational-policy.js
@@ -188,6 +189,12 @@ endpoint	path
 /api/stock/analyses/imperium/live	deploy/hostinger-web/stock-analysis-policy.js
 /api/stock/analyses/imperium/serial-treatment/next	deploy/hostinger-web/stock-analysis-policy.js
 /api/stock/analyses/jobs	deploy/hostinger-web/stock-analysis-policy.js
+/api/disconnection/reports	desc_relay_technet_staged.py
+/api/monitor/snapshot	desc_relay_technet_staged.py
+/api/stock/analyses/daily/import	desc_relay_technet_staged.py
+/api/stock/daily	desc_relay_technet_staged.py
+/api/stock/quality-control	desc_relay_technet_staged.py
+/api/technet/review	desc_relay_technet_staged.py
 /api/disconnection/	desc_review_proxy.py
 /api/stock/daily	desc_review_relay.py
 /api/stock/quality-control	desc_review_relay.py
@@ -201,6 +208,7 @@ endpoint	path
 /api/profiles	integrations/desc_runtime/test_nightly_backlog_106.py
 /api/commission-reports/export.xlsx?profile=mossoro&start=2026-11-01&end=2026-11-11	integrations/import_bridge/commission_reports.test.mjs
 /api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all	integrations/import_bridge/order_reports.test.mjs
+/api/technet/review?profile=natal	integrations/import_bridge/technet_review.test.mjs
 /api/disconnection/	integrations/import_bridge/worker.mjs
 /api/monitor/snapshot	integrations/import_bridge/worker.mjs
 /api/orders/bulk-create	integrations/import_bridge/worker.mjs
