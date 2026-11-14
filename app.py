@@ -82,6 +82,7 @@ from imperium_api import (
     MaterialTransferUncertainError,
     Order,
 )
+from imperium_operation_gate import FairOperationGate
 from official_close import build_manual_official_plan
 from operation_scope import (
     ImportScope,
@@ -467,7 +468,7 @@ PROFILES = {
 }
 HEALTH_CHECK = HealthCheckService()
 DEFAULT_PROFILE = "natal"
-OPERATION_GATE = threading.Lock()
+OPERATION_GATE = FairOperationGate()
 IMPORT_AUDIT_LOCK = threading.Lock()
 MATERIAL_ASSIGNMENT_LOCK = threading.Lock()
 WRITE_OFF_REQUESTS_LOCK = threading.Lock()
@@ -5932,7 +5933,8 @@ class PanelHandler(BaseHTTPRequestHandler):
                 )
                 if order is None:
                     raise ValueError("A OS nao foi localizada no historico operacional do Imperium")
-                if not OPERATION_GATE.acquire(timeout=10.0):
+                # Validacao manual priorizada pela fila FIFO; sem baixa automatica.
+                if not OPERATION_GATE.acquire(timeout=75.0):
                     self._json(
                         HTTPStatus.CONFLICT,
                         {
