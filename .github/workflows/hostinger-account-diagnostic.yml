@@ -9,6 +9,11 @@ on:
       - "scripts/build_hostinger_node_release.py"
       - ".github/workflows/hostinger-account-diagnostic.yml"
   workflow_dispatch:
+    inputs:
+      technet_review_only:
+        description: Publicar apenas a consulta TECHNET DataSnap
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -30,6 +35,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Conferir escopo da publicacao TECHNET
+        if: ${{ inputs.technet_review_only }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 0983acf451a3cf7a64576e82c0743b2e046582e7
+          git diff --exit-code FETCH_HEAD HEAD -- static/ deploy/hostinger-web/ scripts/build_hostinger_node_release.py \
+            ':(exclude)deploy/hostinger-web/operational-policy.js' \
+            ':(exclude)deploy/hostinger-web/operational-relay.js'
+          git fetch --no-tags --depth=1 origin f8071bfeb1bf9ddc1fc9d882d6b084b54813b072
+          git diff --exit-code FETCH_HEAD HEAD -- deploy/hostinger-web/operational-policy.js deploy/hostinger-web/operational-relay.js
+
       - name: Python
         uses: actions/setup-python@v5
         with:
@@ -49,6 +66,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check deploy/hostinger-web/server.js
+          node --test integrations/import_bridge/technet_review.test.mjs
           node --check static/order-reports-ui.js
           node --test tests/test_order_reports_ui.cjs integrations/import_bridge/order_reports.test.mjs
           python -m unittest tests.test_order_reports -v
@@ -130,7 +148,40 @@ jobs:
           })().catch(error => {console.error(error.message); process.exitCode=1;});
           NODE
 
+      - name: Validar consulta DataSnap TECHNET na ponte privada
+        if: ${{ inputs.technet_review_only }}
+        shell: bash
+        env:
+          DOMINIUM_DESC_REVIEW_CONNECTION: ${{ secrets.DOMINIUM_DESC_REVIEW_CONNECTION }}
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const {resolveOperationalRead, restorePrivateJsonContentType} = require('./output/hostinger-node-release/operational-relay.js');
+          (async () => {
+            const req = {
+              method:'POST', originalUrl:'/api/technet/review?profile=natal',
+              headers:{'content-type':'application/json'},
+              dominiumSession:{}, dominiumUser:{role:'controller',id:1},
+            };
+            const relay = resolveOperationalRead(req);
+            assert.ok(relay);
+            const body = JSON.stringify({action:'lookup',profile:'natal',
+              contract:'4337698',scheduled_date:'2026-11-14'});
+            restorePrivateJsonContentType(req,relay.headers,body);
+            const response = await fetch(relay.url,{method:req.method,headers:relay.headers,
+              body,redirect:'error',signal:AbortSignal.timeout(45000)});
+            assert.equal(response.status,200,'Consulta TECHNET indisponivel');
+            const found = await response.json();
+            assert.equal(found.ok,true);
+            assert.equal(found.contract,'4337698');
+            assert.equal(found.read_only,true);
+            assert.ok(Array.isArray(found.orders));
+            console.log('Consulta TECHNET DataSnap validada');
+          })().catch(error=>{console.error(error.message);process.exitCode=1;});
+          NODE
+
       - name: Verificar consulta de estoque na API oficial antes do deploy
+        if: ${{ !inputs.technet_review_only }}
         shell: bash
         env:
           DOMINIUM_DESC_REVIEW_CONNECTION: ${{ secrets.DOMINIUM_DESC_REVIEW_CONNECTION }}
