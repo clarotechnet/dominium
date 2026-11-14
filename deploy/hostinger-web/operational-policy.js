@@ -46,6 +46,9 @@ function allowedOperationalRead(method, requestTarget) {
 }
 // The live lookup is a read action transported as POST. Keep it separate
 // from GET permissions and never allow connect/close routes through it.
+function allowedTechnetReview(method, target) {
+  return method === 'POST' && target === '/api/technet/review?profile=natal';
+}
 function allowedToaLookup(method, requestTarget) {
   return method === 'POST' && typeof requestTarget === 'string' &&
     /^\/api\/toa-live\/lookup\?profile=(?:natal|fortaleza|mossoro|recife)$/.test(requestTarget);
@@ -149,6 +152,6 @@ function operationTransportFailure() {
     error:'A resposta do Imperium nao foi confirmada. Confira a OS no sistema antes de repetir esta operacao.'};
 }
 
-module.exports = { allowedOperationalRead, allowedToaLookup, allowedOrderClose,
+module.exports = { allowedTechnetReview, allowedOperationalRead, allowedToaLookup, allowedOrderClose,
   allowedQualityControl, allowedDailyStock, allowedOperationalWrite, validBulkCreateBody,
   allowedBacklogRoute, operationTransportFailure, validOfficialCloseBody, closeTransportFailure };

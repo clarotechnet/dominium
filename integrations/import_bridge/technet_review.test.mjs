@@ -1,0 +1,31 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import worker from "./worker.mjs";
+import relay from "../../deploy/hostinger-web/operational-relay.js";
+const target="/api/technet/review?profile=natal";
+const token="A".repeat(48);
+test("TECHNET review requires an operational role and forwards only to private DESC relay",async()=>{
+ const url="https://bridge.invalid"+target;
+ const headers={authorization:"Bearer "+token,"content-type":"application/json","x-dominium-actor":"operator"};
+ let calls=0;
+ const env={IMPORT_TOKEN:token,DESC_SERVICE:{fetch:async (request)=>{
+  calls++;
+  assert.equal(request.url,"http://127.0.0.1:8793"+target);
+  assert.equal(request.headers.get("x-dominium-role"),"controller");
+  assert.equal(request.headers.has("cookie"),false);
+  assert.deepEqual(await request.json(),{action:"lookup"});
+  return Response.json({ok:true});
+ }}};
+ const request=(role)=>new Request(url,{method:"POST",headers:{...headers,"x-dominium-role":role},body:'{"action":"lookup"}'});
+ assert.equal((await worker.fetch(request("viewer"),env)).status,403);
+ assert.equal(calls,0);
+ assert.equal((await worker.fetch(request("controller"),env)).status,200);
+ assert.equal(calls,1);
+ const req={method:"POST",originalUrl:target,dominiumSession:{},dominiumUser:{role:"controller",id:1},headers:{"content-type":"application/json"}};
+ assert.ok(relay.resolveOperationalRead(req,()=>({token})));
+ assert.throws(()=>relay.resolveOperationalRead({...req,dominiumUser:{role:"viewer"}},()=>({token})));
+ const outbound={};
+ relay.restorePrivateJsonContentType(req,outbound,"{}");
+ assert.equal(outbound["content-type"],"application/json");
+ assert.equal(relay.resolveOperationalRead({...req,originalUrl:target.replace("natal","recife")},()=>({token})),null);
+});

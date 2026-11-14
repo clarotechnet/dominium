@@ -7,7 +7,7 @@ import stockAnalysisPolicy from '../../deploy/hostinger-web/stock-analysis-polic
 import orderReportPolicy from '../../deploy/hostinger-web/order-report-policy.js';
 import commissionReportPolicy from '../../deploy/hostinger-web/commission-report-policy.js';
 const {allowedImportRoute, MAX_IMPORT_BYTES} = policy;
-const {allowedOperationalRead,allowedToaLookup,allowedOrderClose,allowedQualityControl,allowedDailyStock,allowedOperationalWrite,validBulkCreateBody,operationTransportFailure,validOfficialCloseBody,closeTransportFailure} = operationalPolicy;
+const {allowedTechnetReview,allowedOperationalRead,allowedToaLookup,allowedOrderClose,allowedQualityControl,allowedDailyStock,allowedOperationalWrite,validBulkCreateBody,operationTransportFailure,validOfficialCloseBody,closeTransportFailure} = operationalPolicy;
 const {allowedConfrontRoute} = confrontPolicy;
 const {allowedAtlasQueryRoute} = atlasPolicy;
 const {allowedStockAnalysisRoute} = stockAnalysisPolicy;
@@ -36,6 +36,7 @@ export default {
       allowedCommissionReport(request.method,url.pathname+url.search);
     const monitor=request.method==='GET' && url.pathname==='/api/monitor/snapshot';
     const operational=allowedOperationalRead(request.method,url.pathname+url.search);
+    const technetReview=allowedTechnetReview(request.method,url.pathname+url.search);
     const toaLookup=allowedToaLookup(request.method,url.pathname+url.search);
     const quality=allowedQualityControl(request.method,url.pathname+url.search);
     const daily=allowedDailyStock(request.method,url.pathname+url.search);
@@ -46,18 +47,18 @@ export default {
     if (!(((operational && !officialStock && !serialConsult && !confrontation && !query && !analysis && !reports && !toaLookup) || ((quality || daily || analysis) && request.method==='GET')) ? ['admin','controller','viewer'] : ['admin','controller']).includes(role) ||
         !request.headers.get('x-dominium-actor')) return json(403,'Operador não identificado');
     let route;
-    try {route=(operational || confrontation || query || analysis || reports || toaLookup || orderClose || operationalWrite || quality || daily) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
+    try {route=(operational || confrontation || query || analysis || reports || technetReview || toaLookup || orderClose || operationalWrite || quality || daily) ? url.pathname+url.search : (desc ? descPolicy.allowedRoute : allowedImportRoute)(request.method,url.pathname+url.search);}
     catch {return json(404,'Rota não permitida');}
     const headers=new Headers({Accept:'application/json','X-Dominium-Actor':request.headers.get('x-dominium-actor')});
-    if(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor)headers.set('Authorization',request.headers.get('authorization'));
-    if(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor)headers.set('X-Dominium-Role',role);
+    if(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor || technetReview)headers.set('Authorization',request.headers.get('authorization'));
+    if(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor || technetReview)headers.set('X-Dominium-Role',role);
     let body;
     if (request.method==='POST') {
       if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return json(415,'Envie JSON');
-      const maxBytes=url.pathname==='/api/toa-agenda/import' ? 24*1024*1024 :
+      const maxBytes=technetReview ? 8192 : url.pathname==='/api/toa-agenda/import' ? 24*1024*1024 :
         operationalWrite ? 256*1024 :
         (analysis && url.pathname==='/api/stock/analyses/daily/import') ? 5*1024*1024 :
-        (desc || confrontation || query || analysis || reports || toaLookup || orderClose || quality || daily) ? 64*1024 : MAX_IMPORT_BYTES;
+        (desc || confrontation || query || analysis || reports || technetReview || toaLookup || orderClose || quality || daily) ? 64*1024 : MAX_IMPORT_BYTES;
       if (Number(request.headers.get('content-length')||0)>maxBytes) return json(413,'Arquivo acima do limite');
       body=await request.arrayBuffer();
       if(body.byteLength>maxBytes)return json(413,'Arquivo acima do limite');
@@ -76,8 +77,8 @@ export default {
       headers.set('Content-Type','application/json');
     }
     try {
-      const service=(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor) ? env.DESC_SERVICE : env.IMPORT_SERVICE;
-      const origin=(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor) ? 'http://127.0.0.1:8793' : 'http://127.0.0.1:8765';
+      const service=(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor || technetReview) ? env.DESC_SERVICE : env.IMPORT_SERVICE;
+      const origin=(desc || officialStock || serialConsult || confrontation || query || analysis || reports || quality || daily || monitor || technetReview) ? 'http://127.0.0.1:8793' : 'http://127.0.0.1:8765';
       const upstream=await service.fetch(new Request(origin+route,
         {method:request.method,headers,body,redirect:'manual'}));
       if (upstream.status>=300 && upstream.status<400) return (orderClose || operationalWrite)
