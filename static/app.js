@@ -5716,7 +5716,7 @@ async function verifyCloseOrderInstaller(idOs, force = false) {
     let result;
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
-        result = await request(apiUrl(`/api/orders/${idOs}/installer`), { timeoutMs: 45000 });
+        result = await request(apiUrl(`/api/orders/${idOs}/installer`), { timeoutMs: 90000 });
         break;
       } catch (error) {
         if (error.status !== 409 || attempt === 2) throw error;
