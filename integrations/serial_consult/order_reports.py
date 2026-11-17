@@ -8,6 +8,7 @@ import base64
 import datetime as dt
 import io
 import json
+import os
 import re
 import struct
 import threading
@@ -21,8 +22,9 @@ except ImportError:
     from midas_reader import decode_dataset
 
 PORTS = {"natal": 212, "fortaleza": 596, "mossoro": 579, "recife": 599}
-RUNTIME = Path(r"C:\DominiumRuntime\Imperium\FerramentaImperiumDireto-OLLAMA")
-CREDENTIALS = Path(r"C:\DominiumMain\config\credentials.dat")
+RUNTIME = Path(os.environ.get("DOMINIUM_IMPERIUM_RUNTIME_ROOT")
+               or r"C:\DominiumRuntime\Imperium\FerramentaImperiumDireto-OLLAMA")
+CREDENTIALS = RUNTIME / "config" / "credentials.dat"
 MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 ROUTE = re.compile(
     r"/api/order-reports/export\.xlsx\?profile=(natal|fortaleza|mossoro|recife)"

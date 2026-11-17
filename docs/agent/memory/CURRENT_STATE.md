@@ -1,3 +1,11 @@
+## 17/11/2026 — Credencial dos relatórios corrigida
+
+OS e Comissão usavam a credencial DPAPI do checkout legado, ilegível pelo
+Windows. O padrão compartilhado agora acompanha o runtime Imperium ativo
+e sua configuração de ambiente. Downloads das quatro cidades voltaram
+com HTTP 200; bruto/tratado de Mossoró conferidos; TOA responde 200.
+Detalhes: [REPORT_CREDENTIAL_REPAIR_20261117.md](../REPORT_CREDENTIAL_REPAIR_20261117.md).
+
 ## 11/11/2026 — Relatórios nativos de OS
 
 Implementada a aba Operação > Relatórios de OS: dois XLSX Imperium (Todos e Manutenção / Visita Técnica), período, cidade selecionada, 42 colunas originais. Consulta privada autenticada e somente leitura; preserva status e precisão dos identificadores longos. Natal 10/11 conferido: 889/80 OS. Detalhes e limites em [ORDER_REPORTS_20261111.md](../ORDER_REPORTS_20261111.md).

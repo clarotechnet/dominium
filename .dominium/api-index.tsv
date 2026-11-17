@@ -189,12 +189,6 @@ endpoint	path
 /api/stock/analyses/imperium/live	deploy/hostinger-web/stock-analysis-policy.js
 /api/stock/analyses/imperium/serial-treatment/next	deploy/hostinger-web/stock-analysis-policy.js
 /api/stock/analyses/jobs	deploy/hostinger-web/stock-analysis-policy.js
-/api/disconnection/reports	desc_relay_technet_staged.py
-/api/monitor/snapshot	desc_relay_technet_staged.py
-/api/stock/analyses/daily/import	desc_relay_technet_staged.py
-/api/stock/daily	desc_relay_technet_staged.py
-/api/stock/quality-control	desc_relay_technet_staged.py
-/api/technet/review	desc_relay_technet_staged.py
 /api/disconnection/	desc_review_proxy.py
 /api/stock/daily	desc_review_relay.py
 /api/stock/quality-control	desc_review_relay.py

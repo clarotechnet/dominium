@@ -349,3 +349,13 @@ Alterações preparadas para commit (4 arquivos). Para motivação e resultado c
 - `deploy/hostinger-web/operational-relay.js`
 - `integrations/import_bridge/technet_review.test.mjs`
 - `integrations/import_bridge/worker.mjs`
+
+## 2026-11-17 | staged:53ab40f48b3c433a
+
+Alterações preparadas para commit (5 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `docs/agent/REPORT_CREDENTIAL_REPAIR_20261117.md`
+- `docs/agent/memory/CURRENT_STATE.md`
+- `docs/agent/memory/OPERATIONS_JOURNAL.md`
+- `integrations/serial_consult/order_reports.py`
+- `tests/test_report_runtime_credentials.py`

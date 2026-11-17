@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-14T12:33:22+00:00",
+  "generated_at": "2026-11-17T12:29:28+00:00",
   "schema": 2,
-  "source_fingerprint": "0cc78db871265f4d087e0debbae6599dbc70e06996977584842e886a47ce2b7f",
+  "source_fingerprint": "91417fba4f4338cc7cceffe4a8fc8bd5dfd5837c60aec85c01577cdd2d36b8b4",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -162,8 +162,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 360511,
-      "sha256": "227ade0c245b77edd829b6ebe072eec88f7eef133572c9953fcd4e35d7f4e466",
+      "bytes": 360652,
+      "sha256": "419799f903859468b8f30251adab7cda29af1fd8284eba6904d0a2b7781351a4",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -189,6 +189,7 @@
         "http",
         "imperium_api",
         "imperium_http_api",
+        "imperium_operation_gate",
         "ipaddress",
         "json",
         "logging",
@@ -1167,54 +1168,6 @@
       "symbol_count": 7
     },
     {
-      "path": "desc_relay_technet_staged.py",
-      "category": "shared",
-      "bytes": 19288,
-      "sha256": "97376aae524cf0178cae0c9aec1916ac6f008b0c10cd9e00d51d2dbb9625ed1d",
-      "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
-      "imports": [
-        "__future__",
-        "argparse",
-        "atlas_query_http",
-        "commission_reports",
-        "confront_http",
-        "daily_stock_service",
-        "desc_order_verifier",
-        "desc_review_proxy",
-        "hmac",
-        "http",
-        "json",
-        "logging",
-        "monitor_snapshot_relay",
-        "official_stock_bridge",
-        "operator_reports",
-        "order_reports",
-        "os",
-        "pathlib",
-        "quality_control_relay",
-        "secrets",
-        "serial_service",
-        "stock_analysis_http",
-        "sys",
-        "technet_review_bridge",
-        "urllib"
-      ],
-      "endpoints": [
-        "/api/disconnection/reports",
-        "/api/monitor/snapshot",
-        "/api/stock/analyses/daily/import",
-        "/api/stock/daily",
-        "/api/stock/quality-control",
-        "/api/technet/review"
-      ],
-      "env_vars": [
-        "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
-      ],
-      "datasnap_methods": [],
-      "entrypoint": true,
-      "symbol_count": 8
-    },
-    {
       "path": "desc_review_proxy.py",
       "category": "shared",
       "bytes": 6036,
@@ -1604,8 +1557,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 13635,
-      "sha256": "a058ef7333f7e004ca0cfd63c82eedd0da7c5544e0595f51bbeac5d42a897dcf",
+      "bytes": 14041,
+      "sha256": "a12ebfe7d53221ba830b0308eebb01d7dd00d687bec6f9449b38af51b1875a1b",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1643,9 +1596,9 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 67929,
-      "sha256": "87e75c677ba88763506ccb753ffeee7c5c2609c6598471bd8e4c549c6b326ed2",
-      "summary": "11/11/2026 — Relatórios nativos de OS",
+      "bytes": 68369,
+      "sha256": "14325d15cdd0cf096741f0fcaa50453ace8eb47ac011336909efac4253190a54",
+      "summary": "17/11/2026 — Credencial dos relatórios corrigida",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1685,8 +1638,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 22830,
-      "sha256": "73219f4d6d244c2c7df78859671e03a9a2093293cd6722132e1d2e5a42a0c016",
+      "bytes": 24322,
+      "sha256": "ce65c32b21dd12bdbe04e00b61a6813bf310309e04f13db1914a0fcc22ad0e93",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -1755,6 +1708,19 @@
       "bytes": 4355,
       "sha256": "281b6cb6cc46851e9402ff82ec4cabe9eb05c88dc5c1a2c9811cc4bd6243e6cd",
       "summary": "Caso real confirmado e ponte compartilhada preservada",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "docs/agent/REPORT_CREDENTIAL_REPAIR_20261117.md",
+      "category": "docs",
+      "bytes": 1575,
+      "sha256": "42bfcdf9ac7aed434fba41b38806318662297b5f079ee3fae229796a8d749839",
+      "summary": "Credencial compartilhada dos relatórios — 17/11/2026",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -2229,6 +2195,23 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 9
+    },
+    {
+      "path": "imperium_operation_gate.py",
+      "category": "imperium",
+      "bytes": 2188,
+      "sha256": "06d73ed2f5d60b102932074f0d4910c8ff2428934d2e8e9d5f58855466531540",
+      "summary": "Serializacao justa das operacoes do terminal Imperium/DataSnap.",
+      "imports": [
+        "collections",
+        "threading",
+        "time"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
     },
     {
       "path": "import_protocol_templates.json",
@@ -3741,8 +3724,8 @@
     {
       "path": "integrations/serial_consult/order_reports.py",
       "category": "shared",
-      "bytes": 17382,
-      "sha256": "8e6f6b8ca7929f62dd16c616b1d79a14c332a19e9f1648ab2af3f2f29ecd7538",
+      "bytes": 17450,
+      "sha256": "84a8b2e723e695e9d7d4aa24d992af5bdfce89fc7d09af55319a2defac84b005",
       "summary": "Read-only Imperium OS exports matching the native 42-column Excel layout.",
       "imports": [
         "__future__",
@@ -3752,6 +3735,7 @@
         "io",
         "json",
         "midas_reader",
+        "os",
         "pathlib",
         "re",
         "struct",
@@ -3762,7 +3746,9 @@
       "endpoints": [
         "/api/order-reports/export\\.xlsx\\?profile=(natal"
       ],
-      "env_vars": [],
+      "env_vars": [
+        "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
+      ],
       "datasnap_methods": [
         "TDtmOrdemServico.AS_GetRecords"
       ],
@@ -6332,29 +6318,6 @@
       "symbol_count": 0
     },
     {
-      "path": "technet_review_bridge.py",
-      "category": "shared",
-      "bytes": 14390,
-      "sha256": "8d7c3885a99398df2e97a7061136cb43f208392bab288eac8a120ee64bd0027e",
-      "summary": "Read-only DataSnap evidence for the TECHNET extension.",
-      "imports": [
-        "datasnap_client",
-        "datetime",
-        "decimal",
-        "imperium_api",
-        "json",
-        "material_matching",
-        "pathlib",
-        "re",
-        "unicodedata"
-      ],
-      "endpoints": [],
-      "env_vars": [],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 6
-    },
-    {
       "path": "technician_directory.py",
       "category": "shared",
       "bytes": 5879,
@@ -7733,6 +7696,24 @@
       "symbol_count": 8
     },
     {
+      "path": "tests/test_imperium_operation_gate.py",
+      "category": "tests",
+      "bytes": 3167,
+      "sha256": "b4b9eede42214395a413a6abf490ce9f78a6bd58c6ebff121fa4d5e95c95f655",
+      "summary": "",
+      "imports": [
+        "imperium_operation_gate",
+        "threading",
+        "time",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 6
+    },
+    {
       "path": "tests/test_imperium_serial_treatment.py",
       "category": "tests",
       "bytes": 8092,
@@ -8786,6 +8767,29 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 43
+    },
+    {
+      "path": "tests/test_report_runtime_credentials.py",
+      "category": "tests",
+      "bytes": 2691,
+      "sha256": "91059bbc923c63a7daa34129c512205d92624352c41f6a97f1fb2b1ac3a6da50",
+      "summary": "Both report downloads use the active Imperium runtime's protected credential.",
+      "imports": [
+        "os",
+        "pathlib",
+        "shutil",
+        "subprocess",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [
+        "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_semiauto_frontend.js",

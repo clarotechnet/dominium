@@ -327,3 +327,23 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Testes Python e JS dos relatorios passaram no CI; dia anterior conferido com os dois XLSX originais; periodo de dois dias validado com arquivo de 156 linhas e 42 colunas; quatro cidades NET consultadas; gate geral mantem quatro erros preexistentes documentados
 
 **Próximo passo/pendência:** Atualizar a pagina e acessar Operacao Relatorios de OS para selecionar cidade periodo e XLSX
+
+## 2026-11-17 12:26 UTC — Relatorios usam a credencial do runtime Imperium ativo
+
+**Motivo:** Downloads de OS e comissoes falhavam porque a credencial do checkout legado nao podia mais ser descriptografada pelo Windows
+
+**Alterado:** Padrao compartilhado passa a usar config credentials do runtime Imperium, respeitando a raiz configurada no ambiente; sem copiar senha nem alterar os arquivos protegidos; runtime complementar atualizado com backup
+
+**Verificação:** Teste sintetico reproduziu a selecao do caminho antigo e passou apos a correcao; dezessete testes de credenciais OS e comissoes aprovados; consulta real OS Mossoro e comissoes Natal voltou com a credencial ativa
+
+**Próximo passo/pendência:** Conferir todos os XLSX pela ponte publicada e registrar o resultado do gate
+
+## 2026-11-17 12:28 UTC — Downloads restaurados e validados na ponte publicada
+
+**Motivo:** Confirmar que a troca da origem da credencial resolveu os erros dos dois relatorios
+
+**Alterado:** OS e comissoes retornam Excel novamente; automacao TOA responde normalmente na verificacao atual
+
+**Verificação:** Comissoes das quatro cidades e OS bruto tratado verificadas com resposta de sucesso CRC e XML validos; dezessete testes focados aprovados; gate geral executou mais de mil testes com os mesmos quatro erros antigos de limpeza SQLite e versao fixa do backlog
+
+**Próximo passo/pendência:** Manter a credencial no runtime Imperium ativo e evitar depender da copia protegida do checkout legado
