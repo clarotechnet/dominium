@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-17T12:29:28+00:00",
+  "generated_at": "2026-11-18T19:56:16+00:00",
   "schema": 2,
-  "source_fingerprint": "91417fba4f4338cc7cceffe4a8fc8bd5dfd5837c60aec85c01577cdd2d36b8b4",
+  "source_fingerprint": "455db11d7efb85eeff29146c6e55c1212edb10e7a279239d3f2f23881642db06",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1038,8 +1038,8 @@
     {
       "path": "deploy/hostinger-web/stock-analysis-policy.js",
       "category": "tooling-deploy",
-      "bytes": 2329,
-      "sha256": "55ba737af78a81fe819c61bfeda0a88da210b67fa964b595c992a35cb92b6d5a",
+      "bytes": 2571,
+      "sha256": "ec489159895ad366bfa85ca15a4c31c6fa79709c7e58be6ba55e63fd37cac8f2",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1557,8 +1557,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 14041,
-      "sha256": "a12ebfe7d53221ba830b0308eebb01d7dd00d687bec6f9449b38af51b1875a1b",
+      "bytes": 14719,
+      "sha256": "f7e7aa70190d5a000632d9b8aa6f3d13b90938a8ce5ee743ac1094387461d85f",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1596,9 +1596,9 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 68369,
-      "sha256": "14325d15cdd0cf096741f0fcaa50453ace8eb47ac011336909efac4253190a54",
-      "summary": "17/11/2026 — Credencial dos relatórios corrigida",
+      "bytes": 69051,
+      "sha256": "88321d6c15d825d586ae8b8308d0fc0d2545dc251cbfcf8bec01fc514c35c7bb",
+      "summary": "18/11/2026 — Vistoria diária de materiais em preparação",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1638,8 +1638,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 24322,
-      "sha256": "ce65c32b21dd12bdbe04e00b61a6813bf310309e04f13db1914a0fcc22ad0e93",
+      "bytes": 24892,
+      "sha256": "bcec95d869cf7c23f23f8d321d5ed1b56407979c1008de5e97425089d8361eff",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3649,8 +3649,8 @@
     {
       "path": "integrations/serial_consult/imperium_supabase_live.py",
       "category": "imperium",
-      "bytes": 20542,
-      "sha256": "5a5dde14acbf26d3b50504425a2aa8bbdfa2bb651add70342de64c782a59ab46",
+      "bytes": 20670,
+      "sha256": "25180fe00af2b8fcdce23fbea729f35de02b5733b7c9bca307643b9499f7e09b",
       "summary": "Live Imperium -> normalized, versioned Supabase snapshots; zero Excel dependency.",
       "imports": [
         "__future__",
@@ -3678,6 +3678,34 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 19
+    },
+    {
+      "path": "integrations/serial_consult/material_stock_audit.py",
+      "category": "shared",
+      "bytes": 11261,
+      "sha256": "1009ae8318f95f5f88d402c72f8899102d460b3b070460f8f6fb4baf1814729b",
+      "summary": "Compare Imperium material entries against dated operational and SAP balances.",
+      "imports": [
+        "__future__",
+        "collections",
+        "datetime",
+        "decimal",
+        "imperium_supabase_live",
+        "logging",
+        "order_reports",
+        "re",
+        "technician_stock_snapshots",
+        "threading",
+        "unicodedata",
+        "used_equipment_live_datasnap"
+      ],
+      "endpoints": [
+        "/api/stock/analyses/material-audit"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 10
     },
     {
       "path": "integrations/serial_consult/midas_reader.py",
@@ -3841,8 +3869,8 @@
     {
       "path": "integrations/serial_consult/stock_analysis_http.py",
       "category": "shared",
-      "bytes": 27308,
-      "sha256": "5ca52a5e946368570fc7948594e7ecb8f996f5fd11b6990e372d7cbaded14e90",
+      "bytes": 27803,
+      "sha256": "4a2b995ae7c871166730314d35fa21bd413cb9241da3a34c53c2f1f7e12c82ab",
       "summary": "Audited, read-only stock reports from a previously validated Atlas QUERY.",
       "imports": [
         "__future__",
@@ -3857,11 +3885,13 @@
         "io",
         "json",
         "logging",
+        "material_stock_audit",
         "pathlib",
         "re",
         "report_sheet_preview",
         "sqlite3",
         "stock_report_enrichment",
+        "technician_stock_snapshots",
         "threading",
         "time",
         "unicodedata",
@@ -3903,6 +3933,33 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 3
+    },
+    {
+      "path": "integrations/serial_consult/technician_stock_snapshots.py",
+      "category": "shared",
+      "bytes": 9784,
+      "sha256": "a5ce5e2b23f43757c1e6d14cab11254f023ee129760d0bb723785d6cd4c1ec83",
+      "summary": "Persist daily balances read from the existing Imperium stock consultation.",
+      "imports": [
+        "__future__",
+        "contextlib",
+        "datetime",
+        "decimal",
+        "imperium_api",
+        "json",
+        "logging",
+        "order_reports",
+        "pathlib",
+        "re",
+        "sqlite3",
+        "threading",
+        "uuid"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 13
     },
     {
       "path": "integrations/serial_consult/used_equipment_live_datasnap.py",
@@ -5864,8 +5921,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 176291,
-      "sha256": "e72f5f0a5d2e925c9d04e363f1f5430615404a514152f435ad481a6f1273bc22",
+      "bytes": 178682,
+      "sha256": "0276e51ae5643e7b2383f035baef5e82a151b6b6381f897f16397dded2f2c157",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5901,6 +5958,21 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 1
+    },
+    {
+      "path": "static/material-stock-audit.js",
+      "category": "frontend",
+      "bytes": 8033,
+      "sha256": "b484bd2f18b0b23e57028d91d4d5a7c339c1f9a0ce99bdea122b83bcedf0b414",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/stock/analyses/material-audit"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 15
     },
     {
       "path": "static/motion-ui.js",
@@ -8013,6 +8085,28 @@
       "symbol_count": 9
     },
     {
+      "path": "tests/test_material_stock_audit.py",
+      "category": "tests",
+      "bytes": 5780,
+      "sha256": "fe92d22e32f39087a5e1748d8cccd9a80682ea20337b8fdd83179c53bc7d6c84",
+      "summary": "",
+      "imports": [
+        "datetime",
+        "decimal",
+        "material_stock_audit",
+        "pathlib",
+        "sys",
+        "technician_stock_snapshots",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 11
+    },
+    {
       "path": "tests/test_material_writeoff.py",
       "category": "tests",
       "bytes": 13827,
@@ -8905,8 +8999,8 @@
     {
       "path": "tests/test_stock_analysis_proxy.cjs",
       "category": "tests",
-      "bytes": 3539,
-      "sha256": "e2efb9fdbb96ae282055f2ee0d405215eb0bb3c336097efcec8c4950251cbe93",
+      "bytes": 4180,
+      "sha256": "dbe1d25b6229c3770044dc28112e225db1d231c18d2e607f03f85295bbdd1346",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -8919,12 +9013,13 @@
         "/api/stock/analyses/daily?city=natal&start=2026-10-28&end=2026-10-29",
         "/api/stock/analyses/jobs",
         "/api/stock/analyses/jobs/",
-        "/api/stock/analyses/jobs/123"
+        "/api/stock/analyses/jobs/123",
+        "/api/stock/analyses/material-audit"
       ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 3
+      "symbol_count": 4
     },
     {
       "path": "tests/test_stock_analysis_reports.py",

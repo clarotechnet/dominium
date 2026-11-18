@@ -347,3 +347,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Comissoes das quatro cidades e OS bruto tratado verificadas com resposta de sucesso CRC e XML validos; dezessete testes focados aprovados; gate geral executou mais de mil testes com os mesmos quatro erros antigos de limpeza SQLite e versao fixa do backlog
 
 **Próximo passo/pendência:** Manter a credencial no runtime Imperium ativo e evitar depender da copia protegida do checkout legado
+
+## 2026-11-18 19:52 UTC — Vistoria diária de baixas de materiais
+
+**Motivo:** Comparar baixas do Imperium com os saldos do técnico e o Excel SAP do mesmo dia
+
+**Alterado:** Adicionados histórico por técnico/local, tela e cálculo de divergência. Piloto salvo em Natal, 180 locais.
+
+**Verificação:** Testes de quantidade acumulada, importação por data, coleta incompleta, isolamento por cidade, rotas e captura real.
+
+**Próximo passo/pendência:** Publicar relay, Worker e interface juntos. Confirmar a próxima foto do estoque e o Excel SAP de referência.

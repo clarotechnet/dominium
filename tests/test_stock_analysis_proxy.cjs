@@ -52,3 +52,13 @@ test('frontend offers three report actions in stock navigation',()=>{
  assert.match(html,/id="stockQueryPreviewTable"/);
  assert.match(html,/id="stockSuspectsPreviewTable"/);
 });
+
+test('material audit routes are scoped and require an operator for capture',()=>{
+ const audit='/api/stock/analyses/material-audit';
+ const call=()=>({token});
+ assert.equal(policy.allowedStockAnalysisRoute('GET',audit+'?city=all'),false);
+ assert.equal(policy.allowedStockAnalysisRoute('POST',audit+'/capture?city=natal'),false);
+ assert.doesNotThrow(()=>proxy.resolveOperationalRead(actor('GET','viewer',audit+'?city=natal'),call));
+ assert.throws(()=>proxy.resolveOperationalRead(actor('POST','viewer',audit+'/capture'),call));
+ assert.doesNotThrow(()=>proxy.resolveOperationalRead(actor('POST','controller',audit+'/verify'),call));
+});

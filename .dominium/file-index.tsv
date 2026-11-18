@@ -44,7 +44,7 @@ tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
 tooling-deploy	deploy/hostinger-web/server.js	41	37	1		ac7f1f342ba3ef5d
-tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	6			55ba737af78a81fe
+tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	6			ec489159895ad366
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
 tooling-deploy	deploy/supabase-hosted/supabase/.temp/linked-project.json					55ceb062fdaf3cc0
@@ -79,13 +79,13 @@ docs	docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md				Dominium — consul
 docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/IMPERIUM_VIDEO_ATLAS_AUDIT_20261106.md				Dominium — Fluxo comprovado nos vídeos operacionais, 06/11/2026	d6ab164c441c4db7
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	a12ebfe7d53221ba
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	f7e7aa70190d5a00
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md			2	17/11/2026 — Credencial dos relatórios corrigida	14325d15cdd0cf09
+docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	ce65c32b21dd12bd
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	bcec95d869cf7c23
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -194,7 +194,8 @@ shared	integrations/serial_consult/equipment_video_transform.py	6			Verified par
 imperium	integrations/serial_consult/imperium_atlas_video.py	11	1		Stage 3: verified read-only Atlas lookups, resumable in Dominium Supabase.	36b6a90c20682c26
 imperium	integrations/serial_consult/imperium_serial_treatment.py	12	1		Second, explicit stage of daily Imperium equipment workflow: read-only serial treatment.	b600b32327a19ffc
 imperium	integrations/serial_consult/imperium_source_http.py	6	3		Source-specific Imperium used-equipment period extraction with local history.	993b0c3b3d38a736
-imperium	integrations/serial_consult/imperium_supabase_live.py	19	1		Live Imperium -> normalized, versioned Supabase snapshots; zero Excel dependency.	5a5dde14acbf26d3
+imperium	integrations/serial_consult/imperium_supabase_live.py	19	1		Live Imperium -> normalized, versioned Supabase snapshots; zero Excel dependency.	25180fe00af2b8fc
+shared	integrations/serial_consult/material_stock_audit.py	10	1		Compare Imperium material entries against dated operational and SAP balances.	1009ae8318f95f5f
 shared	integrations/serial_consult/midas_reader.py	3			Bounded read-only decoder for Delphi MIDAS ClientDataSet binary packets.	8726cc9899870a45
 shared	integrations/serial_consult/monitor_snapshot_relay.py	1	1		Read-only bridge for the existing TOA CSV monitor snapshots.	5202d89531eb4b46
 shared	integrations/serial_consult/order_reports.py	13	1	1	Read-only Imperium OS exports matching the native 42-column Excel layout.	84a8b2e723e695e9
@@ -202,8 +203,9 @@ shared	integrations/serial_consult/README.md			1	Recursos / Consultar Seriais �
 shared	integrations/serial_consult/report_sheet_preview.py	1			SQLite materialized, paged views of completed stock-analysis XLSX reports.	59f0d19563f30298
 shared	integrations/serial_consult/serial_datasnap.py	2		1	Private read-only DataSnap query for IMPERIUM serial movement history.	eb22b860ece7fb44
 shared	integrations/serial_consult/serial_service.py	4	1		Private, read-only serial consultation: real DataSnap history + local evidence.	d9f51c614747ed37
-shared	integrations/serial_consult/stock_analysis_http.py	18	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	5ca52a5e94636857
+shared	integrations/serial_consult/stock_analysis_http.py	18	3		Audited, read-only stock reports from a previously validated Atlas QUERY.	4a2b995ae7c87116
 shared	integrations/serial_consult/stock_report_enrichment.py	3			Bounded read-only DataSnap enrichment for stock XLSX reports.	dff77b77c7f8eec5
+shared	integrations/serial_consult/technician_stock_snapshots.py	13			Persist daily balances read from the existing Imperium stock consultation.	a5ce5e2b23f43757
 shared	integrations/serial_consult/used_equipment_live_datasnap.py	6			Capturably identical READ-ONLY Imperium equipment report requests.	d94464678263744f
 shared	integrations/serial_consult/used_equipment_report.py	7		1	Read-only, fail-closed integration foundation for Imperium Equipamentos Utilizados.	fc26265defff25d8
 shared	integrations/serial_consult/used_equipment_report_contract.json			3		25e7f6d531985240
@@ -314,9 +316,10 @@ frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			e72f5f0a5d2e925c
+frontend	static/index.html		1			0276e51ae5643e7b
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
+frontend	static/material-stock-audit.js	15	1			b484bd2f18b0b23e
 frontend	static/motion-ui.js	12			DOMINIUM | MAPA DE RESPONSABILIDADE	1c23e30b47c0ff06
 frontend	static/operations-monitor.js	34			DOMINIUM | MAPA DE RESPONSABILIDADE	b112edee82115b2f
 frontend	static/order-reports-ui.js	4	1		Native Imperium OS reports: scope and request are fixed when download begins. */	e893696b99e7f104
@@ -432,6 +435,7 @@ tests	tests/test_material_matching.py	33				f7a01b4226d11747
 tests	tests/test_material_partial_stock_runtime.js	5				7c3c093ee0706147
 tests	tests/test_material_paste_shortage_guard.py	5			TOA paste keeps requested quantities and audits stock-bounded allocations.	3fb4d7a384fcc321
 tests	tests/test_material_selection_guard.py	9			Regression contracts for quantity-limited miscellaneous POSTs.	a272269f1562896a
+tests	tests/test_material_stock_audit.py	11				fe92d22e32f39087
 tests	tests/test_material_writeoff.py	16				4d6bdafc337eb87a
 tests	tests/test_midas_bcd_used_equipment.py	9			Synthetic-only regression: MIDAS BCD fields observed in Imperium used equipment.	7d7cb77e78e57db6
 tests	tests/test_monitor_snapshot_relay.py	4	5			74743ae84a658a76
@@ -474,7 +478,7 @@ tests	tests/test_serial_consult.py	3				3bb13e50693f977d
 tests	tests/test_serial_datasnap_history.py	9	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	36414aaf670dbe68
 tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
 tests	tests/test_stock_all_scope.cjs	3				1dd1b43e48b9d7ca
-tests	tests/test_stock_analysis_proxy.cjs	3	10			e2efb9fdbb96ae28
+tests	tests/test_stock_analysis_proxy.cjs	4	11			dbe1d25b6229c377
 tests	tests/test_stock_analysis_reports.py	12	7		Tests for safe, cached, actor-scoped stock analysis report generation.	81edf96228f8fb8c
 tests	tests/test_stock_daily_analysis_feedback.cjs	4	12			7a8f7ba8d6080c68
 tests	tests/test_stock_inventory.py	5				c08f24560a02efc7

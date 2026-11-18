@@ -1097,6 +1097,41 @@
           <article><span>Saldo da empresa</span><strong id="dailyStockFileCount">—</strong><small id="dailyStockDateLabel">Aguardando importação</small></article>
           <article><span>Regras do arquivo</span><strong>3 colunas</strong><small>Códigos normalizados e quantidades somadas por material</small></article>
         </div>
+        <section class="daily-stock-preview" id="materialAuditPanel" aria-labelledby="materialAuditTitle">
+          <h3 id="materialAuditTitle">Vistoria de baixas de materiais</h3>
+          <div class="daily-stock-actions">
+            <button class="button secondary" id="materialAuditCapture" type="button">Salvar estoque de hoje</button>
+            <button class="button primary" id="materialAuditVerify" type="button">Verificar baixas de ontem</button>
+          </div>
+          <p class="daily-stock-status" id="materialAuditStatus" role="status"></p>
+          <section id="materialAuditResult" hidden aria-label="Resultado da vistoria">
+            <p class="daily-stock-status" id="materialAuditSummary"></p>
+            <details>
+              <summary>Ranking por técnico</summary>
+              <div class="table-scroll">
+                <table class="daily-stock-table">
+                  <thead><tr><th>Técnico</th><th>OS verificadas</th><th>OS com divergência no técnico</th><th>Percentual</th></tr></thead>
+                  <tbody id="materialAuditRanking"></tbody>
+                </table>
+              </div>
+            </details>
+            <label class="field">Filtrar por técnico, OS ou código
+              <input id="materialAuditSearch" type="search">
+            </label>
+            <div class="table-scroll">
+              <table class="daily-stock-table">
+                <thead><tr><th>OS</th><th>Técnico</th><th>Material</th><th>Baixado</th><th>Saldo salvo</th><th>Saldo antes da OS*</th><th>Saldo hoje</th><th>Variação do saldo</th><th>Excesso*</th><th>Checagem do técnico</th><th>Saldo da empresa</th><th>Checagem da empresa</th></tr></thead>
+                <tbody id="materialAuditRows"></tbody>
+              </table>
+            </div>
+            <p class="daily-stock-status">*Estimativa pelo saldo salvo e pelas baixas encontradas. Transferências e ajustes podem explicar diferenças.</p>
+            <div class="daily-stock-actions">
+              <button class="button secondary" id="materialAuditPrevious" type="button">Anterior</button>
+              <button class="button secondary" id="materialAuditNext" type="button">Próxima</button>
+              <span id="materialAuditPage" aria-live="polite"></span>
+            </div>
+          </section>
+        </section>
         <div class="daily-stock-preview hidden" id="dailyStockPreview">
           <h3>Conferência da nova planilha</h3>
           <p id="dailyStockPreviewText"></p>
@@ -2903,6 +2938,7 @@
   <script src="/quality-control.js?v=20261029-analysis-1"></script>
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>
+  <script src="/material-stock-audit.js?v=20261118"></script>
   <script src="/stock-nav.js?v=20261103-global-1"></script>
   <script src="/stock-analysis-ui.js?v=20261103-global-1"></script>
   <script src="/stock-daily-analysis-ui.js?v=20261106-atlas-video-3"></script>
