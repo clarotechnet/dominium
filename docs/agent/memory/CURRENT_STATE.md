@@ -1,3 +1,14 @@
+## 18/11/2026 — Vistoria diária de materiais em preparação
+
+Coleta de saldos do Imperium por técnico/local, cidade e data no banco
+`StockAnalysisData/technician-stock.sqlite3` do servidor. A referência do saldo
+da empresa é a importação do Estoque Diário (SAP) da mesma data. Vistoria piloto
+em Natal, com consumo acumulado por código, saldos salvos de dois dias e
+indicação explícita de dados ausentes. Coleta real de 18/11 concluída em Natal,
+180 locais e 18.784 linhas. Consulta de 17/11 confirmou que a origem fornece data
+de inclusão de miscelânea, código e técnico. A aplicação web ainda depende da
+publicação coordenada do relay, Worker e Hostinger.
+
 ## 17/11/2026 — Credencial dos relatórios corrigida
 
 OS e Comissão usavam a credencial DPAPI do checkout legado, ilegível pelo

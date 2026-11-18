@@ -240,6 +240,7 @@ endpoint	path
 /api/stock/analyses/imperium/runs	integrations/serial_consult/imperium_source_http.py
 /api/stock/analyses/imperium/runs/(	integrations/serial_consult/imperium_source_http.py
 /api/stock/analyses/imperium/live	integrations/serial_consult/imperium_supabase_live.py
+/api/stock/analyses/material-audit	integrations/serial_consult/material_stock_audit.py
 /api/monitor/snapshot	integrations/serial_consult/monitor_snapshot_relay.py
 /api/order-reports/export\.xlsx\?profile=(natal	integrations/serial_consult/order_reports.py
 /api/serials/consult	integrations/serial_consult/serial_service.py
@@ -288,6 +289,7 @@ endpoint	path
 /api/disconnection/state	static/disconnection.js
 /api/disconnection/technician	static/disconnection.js
 /api/operational/export.json	static/index.html
+/api/stock/analyses/material-audit	static/material-stock-audit.js
 /api/order-reports/export.xlsx?	static/order-reports-ui.js
 /api/stock/quality-control	static/quality-control.js
 /api/stock/analyses/available?city=	static/stock-analysis-ui.js
@@ -535,6 +537,7 @@ endpoint	path
 /api/stock/analyses/jobs	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/jobs/	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/jobs/123	tests/test_stock_analysis_proxy.cjs
+/api/stock/analyses/material-audit	tests/test_stock_analysis_proxy.cjs
 /api/stock/analyses/available?city=all	tests/test_stock_analysis_reports.py
 /api/stock/analyses/available?city=mossoro	tests/test_stock_analysis_reports.py
 /api/stock/analyses/available?city=natal	tests/test_stock_analysis_reports.py

@@ -179,7 +179,8 @@ class SupabasePeriodStore:
         self.key=key
 
     def call(self,table,method="GET",*,query=None,body=None,upsert=False):
-        if table not in (RUNS,BATCHES,"dominium_imperium_tratamento_itens"):
+        company_read = method == "GET" and table in ("estoque_diario_importacoes", "estoque_diario_itens")
+        if not company_read and table not in (RUNS,BATCHES,"dominium_imperium_tratamento_itens"):
             raise LiveSyncError(500,"internal_table","Tabela de destino não autorizada")
         if self._requester is not None:
             return self._requester(table,method,query,body)

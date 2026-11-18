@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-17T12:29:28+00:00
-- Source fingerprint: `91417fba4f4338cc`
-- Indexed files: 543
-- Indexed symbols: 4437
-- API path references: 562
+- Generated: 2026-11-18T19:56:16+00:00
+- Source fingerprint: `455db11d7efb85ee`
+- Indexed files: 547
+- Indexed symbols: 4487
+- API path references: 565
 
 ## Navigation rule
 
@@ -118,6 +118,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/index.html` (1 API paths)
 - `static/LUCIDE-LICENSE.txt` - ISC License
 - `static/lucide.min.js` (1 symbols)
+- `static/material-stock-audit.js` (15 symbols, 1 API paths)
 - `static/motion-ui.js` (12 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `static/operations-monitor.js` (34 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `static/order-reports-ui.js` (4 symbols, 1 API paths) - Native Imperium OS reports: scope and request are fixed when download begins. */
@@ -199,10 +200,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 162 files
+- shared: 164 files
 - tooling-deploy: 52 files
 - docs: 52 files
-- tests: 170 files
+- tests: 171 files
 
 ## Search indexes
 
