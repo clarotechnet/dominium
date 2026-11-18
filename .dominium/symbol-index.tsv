@@ -1205,8 +1205,8 @@ OrderReportService	class	integrations/serial_consult/order_reports.py	319	-
 __init__	method	integrations/serial_consult/order_reports.py	320	OrderReportService
 download	method	integrations/serial_consult/order_reports.py	324	OrderReportService
 snapshot_page	function	integrations/serial_consult/report_sheet_preview.py	12	-
-prepare_queries	function	integrations/serial_consult/serial_datasnap.py	36	-
-fetch_serial_history	function	integrations/serial_consult/serial_datasnap.py	54	-
+prepare_queries	function	integrations/serial_consult/serial_datasnap.py	34	-
+fetch_serial_history	function	integrations/serial_consult/serial_datasnap.py	52	-
 parse_route	function	integrations/serial_consult/serial_service.py	16	-
 local_references	function	integrations/serial_consult/serial_service.py	43	-
 latest_destination	function	integrations/serial_consult/serial_service.py	73	-
@@ -3716,7 +3716,7 @@ setUp	method	tests/test_registration_flow.py	280	TestContactEmail
 test_contact_email_not_auth_credential	method	tests/test_registration_flow.py	285	TestContactEmail
 test_contact_email_stripped	method	tests/test_registration_flow.py	296	TestContactEmail
 RuntimeCredentialTests	class	tests/test_report_runtime_credentials.py	13	-
-test_both_downloads_use_active_runtime_even_with_a_legacy_credential	method	tests/test_report_runtime_credentials.py	14	RuntimeCredentialTests
+test_reports_and_serial_use_active_runtime_even_with_a_legacy_credential	method	tests/test_report_runtime_credentials.py	14	RuntimeCredentialTests
 extractFunction	function	tests/test_semiauto_frontend.js	21	-
 normalize	function	tests/test_semiauto_frontend.js	36	-
 normalize	function	tests/test_semiauto_frontend.js	227	-

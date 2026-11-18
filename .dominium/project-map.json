@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-18T20:35:37+00:00",
+  "generated_at": "2026-11-18T20:41:14+00:00",
   "schema": 2,
-  "source_fingerprint": "ff2ec1543c4e9bee230782b6afc88c5e05b824abb184f1c3516840f9aed820ff",
+  "source_fingerprint": "8acba23378af6697ae204866ce03f47aea4b63b76ea5a1eeb88cbbc8bd23ddc1",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1557,8 +1557,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 15042,
-      "sha256": "ee889520c6b6dc2a5c0135ad8c4bd9a25eb10f31a643db2e250ac850d8bdf55a",
+      "bytes": 15359,
+      "sha256": "ed25d51a9ab3c66a0f9bffc6a8481a72ae3e385fe6c6bfea764bd1d0b3243a46",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1638,8 +1638,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 25485,
-      "sha256": "30ea53e62066a26242f704f118c7e2f465279ac3528cd1328a8da49aa398ddad",
+      "bytes": 26084,
+      "sha256": "17f7684c6d491c8b1e4531604381b4eb0f66c5d9272056554f6202dd7a245818",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3822,8 +3822,8 @@
     {
       "path": "integrations/serial_consult/serial_datasnap.py",
       "category": "shared",
-      "bytes": 4824,
-      "sha256": "eb22b860ece7fb44d4082d5eec7af7280ad35127a599f8e2c99e37e94f3e6918",
+      "bytes": 4765,
+      "sha256": "75b86b914bc22ca5aaf9b25322403c370b81aee3ee14d43455b88947df27630b",
       "summary": "Private read-only DataSnap query for IMPERIUM serial movement history.",
       "imports": [
         "__future__",
@@ -3831,7 +3831,7 @@
         "datasnap_client",
         "imperium_api",
         "midas_reader",
-        "pathlib",
+        "order_reports",
         "re",
         "sys"
       ],
@@ -5610,6 +5610,27 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 1
+    },
+    {
+      "path": "stage-serial-relay.ps1",
+      "category": "shared",
+      "bytes": 5639,
+      "sha256": "e72da35fee1a28c027f07ef4c55db78803924903461c645007e96a5a099b02fe",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/atlas-query/jobs",
+        "/api/imperium-official/stocks?profile=natal",
+        "/api/serials/consult",
+        "/api/serials/consult?serials=ZZZZZZZZZZZZ&profile=",
+        "/api/stock/analyses/material-audit?city=natal"
+      ],
+      "env_vars": [
+        "PYTHONUTF8"
+      ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "static/all-cities-scope.css",
@@ -8867,9 +8888,9 @@
     {
       "path": "tests/test_report_runtime_credentials.py",
       "category": "tests",
-      "bytes": 2691,
-      "sha256": "91059bbc923c63a7daa34129c512205d92624352c41f6a97f1fb2b1ac3a6da50",
-      "summary": "Both report downloads use the active Imperium runtime's protected credential.",
+      "bytes": 3015,
+      "sha256": "eca891bc4fae95b89569cafd644020f70132b5d264052ecc1e176552daddebe1",
+      "summary": "Imperium reports and serial history use the active runtime credential.",
       "imports": [
         "os",
         "pathlib",
@@ -10392,6 +10413,7 @@
     "IMPERIUM_DATASNAP_USERNAME",
     "PLAYWRIGHT_MODULE",
     "PORT",
+    "PYTHONUTF8",
     "QA_SCREENSHOT_DIR",
     "SUPABASE_ACCESS_TOKEN",
     "SUPABASE_DB_PASSWORD",

@@ -367,3 +367,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 8 testes especificos. Ponte local com consulta oficial 200 (369 estoques), vistoria 200 (180 locais) e Atlas 200. Suíte completa com as mesmas 4 falhas preexistentes.
 
 **Próximo passo/pendência:** Manter a credencial dedicada no servidor ao republicar a ponte.
+
+## 2026-11-18 20:41 UTC — Historico de seriais usa o runtime ativo
+
+**Motivo:** Segunda etapa de validacao do deploy falhava em Natal porque serial_datasnap abria a credencial DPAPI legada
+
+**Alterado:** Reusar raiz de runtime do relatorio OS no historico e na confirmacao do estoque atual; relay atualizado com backup, gates mantidos.
+
+**Verificação:** 11 testes focados passaram. Analitico e sintetico nas quatro bases responderam 200 na ponte local. O gate completo repetiu as 4 falhas preexistentes.
+
+**Próximo passo/pendência:** Manter os modulos corrigidos no proximo release do relay.

@@ -1,4 +1,4 @@
-"""Both report downloads use the active Imperium runtime's protected credential."""
+"""Imperium reports and serial history use the active runtime credential."""
 import os
 from pathlib import Path
 import shutil
@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class RuntimeCredentialTests(unittest.TestCase):
-    def test_both_downloads_use_active_runtime_even_with_a_legacy_credential(self):
+    def test_reports_and_serial_use_active_runtime_even_with_a_legacy_credential(self):
         with tempfile.TemporaryDirectory() as tmp:
             active = Path(tmp) / "active Imperium"
             (active / "config").mkdir(parents=True)
@@ -25,7 +25,7 @@ import os, sys
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0, str(Path("integrations/serial_consult").resolve()))
-import order_reports, commission_reports
+import order_reports, commission_reports, serial_datasnap
 active = Path(os.environ["DOMINIUM_IMPERIUM_RUNTIME_ROOT"])
 expected = active / "config" / "credentials.dat"
 seen = []
@@ -45,9 +45,13 @@ with patch("datasnap_client.load_credentials", side_effect=load), patch("datasna
         try: operation(*args)
         except StopBeforeNetwork: pass
         else: raise AssertionError("Expected network boundary")
-assert seen == [expected, expected]
+with patch.object(serial_datasnap, "load_credentials", side_effect=load), patch.object(serial_datasnap, "DataSnapClient", Client):
+    try: serial_datasnap.fetch_serial_history("ZZZZZZZZZZZZ")
+    except StopBeforeNetwork: pass
+    else: raise AssertionError("Expected network boundary")
+assert seen == [expected, expected, expected]
 assert order_reports.CREDENTIALS == commission_reports.CREDENTIALS == expected
-print("Both report clients selected the active protected credential")
+print("Report and serial clients selected the active protected credential")
 '''
             result = subprocess.run(
                 [sys.executable, "-c", script], cwd=ROOT,
@@ -55,7 +59,7 @@ print("Both report clients selected the active protected credential")
                 capture_output=True, text=True, timeout=15, check=False,
             )
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("Both report clients selected", result.stdout)
+            self.assertIn("Report and serial clients selected", result.stdout)
 
 
 if __name__ == "__main__":

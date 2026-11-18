@@ -684,7 +684,7 @@ base64	integrations/serial_consult/serial_datasnap.py
 datasnap_client	integrations/serial_consult/serial_datasnap.py
 imperium_api	integrations/serial_consult/serial_datasnap.py
 midas_reader	integrations/serial_consult/serial_datasnap.py
-pathlib	integrations/serial_consult/serial_datasnap.py
+order_reports	integrations/serial_consult/serial_datasnap.py
 re	integrations/serial_consult/serial_datasnap.py
 sys	integrations/serial_consult/serial_datasnap.py
 __future__	integrations/serial_consult/serial_service.py

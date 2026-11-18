@@ -2,18 +2,16 @@
 
 Templates derive from protocol captures, with the original serial replaced by
 a neutral placeholder. Provider handles are prepared fresh for every session.
-No write methods are used. Only the Natal (212) protocol is verified.
+No write methods are used.
 """
 from __future__ import annotations
 
 import base64
 import re
 import sys
-from pathlib import Path
 
 from midas_reader import decode_dataset, PacketError
-
-RUNTIME_ROOT = Path(r"C:\DominiumMain")
+from order_reports import RUNTIME as RUNTIME_ROOT
 if str(RUNTIME_ROOT) not in sys.path:
     sys.path.append(str(RUNTIME_ROOT))
 from datasnap_client import DataSnapClient, load_credentials, DataSnapError
