@@ -1553,6 +1553,8 @@ inspect	tests/test_official_stock_blocker_review.py
 official_stock_blocker_review	tests/test_official_stock_blocker_review.py
 unittest	tests/test_official_stock_blocker_review.py
 integrations	tests/test_official_stock_relay.py
+pathlib	tests/test_official_stock_relay.py
+tempfile	tests/test_official_stock_relay.py
 unittest	tests/test_official_stock_relay.py
 ast	tests/test_official_stock_remediation_plan.py
 copy	tests/test_official_stock_remediation_plan.py

@@ -1,6 +1,10 @@
 """Read-only official inventory bridge policy and response contracts."""
+from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import patch
 
+from integrations.official_stock_relay import official_stock_bridge
 from integrations.official_stock_relay.official_stock_bridge import (
     OfficialStockBridge, parse_route,
 )
@@ -32,6 +36,18 @@ class OfficialStockRelayTests(unittest.TestCase):
                 parse_route("GET", target)
         with self.assertRaises(ValueError):
             parse_route("POST", "/api/imperium-official/stocks")
+
+    def test_relay_can_have_a_private_credential_without_changing_the_application(self):
+        with tempfile.TemporaryDirectory() as folder:
+            legacy = Path(folder) / "legacy.dat"
+            dedicated = Path(folder) / "relay.dat"
+            with patch.object(official_stock_bridge, "CREDENTIALS_FILE", legacy), patch.object(
+                official_stock_bridge, "RELAY_CREDENTIALS_FILE", dedicated
+            ):
+                self.assertEqual(OfficialStockBridge()._credentials_file, legacy)
+                dedicated.touch()
+                self.assertEqual(OfficialStockBridge()._credentials_file, dedicated)
+                self.assertEqual(OfficialStockBridge(credentials_file=legacy)._credentials_file, legacy)
 
     def test_only_read_only_contracts_are_exposed(self):
         bridge = OfficialStockBridge(credentials_file="not-accessed.fixture")

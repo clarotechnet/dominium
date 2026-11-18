@@ -357,3 +357,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Testes de quantidade acumulada, importação por data, coleta incompleta, isolamento por cidade, rotas e captura real.
 
 **Próximo passo/pendência:** Publicar relay, Worker e interface juntos. Confirmar a próxima foto do estoque e o Excel SAP de referência.
+
+## 2026-11-18 20:35 UTC — Credencial da ponte oficial de estoque
+
+**Motivo:** O deploy da main parava em 502 porque o Windows nao conseguia abrir a credencial legada
+
+**Alterado:** Preferir DPAPI dedicada da ponte de consulta, preservando o caminho legado nos demais servicos. Relay atualizado com backup.
+
+**Verificação:** 8 testes especificos. Ponte local com consulta oficial 200 (369 estoques), vistoria 200 (180 locais) e Atlas 200. Suíte completa com as mesmas 4 falhas preexistentes.
+
+**Próximo passo/pendência:** Manter a credencial dedicada no servidor ao republicar a ponte.

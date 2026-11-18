@@ -21,6 +21,7 @@ CATALOG_ROUTE = "/api/imperium-official/stocks"
 ITEMS_ROUTE = re.compile(r"^/api/imperium-official/stocks/([1-9][0-9]{0,9})/items$")
 PROFILES = frozenset({"natal", "fortaleza"})
 CREDENTIALS_FILE = APP_ROOT / "config" / "imperium_http_credentials.dat"
+RELAY_CREDENTIALS_FILE = Path(__file__).resolve().parent / "config" / CREDENTIALS_FILE.name
 
 
 def parse_route(method: str, target: str):
@@ -52,7 +53,9 @@ def parse_route(method: str, target: str):
 
 
 class OfficialStockBridge:
-    def __init__(self, credentials_file=CREDENTIALS_FILE):
+    def __init__(self, credentials_file=None):
+        if credentials_file is None:
+            credentials_file = RELAY_CREDENTIALS_FILE if RELAY_CREDENTIALS_FILE.is_file() else CREDENTIALS_FILE
         self._credentials_file = Path(credentials_file)
         self._clients = {}
         self._lock = threading.RLock()

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-18T19:56:16+00:00",
+  "generated_at": "2026-11-18T20:35:37+00:00",
   "schema": 2,
-  "source_fingerprint": "455db11d7efb85eeff29146c6e55c1212edb10e7a279239d3f2f23881642db06",
+  "source_fingerprint": "ff2ec1543c4e9bee230782b6afc88c5e05b824abb184f1c3516840f9aed820ff",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1557,8 +1557,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 14719,
-      "sha256": "f7e7aa70190d5a000632d9b8aa6f3d13b90938a8ce5ee743ac1094387461d85f",
+      "bytes": 15042,
+      "sha256": "ee889520c6b6dc2a5c0135ad8c4bd9a25eb10f31a643db2e250ac850d8bdf55a",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1638,8 +1638,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 24892,
-      "sha256": "bcec95d869cf7c23f23f8d321d5ed1b56407979c1008de5e97425089d8361eff",
+      "bytes": 25485,
+      "sha256": "30ea53e62066a26242f704f118c7e2f465279ac3528cd1328a8da49aa398ddad",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3130,8 +3130,8 @@
     {
       "path": "integrations/official_stock_relay/official_stock_bridge.py",
       "category": "shared",
-      "bytes": 3545,
-      "sha256": "3074b95c68197e4c4702c64ec623e6e0165ee747e9eac3c639e8c3e42e406260",
+      "bytes": 3774,
+      "sha256": "63475b9ed5c293a7ad59e8b0e8afc3c1ff968543b563d397a704693ef3c86f33",
       "summary": "Read-only official Imperium inventory for the authenticated private DESC relay.",
       "imports": [
         "__future__",
@@ -8429,11 +8429,13 @@
     {
       "path": "tests/test_official_stock_relay.py",
       "category": "tests",
-      "bytes": 2201,
-      "sha256": "12032c8dea0f41e47c8bb35dbb1b817138f1391e0429d4085240abc730d33158",
+      "bytes": 3078,
+      "sha256": "70011f25b79b6e0177e51d395e4fc721fd35f0cca5f9755d4bd72065797f72dd",
       "summary": "Read-only official inventory bridge policy and response contracts.",
       "imports": [
         "integrations",
+        "pathlib",
+        "tempfile",
         "unittest"
       ],
       "endpoints": [
@@ -8452,7 +8454,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 6
+      "symbol_count": 7
     },
     {
       "path": "tests/test_official_stock_remediation_plan.py",
