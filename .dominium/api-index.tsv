@@ -261,11 +261,6 @@ endpoint	path
 /api/confront/jobs/	scripts/smoke_confront_private_relay.py
 /api/confront/status	scripts/smoke_confront_private_relay.py
 /api/disconnection/reports	scripts/smoke_confront_private_relay.py
-/api/atlas-query/jobs	stage-serial-relay.ps1
-/api/imperium-official/stocks?profile=natal	stage-serial-relay.ps1
-/api/serials/consult	stage-serial-relay.ps1
-/api/serials/consult?serials=ZZZZZZZZZZZZ&profile=	stage-serial-relay.ps1
-/api/stock/analyses/material-audit?city=natal	stage-serial-relay.ps1
 /api/orders?status=field&service_type=all&date=	static/all-operations.js
 /api/toa-contracts?date=	static/all-operations.js
 /api/atlas-query/jobs	static/atlas-query-ui.js

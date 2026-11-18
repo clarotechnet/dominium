@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-18T20:41:14+00:00",
+  "generated_at": "2026-11-18T20:42:41+00:00",
   "schema": 2,
-  "source_fingerprint": "8acba23378af6697ae204866ce03f47aea4b63b76ea5a1eeb88cbbc8bd23ddc1",
+  "source_fingerprint": "3fcdc200398fb86787d9cb4caed727f8fe36a9bc6435afc522f4d899720d96d4",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -5612,27 +5612,6 @@
       "symbol_count": 1
     },
     {
-      "path": "stage-serial-relay.ps1",
-      "category": "shared",
-      "bytes": 5639,
-      "sha256": "e72da35fee1a28c027f07ef4c55db78803924903461c645007e96a5a099b02fe",
-      "summary": "",
-      "imports": [],
-      "endpoints": [
-        "/api/atlas-query/jobs",
-        "/api/imperium-official/stocks?profile=natal",
-        "/api/serials/consult",
-        "/api/serials/consult?serials=ZZZZZZZZZZZZ&profile=",
-        "/api/stock/analyses/material-audit?city=natal"
-      ],
-      "env_vars": [
-        "PYTHONUTF8"
-      ],
-      "datasnap_methods": [],
-      "entrypoint": false,
-      "symbol_count": 0
-    },
-    {
       "path": "static/all-cities-scope.css",
       "category": "frontend",
       "bytes": 1098,
@@ -10413,7 +10392,6 @@
     "IMPERIUM_DATASNAP_USERNAME",
     "PLAYWRIGHT_MODULE",
     "PORT",
-    "PYTHONUTF8",
     "QA_SCREENSHOT_DIR",
     "SUPABASE_ACCESS_TOKEN",
     "SUPABASE_DB_PASSWORD",
