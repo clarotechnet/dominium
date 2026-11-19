@@ -1,3 +1,19 @@
+## 19/11/2026 - Nomes dos tecnicos no relatorio Backlog
+
+Adaptador somente leitura ativo no sidecar 9342: GET compare apresenta
+NOME (LOGIN), com technician_login e technician_name separados. Fonte:
+TechnicianDirectory com o cadastro atual de DominiumMain; recarga por mtime.
+Login original no SQLite, codigos, datas, cidades e contratos preservados.
+Consulta real: 426 linhas, 406 enriquecidas; relatorio selecionado com 86 contratos
+e 17 grupos, 16 logins identificados. Z705513 ainda sem cadastro confirmado.
+8 testes Python focados e 7 Node aprovados; build aprovado. Gate geral:
+1116 testes, 4 erros reproduzidos na main limpa (3 bloqueios SQLite/Windows
+em testes Atlas e uma assercao antiga de versao do asset Backlog), 22 skips.
+Autenticacao sem token continua 401. Rollback:
+F:\\Dominium\\Recuperacao\\Backlog-TechnicianNames-20261119-090609.
+Integracao reproduzivel em integrations/backlog_runtime/technician-names.patch.
+Nenhuma baixa, movimentacao de estoque ou mensagem enviada.
+
 ## 18/11/2026 — Vistoria diária de materiais em preparação
 
 Coleta de saldos do Imperium por técnico/local, cidade e data no banco

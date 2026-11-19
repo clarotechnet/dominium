@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-18T19:56:16+00:00
-- Source fingerprint: `455db11d7efb85ee`
-- Indexed files: 547
-- Indexed symbols: 4487
+- Generated: 2026-11-19T12:08:30+00:00
+- Source fingerprint: `b8e25806a4c82b09`
+- Indexed files: 550
+- Indexed symbols: 4495
 - API path references: 565
 
 ## Navigation rule
@@ -145,6 +145,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `auth_store.py` (28 symbols) - Autenticacao local do DOMINIUM.
 - `auth_store_postgres.py` (18 symbols) - Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.
 - `auto_improductive_close.py` (23 symbols)
+- `backlog_technician_names.py` (1 symbols) - Display enrichment for the read-only backlog comparison; no operational writes.
 - `bulk_orders.py` (2 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `cancel_all_open.py` (3 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `CLAUDE.md` (1 DataSnap methods) - DOMINIUM / Claude Code
@@ -200,10 +201,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 164 files
+- shared: 166 files
 - tooling-deploy: 52 files
 - docs: 52 files
-- tests: 171 files
+- tests: 172 files
 
 ## Search indexes
 

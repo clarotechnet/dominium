@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-18T19:56:16+00:00",
+  "generated_at": "2026-11-19T12:08:30+00:00",
   "schema": 2,
-  "source_fingerprint": "455db11d7efb85eeff29146c6e55c1212edb10e7a279239d3f2f23881642db06",
+  "source_fingerprint": "b8e25806a4c82b090e4803cce9a6826bc4bcde4774b9de488c0ed276da8c25c3",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -444,6 +444,22 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 23
+    },
+    {
+      "path": "backlog_technician_names.py",
+      "category": "shared",
+      "bytes": 978,
+      "sha256": "c721e5d5014a81cde17b3f0e5c66dd3f6e57f44f2e4a26cf2dc65ee5a7e930ad",
+      "summary": "Display enrichment for the read-only backlog comparison; no operational writes.",
+      "imports": [
+        "__future__",
+        "re"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
     },
     {
       "path": "bulk_orders.py",
@@ -1557,8 +1573,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 14719,
-      "sha256": "f7e7aa70190d5a000632d9b8aa6f3d13b90938a8ce5ee743ac1094387461d85f",
+      "bytes": 15153,
+      "sha256": "80a46e04c05901b6d304646aab877041624540cfb00b524658ccb56b6f568e2a",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1596,9 +1612,9 @@
     {
       "path": "docs/agent/memory/CURRENT_STATE.md",
       "category": "docs",
-      "bytes": 69051,
-      "sha256": "88321d6c15d825d586ae8b8308d0fc0d2545dc251cbfcf8bec01fc514c35c7bb",
-      "summary": "18/11/2026 — Vistoria diária de materiais em preparação",
+      "bytes": 70044,
+      "sha256": "b1015daef4bdc5380334cb1863003cfc6f863f060855b4ddaec693148d47a196",
+      "summary": "19/11/2026 - Nomes dos tecnicos no relatorio Backlog",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -1638,8 +1654,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 24892,
-      "sha256": "bcec95d869cf7c23f23f8d321d5ed1b56407979c1008de5e97425089d8361eff",
+      "bytes": 26425,
+      "sha256": "ad587e5d32249542c942d71f0563ec58a626cd234c3c785460a21a1b1e94182c",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -2283,6 +2299,19 @@
       "datasnap_methods": [
         "TDtmOrdemServico.AS_Execute"
       ],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "integrations/backlog_runtime/README.md",
+      "category": "shared",
+      "bytes": 1648,
+      "sha256": "ecb9563576e50b9d16772d76d4cf0d4636cdd6e41cbfaf5bc8c53473892cb04a",
+      "summary": "Technician names in the backlog comparison",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
     },
@@ -6964,6 +6993,26 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 1
+    },
+    {
+      "path": "tests/test_backlog_technician_names.py",
+      "category": "tests",
+      "bytes": 3077,
+      "sha256": "c9881248db11bc663e13cd8fac85b319738f8ca6c2d00ebd3edbb31012a27b43",
+      "summary": "",
+      "imports": [
+        "backlog_technician_names",
+        "json",
+        "pathlib",
+        "technician_directory",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
     },
     {
       "path": "tests/test_backlog_todos_navigation.cjs",
