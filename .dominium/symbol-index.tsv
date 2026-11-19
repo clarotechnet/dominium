@@ -231,6 +231,7 @@ is_enabled	method	auto_improductive_close.py	366	AutoImproductiveCloser
 public_state	method	auto_improductive_close.py	371	AutoImproductiveCloser
 _loop	method	auto_improductive_close.py	398	AutoImproductiveCloser
 _run_once	method	auto_improductive_close.py	414	AutoImproductiveCloser
+enrich_comparison	function	backlog_technician_names.py	7	-
 normalize_contracts	function	bulk_orders.py	35	-
 build_bulk_preview	function	bulk_orders.py	70	-
 is_deterministic_error	function	cancel_all_open.py	30	-
@@ -2659,6 +2660,13 @@ response	function	tests/test_backlog_hostinger_proxy.js	19	-
 cfg	function	tests/test_backlog_hostinger_proxy.js	25	-
 fakeDocument	function	tests/test_backlog_report_image.js	16	-
 pollToaRoutes	function	tests/test_backlog_status_reload_20261107.cjs	10	-
+directory	function	tests/test_backlog_technician_names.py	10	-
+BacklogTechnicianNameTests	class	tests/test_backlog_technician_names.py	16	-
+setUp	method	tests/test_backlog_technician_names.py	17	BacklogTechnicianNameTests
+test_known_logins_are_displayed_and_original_payload_is_preserved	method	tests/test_backlog_technician_names.py	22	BacklogTechnicianNameTests
+test_unknown_logins_and_named_routes_survive_missing_catalog	method	tests/test_backlog_technician_names.py	37	BacklogTechnicianNameTests
+test_same_name_keeps_distinct_route_logins	method	tests/test_backlog_technician_names.py	46	BacklogTechnicianNameTests
+test_catalog_changes_are_used_without_restarting	method	tests/test_backlog_technician_names.py	56	BacklogTechnicianNameTests
 extract	function	tests/test_backlog_todos_navigation.cjs	10	-
 setup	function	tests/test_backlog_todos_navigation.cjs	23	-
 HostingerNodeReleaseTests	class	tests/test_build_hostinger_node_release.py	9	-

@@ -1,0 +1,17 @@
+--- a/backlog_sidecar.py
++++ b/backlog_sidecar.py
+@@ -20,0 +21 @@
++from backlog_technician_names import enrich_comparison
+@@ -42 +43 @@
+-def build_handler(service: BacklogHistoryService):
++def build_handler(service: BacklogHistoryService, technician_directory=None):
+@@ -93 +94 @@
+-                    result=service.compare(limit=limit,selected_codes=codes)
++                    result=enrich_comparison(service.compare(limit=limit,selected_codes=codes), technician_directory)
+@@ -167,0 +169 @@
++    parser.add_argument("--technicians-file",default=r"C:\DominiumMain\config\technicians.json")
+@@ -175,0 +178 @@
++    from technician_directory import TechnicianDirectory
+@@ -190 +193 @@
+-    server=ThreadingHTTPServer(("127.0.0.1",args.port),build_handler(service))
++    server=ThreadingHTTPServer(("127.0.0.1",args.port),build_handler(service, TechnicianDirectory(Path(args.technicians_file))))

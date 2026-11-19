@@ -357,3 +357,23 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Testes de quantidade acumulada, importação por data, coleta incompleta, isolamento por cidade, rotas e captura real.
 
 **Próximo passo/pendência:** Publicar relay, Worker e interface juntos. Confirmar a próxima foto do estoque e o Excel SAP de referência.
+
+## 2026-11-19 12:04 UTC — Backlog technician display names
+
+**Motivo:** Selected route reports show TOA Z logins despite names existing in the current technician directory and bot registry.
+
+**Alterado:** Read-only comparison adapter preserves technician_login and renders NAME (LOGIN) for existing UI/copy reports. Independent sidecar patch; no OS or stock writes.
+
+**Verificação:** 8 focused Python tests and 7 report/image Node tests pass. Real 426-row comparison keeps 86 selected contracts and 17 technician groups, with 16 selected logins resolved. Full quality gate running.
+
+**Próximo passo/pendência:** Deploy sidecar adapter after quality gate, verify authenticated live comparison, and obtain the missing name for Z705513.
+
+## 2026-11-19 12:07 UTC — Backlog names deployed and verified
+
+**Motivo:** Use existing technician records instead of Z-only display in the historical hold report.
+
+**Alterado:** Read-only sidecar compare enrichment deployed with backup and exact patch in integrations/backlog_runtime. Raw SQLite login retained; current Main technician directory reloads on change.
+
+**Verificação:** 8 focused Python and 7 Node tests passed; production GET426 rows,406 names,86 selected contracts,17 groups,16 known logins. Unauthenticated request401. Build passed. Full gate1116 tests,4 errors independently reproduced on clean main,22skips.
+
+**Próximo passo/pendência:** Confirm name for Z705513 and add it to the canonical technician directory. General gate failures are unrelated and remain open.

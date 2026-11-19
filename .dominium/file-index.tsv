@@ -13,6 +13,7 @@ orchestration	app.py	151	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	419799f903859
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
+shared	backlog_technician_names.py	1			Display enrichment for the read-only backlog comparison; no operational writes.	c721e5d5014a81cd
 shared	bulk_orders.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	2775b7a068f33346
 shared	cancel_all_open.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	9dde6a0f10a22ffe
 shared	CLAUDE.md			1	DOMINIUM / Claude Code	de5472b9149c3be8
@@ -79,13 +80,13 @@ docs	docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md				Dominium — consul
 docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/IMPERIUM_VIDEO_ATLAS_AUDIT_20261106.md				Dominium — Fluxo comprovado nos vídeos operacionais, 06/11/2026	d6ab164c441c4db7
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	f7e7aa70190d5a00
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	80a46e04c05901b6
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
+docs	docs/agent/memory/CURRENT_STATE.md			2	19/11/2026 - Nomes dos tecnicos no relatorio Backlog	b1015daef4bdc538
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	bcec95d869cf7c23
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	ad587e5d32249542
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -125,6 +126,7 @@ shared	import_protocol_templates.json			1		9a6465634e73b3ec
 shared	import_technicians_xlsx.py	4		1	DOMINIUM | MAPA DE RESPONSABILIDADE	341a4f747dde9502
 imperium	installer_change.py	5			DOMINIUM | MAPA DE RESPONSABILIDADE	18de9230c2938c1e
 shared	installer_change_protocol_templates.json			1		f69d1e6915145bd3
+shared	integrations/backlog_runtime/README.md				Technician names in the backlog comparison	ecb9563576e50b9d
 shared	integrations/desc_reports/desc_review_relay.py	6	1		Authenticated relay for DESC review and private read-only Imperium checks.	db2faeb1c34ebf97
 shared	integrations/desc_reports/operator_reports.py	7			Persistent operator feedback, scoped to the private authenticated DESC relay.	43caa7925ed75b0b
 shared	integrations/desc_reports/README.md				DESC — contratos, revisão manual e REPORT	7b2f2308f26140fa
@@ -376,6 +378,7 @@ tests	tests/test_backlog_action_buttons.cjs	8				5407a352d0b273a2
 tests	tests/test_backlog_hostinger_proxy.js	3	9			0ffdbca1cc822dd4
 tests	tests/test_backlog_report_image.js	1				b8b66a90f2cb8ddd
 tests	tests/test_backlog_status_reload_20261107.cjs	1				291bcba2431ffe6e
+tests	tests/test_backlog_technician_names.py	7				c9881248db11bc66
 tests	tests/test_backlog_todos_navigation.cjs	2				fe3d1917db6de65e
 tests	tests/test_backlog_ui_deploy_20261031.py		3			7e903cf8d3b04a3d
 tests	tests/test_backlog_whatsapp_report.js					c136df0853e1647d
