@@ -377,3 +377,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 8 focused Python and 7 Node tests passed; production GET426 rows,406 names,86 selected contracts,17 groups,16 known logins. Unauthenticated request401. Build passed. Full gate1116 tests,4 errors independently reproduced on clean main,22skips.
 
 **Próximo passo/pendência:** Confirm name for Z705513 and add it to the canonical technician directory. General gate failures are unrelated and remain open.
+
+## 2026-11-19 15:17 UTC — Jose Carlos mapped; contract3796583 traced
+
+**Motivo:** Operator confirmed technician Z705513 and asked why a posted430 had no closure.
+
+**Alterado:** Canonical technician record added with backup; all17 selected logins now resolve. Added diagnostic distinguishing active message executor from disabled legacy scheduler.
+
+**Verificação:** Live comparison17 names,0 unresolved. Contract3796583 TOA cache complete430 ready_for_productive11:32:09; parser reproduction passes; no matching bot execution job or native audit. Fortaleza prefix already correct; anonymous route401; protected credentials could not decrypt in remote context.
+
+**Próximo passo/pendência:** Identify original WhatsApp message admission/delivery failure; no speculative replay or OS write performed.

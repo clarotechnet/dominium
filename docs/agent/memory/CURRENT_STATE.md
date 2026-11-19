@@ -5,7 +5,9 @@ NOME (LOGIN), com technician_login e technician_name separados. Fonte:
 TechnicianDirectory com o cadastro atual de DominiumMain; recarga por mtime.
 Login original no SQLite, codigos, datas, cidades e contratos preservados.
 Consulta real: 426 linhas, 406 enriquecidas; relatorio selecionado com 86 contratos
-e 17 grupos, 16 logins identificados. Z705513 ainda sem cadastro confirmado.
+e 17 grupos. Os 17 logins estao identificados: operador confirmou Z705513 como
+JOSE CARLOS DO NASCIMENTO FILHO; cadastro canonico atualizado e resposta real
+verificada sem reiniciar o servico.
 8 testes Python focados e 7 Node aprovados; build aprovado. Gate geral:
 1116 testes, 4 erros reproduzidos na main limpa (3 bloqueios SQLite/Windows
 em testes Atlas e uma assercao antiga de versao do asset Backlog), 22 skips.

@@ -72,6 +72,7 @@ docs	docs/agent/ATLAS_QUERY_VIDEO_RECOVERY_20261026.md				Natal — vídeo, comp
 docs	docs/agent/ATLAS_QUERY_WAITING_HUD_20261026.md				QUERY — distinguir espera de processamento	cfd355576cf2880e
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor de sessão instalado em 26/10/2026	cd87d67d5054efb8
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
+docs	docs/agent/BACKLOG_TECHNICIAN_AND_3796583_20261119.md				Verified follow-up - 19 November 2026	694ca3ca3e6ffa7f
 docs	docs/agent/COMMISSION_REPORTS_20261112.md			1	Relatórios de Comissão – Imperium DataSnap (12/11/2026)	1e94a4bd2562d64b
 docs	docs/agent/GLOBAL_TODOS_SCOPE_20261103.md				DOMINIUM — escopo global "Todos" e desbloqueio do Backlog (03/11/2026)	236973d4848064d1
 docs	docs/agent/IMPERIUM_DATASNAP_SUPABASE_LIVE_20261105.md				Dominium: Consultar período -> DataSnap -> Supabase (05/11/2026)	cedb896e473eb6f4
@@ -80,13 +81,13 @@ docs	docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md				Dominium — consul
 docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/IMPERIUM_VIDEO_ATLAS_AUDIT_20261106.md				Dominium — Fluxo comprovado nos vídeos operacionais, 06/11/2026	d6ab164c441c4db7
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	80a46e04c05901b6
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	86c30ef37a5ca9d7
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
-docs	docs/agent/memory/CURRENT_STATE.md			2	19/11/2026 - Nomes dos tecnicos no relatorio Backlog	b1015daef4bdc538
+docs	docs/agent/memory/CURRENT_STATE.md			2	19/11/2026 - Nomes dos tecnicos no relatorio Backlog	2bbaf5564ee3eaba
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	ad587e5d32249542
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	b999ecb36389bc2e
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
