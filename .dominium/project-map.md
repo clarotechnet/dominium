@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-19T15:17:58+00:00
-- Source fingerprint: `7b0af4f66939d19e`
-- Indexed files: 551
-- Indexed symbols: 4495
-- API path references: 565
+- Generated: 2026-11-23T12:39:32+00:00
+- Source fingerprint: `ac51b3cb58756b13`
+- Indexed files: 557
+- Indexed symbols: 4575
+- API path references: 569
 
 ## Navigation rule
 
@@ -99,6 +99,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/atlas-query-ui.js` (23 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
 - `static/backlog-analysis.css`
 - `static/backlog-analysis.js` (18 symbols, 7 API paths) - DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */
+- `static/backlog-fora-rota.css` - Somente a aba Análise Backlog > Fora de Rota. Sem sobrescrever o tema global. */
+- `static/backlog-fora-rota.js` (79 symbols, 1 API paths)
 - `static/backlog-report-image.js` (4 symbols) - DOMINIUM — export PNG do resumo de códigos históricos por cidade.
 - `static/backlog-report.js` (7 symbols) - Read-only WhatsApp report derived from the route × historical-code comparison.
 - `static/close-control-city-board.js` (4 symbols) - DOMINIUM Controle de baixas — painel por cidade.
@@ -132,6 +134,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/stock-report-preview-ui.js` (5 symbols, 2 API paths) - The three stock analysis processes have independent, paged workspace views. */
 - `static/styles.css`
 - `static/theme-init.js`
+- `static/vendor/LICENSE.sheetjs.txt` - Apache License
 - `static/workspace.css` - Shared workspace: the original Technet image, floating glass and Dominium red. */
 
 ## shared core
@@ -202,9 +205,9 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## Indexed areas not expanded here
 
 - shared: 166 files
-- tooling-deploy: 52 files
-- docs: 53 files
-- tests: 172 files
+- tooling-deploy: 53 files
+- docs: 54 files
+- tests: 173 files
 
 ## Search indexes
 

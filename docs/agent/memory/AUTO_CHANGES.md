@@ -394,3 +394,16 @@ Alterações preparadas para commit (3 arquivos). Para motivação e resultado c
 - `docs/agent/BACKLOG_TECHNICIAN_AND_3796583_20261119.md`
 - `docs/agent/memory/CURRENT_STATE.md`
 - `docs/agent/memory/OPERATIONS_JOURNAL.md`
+
+## 2026-11-23 | staged:0ed0a07c0e1b8b8c
+
+Alterações preparadas para commit (8 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `docs/agent/FORA_ROTA_INTEGRATION_20261123.md`
+- `scripts/incorporate_fora_rota_20261123.py`
+- `static/backlog-fora-rota.css`
+- `static/backlog-fora-rota.js`
+- `static/index.html`
+- `static/vendor/LICENSE.sheetjs.txt`
+- `static/vendor/xlsx.full.min.js`
+- `tests/test_backlog_fora_rota.cjs`

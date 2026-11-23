@@ -1021,6 +1021,7 @@ json	scripts/generate_agent_context.py
 pathlib	scripts/generate_agent_context.py
 re	scripts/generate_agent_context.py
 subprocess	scripts/generate_agent_context.py
+pathlib	scripts/incorporate_fora_rota_20261123.py
 json	scripts/inspect_atlas_bridge_readonly.py
 urllib	scripts/inspect_atlas_bridge_readonly.py
 pathlib	scripts/inspect_confront_wiring.py

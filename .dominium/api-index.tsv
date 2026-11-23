@@ -249,6 +249,7 @@ endpoint	path
 /api/stock/analyses/jobs/(	integrations/serial_consult/stock_analysis_http.py
 /api/toa-automation	patch_remote_toa.py
 /api/toa-automation/run	patch_remote_toa.py
+/api/backlog/year/sent	scripts/incorporate_fora_rota_20261123.py
 /api/serials/consult	scripts/inspect_confront_wiring.py
 /api/disconnection/reports	scripts/install_confront_relay.py
 /api/confront/jobs	scripts/smoke_confront_cloudflare.mjs
@@ -272,6 +273,7 @@ endpoint	path
 /api/backlog/year/sent	static/backlog-analysis.js
 /api/backlog/year/start	static/backlog-analysis.js
 /api/backlog/year/status	static/backlog-analysis.js
+/api/backlog/year/sent	static/backlog-fora-rota.js
 /api/commission-reports/export.xlsx?	static/commission-reports-ui.js
 /api/confront/jobs	static/confront.js
 /api/confront/jobs/	static/confront.js
@@ -348,6 +350,8 @@ endpoint	path
 /api/stock/transfer	tests/test_atlas_query_proxy_json.js
 /api/atlas-query/jobs	tests/test_atlas_query_reserve_delay.py
 /api/atlas-query/jobs	tests/test_atlas_query_ui_status.js
+/api/backlog/year/sent	tests/test_backlog_fora_rota.cjs
+/api/fora-rota/sent	tests/test_backlog_fora_rota.cjs
 /api/backlog/year/compare?limit=100&codes=106	tests/test_backlog_hostinger_proxy.js
 /api/backlog/year/compare?limit=99999	tests/test_backlog_hostinger_proxy.js
 /api/backlog/year/daily-treatment	tests/test_backlog_hostinger_proxy.js

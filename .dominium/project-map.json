@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-19T15:17:58+00:00",
+  "generated_at": "2026-11-23T12:39:32+00:00",
   "schema": 2,
-  "source_fingerprint": "7b0af4f66939d19e358a72ab4d5cf9605c4bedf304ecb5326ecdaafe94e8e208",
+  "source_fingerprint": "ac51b3cb58756b135ac3c7791e371b73bb42f29b9fe43a2b3dab0351627dfc0f",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1489,6 +1489,19 @@
       "symbol_count": 0
     },
     {
+      "path": "docs/agent/FORA_ROTA_INTEGRATION_20261123.md",
+      "category": "docs",
+      "bytes": 4160,
+      "sha256": "f735658cb419f1961405c19803b984811dcffe5ad663965528c3e0a6f200af8e",
+      "summary": "DOMINIUM — incorporação do gerador Fora de Rota (23/11/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/GLOBAL_TODOS_SCOPE_20261103.md",
       "category": "docs",
       "bytes": 2732,
@@ -1586,8 +1599,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 15471,
-      "sha256": "86c30ef37a5ca9d73973dd077be024018742f2578b53d6d2a44c937addc57493",
+      "bytes": 15940,
+      "sha256": "3212504ca5e950238cd469a7b8d7a504f93fa5c2f409fb0ee15a0c5fad41d1a6",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -5314,6 +5327,23 @@
       "symbol_count": 20
     },
     {
+      "path": "scripts/incorporate_fora_rota_20261123.py",
+      "category": "tooling-deploy",
+      "bytes": 21958,
+      "sha256": "ae31376b1c33ff0135a43025eb969b76dab3a1eb3edef8020c0bb6a2700e758d",
+      "summary": "Integracao controlada do gerador original de Fora de Rota ao frontend Dominium.",
+      "imports": [
+        "pathlib"
+      ],
+      "endpoints": [
+        "/api/backlog/year/sent"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
       "path": "scripts/inspect_atlas_bridge_readonly.py",
       "category": "tooling-deploy",
       "bytes": 1217,
@@ -5733,6 +5763,34 @@
       "symbol_count": 18
     },
     {
+      "path": "static/backlog-fora-rota.css",
+      "category": "frontend",
+      "bytes": 3526,
+      "sha256": "3fa7ea7da617b97dedc9f788c9e10c02559f7acc1fc5988a183e4f7c6daee6f4",
+      "summary": "Somente a aba Análise Backlog > Fora de Rota. Sem sobrescrever o tema global. */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "static/backlog-fora-rota.js",
+      "category": "frontend",
+      "bytes": 47255,
+      "sha256": "1b193d869864fbbb9126e8ff2eb7bca745e6f273b668768a44ddd86abdf61482",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/sent"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 79
+    },
+    {
       "path": "static/backlog-report-image.js",
       "category": "frontend",
       "bytes": 6839,
@@ -5963,8 +6021,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 178682,
-      "sha256": "0276e51ae5643e7b2383f035baef5e82a151b6b6381f897f16397dded2f2c157",
+      "bytes": 183595,
+      "sha256": "86f2363ce130ee0592182cf5f53582278ccb922a1c80eccd60942ff02eade56d",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6204,6 +6262,19 @@
       "bytes": 227,
       "sha256": "97eb92ef899f8dcf33acc7e14839620ca081c8c15f811868c3441e9050c526a0",
       "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "static/vendor/LICENSE.sheetjs.txt",
+      "category": "frontend",
+      "bytes": 11355,
+      "sha256": "4d2a38ac35cda06a555c84074a819d413339cd3691b822cae50f8f322fe01f64",
+      "summary": "Apache License",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -6957,6 +7028,22 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 8
+    },
+    {
+      "path": "tests/test_backlog_fora_rota.cjs",
+      "category": "tests",
+      "bytes": 5633,
+      "sha256": "6bb70ae308eacb51dd0e2f89478426cdd7435b5cdd4faad6271821924e95f237",
+      "summary": "Contratos do gerador original de Fora de Rota, sem acesso a dados reais. */",
+      "imports": [],
+      "endpoints": [
+        "/api/backlog/year/sent",
+        "/api/fora-rota/sent"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "tests/test_backlog_hostinger_proxy.js",
