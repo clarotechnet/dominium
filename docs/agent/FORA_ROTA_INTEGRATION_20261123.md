@@ -72,7 +72,7 @@ Origem: planilha recebida pelo operador no ChatGPT, analisada fora do servidor (
 
 Campos importantes da Safra: DATA_PEND, NM_CIDADE, CD_NET, BASE_CD_NET, NOME, ENDEREÇO, BAIRRO, DX22, TELEFONE NETSMS, TELEFONE TEL, TEL URA, NR_SERIAL e NR_MAC. A data de pendência é valor serial do Excel; não é data de baixa.
 
-Contagens por BASE_CD_NET na área atual do seletor: Natal 1.998; Parnamirim 244; Fortaleza 3.239; Mossoró 224; Recife 1.942; Jaboatão dos Guararapes 278; Olinda 114. Total nessas sete cidades: 8.039. É contagem da lista Claro, ANTES de cruzar com 106 limpo e enviados. A cidade Paulista tem 283 contratos, mas o seletor original do site NÃO a classifica como Recife/Pernambuco: depende de confirmação operacional.
+Contagens por BASE_CD_NET na área atual do seletor: Natal 1.998; Parnamirim 244; Fortaleza 3.239; Mossoró 224; Recife 1.942; Jaboatão dos Guararapes 278; Olinda 114. Total nessas sete cidades: 8.039. É contagem da lista Claro, ANTES de cruzar com 106 limpo e enviados. A cidade Paulista tem 283 contratos, e o operador confirmou em 23/11/2026 que a operação Recife NÃO atende Paulista. Descartar os contratos de Paulista nas importações semanais de Fora de Rota, sem incluí-los em Recife/Pernambuco. Não apagar os dados originais recebidos na planilha.
 
 Há 42 números CD_NET encontrados em múltiplas BASE_CD_NET de cidades diferentes, dos quais 13 têm pelo menos uma ocorrência nas cidades atendidas. Nenhum dos 42 se repete dentro de um mesmo perfil operacional atual. NÃO usar apenas CD_NET como chave global da Safra; manter BASE_CD_NET e escopo/cidade.
 

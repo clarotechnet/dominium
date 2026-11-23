@@ -49,6 +49,8 @@ assert.ok(natal.phones.includes("84988887777"),"TEL URA");
 assert.ok(api.isSupportedOperationalCity({city:"NATAL"}));
 assert.ok(api.isSupportedOperationalCity({city:"JABOATAO DOS GUARARAPES"}));
 assert.ok(!api.isSupportedOperationalCity({city:"SALVADOR"}));
+assert.ok(!api.isSupportedOperationalCity({city:"PAULISTA"}),"Paulista/PE nao e atendida por Recife");
+assert.ok(!api.isSupportedOperationalCity({city:"PAULISTA - PE"}),"Safra semanal nao deve incluir Paulista");
 assert.ok(src.includes("32 * 1024 * 1024"),"weekly Safra workbook must be accepted");
 
 assert.match(natal.equipment,/EQ01/);

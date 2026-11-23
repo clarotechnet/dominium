@@ -416,3 +416,10 @@ Alterações preparadas para commit (4 arquivos). Para motivação e resultado c
 - `scripts/incorporate_fora_rota_20261123.py`
 - `static/backlog-fora-rota.js`
 - `tests/test_backlog_fora_rota.cjs`
+
+## 2026-11-23 | staged:b43ffe1edf5c2d56
+
+Alterações preparadas para commit (2 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `docs/agent/FORA_ROTA_INTEGRATION_20261123.md`
+- `tests/test_backlog_fora_rota.cjs`

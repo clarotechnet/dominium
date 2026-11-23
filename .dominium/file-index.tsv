@@ -74,7 +74,7 @@ docs	docs/agent/ATLAS_SESSION_WATCHDOG_EXECUTION_20261026.md				Atlas: monitor d
 docs	docs/agent/ATLAS_SESSION_WATCHDOG_PLAN_20261026.md				Atlas: verificação real de sessão no watchdog	a481138944205315
 docs	docs/agent/BACKLOG_TECHNICIAN_AND_3796583_20261119.md				Verified follow-up - 19 November 2026	694ca3ca3e6ffa7f
 docs	docs/agent/COMMISSION_REPORTS_20261112.md			1	Relatórios de Comissão – Imperium DataSnap (12/11/2026)	1e94a4bd2562d64b
-docs	docs/agent/FORA_ROTA_INTEGRATION_20261123.md				DOMINIUM — incorporação do gerador Fora de Rota (23/11/2026)	d9c4c61f067cccb1
+docs	docs/agent/FORA_ROTA_INTEGRATION_20261123.md				DOMINIUM — incorporação do gerador Fora de Rota (23/11/2026)	62a43d1b4ee03698
 docs	docs/agent/GLOBAL_TODOS_SCOPE_20261103.md				DOMINIUM — escopo global "Todos" e desbloqueio do Backlog (03/11/2026)	236973d4848064d1
 docs	docs/agent/IMPERIUM_DATASNAP_SUPABASE_LIVE_20261105.md				Dominium: Consultar período -> DataSnap -> Supabase (05/11/2026)	cedb896e473eb6f4
 docs	docs/agent/IMPERIUM_ROLLOUT_20261106.md				DOMINIUM — rollout Imperium DataSnap / Supabase / Atlas (06/11/2026)	cb0558f391f38d2d
@@ -82,7 +82,7 @@ docs	docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md				Dominium — consul
 docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/IMPERIUM_VIDEO_ATLAS_AUDIT_20261106.md				Dominium — Fluxo comprovado nos vídeos operacionais, 06/11/2026	d6ab164c441c4db7
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	7c7c32fd12590732
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	931aa96e0a2b7808
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
 docs	docs/agent/memory/CURRENT_STATE.md			2	19/11/2026 - Nomes dos tecnicos no relatorio Backlog	2bbaf5564ee3eaba
@@ -381,7 +381,7 @@ tests	tests/test_atlas_query_ui_status.js	4	1			f9172992b8656ecb
 tests	tests/test_auth_store.py	7				2131129f824fbae2
 tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
 tests	tests/test_backlog_action_buttons.cjs	8				5407a352d0b273a2
-tests	tests/test_backlog_fora_rota.cjs		2		Contratos do gerador original de Fora de Rota, sem acesso a dados reais. */	4040145e9dbd116b
+tests	tests/test_backlog_fora_rota.cjs		2		Contratos do gerador original de Fora de Rota, sem acesso a dados reais. */	e4081e84cc06f0cb
 tests	tests/test_backlog_hostinger_proxy.js	3	9			0ffdbca1cc822dd4
 tests	tests/test_backlog_report_image.js	1				b8b66a90f2cb8ddd
 tests	tests/test_backlog_status_reload_20261107.cjs	1				291bcba2431ffe6e
