@@ -28,10 +28,10 @@ assert.deepEqual(Array.from(sorted),["123456","456789","567890"],
   "106 must be latest and contracts with ANY 430 are excluded");
 const claroSheet={
   rows:[
-    ["BASE_CD_NET","CD_NET","NM_CIDADE","NOME","ENDERECO","BAIRRO","CEP","NR_MAC","DDD","TEL NETSMS","DX22"],
-    ["NTL_123456","123456","Natal","Cliente A","Rua 1","Alecrim","59000000","EQ01","84","999998888",""],
-    ["NTL_123456","123456","Natal","Cliente A","Rua 1","Alecrim","59000000","EQ02","84","999998888",""],
-    ["FZE_123456","123456","Fortaleza","Cliente B","Rua 2","Centro","60000000","EQ03","85","988887777",""]
+    ["BASE_CD_NET","CD_NET","NM_CIDADE","NOME","ENDERECO","BAIRRO","CEP","NR_MAC","DDD","TELEFONE NETSMS","DX22","TELEFONE TEL","TEL URA"],
+    ["NTL_123456","123456","Natal","Cliente A","Rua 1","Alecrim","59000000","EQ01","84","84999998888_84977776666","","84911112222","84988887777"],
+    ["NTL_123456","123456","Natal","Cliente A","Rua 1","Alecrim","59000000","EQ02","84","84999998888_84977776666","","84911112222","84988887777"],
+    ["FZE_123456","123456","Fortaleza","Cliente B","Rua 2","Centro","60000000","EQ03","85","85988887777","","85911112222","85977776666"]
   ]
 };
 const records=api.parseClaroBacklog({SheetNames:["Safra dados EPO"],Sheets:{"Safra dados EPO":claroSheet}});
@@ -39,6 +39,18 @@ assert.equal(records.length,2,"same contract in different bases must remain dist
 const natal=records.find(r=>r.city==="NATAL"),fortaleza=records.find(r=>r.city==="FORTALEZA");
 assert.ok(natal&&fortaleza);
 assert.equal(natal.contract,"123456");
+assert.equal(natal.baseCdNet,"NTL_123456");
+assert.equal(fortaleza.baseCdNet,"FZE_123456");
+assert.deepEqual(Array.from(api.splitPhones("84999998888_84977776666")),["84999998888","84977776666"]);
+assert.ok(natal.phones.includes("84999998888"),"NETSMS with underscore");
+assert.ok(natal.phones.includes("84977776666"),"second NETSMS phone");
+assert.ok(natal.phones.includes("84911112222"),"TELEFONE TEL");
+assert.ok(natal.phones.includes("84988887777"),"TEL URA");
+assert.ok(api.isSupportedOperationalCity({city:"NATAL"}));
+assert.ok(api.isSupportedOperationalCity({city:"JABOATAO DOS GUARARAPES"}));
+assert.ok(!api.isSupportedOperationalCity({city:"SALVADOR"}));
+assert.ok(src.includes("32 * 1024 * 1024"),"weekly Safra workbook must be accepted");
+
 assert.match(natal.equipment,/EQ01/);
 assert.match(natal.equipment,/EQ02/);
 assert.equal(fortaleza.equipment,"EQ03");

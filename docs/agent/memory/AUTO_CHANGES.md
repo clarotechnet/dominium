@@ -407,3 +407,12 @@ Alterações preparadas para commit (8 arquivos). Para motivação e resultado c
 - `static/vendor/LICENSE.sheetjs.txt`
 - `static/vendor/xlsx.full.min.js`
 - `tests/test_backlog_fora_rota.cjs`
+
+## 2026-11-23 | staged:5f70e04718a613dd
+
+Alterações preparadas para commit (4 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `docs/agent/FORA_ROTA_INTEGRATION_20261123.md`
+- `scripts/incorporate_fora_rota_20261123.py`
+- `static/backlog-fora-rota.js`
+- `tests/test_backlog_fora_rota.cjs`

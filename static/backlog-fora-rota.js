@@ -102,7 +102,8 @@
       setStatus('Lendo backlog da Claro...', 'loading');
       setFileBadge(els.claroFileName, file.name, true);
       const workbook = await readWorkbook(file);
-      state.claroRecords = parseClaroBacklog(workbook);
+      const imported = parseClaroBacklog(workbook);
+    state.claroRecords = imported.filter(isSupportedOperationalCity);
       state.selectedRecords = [];
       state.claroFileName = file.name;
       state.claroUpdatedAt = new Date().toISOString();
@@ -110,7 +111,7 @@
       populateNeighborhoods();
       updateStats();
       updateClaroBadge();
-      setStatus(`${state.claroRecords.length} OS carregadas e salvas para todos na backlog da Claro.`, 'success');
+      setStatus(`${state.claroRecords.length} contratos das cidades atendidas carregados nesta sessao (de ${imported.length} contratos lidos).`, 'success');
     } catch (error) {
       console.error(error);
       setStatus(`Falha ao ler backlog da Claro: ${error.message}`, 'error');
@@ -161,7 +162,7 @@
   }
 
   async function readWorkbook(file) {
-    if (file.size > 12 * 1024 * 1024) throw Error('Arquivo maior que 12 MB');
+    if (file.size > 32 * 1024 * 1024) throw Error('Arquivo maior que 32 MB');
     await ensureXlsx();
     const buffer = await file.arrayBuffer();
     if (/\.csv$/i.test(file.name)) {
@@ -232,9 +233,9 @@
 
       const ddd = stringValue(pick(row, headerMap, ['ddd'])).replace(/\D+/g, '').slice(-2);
       const phones = [
-        pick(row, headerMap, ['tel netsms', 'telefones', 'telefone', 'tel']),
-        pick(row, headerMap, ['tel ura', 'tel1', 'telefone 1']),
-        pick(row, headerMap, ['tel agend conf', 'tel2', 'telefone 2']),
+        pick(row, headerMap, ['telefone netsms', 'tel netsms', 'telefones', 'telefone', 'tel']),
+        pick(row, headerMap, ['telefone tel', 'tel ura', 'tel1', 'telefone 1']),
+        pick(row, headerMap, ['tel ura', 'tel agend conf', 'tel2', 'telefone 2']),
       ]
         .flatMap(splitPhones)
         .map((phone) => normalizePhoneWithDdd(phone, ddd));
@@ -245,6 +246,7 @@
 
       merged.set(mergeKey, {
         contract,
+        baseCdNet: stringValue(baseCdNet),
         city: current.city || city,
         name: current.name || pick(row, headerMap, ['nome', 'nome cliente', 'cliente']),
         address: current.address || pick(row, headerMap, ['endereco', 'endereço', 'logradouro']),
@@ -478,6 +480,12 @@
 
   function getSelectedCityKey() {
     return els.cidade?.value || 'natal_parnamirim';
+  }
+
+  function isSupportedOperationalCity(record) {
+    const city = normalizeText(record?.city);
+    return ['natal', 'parnamirim', 'fortaleza', 'mossoro',
+      'recife', 'jaboatao', 'olinda'].some((name) => city.includes(name));
   }
 
   function recordMatchesSelectedCity(record) {
@@ -1075,7 +1083,7 @@
 
   function splitPhones(value) {
     return stringValue(value)
-      .split(/[\/;,|]+/)
+      .split(/[\/;,|_]+/)
       .flatMap(splitPhoneToken)
       .filter((phone) => phone.length >= 8);
   }
@@ -1211,7 +1219,8 @@
     globalThis.DominiumForaRotaTestHooks = {
       parseClaroBacklog, parseImperiumBacklog, buildClean106Contracts,
       normalizeContract, extractSafraContract, normalizeText, state, els,
-      markSelectedAsSent, availableRecordsForBairro, recordWasSent
+      markSelectedAsSent, availableRecordsForBairro, recordWasSent,
+      isSupportedOperationalCity, splitPhones
     };
   }
 })();

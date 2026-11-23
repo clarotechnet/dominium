@@ -216,7 +216,7 @@ source = "\n".join(line for line in source.split("\n")
     if not any(line.startswith("  const " + name + " =") for name in legacy_consts))
 source = source.replace(
     "    const buffer = await file.arrayBuffer();",
-    "    if (file.size > 12 * 1024 * 1024) throw Error('Arquivo maior que 12 MB');\n"
+    "    if (file.size > 32 * 1024 * 1024) throw Error('Arquivo maior que 32 MB');\n"
     "    if (typeof XLSX === 'undefined') throw Error('Leitor XLSX nao carregou');\n"
     "    const buffer = await file.arrayBuffer();"
 )
@@ -251,6 +251,54 @@ source = source.replace(
     "    if (typeof XLSX === 'undefined') throw Error('Leitor XLSX nao carregou');",
     "    await ensureXlsx();"
 )
+# A planilha Safra real excede 22 MB; restringir persistencia em sessao
+# as cidades atendidas pelo seletor, mantendo a parse completa.
+source = source.replace(
+    "    state.claroRecords = parseClaroBacklog(workbook);",
+    "    const imported = parseClaroBacklog(workbook);\n"
+    "    state.claroRecords = imported.filter(isSupportedOperationalCity);"
+)
+source = source.replace(
+    "  function recordMatchesSelectedCity(record) {",
+    """  function isSupportedOperationalCity(record) {
+    const city = normalizeText(record?.city);
+    return ['natal', 'parnamirim', 'fortaleza', 'mossoro',
+      'recife', 'jaboatao', 'olinda'].some((name) => city.includes(name));
+  }
+
+  function recordMatchesSelectedCity(record) {"""
+)
+source = source.replace(
+    "        contract,\n        city: current.city || city,",
+    "        contract,\n        baseCdNet: stringValue(baseCdNet),\n        city: current.city || city,"
+)
+source = source.replace(
+    "OS carregadas e salvas para todos na backlog da Claro.",
+    "contratos das cidades atendidas carregados nesta sessao (de ${imported.length} contratos lidos)."
+)
+source = source.replace(
+    "      markSelectedAsSent, availableRecordsForBairro, recordWasSent",
+    "      markSelectedAsSent, availableRecordsForBairro, recordWasSent,\n"
+    "      isSupportedOperationalCity"
+)
+# Campos e separadores observados na SAFRA DADOS EPO real.
+# TELEFONE TEL e uma coluna diferente de TEL URA e NETSMS usa underscores.
+source = source.replace(
+    "['tel netsms', 'telefones', 'telefone', 'tel']",
+    "['telefone netsms', 'tel netsms', 'telefones', 'telefone', 'tel']"
+)
+source = source.replace(
+    "['tel ura', 'tel1', 'telefone 1']",
+    "['telefone tel', 'tel ura', 'tel1', 'telefone 1']"
+)
+source = source.replace(
+    "['tel agend conf', 'tel2', 'telefone 2']",
+    "['tel ura', 'tel agend conf', 'tel2', 'telefone 2']"
+)
+source = source.replace(
+    ".split(/[\\/;,|]+/)",
+    ".split(/[\\/;,|_]+/)"
+)
 source = source.replace(
     "  function setDefaultDate() {\n    if (els.data) els.data.value = new Date().toISOString().slice(0, 10);\n  }",
     "  function setDefaultDate() {\n    if (els.data) els.data.value = new Date().toLocaleDateString('en-CA');\n  }"
@@ -276,7 +324,8 @@ source = source.replace(
     globalThis.DominiumForaRotaTestHooks = {
       parseClaroBacklog, parseImperiumBacklog, buildClean106Contracts,
       normalizeContract, extractSafraContract, normalizeText, state, els,
-      markSelectedAsSent, availableRecordsForBairro, recordWasSent
+      markSelectedAsSent, availableRecordsForBairro, recordWasSent,
+      isSupportedOperationalCity, splitPhones
     };
   }
 })();

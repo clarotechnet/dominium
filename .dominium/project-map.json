@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-23T12:39:32+00:00",
+  "generated_at": "2026-11-23T13:43:30+00:00",
   "schema": 2,
-  "source_fingerprint": "ac51b3cb58756b135ac3c7791e371b73bb42f29b9fe43a2b3dab0351627dfc0f",
+  "source_fingerprint": "ff8e3422d0c4baec9a0e5f09eff6eac67ceaaf269bac78b6bbeda7bb82a632aa",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1491,8 +1491,8 @@
     {
       "path": "docs/agent/FORA_ROTA_INTEGRATION_20261123.md",
       "category": "docs",
-      "bytes": 4160,
-      "sha256": "f735658cb419f1961405c19803b984811dcffe5ad663965528c3e0a6f200af8e",
+      "bytes": 7328,
+      "sha256": "d9c4c61f067cccb1f63915a6cd4df9d451720eee9437e32d852e6b2f28bf5728",
       "summary": "DOMINIUM — incorporação do gerador Fora de Rota (23/11/2026)",
       "imports": [],
       "endpoints": [],
@@ -1599,8 +1599,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 15940,
-      "sha256": "3212504ca5e950238cd469a7b8d7a504f93fa5c2f409fb0ee15a0c5fad41d1a6",
+      "bytes": 16281,
+      "sha256": "7c7c32fd12590732bd4dce73d219183e1bc13e6fcee7cafd9d1941de8b4d1324",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -5329,8 +5329,8 @@
     {
       "path": "scripts/incorporate_fora_rota_20261123.py",
       "category": "tooling-deploy",
-      "bytes": 21958,
-      "sha256": "ae31376b1c33ff0135a43025eb969b76dab3a1eb3edef8020c0bb6a2700e758d",
+      "bytes": 23961,
+      "sha256": "24ff9667ca1cebd21a2f0aa8b2c1b632dd2359b78512eb0a1c9d70b92ac8ce25",
       "summary": "Integracao controlada do gerador original de Fora de Rota ao frontend Dominium.",
       "imports": [
         "pathlib"
@@ -5778,8 +5778,8 @@
     {
       "path": "static/backlog-fora-rota.js",
       "category": "frontend",
-      "bytes": 47255,
-      "sha256": "1b193d869864fbbb9126e8ff2eb7bca745e6f273b668768a44ddd86abdf61482",
+      "bytes": 47733,
+      "sha256": "2de8cddd23f031a14042083e7cba23a56fd1cdda12046fcc3834d43e0ef7bf70",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5788,7 +5788,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 79
+      "symbol_count": 80
     },
     {
       "path": "static/backlog-report-image.js",
@@ -7032,8 +7032,8 @@
     {
       "path": "tests/test_backlog_fora_rota.cjs",
       "category": "tests",
-      "bytes": 5633,
-      "sha256": "6bb70ae308eacb51dd0e2f89478426cdd7435b5cdd4faad6271821924e95f237",
+      "bytes": 6527,
+      "sha256": "4040145e9dbd116bb214a67ed881e6605866428b3b675e02766be2a9e0f779d1",
       "summary": "Contratos do gerador original de Fora de Rota, sem acesso a dados reais. */",
       "imports": [],
       "endpoints": [
