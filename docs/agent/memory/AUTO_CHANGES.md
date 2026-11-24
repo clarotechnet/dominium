@@ -375,3 +375,14 @@ Alterações preparadas para commit (11 arquivos). Para motivação e resultado 
 - `static/material-stock-audit.js`
 - `tests/test_material_stock_audit.py`
 - `tests/test_stock_analysis_proxy.cjs`
+
+## 2026-11-24 | staged:fe70594aee972793
+
+Alterações preparadas para commit (6 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `static/backlog-fora-rota.css`
+- `static/backlog-fora-rota.js`
+- `static/index.html`
+- `static/vendor/LICENSE.sheetjs.txt`
+- `static/vendor/xlsx.full.min.js`
+- `tests/test_backlog_fora_rota.cjs`
