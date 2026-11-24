@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T12:31:52+00:00",
+  "generated_at": "2026-11-24T12:40:48+00:00",
   "schema": 2,
-  "source_fingerprint": "5f2425167b91fd81c1bee3396369f74c9f3e6053f5867c7bcac4119d711ab1a1",
+  "source_fingerprint": "83473293ff771c4b855aadc93168ff974e32903185619789e4b99390df859859",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1558,8 +1558,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 17531,
-      "sha256": "c948f50b9725580ed008913229af933b7dec269df2944cdd89acbd373315fad5",
+      "bytes": 17730,
+      "sha256": "ea63dc825e7a2f393ff83b3a71dd10cfa1f37692e9cd2c969bdb9fdb5e39aaa8",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -5964,8 +5964,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 184315,
-      "sha256": "073a85dcbe1dbf613a2734a6ce3f361c071e2965a05599be236b6f24581f80ca",
+      "bytes": 184313,
+      "sha256": "9a8c295af485b8c0786ef40de7a556516a22460c084cb74e05b8f3a3cb0ef4bb",
       "summary": "",
       "imports": [],
       "endpoints": [
