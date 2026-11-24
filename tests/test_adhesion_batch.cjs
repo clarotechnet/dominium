@@ -116,3 +116,19 @@ test("persistent cache, cancellation and nonbusy errors fail closed",async()=>{
  await assert.rejects(freshOrders(async()=>{throw Object.assign(new Error("auth"),{status:401});},{active:()=>true,wait:async()=>{throw Error("must not retry");}}),/auth/);
  assert.equal(codeOnly("INSTALACAO DE CABO GPON"),true);
 });
+
+test("refresh approval before companion without changing OS identity",()=>{
+ const {refreshCandidate}=require("../static/adhesion-batch.js");
+ const old={id_os:2,num_os:"999",contract:"12345678",service:"INSTALACAO DE CABO GPON",operation_source:"toa_import",operation_identity:{profile_key:"natal",contract:"12345678",activity_id:"123"},import_scope:{source_file:"Atividades-NTL-DMV_24_11_26.csv",expected_profile_key:"natal",source_hash:"fixture"},approved_state_hash:"old"};
+ const candidate={order:old,numOs:"999",capture:{aid:"123",contract:"12345678"},batchScope:scope,batchCodeOnly:true};
+ const fresh={...old,approved_state_hash:"new"};
+ assert.equal(refreshCandidate(candidate,[fresh],()=>true).order.approved_state_hash,"new");
+ assert.equal(candidate.order.approved_state_hash,"old");
+ assert.throws(()=>refreshCandidate(candidate,[],()=>true),/nao esta mais em campo/);
+ assert.throws(()=>refreshCandidate(candidate,[{...fresh,import_scope:{...fresh.import_scope,source_hash:"other"}}],()=>true),/Escopo/);
+ assert.throws(()=>refreshCandidate(candidate,[fresh],()=>false),/Escopo/);
+});
+test("Imperium-only companion without confirmed TOA code is not inferred",()=>{
+ const f=fixture();f.capture.tasks[0].imperium_only=true;f.capture.tasks[0].close_code="";
+ assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps),/codigo de baixa nao confirmado/);
+});

@@ -47,6 +47,21 @@
     const s=String(service||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
     return s.includes("ASSINATURA") || /INST(?:ALACAO)?\.?\s+GPON\s*-\s*INST(?:ALACAO)?\.?\s+CABO/.test(s) || /INSTALACAO (?:DE )?CABO GPON/.test(s);
   }
+  function refreshCandidate(candidate, orders, valid) {
+    const previous=candidate.order, scope=candidate.batchScope;
+    const matches=orders.filter(o=>String(o.num_os)===String(previous.num_os) && String(o.id_os)===String(previous.id_os) && String(o.contract)===String(previous.contract));
+    if(matches.length!==1) throw Error("OS nao esta mais em campo ou mudou de identidade: "+candidate.numOs);
+    const current=matches[0];
+    const identityKeys=["profile_key","contract","activity_id","city","project_id"];
+    if(!valid(current,candidate.capture) || current.operation_source!==previous.operation_source ||
+       String(current.service)!==String(previous.service) ||
+       identityKeys.some(k=>String(current.operation_identity?.[k]||"")!==String(previous.operation_identity?.[k]||"")) ||
+       current.import_scope?.source_hash!==previous.import_scope?.source_hash ||
+       (current.operation_source==="toa_import" && !importBucket(current,{...scope,contract:String(current.contract)},candidate.capture))) {
+      throw Error("Escopo da OS mudou; nenhuma baixa enviada: "+candidate.numOs);
+    }
+    return {...candidate,order:current};
+  }
   function materialAudit(preparation) {
     if(!preparation || typeof preparation!=="object") return "";
     const label=rows=>(Array.isArray(rows)?rows:[]).map(row=>String(row.requested_code||row.code||row.requested_codes?.join("/")||"codigo nao informado")).join(", ");
@@ -90,6 +105,7 @@
       for(const task of matching) {
         const os=String(task.os_number), activeOrder=byNumber.get(os);
         const exact=(capture.imperium_matches||[]).filter(o=>String(o.num_os)===os && String(o.contract)===contract && Number(o.id_os)===Number(activeOrder.id_os));
+        if(task.imperium_only===true || task.source==="imperium_contract_status") throw Error("OS "+os+" nao localizada no TOA; codigo de baixa nao confirmado.");
         if(seen.has(os) || exact.length!==1 || !deps.valid(exact[0],capture) || !deps.executed(task.status)) throw Error("OS sem correspondencia unica, aprovada e executada: "+os);
         const code=String(task.close_code||"").trim();
         if(!code || code==="430" || !deps.knownCode(code)) throw Error("Codigo de baixa ausente ou invalido: "+os);
@@ -188,7 +204,7 @@
       } catch(err) {hooks.update(contract,"Tratativa",String(err.message||err).slice(0,300));}
     }
   }
-  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders};return;}
+  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,refreshCandidate};return;}
   const panel=document.getElementById("adhesionBatch");
   if(!panel)return;
   const input=document.getElementById("adhesionBatchInput"),start=document.getElementById("adhesionBatchStart"),
@@ -254,7 +270,14 @@
             return {humanReview:true,reason:"OS possui tentativa anterior sem liberacao para reenvio."};
           }
           if(!active()) throw Error("Lote interrompido.");
-          return processAutoCloseCandidate(candidate,profile);
+          const path="/api/orders?date="+encodeURIComponent(date)+"&status=field&service_type=all";
+          const fresh=await freshOrders(
+            ()=>request(apiUrlForProfile(path,profile),{timeoutMs:180000}),
+            {active,wait:sleep,notify:(attempt,max)=>update(String(candidate.order.contract),"Consultando","Atualizando aprovacao da OS "+candidate.numOs+" ("+attempt+"/"+max+").")}
+          );
+          const refreshed=refreshCandidate(candidate,fresh.orders,validToaCloseSnapshot);
+          if(!active()) throw Error("Lote interrompido.");
+          return processAutoCloseCandidate(refreshed,profile);
         },
         async confirm(requestId) {
           for(let attempt=0;attempt<12;attempt++){
