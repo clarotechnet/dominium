@@ -100,3 +100,19 @@ test("already absent contract never submits a write",async()=>{
  await runBatch(["12345678"],{active:()=>true,update:(...v)=>events.push(v),prepare:async()=>[],send:async()=>{writes++;return {closed:true}},confirm:async()=>"confirmed"});
  assert.equal(writes,0);assert.equal(events.at(-1)[1],"Sem OS em campo");
 });
+
+test("busy cache and HTTP 409 wait for fresh data without submitting writes",async()=>{
+ const {freshOrders}=require("../static/adhesion-batch.js");
+ const queue=[{stale:true,orders:[{id_os:1}]},Object.assign(new Error("busy"),{status:409}),{orders:[{id_os:2}]}];
+ const waits=[],notices=[];
+ const result=await freshOrders(async()=>{const r=queue.shift();if(r instanceof Error)throw r;return r;},{active:()=>true,wait:async d=>waits.push(d),notify:(a,m)=>notices.push([a,m]),attempts:3,delay:5});
+ assert.equal(result.orders[0].id_os,2);assert.deepEqual(waits,[5,5]);assert.deepEqual(notices,[[1,3],[2,3]]);
+});
+test("persistent cache, cancellation and nonbusy errors fail closed",async()=>{
+ const {freshOrders}=require("../static/adhesion-batch.js");let reads=0;
+ await assert.rejects(freshOrders(async()=>{reads++;return {stale:true,orders:[]};},{active:()=>true,wait:async()=>{},attempts:2}),/Imperium ocupado/);assert.equal(reads,2);
+ let active=true;
+ await assert.rejects(freshOrders(async()=>({stale:true,orders:[]}),{active:()=>active,wait:async()=>{active=false;}}),/interrompido/);
+ await assert.rejects(freshOrders(async()=>{throw Object.assign(new Error("auth"),{status:401});},{active:()=>true,wait:async()=>{throw Error("must not retry");}}),/auth/);
+ assert.equal(codeOnly("INSTALACAO DE CABO GPON"),true);
+});
