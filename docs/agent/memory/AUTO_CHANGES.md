@@ -402,3 +402,11 @@ Alterações preparadas para commit (11 arquivos). Para motivação e resultado 
 - `tests/test_backlog_fora_rota.cjs`
 - `tests/test_backlog_status_reload_20261107.cjs`
 - `tests/test_fora_rota_shared_state.mjs`
+
+## 2026-11-24 | staged:0493a469a43a4da6
+
+Alterações preparadas para commit (3 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `static/backlog-fora-rota.js`
+- `static/index.html`
+- `tests/test_fora_rota_performance.cjs`
