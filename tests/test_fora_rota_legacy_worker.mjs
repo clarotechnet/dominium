@@ -20,7 +20,7 @@ test('D1 sync uses indexed columns, retains history and pages safely',async()=>{
  }}};
  globalThis.fetch=async(url,options)=>{
   assert.equal(options.method,'POST');
-  assert.equal(options.redirect,'error');
+  assert.equal(options.redirect,'manual');
   const body=JSON.parse(options.body);
   sent.push(...body.records);
   return new Response(JSON.stringify({ok:true,received:body.records.length,changed:body.records.length}),{status:200});

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T12:15:06+00:00",
+  "generated_at": "2026-11-24T12:27:17+00:00",
   "schema": 2,
-  "source_fingerprint": "6957f95d55a11800d8c71fc104811ff15531053413c7e213b2236dbd19e6aa55",
+  "source_fingerprint": "dda477f0e0336c622caa434f1ccd429cfff649a4a8915c6de0dc3f34bad297e0",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1558,8 +1558,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 16717,
-      "sha256": "3c3c656a8254f8eae199a1005fdbedbb49eccf72114efaab3fdb3176e0e936dd",
+      "bytes": 16987,
+      "sha256": "8e6cf027ba623b7872cdd0a48e8c13ac0fb830a082ffd55ae2ba45618002f55b",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -2860,8 +2860,8 @@
     {
       "path": "integrations/fora-rota-legacy-sync/worker.mjs",
       "category": "shared",
-      "bytes": 3809,
-      "sha256": "92456f8286dfc6140930d72b68f589bc59cdfda016cd669499a332c3066d1d52",
+      "bytes": 3887,
+      "sha256": "c9c37356167f9f75ba79b3e6eebc521e7fa2c5c39edd21e27b90420ebef5f738",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7822,8 +7822,8 @@
     {
       "path": "tests/test_fora_rota_legacy_worker.mjs",
       "category": "tests",
-      "bytes": 1927,
-      "sha256": "8a8607049b6efb70b5112792839b779787d2d14637f7661618f0ea9d690cbcb2",
+      "bytes": 1928,
+      "sha256": "3875bf4f498fc12e3a8a2fbc5776ed6f7b4678034e6755dc10aabc69f616671c",
       "summary": "",
       "imports": [],
       "endpoints": [],

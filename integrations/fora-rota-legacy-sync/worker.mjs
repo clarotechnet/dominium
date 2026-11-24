@@ -35,7 +35,7 @@ export async function sync(env,{full=false,now=Date.now()}={}){
    }
    return mapped;
   });
-  const r=await fetch(ENDPOINT,{method:'POST',headers:{...headers,'X-Sync-Token':env.SYNC_TOKEN},body:JSON.stringify({records}),redirect:'error',signal:AbortSignal.timeout(45000)});
+  const r=await fetch(ENDPOINT,{method:'POST',headers:{...headers,'X-Sync-Token':env.SYNC_TOKEN},body:JSON.stringify({records}),redirect:'manual',signal:AbortSignal.timeout(45000)});
   const reply=await r.json().catch(()=>null);
   if(!r.ok||!reply?.ok||reply.received!==records.length)throw Error('Supabase sync rejected: '+r.status);
   read+=records.length;changes+=Number(reply.changed)||0;
@@ -49,7 +49,7 @@ export default{
  async fetch(req,env){
   const u=new URL(req.url);
   if(req.method!=='POST'||u.pathname!=='/sync'||!await equal(req.headers.get('X-Sync-Token'),env.SYNC_TOKEN))return json({ok:false},404);
-  try{return json(await sync(env,{full:true}));}catch(e){return json({ok:false,error:'Sync failed'},503);}
+  try{return json(await sync(env,{full:true}));}catch(e){console.error('FORA_ROTA_SYNC_FAILED',e instanceof Error ? e.name : 'Error');return json({ok:false,error:'Sync failed'},503);}
  },
  async scheduled(event,env,ctx){
   const t=new Date(event.scheduledTime);
