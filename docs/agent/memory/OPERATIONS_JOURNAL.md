@@ -367,3 +367,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Testes da fila, da aprovação atualizada e da ponte oficial, com cobertura de confirmação parcial e de GPON.
 
 **Próximo passo/pendência:** Tratar divergências de estoque, técnico e códigos ausentes somente com evidência oficial.
+
+## 2026-11-24 20:26 UTC — Reduzir espera pela lista do Imperium na adesão
+
+**Motivo:** A fila fazia uma consulta inicial redundante e aguardava o terminal compartilhado por até 24 tentativas.
+
+**Alterado:** A preparação reaproveita a lista em campo do snapshot atualizado devolvido pela consulta TOA. A leitura adicional e a aprovação de cada O.S. têm limite de quatro tentativas e 15 segundos.
+
+**Verificação:** 33 testes focados na fila, no TOA e na ponte oficial, incluindo snapshot atualizado, resposta antiga e limite de espera.
+
+**Próximo passo/pendência:** Observar lotes reais sem reabrir envios incertos.

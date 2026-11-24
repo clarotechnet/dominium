@@ -28,20 +28,33 @@
   }
   // The operational endpoint returns HTTP 200 + stale=true (or 409)
   // while its shared lock is held. Only retry reads, never a close.
-  async function freshOrders(read, {active,wait,notify=()=>{},attempts=24,delay=5000}) {
+  async function freshOrders(read, {active,wait,notify=()=>{},attempts=4,delay=1500,budgetMs=15000,now=Date.now}) {
+    const deadline=now()+budgetMs;
     for(let attempt=1;attempt<=attempts;attempt++){
       if(!active())throw Error("Lote interrompido.");
+      const remaining=deadline-now();
+      if(remaining<=0)break;
       let payload;
-      try {payload=await read();}
+      try {payload=await read(remaining);}
       catch(err){if(err.status!==409)throw err;}
       if(!active())throw Error("Lote interrompido.");
       if(payload && payload.stale!==true && Array.isArray(payload.orders))return payload;
       if(payload && payload.stale!==true)throw Error("Resposta invalida da lista Imperium.");
-      if(attempt===attempts)break;
+      if(attempt===attempts || deadline-now()<=delay)break;
       notify(attempt,attempts);
       await wait(delay);
     }
-    throw Error("Imperium ocupado: nao foi possivel obter lista atualizada.");
+    throw Error("Imperium ocupado: nao foi possivel obter lista atualizada no tempo da fila.");
+  }
+  async function ordersForBatchContract(payload, contract, readFresh) {
+    const orders=payload.imperium_all_orders;
+    if(payload.imperium_refresh?.refreshed===true && Array.isArray(orders) &&
+       orders.every(order=>order?.contract && order.status)) {
+      // This snapshot establishes which OS are still in the field. Only
+      // refreshCandidate can authorize a send using a fresh field-list row.
+      return orders.filter(order=>String(order.contract)===contract && String(order.status).trim().toUpperCase()==="EM CAMPO");
+    }
+    return (await readFresh()).orders;
   }
   function codeOnly(service) {
     const s=String(service||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
@@ -231,7 +244,7 @@
       } catch(err) {hooks.update(contract,"Tratativa",String(err.message||err).slice(0,300));}
     }
   }
-  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,refreshCandidate};return;}
+  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,ordersForBatchContract,refreshCandidate};return;}
   const panel=document.getElementById("adhesionBatch");
   if(!panel)return;
   const input=document.getElementById("adhesionBatchInput"),start=document.getElementById("adhesionBatchStart"),
@@ -262,24 +275,19 @@
     rows=new Map(contracts.map(contract=>[contract,{contract,label:"Na fila",detail:"Aguardando"}]));
     render();renderToaLiveStatus();
     const active=()=>!stopped && state.profile===profile && state.profileEpoch===epoch && elements.date.value===date && state.officialCloseEnabled && state.closeEnabled;
+    const fieldPath="/api/orders?date="+encodeURIComponent(date)+"&status=field&service_type=all";
+    const readFieldOrders=timeoutMs=>request(apiUrlForProfile(fieldPath,profile),{timeoutMs});
     try {
       await runBatch(contracts,{
         active,update,
         async prepare(contract) {
-          const path="/api/orders?date="+encodeURIComponent(date)+"&status=field&service_type=all";
-          const orders=await freshOrders(
-            ()=>request(apiUrlForProfile(path,profile),{timeoutMs:180000}),
-            {active,wait:sleep,notify:(attempt,max)=>update(contract,"Consultando","Imperium ocupado; aguardando lista atualizada ("+attempt+"/"+max+").")}
-          );
           const payload=await request(apiUrlForProfile("/api/toa-live/lookup",profile),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:contract,expected_profile_key:profile,expected_date:date}),timeoutMs:300000});
           if(!active()) throw Error("Cidade/data alterada; fila interrompida.");
-          // Revalidate the field list if the TOA correlation itself could
-          // not refresh Imperium. The initial snapshot alone is insufficient.
-          const current=payload.imperium_refresh?.refreshed===true ? orders : await freshOrders(
-            ()=>request(apiUrlForProfile(path,profile),{timeoutMs:180000}),
-            {active,wait:sleep,notify:(attempt,max)=>update(contract,"Consultando","Aguardando reconfirmacao do Imperium ("+attempt+"/"+max+").")}
-          );
-          return selectCandidates(payload,current.orders,{profile,contract,date,epoch},{
+          const orders=await ordersForBatchContract(payload,contract,()=>freshOrders(
+            readFieldOrders,
+            {active,wait:sleep,notify:(attempt,max)=>update(contract,"Consultando","Imperium ocupado; aguardando lista atualizada ("+attempt+"/"+max+").")}
+          ));
+          return selectCandidates(payload,orders,{profile,contract,date,epoch},{
             complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,
             valid:validToaCloseSnapshot,knownCode:code=>state.closeCodes.some(c=>c.code===code),
             assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials,expectedType:expectedEquipmentType,productive:code=>Boolean(state.closeCodes.find(c=>c.code===code)?.productive)
@@ -296,9 +304,8 @@
             return {humanReview:true,reason:"OS possui tentativa anterior sem liberacao para reenvio."};
           }
           if(!active()) throw Error("Lote interrompido.");
-          const path="/api/orders?date="+encodeURIComponent(date)+"&status=field&service_type=all";
           const fresh=await freshOrders(
-            ()=>request(apiUrlForProfile(path,profile),{timeoutMs:180000}),
+            readFieldOrders,
             {active,wait:sleep,notify:(attempt,max)=>update(String(candidate.order.contract),"Consultando","Atualizando aprovacao da OS "+candidate.numOs+" ("+attempt+"/"+max+").")}
           );
           const refreshed=refreshCandidate(candidate,fresh.orders,validToaCloseSnapshot);
