@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T12:58:52+00:00",
+  "generated_at": "2026-11-24T16:30:54+00:00",
   "schema": 2,
-  "source_fingerprint": "49f0feaf18b737a1311b0c9d469a5ea8e675a446316ab83effc4c02234d6cb77",
+  "source_fingerprint": "324416c61e049cd4cc591ad3a07f78160efe82efa9f68956a8395070c0487185",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1251,6 +1251,19 @@
       "symbol_count": 26
     },
     {
+      "path": "docs/agent/ADESAO_BATCH_NTL_PWM_20261124.md",
+      "category": "docs",
+      "bytes": 2030,
+      "sha256": "c0edc186d895639e0bd38051d21b3b5cc533f3d6132d1d3d6f421fe6f3b55928",
+      "summary": "Adesao NTL/PWM: baixa em lote explicita (24/11/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/ATLAS_APP4_VIDEO_COMPARISON_20261026.md",
       "category": "docs",
       "bytes": 4289,
@@ -1558,8 +1571,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 18330,
-      "sha256": "e70d4b3b5dbe1e11a5213ca86e83021409f0fc1d4e0b8150ae9c4a72320df8f0",
+      "bytes": 18658,
+      "sha256": "ccc75b5dc49668df02d990208129719b3262167c81624c99e38f19ff791c05c0",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -5641,8 +5654,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 15692,
-      "sha256": "7bb99ba72ddfb9a558b928cf3493bde3ed713138e3fa8860daf4e96314772321",
+      "bytes": 17987,
+      "sha256": "72e6b00c35e32ac648a5e9e8046b9cf3705317de82e22642d81fda787c811802",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -5653,7 +5666,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 11
+      "symbol_count": 13
     },
     {
       "path": "static/all-cities-scope.css",
@@ -5994,8 +6007,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 185602,
-      "sha256": "7282bb7575477b0e29569a1ce4c91cabb9738400893825c0ac0c327b077e2ea7",
+      "bytes": 185723,
+      "sha256": "9f6d280e071e4467307b4bc7bfb8f9040cbaeffaf9b9b47faf847d32f35d0b3d",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6689,8 +6702,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 5477,
-      "sha256": "6ecb59e8cc7c1c857ceebb7bdee6a7db4bcb013e793daf4e1121b278e5354e51",
+      "bytes": 7662,
+      "sha256": "e4c3a27cb87667134ea86cca3595f647cc9a14cf1545005bb8c5557baef519ca",
       "summary": "",
       "imports": [],
       "endpoints": [],

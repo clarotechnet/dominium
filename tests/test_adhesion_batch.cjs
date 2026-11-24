@@ -72,3 +72,31 @@ test("legacy production lookup uses signed import scope, not technician as bucke
  f.order.operation_identity.activity_id="different";
  assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps));
 });
+
+test("serial mandatory on productive Virtua; code-only companion needs no items",()=>{
+ const f=fixture(), virtua={...f.order,id_os:2,num_os:"2612345679",service:"ADESAO - INSTALAR PONTO VIRTUA"};
+ f.capture.tasks.push({os_number:virtua.num_os,status:"executed",close_code:"409"});
+ f.capture.imperium_matches.push(virtua);
+ f.capture.materials=[{code:"22026219",quantity:15},{code:"22056364",quantity:1}];
+ f.deps.expectedType=s=>s.includes("VIRTUA")?"emta":"";
+ f.deps.productive=()=>true;
+ f.deps.assign=cs=>cs.forEach(c=>c.materialOwner=c.numOs===virtua.num_os);
+ assert.throws(()=>selectCandidates(f.payload,[f.order,virtua],scope,f.deps),/Serial obrigatorio/);
+ f.capture.installed_equipment=[{serial:"AABBCCDDEEFF",type:"emta"}];
+ f.deps.equipment=c=>({installed:c.batchCodeOnly?[]:f.capture.installed_equipment,removed:[]});
+ const cs=selectCandidates(f.payload,[f.order,virtua],scope,f.deps);
+ assert.equal(cs[0].numOs,virtua.num_os);assert.equal(cs[1].batchCodeOnly,true);
+});
+test("shortage audit permits confirmed completion and next contract, no serial waiver",async()=>{
+ const events=[],sent=[];
+ await runBatch(["12345678","23456789"],{active:()=>true,update:(...v)=>events.push(v),prepare:async c=>c==="12345678"?[{numOs:"1"},{numOs:"2"}]:[{numOs:"3"}],send:async c=>{sent.push(c.numOs);return c.numOs==="1"?{pending:true,requestId:"r",materialPreparation:{discarded_shortfalls:[{code:"22056364"},{code:"22056365"}],partial_shortfalls:[]}}:c.numOs==="3"?{closed:false,reason:"Serial fora do estoque"}:{closed:true}},confirm:async()=>"confirmed"});
+ assert.deepEqual(sent,["1","2","3"]);
+ const done=events.findLast(v=>v[0]==="12345678");
+ assert.equal(done[1],"Baixado");assert.match(done[2],/22056364, 22056365/);
+ assert.equal(events.at(-1)[1],"Tratativa");assert.match(events.at(-1)[2],/Serial fora do estoque/);
+});
+test("already absent contract never submits a write",async()=>{
+ let writes=0;const events=[];
+ await runBatch(["12345678"],{active:()=>true,update:(...v)=>events.push(v),prepare:async()=>[],send:async()=>{writes++;return {closed:true}},confirm:async()=>"confirmed"});
+ assert.equal(writes,0);assert.equal(events.at(-1)[1],"Sem OS em campo");
+});

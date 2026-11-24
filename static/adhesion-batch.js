@@ -30,6 +30,17 @@
     const s=String(service||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
     return s.includes("ASSINATURA") || /INST(?:ALACAO)?\.?\s+GPON\s*-\s*INST(?:ALACAO)?\.?\s+CABO/.test(s);
   }
+  function materialAudit(preparation) {
+    if(!preparation || typeof preparation!=="object") return "";
+    const label=rows=>(Array.isArray(rows)?rows:[]).map(row=>String(row.requested_code||row.code||row.requested_codes?.join("/")||"codigo nao informado")).join(", ");
+    const parts=[];
+    const omitted=label(preparation.discarded_shortfalls),partial=label(preparation.partial_shortfalls);
+    if(omitted)parts.push("Sem saldo (dispensadas): "+omitted);
+    if(partial)parts.push("Quantidade limitada ao saldo: "+partial);
+    if(preparation.transferred)parts.push("Complemento pelo RETORNO");
+    if(preparation.fallback_removed_after_rejection?.length)parts.push("Itens retirados apos rejeicao confirmada: "+preparation.fallback_removed_after_rejection.join(", "));
+    return parts.join("; ");
+  }
   function selectCandidates(payload, active, scope, deps) {
     const {profile,contract,date}=scope;
     if(profile!=="natal") throw Error("Lote exclusivo da base Natal/Parnamirim.");
@@ -64,7 +75,7 @@
         const exact=(capture.imperium_matches||[]).filter(o=>String(o.num_os)===os && String(o.contract)===contract && Number(o.id_os)===Number(activeOrder.id_os));
         if(seen.has(os) || exact.length!==1 || !deps.valid(exact[0],capture) || !deps.executed(task.status)) throw Error("OS sem correspondencia unica, aprovada e executada: "+os);
         const code=String(task.close_code||"").trim();
-        if(!code || !deps.knownCode(code)) throw Error("Codigo de baixa ausente ou invalido: "+os);
+        if(!code || code==="430" || !deps.knownCode(code)) throw Error("Codigo de baixa ausente ou invalido: "+os);
         const order=exact[0], service=String(order.service||"");
         const origin=importBucket(order,scope,capture);
         if(!route && !isAdhesionBucket(profile,origin)) throw Error("Bucket de origem sem comprovacao no arquivo de importacao.");
@@ -76,6 +87,20 @@
       }
     }
     if(seen.size!==byNumber.size) throw Error("Nem todas as OS em campo foram conciliadas com o TOA.");
+    // If a productive companion already left the field, the remaining OS
+    // cannot safely claim the activity's shared stock a second time.
+    for(const candidate of candidates) {
+      if(candidate.batchCodeOnly)continue;
+      const capture=candidate.capture;
+      const activeTasks=new Set(candidates.filter(c=>c.capture.aid===capture.aid).map(c=>c.numOs));
+      for(const task of capture.tasks||[]) {
+        const os=String(task.os_number||"");
+        if(!os || activeTasks.has(os))continue;
+        const other=(capture.imperium_matches||[]).find(o=>String(o.num_os)===os)
+          || (capture.imperium_all_orders||[]).find(o=>String(o.num_os)===os);
+        if(!other || !codeOnly(other.service))throw Error("Atividade com OS acompanhante fora de campo; risco de duplicar estoque.");
+      }
+    }
     deps.assign(candidates);
     const serials=new Set(), byActivity=new Map();
     for(const candidate of candidates) {
@@ -84,6 +109,10 @@
       byActivity.set(candidate.capture.aid,activitySerials);
       const plan=deps.equipment(candidate);
       if(plan.error || plan.correction) throw Error("Equipamentos exigem tratativa: "+candidate.numOs);
+      const expected=deps.expectedType?.(candidate.order.service);
+      if(expected && deps.productive?.(candidate.code) && !plan.installed.some(item=>item.type===expected || (expected==="decoder" && item.type==="smart"))) {
+        throw Error("Serial obrigatorio nao conciliado para OS "+candidate.numOs+" ("+expected+").");
+      }
       for(const item of [...plan.installed,...plan.removed]) {
         const key=String(item.serial||"").replace(/[^A-Z0-9]/gi,"").toUpperCase();
         if(!key || serials.has(key)) throw Error("Serial ausente ou repetido no contrato: "+candidate.numOs);
@@ -118,15 +147,17 @@
         const candidates=await hooks.prepare(contract);
         if(!hooks.active()) break;
         if(!candidates.length) {hooks.update(contract,"Sem OS em campo","Nenhuma baixa enviada.");continue;}
-        let confirmed=0, waiting=0, blocked=0, reason="";
+        let confirmed=0, waiting=0, blocked=0, reason=""; const audits=[];
         for(const candidate of candidates) {
           if(!hooks.active()) break;
           hooks.update(contract,"Executando","OS "+candidate.numOs+" ("+candidate.code+")");
           const res=await hooks.send(candidate);
           if(res.reason || res.error) reason=String(res.reason || res.error).slice(0,240);
+          const audit=materialAudit(res.materialPreparation);
+          if(audit)audits.push("OS "+candidate.numOs+": "+audit);
           if(res.closed) {confirmed++;continue;}
           if(res.pending && res.requestId) {
-            hooks.update(contract,"Aguardando confirmacao","OS "+candidate.numOs+" enviada uma vez.");
+            hooks.update(contract,"Aguardando confirmacao","OS "+candidate.numOs+" enviada uma vez. "+audit);
             const result=await hooks.confirm(res.requestId,candidate);
             if(result==="confirmed") {confirmed++;continue;}
             if(result==="pending") waiting++; else blocked++;
@@ -135,12 +166,12 @@
           break;
         }
         const rest=candidates.length-confirmed-waiting-blocked;
-        const detail=confirmed+" confirmada(s), "+waiting+" pendente(s), "+blocked+" em tratativa, "+rest+" nao enviada(s)."+(reason?" "+reason:"");
+        const detail=confirmed+" confirmada(s), "+waiting+" pendente(s), "+blocked+" em tratativa, "+rest+" nao enviada(s)."+(reason?" "+reason:"")+(audits.length?" "+audits.join(" | "):"");
         hooks.update(contract,confirmed===candidates.length?"Baixado":waiting?"Aguardando confirmacao":blocked?"Tratativa":"Interrompido",detail);
       } catch(err) {hooks.update(contract,"Tratativa",String(err.message||err).slice(0,300));}
     }
   }
-  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,selectCandidates,runBatch};return;}
+  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch};return;}
   const panel=document.getElementById("adhesionBatch");
   if(!panel)return;
   const input=document.getElementById("adhesionBatchInput"),start=document.getElementById("adhesionBatchStart"),
@@ -184,7 +215,7 @@
           return selectCandidates(payload,orders.orders,{profile,contract,date,epoch},{
             complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,
             valid:validToaCloseSnapshot,knownCode:code=>state.closeCodes.some(c=>c.code===code),
-            assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials
+            assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials,expectedType:expectedEquipmentType,productive:code=>Boolean(state.closeCodes.find(c=>c.code===code)?.productive)
           });
         },
         async send(candidate) {

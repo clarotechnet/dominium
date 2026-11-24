@@ -9586,6 +9586,7 @@ function semiAutoMaterialGroupKey(candidate) {
 }
 
 function semiAutoCandidateAcceptsMaterials(candidate) {
+  if (candidate?.batchAdhesion && candidate.batchCodeOnly) return false;
   if (candidate?.isDisconnect && String(candidate?.code || "").trim() === "430") return false;
   if (!closeCodeAllowsMaterials(candidate?.code)) return false;
   if (!toaLiveMaterialsDraft(candidate?.capture?.materials).length) return false;
@@ -9784,7 +9785,7 @@ function semiAutoCandidateEquipmentPlan(candidate) {
   const capture = candidate?.capture || {};
   const service = normalize(match.service);
   if (service.includes("ASSINATURA")) return { installed: [], removed: [], correction: null, error: "" };
-  if (candidate.materialGroupSize > 1 && !candidate.materialOwner) return { installed: [], removed: [], correction: null, error: "" };
+  if (!candidate.batchAdhesion && candidate.materialGroupSize > 1 && !candidate.materialOwner) return { installed: [], removed: [], correction: null, error: "" };
 
   const contractOrders = (capture.imperium_matches && capture.imperium_matches.length)
     ? capture.imperium_matches
