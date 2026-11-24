@@ -410,3 +410,42 @@ Alterações preparadas para commit (3 arquivos). Para motivação e resultado c
 - `static/backlog-fora-rota.js`
 - `static/index.html`
 - `tests/test_fora_rota_performance.cjs`
+
+## 2026-11-24 | staged:d00b6d370224bc0e
+
+Alterações preparadas para commit (6 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `integrations/fora-rota-legacy-sync/worker.mjs`
+- `integrations/fora-rota-legacy-sync/wrangler.jsonc`
+- `supabase/functions/dominium-fora-rota-legacy-sync/core.mjs`
+- `supabase/functions/dominium-fora-rota-legacy-sync/index.ts`
+- `supabase/functions/dominium-fora-rota-legacy-sync/merge.mjs`
+- `tests/test_fora_rota_legacy_sync.mjs`
+
+## 2026-11-24 | staged:8ece39f652b6c8bb
+
+Alterações preparadas para commit (2 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `integrations/fora-rota-legacy-sync/worker.mjs`
+- `tests/test_fora_rota_legacy_worker.mjs`
+
+## 2026-11-24 | staged:451f061a9a4e1a6c
+
+Alterações preparadas para commit (1 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `supabase/functions/dominium-fora-rota-legacy-sync/index.ts`
+
+## 2026-11-24 | staged:e3c3b7fb424df8db
+
+Alterações preparadas para commit (2 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `integrations/fora-rota-legacy-sync/worker.mjs`
+- `tests/test_fora_rota_legacy_worker.mjs`
+
+## 2026-11-24 | staged:0658246d7573c0c0
+
+Alterações preparadas para commit (3 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `static/backlog-fora-rota.js`
+- `static/index.html`
+- `tests/test_fora_rota_performance.cjs`

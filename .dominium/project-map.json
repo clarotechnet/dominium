@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T11:35:09+00:00",
+  "generated_at": "2026-11-24T12:31:52+00:00",
   "schema": 2,
-  "source_fingerprint": "d5b137537807368491d3ab37b3804a1329cdb26a3628dd81f2fd0aea2671fc0c",
+  "source_fingerprint": "5f2425167b91fd81c1bee3396369f74c9f3e6053f5867c7bcac4119d711ab1a1",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1558,8 +1558,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 15967,
-      "sha256": "d7962e2b0bdf60352673f0d10f5f27a215d4c510c2fd560d14213335b6636b7e",
+      "bytes": 17531,
+      "sha256": "c948f50b9725580ed008913229af933b7dec269df2944cdd89acbd373315fad5",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -2856,6 +2856,19 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 22
+    },
+    {
+      "path": "integrations/fora-rota-legacy-sync/worker.mjs",
+      "category": "shared",
+      "bytes": 3887,
+      "sha256": "c9c37356167f9f75ba79b3e6eebc521e7fa2c5c39edd21e27b90420ebef5f738",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
     },
     {
       "path": "integrations/import_bridge/commission_reports.test.mjs",
@@ -6311,6 +6324,48 @@
       "symbol_count": 0
     },
     {
+      "path": "supabase/functions/dominium-fora-rota-legacy-sync/core.mjs",
+      "category": "shared",
+      "bytes": 4348,
+      "sha256": "87039e4164c11443119ddaaaf92562017e9b581053a80c2a6e27885646c1a4f8",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 9
+    },
+    {
+      "path": "supabase/functions/dominium-fora-rota-legacy-sync/index.ts",
+      "category": "shared",
+      "bytes": 3172,
+      "sha256": "a3be95f71cd4be931b1cc9ed299c9f79f9255f41ef26458d2814fb6b73b6d475",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TOKEN_HASH.charCodeAt",
+        "TOKEN_HASH.length"
+      ],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
+      "path": "supabase/functions/dominium-fora-rota-legacy-sync/merge.mjs",
+      "category": "shared",
+      "bytes": 2964,
+      "sha256": "07891305cef9ea1b72b253c97c9056e2e4cd8f21eb45415f2e5582a3ccb67b3e",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
       "path": "supabase/functions/dominium-fora-rota-state/core.mjs",
       "category": "shared",
       "bytes": 4349,
@@ -7750,6 +7805,32 @@
       ],
       "entrypoint": true,
       "symbol_count": 8
+    },
+    {
+      "path": "tests/test_fora_rota_legacy_sync.mjs",
+      "category": "tests",
+      "bytes": 2083,
+      "sha256": "e949fac884531f35cf8a2974b64f3a37aaa8c285b86ca133fc78aae9a77bf9d7",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "tests/test_fora_rota_legacy_worker.mjs",
+      "category": "tests",
+      "bytes": 1928,
+      "sha256": "3875bf4f498fc12e3a8a2fbc5776ed6f7b4678034e6755dc10aabc69f616671c",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "tests/test_fora_rota_performance.cjs",
@@ -10611,6 +10692,8 @@
     "TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md",
     "TOA_PROVIDER_TREE_REPAIR_20261027.md",
     "TOA_REPLAY_HEADER_NAMES.has",
+    "TOKEN_HASH.charCodeAt",
+    "TOKEN_HASH.length",
     "TOKEN_PATTERN.test",
     "Tabela_codigo_baixa0711.catalog",
     "Tabela_codigo_baixa0711.pdf",
