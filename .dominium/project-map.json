@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T00:34:42+00:00",
+  "generated_at": "2026-11-24T00:58:22+00:00",
   "schema": 2,
-  "source_fingerprint": "29d7022f4a95e7721ae3c37b78aadef564dd03bb20fd7b51092fe0a6be221818",
+  "source_fingerprint": "041867fb0fc5a4e2481fca0163ccca426e441902ea0de16b5650365806b3be76",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -980,8 +980,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 44030,
-      "sha256": "ac7f1f342ba3ef5d71e17c749f02480c737291df06205dd92fcb1cec7fcdf6f8",
+      "bytes": 45352,
+      "sha256": "d7fc6d917d7691b76f059bb5411132c344518b41d380946dc4f7e59e8776c1e1",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1000,6 +1000,7 @@
         "/api/confront/",
         "/api/diagnostics",
         "/api/disconnection",
+        "/api/fora-rota/state",
         "/api/health-check",
         "/api/import-history",
         "/api/import-targets",
@@ -1557,8 +1558,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 15093,
-      "sha256": "2a77fad38d5d29bfa4ec90e8c768404df9ef3960d312f6881d1873b8eba3fdcb",
+      "bytes": 15695,
+      "sha256": "c961b41174212381d6a02d8d9ac8815430d94628d20304410c96606536fbe1d6",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -5672,8 +5673,8 @@
     {
       "path": "static/backlog-analysis.js",
       "category": "frontend",
-      "bytes": 21521,
-      "sha256": "05d3c0233b40c4af7dc50a1f804e629c5e41720525b32db7c7d70f4337dee22c",
+      "bytes": 21259,
+      "sha256": "9f83d2bc7de02eb555481266bc0ca52776b59964277a0e905b4ee86dd407e7cd",
       "summary": "DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */",
       "imports": [],
       "endpoints": [
@@ -5706,17 +5707,18 @@
     {
       "path": "static/backlog-fora-rota.js",
       "category": "frontend",
-      "bytes": 49378,
-      "sha256": "d8ce9fe95ac6bd91b47eb683d442ba40e5f67b4e339fd5c74ef132f174d273c1",
+      "bytes": 52444,
+      "sha256": "4f101f37f0d0d27809d57bb20619a5ea8dc430c3665760c649588c7a4a11a102",
       "summary": "",
       "imports": [],
       "endpoints": [
-        "/api/backlog/year/sent"
+        "/api/backlog/year/sent",
+        "/api/fora-rota/state"
       ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 82
+      "symbol_count": 86
     },
     {
       "path": "static/backlog-report-image.js",
@@ -5949,8 +5951,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 183782,
-      "sha256": "b892e494c78ffca346e84bd97765a798482cb39f65a8fd8216eb1d2a83901a84",
+      "bytes": 184317,
+      "sha256": "b6e32f0ec07629789461e0237475061ed38daf03e2f52576c45b625a99c20814",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6294,6 +6296,45 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 0
+    },
+    {
+      "path": "supabase/fora_rota_snapshot_schema.sql",
+      "category": "shared",
+      "bytes": 3076,
+      "sha256": "e14c971cc199c647f49572483788ef1a25b9ab370391a6496f356254021de5a2",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "supabase/functions/dominium-fora-rota-state/core.mjs",
+      "category": "shared",
+      "bytes": 4349,
+      "sha256": "6a1337752c41345809a8792bdff6595f31e9ec5d7fd5a7ddc1e408b1fd7e8199",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 9
+    },
+    {
+      "path": "supabase/functions/dominium-fora-rota-state/index.ts",
+      "category": "shared",
+      "bytes": 5838,
+      "sha256": "c89f0ec843c1efc41e2d1a342c8fdcd11a7e3978a5ca66278cdbf165b625a744",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
     },
     {
       "path": "supabase/migrations/20260917202620_dominium_auth_schema.sql",
@@ -6960,18 +7001,19 @@
     {
       "path": "tests/test_backlog_fora_rota.cjs",
       "category": "tests",
-      "bytes": 6740,
-      "sha256": "e4081e84cc06f0cbea62c91f61becc8508c4bfa3b19d5a3bc74330847690db4d",
+      "bytes": 7118,
+      "sha256": "8cc48eaca610730ec628153619db4e7d6b945d15d8fcc0b57cc51aa3e73bc36e",
       "summary": "Contratos do gerador original de Fora de Rota, sem acesso a dados reais. */",
       "imports": [],
       "endpoints": [
         "/api/backlog/year/sent",
-        "/api/fora-rota/sent"
+        "/api/fora-rota/sent",
+        "/api/fora-rota/state"
       ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 0
+      "symbol_count": 1
     },
     {
       "path": "tests/test_backlog_hostinger_proxy.js",
@@ -7012,8 +7054,8 @@
     {
       "path": "tests/test_backlog_status_reload_20261107.cjs",
       "category": "tests",
-      "bytes": 1429,
-      "sha256": "291bcba2431ffe6ed786bbdca75f2551f42bc65d626c87d39d602e4acf6d1a09",
+      "bytes": 1421,
+      "sha256": "b8c6664881c88ae7e087ceafbf9608c6ca30265332863558fecd50983896c5ed",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7708,6 +7750,19 @@
       ],
       "entrypoint": true,
       "symbol_count": 8
+    },
+    {
+      "path": "tests/test_fora_rota_shared_state.mjs",
+      "category": "tests",
+      "bytes": 2190,
+      "sha256": "6913a58d29f36e9538bd9e7529dc64dd689815ef7883f1407a8b67b93f565b4d",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "tests/test_hostinger_dataset_regression.cjs",

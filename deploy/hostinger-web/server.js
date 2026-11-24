@@ -518,6 +518,7 @@ async function listOrders(profileKey, isoDate, status = "field", serviceType = "
 
 app.use("/api/toa-agenda/import", express.json({ limit: "24mb" }));
 app.use("/api/backlog/year/routes", express.json({ limit: "22mb" }));
+app.use("/api/fora-rota/state", express.json({ limit: "6mb" }));
 app.use(["/api/imports/preview", "/api/imports/commit"], express.json({ limit: "12mb" }));
 app.use("/api/stock/analyses/daily/import", express.json({ limit: "5mb" }));
 app.use(express.json({ limit: "256kb" }));
@@ -962,6 +963,25 @@ const OPERATIONAL_PROXY_HEADER_ALLOWLIST = [
 
 const { createBacklogMiddleware } = require('./backlog-proxy');
 app.use('/api/backlog/year', createBacklogMiddleware());
+app.all('/api/fora-rota/state', async (req,res) => {
+  if (!['admin','controller'].includes(String(req.dominiumUser?.role||'')))
+    return res.status(403).json({ok:false,error:'Perfil operacional necessario'});
+  if (!['GET','POST'].includes(req.method)) return res.status(405).json({ok:false,error:'Metodo invalido'});
+  const b=req.method==='GET'?{action:'get_all'}:req.body;
+  if (!b || typeof b!=='object' || Array.isArray(b) || !['get_all','put','mark_sent'].includes(b.action))
+    return res.status(400).json({ok:false,error:'Acao invalida'});
+  const timer=new AbortController();
+  const timeout=setTimeout(()=>timer.abort(),90000);
+  try {
+    const upstream=await fetch(SUPABASE_URL+'/functions/v1/dominium-fora-rota-state',{
+      method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'content-type':'application/json','x-dominium-edge-key':bridgeToken()},
+      body:JSON.stringify({...b,actor_user_id:Number(req.dominiumUser.id)}),signal:timer.signal,redirect:'error'
+    });
+    const payload=await upstream.json();
+    return res.status(upstream.status).set('cache-control','no-store').json(payload);
+  } catch { return res.status(503).json({ok:false,error:'Bases compartilhadas indisponiveis'}); }
+  finally { clearTimeout(timeout); }
+});
 const { createDisconnectionMiddleware } = require('./disconnection-proxy');
 app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }));
 const { createImportMiddleware } = require('./import-proxy');

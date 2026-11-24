@@ -13366,6 +13366,7 @@ async function initialize() {
     renderProfileTabs();
     render();
     if (state.activeModule === "disconnection") disconnectionController?.activate();
+    if (state.activeModule === "backlog") document.dispatchEvent(new CustomEvent("dominium:fora-rota-ready"));
   }
 }
 

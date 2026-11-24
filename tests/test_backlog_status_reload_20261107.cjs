@@ -17,6 +17,6 @@ test("completed import renders persisted 5\/5 state; history error remains ident
   assert.match(js,/"Erro da última tentativa: "/);
 });
 test("cache-busts the status-polling javascript without changing application routes",()=>{
-  assert.match(html,/backlog-analysis\.js\?v=20261107-restore-status-1/);
+  assert.match(html,/backlog-analysis\.js\?v=20261123-shared-1/);
   assert.ok(!html.includes("backlog-analysis.js?v=20261103-route-buttons-1"));
 });

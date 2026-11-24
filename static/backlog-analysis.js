@@ -341,11 +341,7 @@
   $("backlogFindOffRoute").addEventListener("click",()=>action($("backlogFindOffRoute"),async()=>{
     currentProfile=$("backlogOffRouteProfile").value;
     const r=await call("/api/backlog/year/fora-rota?profile="+encodeURIComponent(currentProfile)+"&limit=150");candidates=r.candidates||[];
-    table($("backlogOffRouteResult"),[["Contrato","contract"],["Data","activity_date"],["O.S.","os_number"],["Código","code"],["Serviço","service"]],candidates,async(item,btn)=>{
-      btn.disabled=true;
-      try{const v=await post("/api/backlog/year/sent",{profile:currentProfile,contract:item.contract,note:"Registro manual no painel"});btn.textContent=v.ok?"Registrado":"Erro";}
-      catch(e){btn.disabled=false;btn.textContent="Repetir";update($("backlogSyncStatus"),e.message);}
-    });
+    table($("backlogOffRouteResult"),[["Contrato","contract"],["Data","activity_date"],["O.S.","os_number"],["Código","code"],["Serviço","service"]],candidates);
   }));
   $("backlogCopyOffRoute").addEventListener("click",()=>copy(candidates.map(r=>"Contrato "+r.contract+" • O.S. "+r.os_number+" • "+r.code+" ("+r.activity_date+")").join("\n")));
   $("backlogRefreshSent").addEventListener("click",()=>action($("backlogRefreshSent"),async()=>{
@@ -357,7 +353,7 @@
       const selected=tab.dataset.backlogTab;
       for(const btn of root.querySelectorAll("[data-backlog-tab]"))btn.classList.toggle("active",btn===tab);
       for(const pane of root.querySelectorAll("[data-backlog-pane]"))pane.classList.toggle("hidden",pane.dataset.backlogPane!==selected);
-      if(selected==="sent")$("backlogRefreshSent").click();
+      if(selected==="sent"){$("backlogRefreshSent").click();document.dispatchEvent(new CustomEvent("dominium:fora-rota-ready"));}
       if(selected==="daily")loadDailyTreatment().catch(()=>{});
     });
   }

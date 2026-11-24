@@ -161,6 +161,7 @@ endpoint	path
 /api/confront/	deploy/hostinger-web/server.js
 /api/diagnostics	deploy/hostinger-web/server.js
 /api/disconnection	deploy/hostinger-web/server.js
+/api/fora-rota/state	deploy/hostinger-web/server.js
 /api/health-check	deploy/hostinger-web/server.js
 /api/import-history	deploy/hostinger-web/server.js
 /api/import-targets	deploy/hostinger-web/server.js
@@ -273,6 +274,7 @@ endpoint	path
 /api/backlog/year/start	static/backlog-analysis.js
 /api/backlog/year/status	static/backlog-analysis.js
 /api/backlog/year/sent	static/backlog-fora-rota.js
+/api/fora-rota/state	static/backlog-fora-rota.js
 /api/commission-reports/export.xlsx?	static/commission-reports-ui.js
 /api/confront/jobs	static/confront.js
 /api/confront/jobs/	static/confront.js
@@ -351,6 +353,7 @@ endpoint	path
 /api/atlas-query/jobs	tests/test_atlas_query_ui_status.js
 /api/backlog/year/sent	tests/test_backlog_fora_rota.cjs
 /api/fora-rota/sent	tests/test_backlog_fora_rota.cjs
+/api/fora-rota/state	tests/test_backlog_fora_rota.cjs
 /api/backlog/year/compare?limit=100&codes=106	tests/test_backlog_hostinger_proxy.js
 /api/backlog/year/compare?limit=99999	tests/test_backlog_hostinger_proxy.js
 /api/backlog/year/daily-treatment	tests/test_backlog_hostinger_proxy.js

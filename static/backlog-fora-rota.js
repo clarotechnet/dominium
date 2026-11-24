@@ -11,7 +11,10 @@
     mossoro: 'Mossoro',
   };
 
+  const SHARED_API = '/api/fora-rota/state';
+  const profileKeys = ['natal','fortaleza','mossoro','recife'];
   const state = {
+    sharedReady: false, sharedLoading: null, sharedEpoch: 0, revisions: {}, legacySent: {},
     claroRecords: [],
     selectedRecords: [],
     sentContracts: {},
@@ -31,7 +34,7 @@
     collectElements();
     wireEvents();
     setDefaultDate();
-    loadSavedState();
+    populateNeighborhoods(); updateStats();
   });
 
   function collectElements() {
@@ -107,6 +110,16 @@
     document.addEventListener('dominium:module-change', (event) => {
       if (event.detail?.module === 'backlog') refreshSentTracking();
     });
+    document.addEventListener('dominium:fora-rota-ready', () => refreshSentTracking());
+    document.addEventListener('dominium:auth-cleared', () => {
+      state.sharedEpoch++; state.sharedLoading=null; state.sharedReady=false; state.revisions={}; state.legacySent={};
+      state.claroRecords=[]; state.clean106ByCity={}; state.clean106MetaByCity={}; state.clean106Contracts=[];
+      state.sentContracts={}; state.pendingClean106=[]; state.pendingFileName=''; state.claroFileName=''; state.claroUpdatedAt='';
+      invalidateSelection(); populateNeighborhoods(); updateImperiumBadge(); updateClaroBadge(); updateStats();
+      for (const key of [IMPERIUM_STORAGE_KEY,IMPERIUM_META_STORAGE_KEY,CLARO_SESSION_KEY]) {try{sessionStorage.removeItem(key);}catch{}}
+    });
+    document.getElementById('foraRotaRefreshSharedButton')?.addEventListener('click', () => refreshSentTracking());
+    document.getElementById('foraRotaLegacyImport')?.addEventListener('change', importLegacyHistory);
   }
 
   function invalidateSelection() {
@@ -125,7 +138,11 @@
       setStatus('A lista contém contrato já registrado no Dominium. Gere novamente.', 'error');
       return false;
     }
-    return window.confirm('Conferiu todos os contratos no Analise-Backlog original e no TOA? O histórico legado ainda não foi migrado. Continue somente se a seleção estiver correta.');
+    const eligible = new Set(availableRecordsForBairro(els.bairro.value).map(r=>normalizeContract(r.contract)));
+    if (!state.selectedRecords.length || state.selectedRecords.some(r=>!eligible.has(normalizeContract(r.contract)))) {
+      invalidateSelection(); setStatus('A base foi atualizada. Gere novamente.', 'error'); return false;
+    }
+    return window.confirm('Conferiu os contratos no TOA e eventuais retornos recentes no Analise-Backlog? O histórico foi migrado, mas a sincronização do bot ainda não é contínua.');
   }
 
   function setDefaultDate() {
@@ -135,25 +152,27 @@
   async function handleClaroImport() {
     const file = els.claroInput?.files?.[0];
     if (!file) return;
-
     try {
+      if (!await refreshSentTracking()) return;
+      const epoch=state.sharedEpoch;
       setStatus('Lendo backlog da Claro...', 'loading');
-      setFileBadge(els.claroFileName, file.name, true);
-      const workbook = await readWorkbook(file);
-      const imported = parseClaroBacklog(workbook);
-    state.claroRecords = imported.filter(isSupportedOperationalCity);
-      state.selectedRecords = [];
-      state.claroFileName = file.name;
-      state.claroUpdatedAt = new Date().toISOString();
-      await saveClaroState({ localOnlyOnPermissionError: true });
-      populateNeighborhoods();
-      updateStats();
-      updateClaroBadge();
-      setStatus(`${state.claroRecords.length} contratos das cidades atendidas carregados nesta sessao (de ${imported.length} contratos lidos).`, 'success');
-    } catch (error) {
-      console.error(error);
-      setStatus(`Falha ao ler backlog da Claro: ${error.message}`, 'error');
-    }
+      const imported=parseClaroBacklog(await readWorkbook(file)).filter(isSupportedOperationalCity);
+      if (epoch!==state.sharedEpoch) return;
+      const groups=profileKeys.map(profile=>({profile,records:imported.filter(r=>operationalProfile(r.city)===profile)}));
+      if (!imported.length || groups.some(g=>!g.records.length)) throw Error('A Safra semanal precisa conter as quatro bases atendidas; nenhuma base foi substituída.');
+      if (!window.confirm('Substituir as bases Claro das quatro regiões por esta Safra? As versões anteriores serão preservadas.')) return;
+      let saved=0;
+      try {
+        for (const group of groups) {
+          if (epoch!==state.sharedEpoch) throw Error('Sessão alterada');
+          await putShared(group.profile,'claro',group.records,file.name); saved++;
+        }
+      } catch(error) { throw Error(saved+' de 4 bases atualizadas. Confira as versões e reimporte se necessário: '+error.message); }
+      invalidateSelection();
+      if (!await refreshSentTracking()) throw Error('Dados gravados; atualização da tela pendente.');
+      setStatus(imported.length+' contratos salvos no banco compartilhado.', 'success');
+    } catch(error) {setStatus('Falha na importação: '+error.message,'error');}
+    finally {els.claroInput.value='';}
   }
 
   async function handleImperiumImport() {
@@ -481,39 +500,20 @@
   }
 
   function sentRecordMatchesSelectedCity(sentRecord) {
-    const cityKey = getSelectedCityKey();
-    const cityText = normalizeText(sentRecord?.city || sentRecord?.cityLabel);
-    // Legacy records without city remain conservative: if we cannot prove
-    // they belong to another city, keep treating them as already sent.
-    if (!cityText) return true;
-    if (cityKey === 'natal_parnamirim') return cityText.includes('natal') || cityText.includes('parnamirim');
-    if (cityKey === 'fortaleza') return cityText.includes('fortaleza');
-    if (cityKey === 'pernambuco') return cityText.includes('recife') || cityText.includes('jaboatao') || cityText.includes('olinda') || cityText.includes('pernambuco');
-    if (cityKey === 'mossoro') return cityText.includes('mossoro');
-    return true;
+    const scope=operationalProfile(sentRecord?.city || sentRecord?.cityLabel);
+    return !scope || scope===operationalProfile(getSelectedCityKey());
   }
 
   async function addPendingBaseToCity() {
-    if (!state.pendingClean106.length) {
-      setStatus('Suba uma backlog do Imperium antes de adicionar a base da cidade.', 'error');
-      return;
-    }
-
-    const cityKey = getSelectedCityKey();
-    state.clean106ByCity[cityKey] = [...state.pendingClean106];
-    state.clean106MetaByCity[cityKey] = {
-      fileName: state.pendingFileName,
-      updatedAt: new Date().toISOString(),
-      count: state.pendingClean106.length,
-    };
-    state.clean106Contracts = state.clean106ByCity[cityKey];
-    await saveSavedState({ localOnlyOnPermissionError: true });
-    state.pendingClean106 = [];
-    state.pendingFileName = '';
-    updateImperiumBadge();
-    populateNeighborhoods();
-    updateStats();
-    setStatus(`${state.clean106Contracts.length} contrato(s) 106 limpo salvos em ${CITY_LABELS[cityKey]}.`, 'success');
+    if (!state.pendingClean106.length) {setStatus('Importe o histórico Imperium antes de salvar.','error');return;}
+    const city=getSelectedCityKey(), profile=operationalProfile(city), rows=[...state.pendingClean106], name=state.pendingFileName;
+    if (!await refreshSentTracking()) return;
+    if (!window.confirm('Salvar nova versão da base 106 de '+CITY_LABELS[city]+'?')) return;
+    try {
+      await putShared(profile,'clean106',rows,name||'Histórico Imperium');
+      state.pendingClean106=[]; state.pendingFileName=''; invalidateSelection();
+      await refreshSentTracking(); setStatus('Base 106 compartilhada salva: '+CITY_LABELS[city], 'success');
+    } catch(error) {setStatus(error.message,'error');}
   }
 
   function getSelectedCityKey() {
@@ -521,41 +521,15 @@
   }
 
   function isSupportedOperationalCity(record) {
-    const city = normalizeText(record?.city);
-    return ['natal', 'parnamirim', 'fortaleza', 'mossoro',
-      'recife', 'jaboatao', 'olinda'].some((name) => city.includes(name));
+    return Boolean(operationalProfile(record?.city));
   }
 
   function recordMatchesSelectedCity(record) {
-    const cityKey = getSelectedCityKey();
-    const cityText = normalizeText(record.city);
-    if (!cityText) return true;
-    if (cityKey === 'natal_parnamirim') return cityText.includes('natal') || cityText.includes('parnamirim');
-    if (cityKey === 'fortaleza') return cityText.includes('fortaleza');
-    if (cityKey === 'pernambuco') return cityText.includes('recife') || cityText.includes('jaboatao') || cityText.includes('olinda') || cityText.includes('pernambuco');
-    if (cityKey === 'mossoro') return cityText.includes('mossoro');
-    return true;
+    return operationalProfile(record.city) === operationalProfile(getSelectedCityKey());
   }
 
   async function clearSavedCity(cityKey) {
-    const label = cityKey === 'all' ? 'todas as cidades' : CITY_LABELS[cityKey];
-    if (!window.confirm(`Apagar a base 106 salva de ${label}?`)) return;
-
-    if (cityKey === 'all') {
-      state.clean106ByCity = {};
-      state.clean106MetaByCity = {};
-      state.clean106Contracts = [];
-    } else {
-      delete state.clean106ByCity[cityKey];
-      delete state.clean106MetaByCity[cityKey];
-      if (getSelectedCityKey() === cityKey) state.clean106Contracts = [];
-    }
-
-    await saveSavedState({ localOnlyOnPermissionError: true });
-    updateImperiumBadge();
-    populateNeighborhoods();
-    updateStats();
-    setStatus(`Base 106 de ${label} apagada.`, 'success');
+    setStatus('Para proteger o histórico compartilhado, substitua a base por uma importação validada. A limpeza em massa foi desativada.', 'error');
   }
 
   function populateNeighborhoods() {
@@ -631,59 +605,21 @@
   // Envio aqui significa SOMENTE registrar no historico do Dominium.
   // Nao dispara WhatsApp, baixa de OS nem operacao no Imperium.
   async function markSelectedAsSent() {
-    if (!state.selectedRecords.length) {
-      setStatus('Gere as mensagens antes de registrar os envios.', 'error');
-      return;
-    }
-    const button = els.marcar;
-    if (button.disabled) return;
-    button.disabled = true;
-    const cityKey = getSelectedCityKey();
-    const profile = cityKey === 'natal_parnamirim' ? 'natal'
-      : cityKey === 'pernambuco' ? 'recife' : cityKey;
-    const technician = stringValue(els.tecnico.value) || 'A DEFINIR';
-    const sentDate = stringValue(els.data.value) || new Date().toLocaleDateString('en-CA');
-    const agenda = stringValue(els.agenda.value) || '08:00 - 22:00';
-    let registered = 0;
+    if (!state.selectedRecords.length || els.marcar.disabled) return;
+    const button=els.marcar; button.disabled=true;
+    const profile=operationalProfile(getSelectedCityKey()), selected=[...state.selectedRecords];
+    const technician=stringValue(els.tecnico.value)||'A DEFINIR', sentDate=stringValue(els.data.value), agenda=stringValue(els.agenda.value)||'08:00 - 22:00';
     try {
-      // Fonte autoritativa para deduplicacao, inclusive entre navegadores.
-      state.sentContracts = await loadDominiumSentContracts();
-      for (const record of state.selectedRecords) {
-        if (recordWasSent(record)) continue;
-        const note = ['Fora Rota', 'Tecnico: ' + technician,
-          'Agenda: ' + agenda, 'Data: ' + sentDate].join(' | ').slice(0, 300);
-        const reply = await dominiumCall('/api/backlog/year/sent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({profile, contract: record.contract, note})
-        });
-        if (!reply || reply.ok !== true) {
-          throw Error('API nao confirmou registro de ' + record.contract);
-        }
-        const sentAt = new Date().toISOString();
-        state.sentContracts[profile + ':' + record.contract] = {
-          contract: record.contract, city: cityKey,
-          cityLabel: CITY_LABELS[cityKey] || cityKey,
-          name: record.name, technician, sentDate, sentAt, agenda,
-          lastMessage: note
-        };
-        registered++;
-      }
-      await saveSavedState();
-      state.selectedRecords = [];
-      els.output.value = '';
-      populateNeighborhoods();
-      updateStats();
-      renderSentTracking();
-      setStatus(registered + ' contrato(s) registrados no Dominium. Nenhuma mensagem foi enviada.', 'success');
-    } catch (error) {
-      populateNeighborhoods();
-      updateStats();
-      setStatus('Registro parcial (' + registered + ' confirmados): ' + error.message +
-        '. Confira Rotas Enviadas antes de repetir.', 'error');
-    } finally {
-      button.disabled = false;
-    }
+      if (!await refreshSentTracking()) return;
+      if (!state.selectedRecords.length || profile!==operationalProfile(getSelectedCityKey()) || selected.some(recordWasSent)) throw Error('Histórico ou cidade alterado. Gere novamente.');
+      const rows=selected.map(r=>({contract:normalizeContract(r.contract),city:r.city,technician,sentDate,agenda}));
+      const result=await dominiumCall(SHARED_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'mark_sent',profile,kind:'legacy_sent',expected_revision:state.revisions[profile+':legacy_sent']||0,records:rows})});
+      if (result?.ok!==true) throw Error('Registro não confirmado');
+      invalidateSelection();
+      await refreshSentTracking();
+      setStatus(result.count+' contratos registrados no banco compartilhado. Nenhuma mensagem foi enviada.', 'success');
+    } catch(error) {invalidateSelection();setStatus('Confira o histórico antes de repetir: '+error.message,'error');}
+    finally {button.disabled=false;}
   }
 
   function clearSelection() {
@@ -722,40 +658,33 @@
   }
 
   async function loadDominiumSentContracts() {
-    const response = await dominiumCall('/api/backlog/year/sent');
+    const response=await dominiumCall('/api/backlog/year/sent');
     if (!Array.isArray(response?.rows)) throw Error('Resposta de envios sem lista');
-    const sent = {};
+    const sent={...state.legacySent};
     for (const row of response.rows) {
-      const contract = normalizeContract(row.contract);
+      const contract=normalizeContract(row.contract), profile=stringValue(row.profile).toLowerCase();
       if (!contract) continue;
-      const profile = stringValue(row.profile).toLowerCase();
-      const city = dominiumProfile(profile);
-      sent[profile + ':' + contract] = {
-        contract, city, cityLabel: CITY_LABELS[city] || profile,
-        sentAt: row.sent_at || row.sentAt || '',
-        sentDate: row.sent_at || row.sentAt || '',
-        technician: 'A DEFINIR',
-        lastMessage: stringValue(row.note)
-      };
+      const city=dominiumProfile(profile), key=profile+':'+contract;
+      if (!sent[key]) sent[key]={contract,city,cityLabel:CITY_LABELS[city]||profile,sentAt:row.sent_at||row.sentAt||'',sentDate:row.sent_at||row.sentAt||'',technician:'A DEFINIR',lastMessage:stringValue(row.note)};
     }
     return sent;
   }
 
   async function refreshSentTracking() {
-    if (els.refreshTracking) els.refreshTracking.disabled = true;
+    if (els.refreshTracking) els.refreshTracking.disabled=true;
     try {
-      state.sentContracts = await loadDominiumSentContracts();
-      populateNeighborhoods();
-      updateStats();
-      setStatus('Historico de envios atualizado do Dominium.', 'success');
-      return true;
-    } catch (error) {
-      setStatus('Nao foi possivel consultar envios do Dominium: ' + error.message, 'error');
-      return false;
-    } finally {
-      if (els.refreshTracking) els.refreshTracking.disabled = false;
-      renderSentTracking();
-    }
+      const epoch=state.sharedEpoch;
+      await loadSharedState();
+      // Make migrated data visible even if the old sidecar is temporarily down.
+      state.sentContracts={...state.legacySent};
+      populateNeighborhoods(); updateClaroBadge(); updateImperiumBadge(); updateStats();
+      const combined=await loadDominiumSentContracts();
+      if(epoch!==state.sharedEpoch)return false;
+      state.sentContracts=combined; state.sharedReady=true;
+      populateNeighborhoods(); updateClaroBadge(); updateImperiumBadge(); updateStats();
+      setStatus('Bases compartilhadas e histórico atualizados.', 'success'); return true;
+    } catch(error) {state.sharedReady=false;invalidateSelection();setStatus('Não foi possível atualizar as bases: '+error.message,'error');return false;}
+    finally {if(els.refreshTracking)els.refreshTracking.disabled=false;renderSentTracking();}
   }
 
   function renderSentTracking() {
@@ -972,62 +901,84 @@
     }
   }
 
-  async function loadSavedState() {
-    // Dados de clientes sao guardados somente na sessao deste navegador.
-    // Nunca migrar a chave Firebase original entre aplicacoes.
-    try {
-      const savedClean = JSON.parse(sessionStorage.getItem(IMPERIUM_STORAGE_KEY) || '{}');
-      state.clean106ByCity = Array.isArray(savedClean)
-        ? { natal_parnamirim: savedClean } : savedClean;
-      state.clean106MetaByCity = JSON.parse(sessionStorage.getItem(IMPERIUM_META_STORAGE_KEY) || '{}');
-      const claro = JSON.parse(sessionStorage.getItem(CLARO_SESSION_KEY) || '{}');
-      state.claroRecords = Array.isArray(claro.records) ? claro.records : [];
-      state.claroFileName = stringValue(claro.fileName);
-      state.claroUpdatedAt = stringValue(claro.updatedAt);
-      state.clean106Contracts = state.clean106ByCity[getSelectedCityKey()] || [];
-    } catch (error) {
-      console.warn('Base de sessao invalida, iniciando sem planilhas.', error);
-      state.clean106ByCity = {};
-      state.clean106MetaByCity = {};
-      state.claroRecords = [];
-    }
-    populateNeighborhoods();
-    updateClaroBadge();
-    updateImperiumBadge();
-    updateStats();
-    try {
-      state.sentContracts = await loadDominiumSentContracts();
-      populateNeighborhoods();
-      updateStats();
-    } catch (error) {
-      setStatus('Planilhas locais prontas. Historico de envios indisponivel: ' +
-        error.message, 'error');
-    }
+  function operationalProfile(city) {
+    const key=normalizeText(city).replace(/[^a-z0-9]+/g,' ').trim();
+    if (['natal','parnamirim','natal parnamirim'].includes(key))return 'natal';
+    if (key==='fortaleza')return 'fortaleza';
+    if (key==='mossoro')return 'mossoro';
+    if (['recife','pernambuco','recife pernambuco','jaboatao','jaboatao dos guararapes','olinda'].includes(key))return 'recife';
+    return '';
+  }
+  async function loadSharedState() {
+    if (state.sharedLoading)return state.sharedLoading;
+    const epoch=state.sharedEpoch;
+    const promise=(async()=>{
+      const payload=await dominiumCall(SHARED_API);
+      if(epoch!==state.sharedEpoch)throw Error('Sessão alterada');
+      if(!Array.isArray(payload?.snapshots)||payload.snapshots.length!==13)throw Error('Bases compartilhadas incompletas');
+      const revisions={}, clean={}, meta={}, legacy={}, claro=[];
+      let latestDate='';
+      for(const snapshot of payload.snapshots){
+        const {profile,kind,records,revision}=snapshot;
+        if(!Array.isArray(records)||!Number.isInteger(revision)||revision<0)throw Error('Versão inválida');
+        revisions[profile+':'+kind]=revision;
+        const city=dominiumProfile(profile);
+        if(kind==='claro'){
+          claro.push(...records); if(snapshot.created_at>latestDate)latestDate=snapshot.created_at;
+        }else if(kind==='clean106'){
+          clean[city]=records;meta[city]={fileName:snapshot.source_name,updatedAt:snapshot.created_at,count:records.length};
+        }else if(kind==='legacy_sent'){
+          for(const row of records){
+            const contract=normalizeContract(row.contract);if(!contract)continue;
+            const key=profile+':'+contract;
+            const old=legacy[key];
+            if(!old||(!old.lastReturnCode&&row.lastReturnCode)||((!old.lastReturnCode||row.lastReturnCode)&&String(row.returnedAt||row.updatedAt||'')>String(old.returnedAt||old.updatedAt||'')))legacy[key]={...row,contract,city:row.city||row.cityLabel||'',cityLabel:row.cityLabel||CITY_LABELS[city]||'Sem cidade'};
+          }
+        }
+      }
+      if(Object.keys(revisions).length!==13)throw Error('Escopo de bases incompleto');
+      state.revisions=revisions;state.clean106ByCity=clean;state.clean106MetaByCity=meta;state.claroRecords=claro;state.claroUpdatedAt=latestDate;state.legacySent=legacy;
+      state.clean106Contracts=clean[getSelectedCityKey()]||[];
+      state.sharedReady=true;
+    })();
+    state.sharedLoading=promise;
+    try{await promise;}finally{if(state.sharedLoading===promise)state.sharedLoading=null;}
+  }
+  async function putShared(profile,kind,records,source_name) {
+    if(!state.sharedReady)throw Error('Atualize as bases antes de importar');
+    const result=await dominiumCall(SHARED_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'put',profile,kind,records,source_name:source_name.slice(0,200),expected_revision:state.revisions[profile+':'+kind]||0})});
+    if(result?.ok!==true)throw Error('Gravação não confirmada');
+    state.revisions[profile+':'+kind]=result.revision;
+    return result;
+  }
+  async function importLegacyHistory(event) {
+    const input=event.target,file=input.files?.[0];if(!file)return;
+    try{
+      if(file.size>32*1024*1024)throw Error('Arquivo acima do limite');
+      const data=JSON.parse(await file.text());
+      if(data.schema!=='fora-rota-legacy-export-v1'||!Array.isArray(data.firestoreSent)||!Array.isArray(data.cloudflareSent))throw Error('Exportação inválida');
+      if(!await refreshSentTracking())return;
+      if(!window.confirm('Importar os retornos deste arquivo? O histórico já existente será preservado.'))return;
+      const groups=Object.fromEntries([...profileKeys,'unassigned'].map(p=>[p,new Map()]));
+      for(const row of [...data.firestoreSent,...data.cloudflareSent]){
+        const contract=normalizeContract(row.contract);if(!contract)throw Error('Contrato inválido no histórico');
+        const profile=operationalProfile(row.city||row.cityLabel)||'unassigned';
+        const key=contract, prev=groups[profile].get(key);
+        if(prev&&prev.lastReturnCode&&row.lastReturnCode&&String(prev.lastReturnCode)!==String(row.lastReturnCode)&&String(prev.returnedAt||'')===String(row.returnedAt||''))throw Error('Conflito de retorno no arquivo');
+        const newer=!prev||String(row.returnedAt||row.updatedAt||'')>=String(prev.returnedAt||prev.updatedAt||'');
+        const best=(!prev||(!prev.lastReturnCode&&row.lastReturnCode)||(newer&&(!prev.lastReturnCode||row.lastReturnCode)))?row:prev;
+        const history=new Map([...(prev?.returnHistory||[]),...(row.returnHistory||[])].map(h=>[JSON.stringify(h),h]));
+        groups[profile].set(key,{...prev,...best,contract,returnHistory:[...history.values()]});
+      }
+      for(const [profile,records] of Object.entries(groups))if(records.size)await putShared(profile,'legacy_sent',[...records.values()],file.name);
+      await refreshSentTracking();setStatus('Histórico do legado atualizado. Nenhuma OS foi baixada.','success');
+    }catch(error){setStatus('Importação de histórico: '+error.message,'error');}
+    finally{input.value='';}
   }
 
-  async function saveSavedState(options = {}) {
-    try {
-      sessionStorage.setItem(IMPERIUM_STORAGE_KEY, JSON.stringify(state.clean106ByCity));
-      sessionStorage.setItem(IMPERIUM_META_STORAGE_KEY, JSON.stringify(state.clean106MetaByCity));
-    } catch (error) {
-      console.warn('Base 106 mantida apenas em memoria ate encerrar esta pagina.', error);
-      setStatus('Nao foi possivel guardar a base 106 na sessao: ' + error.message, 'error');
-    }
-  }
+  async function saveSavedState() { throw Error('Use a gravação de bases compartilhadas'); }
 
-  async function saveClaroState(options = {}) {
-    try {
-      sessionStorage.setItem(CLARO_SESSION_KEY, JSON.stringify({
-        records: state.claroRecords,
-        fileName: state.claroFileName,
-        updatedAt: state.claroUpdatedAt
-      }));
-    } catch (error) {
-      console.warn('Backlog Claro mantida apenas na pagina ate fechar.', error);
-      setStatus('Arquivo carregado, mas nao foi possivel guardar na sessao: ' +
-        error.message, 'error');
-    }
-  }
+  async function saveClaroState() { throw Error('Use a gravação de bases compartilhadas'); }
 
 
 
@@ -1242,6 +1193,8 @@
   function setStatus(message, type = '') {
     if (!els.status) return;
     els.status.textContent = message;
+    const trackingStatus=document.getElementById('foraRotaTrackingStatus');
+    if(trackingStatus){trackingStatus.textContent=message;trackingStatus.className=('status-line '+type).trim();}
     els.status.className = `status-line ${type}`.trim();
   }
 
@@ -1260,7 +1213,7 @@
       parseClaroBacklog, parseImperiumBacklog, buildClean106Contracts,
       normalizeContract, extractSafraContract, normalizeText, state, els,
       markSelectedAsSent, availableRecordsForBairro, recordWasSent,
-      isSupportedOperationalCity, splitPhones
+      isSupportedOperationalCity, splitPhones, loadSharedState, refreshSentTracking, operationalProfile, putShared
     };
   }
 })();
