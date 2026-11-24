@@ -469,12 +469,13 @@
 
   function availableRecordsForBairro(bairro) {
     const clean106 = getClean106Contracts();
+    const sent = sentContractIndex();
     const missingBairroOnly = bairro === MISSING_BAIRRO_FILTER;
     const normalizedBairro = missingBairroOnly ? '' : normalizeText(bairro);
     return state.claroRecords.filter((record) => {
       if (!recordMatchesSelectedCity(record)) return false;
       if (!recordMatchesContractSet(record, clean106)) return false;
-      if (recordWasSent(record)) return false;
+      if (recordWasSent(record, sent)) return false;
       const recordBairro = normalizeText(record.bairro);
       if (missingBairroOnly) return !recordBairro;
       if (!normalizedBairro) return true;
@@ -491,12 +492,20 @@
     return getRecordContractKeys(record).some((contract) => contracts.has(contract));
   }
 
-  function recordWasSent(record) {
-    const contracts = new Set(getRecordContractKeys(record));
-    if (!contracts.size) return false;
-    return Object.values(state.sentContracts || {}).some((sentRecord) =>
-      contracts.has(normalizeContract(sentRecord?.contract)) && sentRecordMatchesSelectedCity(sentRecord)
-    );
+  function sentContractIndex() {
+    const scope = operationalProfile(getSelectedCityKey());
+    const contracts = new Set();
+    for (const record of Object.values(state.sentContracts || {})) {
+      const city = operationalProfile(record?.city || record?.cityLabel);
+      if (city && city !== scope) continue;
+      const contract = normalizeContract(record?.contract);
+      if (contract) contracts.add(contract);
+    }
+    return contracts;
+  }
+
+  function recordWasSent(record, sent = sentContractIndex()) {
+    return getRecordContractKeys(record).some(contract => sent.has(contract));
   }
 
   function sentRecordMatchesSelectedCity(sentRecord) {
@@ -534,15 +543,21 @@
 
   function populateNeighborhoods() {
     const allAvailable = availableRecordsForBairro('');
-    const missingBairroCount = allAvailable.filter((record) => !normalizeText(record.bairro)).length;
+    let missingBairroCount = 0;
+    const counts = new Map();
+    for (const record of allAvailable) {
+      const key = normalizeText(record.bairro);
+      if (!key) { missingBairroCount++; continue; }
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
     const neighborhoods = [...new Set(
       state.claroRecords
         .filter(recordMatchesSelectedCity)
         .map((record) => normalizeDisplay(record.bairro))
         .filter(Boolean)
     )]
-      .map((bairro) => ({ bairro, total: availableRecordsForBairro(bairro).length }))
-      .filter((item) => item.total > 0)
+      .map(bairro => ({ bairro, total: counts.get(normalizeText(bairro)) || 0 }))
+      .filter(item => item.total > 0)
       .sort((a, b) => a.bairro.localeCompare(b.bairro, 'pt-BR'));
 
     const missingOption = missingBairroCount
@@ -611,7 +626,7 @@
     const technician=stringValue(els.tecnico.value)||'A DEFINIR', sentDate=stringValue(els.data.value), agenda=stringValue(els.agenda.value)||'08:00 - 22:00';
     try {
       if (!await refreshSentTracking()) return;
-      if (!state.selectedRecords.length || profile!==operationalProfile(getSelectedCityKey()) || selected.some(recordWasSent)) throw Error('Histórico ou cidade alterado. Gere novamente.');
+      if (!state.selectedRecords.length || profile!==operationalProfile(getSelectedCityKey()) || selected.some(record => recordWasSent(record))) throw Error('Histórico ou cidade alterado. Gere novamente.');
       const rows=selected.map(r=>({contract:normalizeContract(r.contract),city:r.city,technician,sentDate,agenda}));
       const result=await dominiumCall(SHARED_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'mark_sent',profile,kind:'legacy_sent',expected_revision:state.revisions[profile+':legacy_sent']||0,records:rows})});
       if (result?.ok!==true) throw Error('Registro não confirmado');
@@ -1213,7 +1228,7 @@
       parseClaroBacklog, parseImperiumBacklog, buildClean106Contracts,
       normalizeContract, extractSafraContract, normalizeText, state, els,
       markSelectedAsSent, availableRecordsForBairro, recordWasSent,
-      isSupportedOperationalCity, splitPhones, loadSharedState, refreshSentTracking, operationalProfile, putShared
+      isSupportedOperationalCity, splitPhones, loadSharedState, refreshSentTracking, operationalProfile, putShared, populateNeighborhoods
     };
   }
 })();
