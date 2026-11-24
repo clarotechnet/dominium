@@ -39,6 +39,7 @@ const equipmentFactory = new Function(`
   ${extractFunction("toaLiveSerialLooksLikeChip")}
   ${extractFunction("toaLiveEquipmentType")}
   ${extractFunction("expectedEquipmentType")}
+  ${extractFunction("isNoEquipmentService")}
   ${extractFunction("toaLiveEquipmentDraft")}
   return {
     toaLiveSerialLooksLikeChip,
@@ -61,6 +62,14 @@ assert.equal(toaLiveSerialLooksLikeChip(decoderSerial), false);
 assert.equal(toaLiveEquipmentType({ serial: chipIccid }), "chip");
 assert.equal(toaLiveEquipmentType({ serial: decoderSerial, description: "DECODER" }), "decoder");
 assert.equal(expectedEquipmentType("ENVIO DE CHIP VIA TECNICO"), "chip");
+
+const smartCard = {serial: "246500000001", type: "2 - SMART CARD", description: "SMART SIM CARD NAGRA"};
+assert.equal(toaLiveEquipmentType(smartCard, true), "smart");
+assert.equal(toaLiveEquipmentType({serial: chipIccid, description: "SIM CARD"}, true), "chip");
+const packageOrder = {service: "MUDANCA DE PACOTE DIGITAL", contract: "1", num_os: "1"};
+assert.deepEqual(toaLiveEquipmentDraft([smartCard], packageOrder, [packageOrder], true), [
+  {serial: smartCard.serial, type: "smart"},
+]);
 
 const sharedActivityEquipment = [
   { serial: decoderSerial, description: "DECODER" },

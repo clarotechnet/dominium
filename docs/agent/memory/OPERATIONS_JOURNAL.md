@@ -357,3 +357,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Testes de quantidade acumulada, importação por data, coleta incompleta, isolamento por cidade, rotas e captura real.
 
 **Próximo passo/pendência:** Publicar relay, Worker e interface juntos. Confirmar a próxima foto do estoque e o Excel SAP de referência.
+
+## 2026-11-24 17:25 UTC — Homologação da fila de adesão NTL/PWM
+
+**Motivo:** O lote exibia espera após confirmação, podia rejeitar a tarefa TOA exata por encontrar uma linha apenas informativa em outra atividade e confundia smart card de TV com chip móvel.
+
+**Alterado:** Fila consulta TOA para cada contrato, preserva resultado e auditoria por O.S., exige tarefa exata e reconhece o smart card de TV pelo tipo da captura de adesão.
+
+**Verificação:** Testes da fila, da aprovação atualizada e da ponte oficial, com cobertura de confirmação parcial e de GPON.
+
+**Próximo passo/pendência:** Tratar divergências de estoque, técnico e códigos ausentes somente com evidência oficial.

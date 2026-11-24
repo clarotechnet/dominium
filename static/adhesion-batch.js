@@ -41,7 +41,7 @@
       notify(attempt,attempts);
       await wait(delay);
     }
-    throw Error("Imperium ocupado: nao foi possivel obter lista atualizada. Nenhuma baixa deste contrato foi enviada.");
+    throw Error("Imperium ocupado: nao foi possivel obter lista atualizada.");
   }
   function codeOnly(service) {
     const s=String(service||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
@@ -85,9 +85,17 @@
       if(!os || byNumber.has(os)) throw Error("OS duplicada ou sem numero no Imperium.");
       byNumber.set(os,row);
     }
-    const candidates=[], seen=new Set();
+    const candidates=[], seen=new Set(), imperiumOnly=new Set();
     for(const capture of payload.results||[]) {
-      const matching=(capture.tasks||[]).filter(t=>byNumber.has(String(t.os_number||"")));
+      const matching=(capture.tasks||[]).filter(task=>{
+        const os=String(task.os_number||"");
+        if(!byNumber.has(os)) return false;
+        if(task.imperium_only===true || task.source==="imperium_contract_status") {
+          imperiumOnly.add(os);
+          return false;
+        }
+        return true;
+      });
       if(!matching.length) continue;
       const legacyValidated=capture.decision==null && capture.found===true &&
         Array.isArray(capture.validation_errors) && capture.validation_errors.length===0 &&
@@ -105,7 +113,6 @@
       for(const task of matching) {
         const os=String(task.os_number), activeOrder=byNumber.get(os);
         const exact=(capture.imperium_matches||[]).filter(o=>String(o.num_os)===os && String(o.contract)===contract && Number(o.id_os)===Number(activeOrder.id_os));
-        if(task.imperium_only===true || task.source==="imperium_contract_status") throw Error("OS "+os+" nao localizada no TOA; codigo de baixa nao confirmado.");
         if(seen.has(os) || exact.length!==1 || !deps.valid(exact[0],capture) || !deps.executed(task.status)) throw Error("OS sem correspondencia unica, aprovada e executada: "+os);
         const code=String(task.close_code||"").trim();
         if(!code || code==="430" || !deps.knownCode(code)) throw Error("Codigo de baixa ausente ou invalido: "+os);
@@ -119,7 +126,12 @@
         candidates.push({capture,task:{...task,close_code:code},order,numOs:os,code,isDisconnect:false,batchAdhesion:true,batchScope:{profile,date,epoch:scope.epoch},batchCodeOnly:codeOnly(service)});
       }
     }
-    if(seen.size!==byNumber.size) throw Error("Nem todas as OS em campo foram conciliadas com o TOA.");
+    if(seen.size!==byNumber.size) {
+      const missing=[...byNumber.keys()].filter(os=>!seen.has(os));
+      const displayed=missing.filter(os=>imperiumOnly.has(os));
+      if(displayed.length) throw Error("OS "+displayed.join(", ")+" nao localizada no TOA; codigo de baixa nao confirmado.");
+      throw Error("OS em campo sem conciliacao no TOA: "+missing.join(", ")+".");
+    }
     // If a productive companion already left the field, the remaining OS
     // cannot safely claim the activity's shared stock a second time.
     for(const candidate of candidates) {
@@ -129,6 +141,7 @@
       for(const task of capture.tasks||[]) {
         const os=String(task.os_number||"");
         if(!os || activeTasks.has(os))continue;
+        if((task.imperium_only===true || task.source==="imperium_contract_status") && seen.has(os))continue;
         const other=(capture.imperium_matches||[]).find(o=>String(o.num_os)===os)
           || (capture.imperium_all_orders||[]).find(o=>String(o.num_os)===os);
         if(!other || !codeOnly(other.service))throw Error("Atividade com OS acompanhante fora de campo; risco de duplicar estoque.");
@@ -180,26 +193,40 @@
         const candidates=await hooks.prepare(contract);
         if(!hooks.active()) break;
         if(!candidates.length) {hooks.update(contract,"Sem OS em campo","Nenhuma baixa enviada.");continue;}
-        let confirmed=0, waiting=0, blocked=0, reason=""; const audits=[];
+        let confirmed=0, waiting=0, blocked=0;
+        const outcomes=[];
         for(const candidate of candidates) {
           if(!hooks.active()) break;
-          hooks.update(contract,"Executando","OS "+candidate.numOs+" ("+candidate.code+")");
-          const res=await hooks.send(candidate);
-          if(res.reason || res.error) reason=String(res.reason || res.error).slice(0,240);
-          const audit=materialAudit(res.materialPreparation);
-          if(audit)audits.push("OS "+candidate.numOs+": "+audit);
-          if(res.closed) {confirmed++;continue;}
-          if(res.pending && res.requestId) {
-            hooks.update(contract,"Aguardando confirmacao","OS "+candidate.numOs+" enviada uma vez. "+audit);
-            const result=await hooks.confirm(res.requestId,candidate);
-            if(result==="confirmed") {confirmed++;continue;}
-            if(result==="pending") waiting++; else blocked++;
-          } else {blocked++;}
+          const os="OS "+candidate.numOs+(candidate.code?" ("+candidate.code+")":"");
+          hooks.update(contract,"Executando",os);
+          let audit="", detail="", result="review";
+          try {
+            const res=await hooks.send(candidate);
+            audit=materialAudit(res.materialPreparation);
+            detail=String(res.reason || res.error || "").slice(0,240);
+            if(res.closed) result="confirmed";
+            else if(res.pending) {
+              result="pending";
+              if(res.requestId) {
+                hooks.update(contract,"Aguardando confirmacao",os+" enviada uma vez. "+audit);
+                result=await hooks.confirm(res.requestId,candidate);
+              }
+            }
+          } catch(err) {
+            detail=String(err.message || err).slice(0,240);
+          }
+          if(result==="confirmed") {
+            confirmed++;
+            outcomes.push([os+" confirmada no Imperium",audit].filter(Boolean).join(". "));
+            continue;
+          }
+          if(result==="pending") waiting++; else blocked++;
+          outcomes.push([os+(result==="pending"?" aguardando confirmacao":" em tratativa"),detail,audit].filter(Boolean).join(". "));
           // Nao movimentar OS acompanhantes se o primeiro envio esta incerto.
           break;
         }
         const rest=candidates.length-confirmed-waiting-blocked;
-        const detail=confirmed+" confirmada(s), "+waiting+" pendente(s), "+blocked+" em tratativa, "+rest+" nao enviada(s)."+(reason?" "+reason:"")+(audits.length?" "+audits.join(" | "):"");
+        const detail=confirmed+" confirmada(s), "+waiting+" pendente(s), "+blocked+" em tratativa, "+rest+" nao enviada(s). "+outcomes.join(" | ");
         hooks.update(contract,confirmed===candidates.length?"Baixado":waiting?"Aguardando confirmacao":blocked?"Tratativa":"Interrompido",detail);
       } catch(err) {hooks.update(contract,"Tratativa",String(err.message||err).slice(0,300));}
     }
@@ -244,7 +271,6 @@
             ()=>request(apiUrlForProfile(path,profile),{timeoutMs:180000}),
             {active,wait:sleep,notify:(attempt,max)=>update(contract,"Consultando","Imperium ocupado; aguardando lista atualizada ("+attempt+"/"+max+").")}
           );
-          if(!orders.orders.some(o=>String(o.contract)===contract)) return [];
           const payload=await request(apiUrlForProfile("/api/toa-live/lookup",profile),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:contract,expected_profile_key:profile,expected_date:date}),timeoutMs:300000});
           if(!active()) throw Error("Cidade/data alterada; fila interrompida.");
           // Revalidate the field list if the TOA correlation itself could
@@ -297,7 +323,7 @@
     } finally {
       state.adhesionBatchRunning=false;
       for(const row of rows.values())if(["Na fila","Consultando","Executando"].includes(row.label)){row.label="Interrompido";row.detail="Nenhuma nova solicitacao sera enviada.";}
-      render();renderSemiAutoQueue();
+      renderToaLiveStatus();
     }
   });
   root.dominiumRenderAdhesionBatch=render;

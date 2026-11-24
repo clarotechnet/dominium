@@ -44,6 +44,33 @@ test("pending confirmation never resends, never submits companion while uncertai
  await runBatch(["12345678","23456789"],{active:()=>true,update:(...v)=>events.push(v),prepare:async c=>c==="12345678"?[{numOs:"1"},{numOs:"2"}]:[{numOs:"3"}],send:async c=>{sent.push(c.numOs);return c.numOs==="1"?{pending:true,requestId:"r"}:{closed:true}},confirm:async()=>"pending"});
  assert.deepEqual(sent,["1","3"]);assert.equal(events.findLast(v=>v[0]==="12345678")[1],"Aguardando confirmacao");assert.equal(events.at(-1)[1],"Baixado");
 });
+
+test("keeps confirmed OS and material audit when companion approval fails", async () => {
+ const events = [], sent = [];
+ await runBatch([scope.contract], {
+  active: () => true,
+  update: (...event) => events.push(event),
+  prepare: async () => [{numOs: "1", code: "409"}, {numOs: "2", code: "409"}, {numOs: "3"}],
+  send: async ({numOs}) => {
+   sent.push(numOs);
+   if (numOs === "2") throw Error("Aprovacao da OS expirou");
+   return {
+    pending: true,
+    requestId: "r",
+    reason: "solicitacao enviada; aguardando confirmacao",
+    materialPreparation: {discarded_shortfalls: [{code: "22056366"}]},
+   };
+  },
+  confirm: async () => "confirmed",
+ });
+ assert.deepEqual(sent, ["1", "2"]);
+ const [, label, detail] = events.at(-1);
+ assert.equal(label, "Tratativa");
+ assert.match(detail, /1 confirmada.*1 em tratativa.*1 nao enviada/);
+ assert.match(detail, /OS 1 \(409\) confirmada no Imperium.*22056366/);
+ assert.match(detail, /OS 2 \(409\) em tratativa.*Aprovacao da OS expirou/);
+ assert.doesNotMatch(detail, /aguardando confirmacao/);
+});
 test("stop prevents next write",async()=>{
  let active=true;const sent=[];
  await runBatch(["12345678","23456789"],{active:()=>active,update:()=>{},prepare:async()=>[{numOs:"1"},{numOs:"2"}],send:async c=>{sent.push(c.numOs);active=false;return {closed:true}},confirm:async()=>"confirmed"});
@@ -131,4 +158,25 @@ test("refresh approval before companion without changing OS identity",()=>{
 test("Imperium-only companion without confirmed TOA code is not inferred",()=>{
  const f=fixture();f.capture.tasks[0].imperium_only=true;f.capture.tasks[0].close_code="";
  assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps),/codigo de baixa nao confirmado/);
+});
+
+test("display rows from another activity do not override the exact TOA task for GPON", () => {
+ const f = fixture();
+ f.order.service = "ADESAO - INSTALAR PONTO VIRTUA";
+ const gpon = {...f.order, id_os: 2, num_os: "2612345679", service: "INSTALACAO DE CABO GPON"};
+ const displayOnly = num => ({os_number: num, source: "imperium_contract_status", imperium_only: true});
+ f.capture.tasks.push(displayOnly(gpon.num_os));
+ f.payload.results.push({
+  ...f.capture,
+  aid: "456",
+  tasks: [displayOnly(f.order.num_os), {os_number: gpon.num_os, status: "executed", close_code: "409"}],
+  imperium_matches: [gpon],
+ });
+ const orders = [f.order, gpon];
+ const candidates = selectCandidates(f.payload, orders, scope, f.deps);
+ assert.deepEqual(candidates.map(c => [c.numOs, c.capture.aid, c.batchCodeOnly]), [
+  [f.order.num_os, "123", false], [gpon.num_os, "456", true],
+ ]);
+ f.payload.results[1].tasks.pop();
+ assert.throws(() => selectCandidates(f.payload, orders, scope, f.deps), /2612345679.*codigo de baixa nao confirmado/);
 });

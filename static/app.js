@@ -8478,9 +8478,10 @@ function toaLiveSerialLooksLikeChip(serial) {
   return /^\d{18,25}$/.test(String(serial || "").trim());
 }
 
-function toaLiveEquipmentType(item) {
+function toaLiveEquipmentType(item, batchAdhesion = false) {
   const label = normalize(`${item.type || ""} ${item.description || ""}`);
   const serial = String(item.serial || "").trim().toUpperCase();
+  if (batchAdhesion && /\bSMART (?:CARD|SIM CARD NAGRA)\b/.test(label)) return "smart";
   if (label.includes("CHIP") || label.includes("SIMCARD") || label.includes("SIM CARD")) return "chip";
   if (toaLiveSerialLooksLikeChip(serial)) return "chip";
   if (label.includes("SMART")) return "smart";
@@ -8491,12 +8492,12 @@ function toaLiveEquipmentType(item) {
   return "auto";
 }
 
-function toaLiveEquipmentDraft(items, order, contractOrders = []) {
+function toaLiveEquipmentDraft(items, order, contractOrders = [], batchAdhesion = false) {
   const rawValues = (items || [])
     .filter((item) => String(item.serial || "").trim())
     .map((item) => ({
       serial: String(item.serial || "").trim().toUpperCase(),
-      type: toaLiveEquipmentType(item),
+      type: toaLiveEquipmentType(item, batchAdhesion),
     }));
   const seenSerials = new Set();
   const values = [];
@@ -9790,8 +9791,9 @@ function semiAutoCandidateEquipmentPlan(candidate) {
   const contractOrders = (capture.imperium_matches && capture.imperium_matches.length)
     ? capture.imperium_matches
     : (state.orders || []).filter((item) => String(item.contract) === String(match.contract));
-  const rawInstalled = toaLiveEquipmentDraft(capture.installed_equipment, match, contractOrders);
-  const untypedRemoved = toaLiveEquipmentDraft(capture.removed_equipment, match, contractOrders);
+  const batchAdhesion = candidate.batchAdhesion === true;
+  const rawInstalled = toaLiveEquipmentDraft(capture.installed_equipment, match, contractOrders, batchAdhesion);
+  const untypedRemoved = toaLiveEquipmentDraft(capture.removed_equipment, match, contractOrders, batchAdhesion);
   const installedType = rawInstalled.find((item) => item.type && item.type !== "auto")?.type || "";
   const expectedType = expectedEquipmentType(match.service);
   const rawRemoved = untypedRemoved.map((item) => {

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T16:54:54+00:00",
+  "generated_at": "2026-11-24T17:28:32+00:00",
   "schema": 2,
-  "source_fingerprint": "75f67d62db1c4ea461864910f6d1b34ddf6851fbc53ed5db0c70544660309fe5",
+  "source_fingerprint": "ba18a1fd26653cdb953b5a0202ee0a1919184b050445a2600aa7d34a2dcea76c",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1652,8 +1652,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 24892,
-      "sha256": "bcec95d869cf7c23f23f8d321d5ed1b56407979c1008de5e97425089d8361eff",
+      "bytes": 25594,
+      "sha256": "886490d786c96fa0b60b79ab0239a90968a7d1e1f0f96e6449119684f3d2f033",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -5654,8 +5654,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 21387,
-      "sha256": "7290eed9482b7714564f283b49c4d0d12c358743f8db3dde43af8d1cf91b9420",
+      "bytes": 22112,
+      "sha256": "650ce50f1e67db99debbd1b293a2e376da2c26b55d2635e80ab473d46566b2f8",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -6008,7 +6008,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 185723,
-      "sha256": "1547dec6b68a1e5da1cb0528e52b6c9faef0db28d0e1f8b866146994a63c3472",
+      "sha256": "ab6c035aee2bf2121f364ec8a6c05e3fcfe4a3f4e26d38aa57c2a8d9758eb278",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6702,15 +6702,15 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 10371,
-      "sha256": "24d81bce4a74cff46c2a78c1890bdb07406c166b25294cec1c42cbfd935c7d65",
+      "bytes": 12456,
+      "sha256": "c9907106eaeb4ceb494c71b343e648dc925a4a11696bc343ab93aa63fb8897c5",
       "summary": "",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 1
+      "symbol_count": 2
     },
     {
       "path": "tests/test_adm_allocation.py",
@@ -9150,8 +9150,8 @@
     {
       "path": "tests/test_semiauto_frontend.js",
       "category": "tests",
-      "bytes": 29131,
-      "sha256": "44a6652d8752bfc1b1b01f15c8cf4f79ea37fb9ac3afa33706db3ef8645f7f0b",
+      "bytes": 29669,
+      "sha256": "916377df2462b088edd672abe2c192229307ee6be3974a8f834d50b7edc5be8d",
       "summary": "",
       "imports": [],
       "endpoints": [],
