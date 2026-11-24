@@ -116,6 +116,7 @@ const state = {
   toaLiveConnecting: false,
   toaLiveLoading: false,
   toaLiveResult: null,
+  adhesionBatchRunning: false,
   semiAutoJobs: [],
   semiAutoRunning: false,
   semiAutoPaused: false,
@@ -7394,7 +7395,7 @@ function renderToaLiveStatus() {
       ? status?.remote ? "Ponte TOA conectada" : "TOA conectado"
       : status?.last_error || "TOA fechado";
   const contract = elements.toaLiveContract.value.replace(/\D/g, "");
-  elements.toaLiveLookup.disabled = searching || !online || contract.length < 5;
+  elements.toaLiveLookup.disabled = state.adhesionBatchRunning || searching || !online || contract.length < 5;
   elements.toaLiveContract.disabled = searching;
   elements.toaLiveOpen.disabled = searching || online;
   elements.toaLiveOpen.querySelector("span").textContent = online
@@ -9585,6 +9586,7 @@ function semiAutoMaterialGroupKey(candidate) {
 }
 
 function semiAutoCandidateAcceptsMaterials(candidate) {
+  if (candidate?.batchAdhesion && candidate.batchCodeOnly) return false;
   if (candidate?.isDisconnect && String(candidate?.code || "").trim() === "430") return false;
   if (!closeCodeAllowsMaterials(candidate?.code)) return false;
   if (!toaLiveMaterialsDraft(candidate?.capture?.materials).length) return false;
@@ -9783,7 +9785,7 @@ function semiAutoCandidateEquipmentPlan(candidate) {
   const capture = candidate?.capture || {};
   const service = normalize(match.service);
   if (service.includes("ASSINATURA")) return { installed: [], removed: [], correction: null, error: "" };
-  if (candidate.materialGroupSize > 1 && !candidate.materialOwner) return { installed: [], removed: [], correction: null, error: "" };
+  if (!candidate.batchAdhesion && candidate.materialGroupSize > 1 && !candidate.materialOwner) return { installed: [], removed: [], correction: null, error: "" };
 
   const contractOrders = (capture.imperium_matches && capture.imperium_matches.length)
     ? capture.imperium_matches
@@ -10326,7 +10328,7 @@ function renderSemiAutoQueue() {
   const online = Boolean(state.toaLiveStatus?.connected && state.toaLiveStatus?.authenticated);
   const resumable = jobs.some((job) => job.state === "pending");
   const agendaCount = semiAutoAgendaRecords().length;
-  const isBusy = state.semiAutoRefreshing || !online || !agendaCount || (state.semiAutoRunning && !state.semiAutoPaused);
+  const isBusy = state.adhesionBatchRunning || state.semiAutoRefreshing || !online || !agendaCount || (state.semiAutoRunning && !state.semiAutoPaused);
   elements.semiAutoStart.disabled = isBusy;
   elements.semiAutoStart.querySelector("span").textContent = state.semiAutoRefreshing
     ? "Conferindo Imperium"
@@ -10342,6 +10344,7 @@ function renderSemiAutoQueue() {
       : "Baixa Automatica (100%)";
   }
   renderSemiAutoAgenda();
+  globalThis.dominiumRenderAdhesionBatch?.();
 }
 
 function semiAutoExpectedSkip(error) {
@@ -10462,6 +10465,12 @@ function semiAutoClassifyErrorSkip(job, error) {
 async function executeDirectAutoClose(candidate, materials = []) {
   const match = candidate.order || toaLiveImperiumMatch(candidate.capture, candidate.task);
   if (!match) return false;
+  const batch = candidate.batchAdhesion === true;
+  if (batch && (!state.adhesionBatchRunning || state.profile !== "natal" || !state.officialCloseEnabled || !state.closeEnabled
+    || candidate.batchScope?.profile !== state.profile || candidate.batchScope?.epoch !== state.profileEpoch
+    || candidate.batchScope?.date !== elements.date.value || !validToaCloseSnapshot(match, candidate.capture))) {
+    return {closed:false,humanReview:true,reason:"Escopo ou autorizacao da baixa mudou"};
+  }
   const capture = candidate.capture || {};
   const task = candidate.task || {};
   const code = String(task.close_code || candidate.code || "409").trim();
@@ -10469,14 +10478,14 @@ async function executeDirectAutoClose(candidate, materials = []) {
   const contractOrders = (capture.imperium_matches && capture.imperium_matches.length)
     ? capture.imperium_matches
     : (state.orders || []).filter((item) => String(item.contract) === String(match.contract));
-  const installed = semiAutoCandidateInstalledEquipment(candidate);
-  const removed = semiAutoCandidateRemovedEquipment(candidate);
+  const installed = batch && candidate.batchCodeOnly ? [] : semiAutoCandidateInstalledEquipment(candidate);
+  const removed = batch && candidate.batchCodeOnly ? [] : semiAutoCandidateRemovedEquipment(candidate);
 
   const displayedOrder = state.orders.find((item) =>
     Number(item.id_os) === Number(match.id_os)
     && String(item.num_os) === String(match.num_os)
   );
-  const currentOrder = displayedOrder && !displayedOrder.read_only ? displayedOrder : match;
+  const currentOrder = batch ? match : (displayedOrder && !displayedOrder.read_only ? displayedOrder : match);
 
   const movement = (code === "517" || (installed.length && removed.length))
     ? "swap"
@@ -10492,7 +10501,7 @@ async function executeDirectAutoClose(candidate, materials = []) {
   const hasMaterials = Array.isArray(materials) && materials.length > 0;
 
   const hasDataSnap = Boolean(state.authUser?.imperium_identities?.[state.profile]);
-  const transport = (
+  const transport = batch ? "official_http" : (
     (state.activeModule === "close" && elements.closeTransport?.value)
     || (state.officialCloseEnabled ? "official_http" : (hasDataSnap ? "datasnap" : "official_http"))
   );
@@ -10531,7 +10540,7 @@ async function executeDirectAutoClose(candidate, materials = []) {
     movement,
     installed_equipment: installed,
     removed_equipment: removed,
-    materials: isNoEquipmentService(service) ? [] : materials.map((m) => ({
+    materials: (batch ? candidate.batchCodeOnly : isNoEquipmentService(service)) ? [] : materials.map((m) => ({
       ...m,
       equivalence_confirmed: true,
     })),
@@ -10554,6 +10563,7 @@ async function executeDirectAutoClose(candidate, materials = []) {
         message: res.message || "Aguardando confirmacao do Imperium",
       };
     }
+    if (batch) return Boolean(res && (res.status === "confirmed" || res.confirmed === true));
     return Boolean(res && (res.ok || res.status === "confirmed" || res.confirmed));
   } catch (err) {
     console.error(`Falha na baixa automatica da OS ${match.num_os}:`, err);
@@ -10573,7 +10583,7 @@ async function processAutoCloseCandidate(candidate, profile) {
   const task = candidate.task || {};
   const code = String(task.close_code || candidate.code || "409").trim();
   const service = normalize(match.service);
-  const noEquipment = isNoEquipmentService(service);
+  const noEquipment = candidate.batchAdhesion ? candidate.batchCodeOnly : isNoEquipmentService(service);
   const definition = state.closeCodes.find((item) => item.code === code);
   const isImproductive = (!definition || !definition.productive || code === "106" || code === "555" || code === "510");
   const isDisconnect430 = Boolean(candidate?.isDisconnect) && code === "430";
@@ -10904,6 +10914,7 @@ async function runSemiAutoQueue() {
 }
 
 async function startAutoCloseQueue() {
+  if (state.adhesionBatchRunning) return;
   state.autoCloseMode = true;
   state.autoCloseCount = 0;
   state.humanReviewCount = 0;
@@ -10911,6 +10922,7 @@ async function startAutoCloseQueue() {
 }
 
 async function startSemiAutoQueue() {
+  if (state.adhesionBatchRunning) return;
   if (state.semiAutoRunning && state.semiAutoPaused) {
     const refreshed = await semiAutoRefreshActiveOrders({ announce: true });
     if (!refreshed) return;
@@ -11149,7 +11161,7 @@ function renderToaLiveResult() {
 
 async function lookupToaLiveContract() {
   const query = elements.toaLiveContract.value.replace(/\D/g, "");
-  if (query.length < 5 || state.toaLiveLoading) return;
+  if (query.length < 5 || state.toaLiveLoading || state.adhesionBatchRunning) return;
   state.toaLiveLoading = true;
   const requestedProfile = state.profile;
   const requestedEpoch = state.profileEpoch;

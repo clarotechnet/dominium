@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T12:40:48+00:00",
+  "generated_at": "2026-11-24T16:30:54+00:00",
   "schema": 2,
-  "source_fingerprint": "83473293ff771c4b855aadc93168ff974e32903185619789e4b99390df859859",
+  "source_fingerprint": "324416c61e049cd4cc591ad3a07f78160efe82efa9f68956a8395070c0487185",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1251,6 +1251,19 @@
       "symbol_count": 26
     },
     {
+      "path": "docs/agent/ADESAO_BATCH_NTL_PWM_20261124.md",
+      "category": "docs",
+      "bytes": 2030,
+      "sha256": "c0edc186d895639e0bd38051d21b3b5cc533f3d6132d1d3d6f421fe6f3b55928",
+      "summary": "Adesao NTL/PWM: baixa em lote explicita (24/11/2026)",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "docs/agent/ATLAS_APP4_VIDEO_COMPARISON_20261026.md",
       "category": "docs",
       "bytes": 4289,
@@ -1558,8 +1571,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 17730,
-      "sha256": "ea63dc825e7a2f393ff83b3a71dd10cfa1f37692e9cd2c969bdb9fdb5e39aaa8",
+      "bytes": 18658,
+      "sha256": "ccc75b5dc49668df02d990208129719b3262167c81624c99e38f19ff791c05c0",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -5436,8 +5449,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 7072,
-      "sha256": "d866fdb9136c3d5315f89fe7ff12811fd58a507ae4cd17a033cfcba0e58f6b0a",
+      "bytes": 7120,
+      "sha256": "05737aae127d6176a803f5185a7150ac35492c1fc7af420597639c93fcabc776",
       "summary": "",
       "imports": [
         "__future__",
@@ -5624,6 +5637,36 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 1
+    },
+    {
+      "path": "static/adhesion-batch.css",
+      "category": "frontend",
+      "bytes": 705,
+      "sha256": "d4d12428bcc10df7c5d91e9d04e77bfaaeee7dec62966f572b30347a5ac4b4ad",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "static/adhesion-batch.js",
+      "category": "frontend",
+      "bytes": 17987,
+      "sha256": "72e6b00c35e32ac648a5e9e8046b9cf3705317de82e22642d81fda787c811802",
+      "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
+      "imports": [],
+      "endpoints": [
+        "/api/close-report?date=",
+        "/api/orders?date=",
+        "/api/toa-live/lookup"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 13
     },
     {
       "path": "static/all-cities-scope.css",
@@ -5964,8 +6007,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 184313,
-      "sha256": "9a8c295af485b8c0786ef40de7a556516a22460c084cb74e05b8f3a3cb0ef4bb",
+      "bytes": 185723,
+      "sha256": "9f6d280e071e4467307b4bc7bfb8f9040cbaeffaf9b9b47faf847d32f35d0b3d",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6652,6 +6695,19 @@
         "DOMINIUM_QA_ARTIFACT_DIR",
         "PLAYWRIGHT_MODULE"
       ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "tests/test_adhesion_batch.cjs",
+      "category": "tests",
+      "bytes": 7662,
+      "sha256": "e4c3a27cb87667134ea86cca3595f647cc9a14cf1545005bb8c5557baef519ca",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 1

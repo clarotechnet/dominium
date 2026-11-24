@@ -455,3 +455,32 @@ Alterações preparadas para commit (3 arquivos). Para motivação e resultado c
 Alterações preparadas para commit (1 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
 
 - `static/index.html`
+
+## 2026-11-24 | staged:0c2d8e45b136ac83
+
+Alterações preparadas para commit (6 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `scripts/quality_gate.py`
+- `static/adhesion-batch.css`
+- `static/adhesion-batch.js`
+- `static/app.js`
+- `static/index.html`
+- `tests/test_adhesion_batch.cjs`
+
+## 2026-11-24 | staged:69ca828e84d6faa4
+
+Alterações preparadas para commit (3 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `static/adhesion-batch.js`
+- `static/index.html`
+- `tests/test_adhesion_batch.cjs`
+
+## 2026-11-24 | staged:72c54cb57dc782ff
+
+Alterações preparadas para commit (5 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `docs/agent/ADESAO_BATCH_NTL_PWM_20261124.md`
+- `static/adhesion-batch.js`
+- `static/app.js`
+- `static/index.html`
+- `tests/test_adhesion_batch.cjs`
