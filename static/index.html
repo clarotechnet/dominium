@@ -7,6 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
   <link rel="stylesheet" href="/styles.css?v=20261107-stock-tabs-1">
+  <link rel="stylesheet" href="/adhesion-batch.css?v=20261124-1">
   <link rel="stylesheet" href="/order-reports.css?v=20261111-treated-1">
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
@@ -1803,6 +1804,21 @@
         </div>
         <div class="disconnect-queue-preview" id="disconnectQueuePreview"></div>
       </section>
+      <section class="semi-auto-agenda adhesion-batch" id="adhesionBatch" aria-label="Baixa de adesao em lote">
+        <div class="semi-auto-agenda-copy">
+          <span class="toa-live-kicker">ADES&#195;O / NATAL</span>
+          <h3>Baixa autom&#225;tica por contratos</h3>
+          <p>Cole at&#233; 50 contratos de Natal, separados por v&#237;rgula ou linha. Somente OS aptas, na data selecionada e via API oficial. Acompanhe os retornos abaixo.</p>
+        </div>
+        <label for="adhesionBatchInput">Contratos</label>
+        <textarea id="adhesionBatchInput" rows="4" placeholder="12345678&#10;23456789&#10;34567890"></textarea>
+        <div class="adhesion-batch-actions">
+          <button class="button primary" id="adhesionBatchStart" type="button">Iniciar baixa em lote</button>
+          <button class="button secondary" id="adhesionBatchStop" type="button" disabled>Parar fila</button>
+        </div>
+        <p id="adhesionBatchStatus" role="status" aria-live="polite">Nenhum contrato em processamento.</p>
+        <div id="adhesionBatchResults" class="adhesion-batch-results" aria-live="polite"></div>
+      </section>
       <section class="semi-auto-agenda" aria-label="Agenda da esteira semiautomatica">
         <div class="semi-auto-agenda-copy">
           <span class="toa-live-kicker">AGENDA AUTOMATICA</span>
@@ -3005,7 +3021,8 @@
   <script src="/all-operations.js?v=20261028-1"></script>
   <script src="/order-reports-ui.js?v=20261111-treated-1"></script>
   <script src="/commission-reports-ui.js?v=20261112-1"></script>
-  <script src="/app.js?v=20261123-shared-1"></script>
+  <script src="/app.js?v=20261124-adhesion-batch-1"></script>
+  <script src="/adhesion-batch.js?v=20261124-1"></script>
   <script src="/close-control-engine.js?v=20261109-mro-ui-1"></script>
   <script src="/close-control-city-board.js?v=20261109-mro-ui-1"></script>
   <script src="/close-control-ui.js?v=20261109-mro-ui-1"></script>

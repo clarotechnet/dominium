@@ -1,0 +1,6 @@
+.adhesion-batch{display:grid;grid-template-columns:1fr;gap:12px}
+.adhesion-batch textarea{width:100%;box-sizing:border-box;min-height:100px;resize:vertical;background:rgba(0,0,0,.16);color:inherit;border:1px solid rgba(128,128,128,.35);border-radius:9px;padding:12px;font:inherit}
+.adhesion-batch-actions{display:flex;flex-wrap:wrap;gap:8px}
+.adhesion-batch-results{display:grid;gap:6px;max-height:360px;overflow:auto}
+.adhesion-batch-result{display:grid;grid-template-columns:minmax(90px,1fr) minmax(120px,1.2fr) minmax(0,3fr);gap:8px;padding:10px;border:1px solid rgba(128,128,128,.25);border-radius:8px;overflow-wrap:anywhere}
+@media(max-width:650px){.adhesion-batch-result{grid-template-columns:1fr}}

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T12:40:48+00:00",
+  "generated_at": "2026-11-24T12:50:33+00:00",
   "schema": 2,
-  "source_fingerprint": "83473293ff771c4b855aadc93168ff974e32903185619789e4b99390df859859",
+  "source_fingerprint": "49e3a3c4f2e7cd9bc37d5ee5c8b63ef66353b995263f06075cb4bd4cb802c4dd",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1558,8 +1558,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 17730,
-      "sha256": "ea63dc825e7a2f393ff83b3a71dd10cfa1f37692e9cd2c969bdb9fdb5e39aaa8",
+      "bytes": 18068,
+      "sha256": "f10060d76a562f93aceb3d807702dd294a682d1bd021abac00a5865bb9d4eec5",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -5436,8 +5436,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 7072,
-      "sha256": "d866fdb9136c3d5315f89fe7ff12811fd58a507ae4cd17a033cfcba0e58f6b0a",
+      "bytes": 7120,
+      "sha256": "05737aae127d6176a803f5185a7150ac35492c1fc7af420597639c93fcabc776",
       "summary": "",
       "imports": [
         "__future__",
@@ -5624,6 +5624,36 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 1
+    },
+    {
+      "path": "static/adhesion-batch.css",
+      "category": "frontend",
+      "bytes": 705,
+      "sha256": "d4d12428bcc10df7c5d91e9d04e77bfaaeee7dec62966f572b30347a5ac4b4ad",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "static/adhesion-batch.js",
+      "category": "frontend",
+      "bytes": 13879,
+      "sha256": "a05e3cc82091f67dca7e15eee365723fbfd1b2975de4d67b63d39976699af9b7",
+      "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
+      "imports": [],
+      "endpoints": [
+        "/api/close-report?date=",
+        "/api/orders?date=",
+        "/api/toa-live/lookup"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 10
     },
     {
       "path": "static/all-cities-scope.css",
@@ -5964,8 +5994,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 184313,
-      "sha256": "9a8c295af485b8c0786ef40de7a556516a22460c084cb74e05b8f3a3cb0ef4bb",
+      "bytes": 185585,
+      "sha256": "4a079dd6e55049eeeefea825c271f650a9c48c92e361e165e4493c3ee217b7bc",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6652,6 +6682,19 @@
         "DOMINIUM_QA_ARTIFACT_DIR",
         "PLAYWRIGHT_MODULE"
       ],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
+    },
+    {
+      "path": "tests/test_adhesion_batch.cjs",
+      "category": "tests",
+      "bytes": 3997,
+      "sha256": "1155f326d6b6bd961af0c7fc030daf819c9bcced1a8948951b92fa525623b7f3",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 1

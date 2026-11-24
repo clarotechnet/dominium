@@ -28,6 +28,7 @@ JS_TESTS = (
     ROOT / "tests" / "test_disconnect_frontend.js",
     ROOT / "tests" / "test_operations_monitor.js",
     ROOT / "tests" / "test_semiauto_frontend.js",
+    ROOT / "tests" / "test_adhesion_batch.cjs",
     ROOT / "tests" / "test_confront_frontend.js",
     ROOT / "tests" / "test_query_import.js",
     ROOT / "tests" / "test_atlas_query_policy.js",
