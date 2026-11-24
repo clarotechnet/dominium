@@ -2,7 +2,7 @@
 (function(root) {
   "use strict";
   const MAX = 50;
-  const PREFIXES = { natal:["NTL"] };
+  const PREFIXES = { natal:["NTL","PWM"] };
   function parseContracts(raw) {
     const tokens = String(raw || "").trim().split(/[\s,;]+/).filter(Boolean);
     const invalid = tokens.filter(value => !/^\d{5,18}$/.test(value));
@@ -15,14 +15,25 @@
   function isAdhesionBucket(profile, value) {
     return (PREFIXES[profile] || []).some(prefix => canonical(value) === prefix+"-DMV");
   }
+  function importBucket(order, scope, capture) {
+    const source=String(order?.import_scope?.source_file||"").split(/[\\/]/).pop();
+    const parts=source.match(/^Atividades-(NTL|PWM)-DMV_(\d{2})_(\d{2})_(\d{2})(?:\s*\(\d+\))?\.(?:csv|xlsx)$/i);
+    const expected=scope.date.split("-");
+    if(!parts || parts[2]!==expected[2] || parts[3]!==expected[1] || parts[4]!==expected[0].slice(-2))return "";
+    const identity=order.operation_identity;
+    if(order.operation_source!=="toa_import" || order.import_scope.expected_profile_key!==scope.profile ||
+       !order.import_scope.source_hash || identity?.profile_key!==scope.profile ||
+       String(identity.contract)!==scope.contract || String(identity.activity_id)!==String(capture.aid))return "";
+    return parts[1].toUpperCase()+"-DMV";
+  }
   function codeOnly(service) {
     const s=String(service||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
     return s.includes("ASSINATURA") || /INST(?:ALACAO)?\.?\s+GPON\s*-\s*INST(?:ALACAO)?\.?\s+CABO/.test(s);
   }
   function selectCandidates(payload, active, scope, deps) {
     const {profile,contract,date}=scope;
-    if(profile!=="natal") throw Error("Lote exclusivo de Natal.");
-    if(payload.profile!==profile || String(payload.resolved_contract||"")!==contract || payload.query_type==="os") throw Error("Contrato ou cidade divergente no TOA.");
+    if(profile!=="natal") throw Error("Lote exclusivo da base Natal/Parnamirim.");
+    if(payload.ok===false || payload.profile!==profile || String(payload.resolved_contract||payload.contract||"")!==contract || payload.query_type==="os") throw Error("Contrato ou cidade divergente no TOA.");
     const rows=active.filter(o=>String(o.contract)===contract);
     if(!rows.length) return [];
     const byNumber=new Map();
@@ -35,13 +46,19 @@
     for(const capture of payload.results||[]) {
       const matching=(capture.tasks||[]).filter(t=>byNumber.has(String(t.os_number||"")));
       if(!matching.length) continue;
+      const legacyValidated=capture.decision==null && capture.found===true &&
+        Array.isArray(capture.validation_errors) && capture.validation_errors.length===0 &&
+        Array.isArray(capture.operation_blockers) && capture.operation_blockers.length===0;
       if(String(capture.contract)!==contract || !capture.aid || !deps.complete(capture.activity_status) ||
-         capture.decision!=="candidate_after_validation" || capture.materials_complete===false) throw Error("Atividade incompleta ou bloqueada no TOA.");
+         (capture.decision!=="candidate_after_validation" && !legacyValidated) || capture.materials_complete===false ||
+         (capture.validation_errors||[]).length || (capture.operation_blockers||[]).length) throw Error("Atividade incompleta ou bloqueada no TOA.");
       const rawDate=String(capture.scheduled_date||"").slice(0,10);
       const normalizedDate=/^\d{2}\/\d{2}\/\d{4}$/.test(rawDate)?rawDate.split("/").reverse().join("-"):rawDate;
       if(normalizedDate!==date) throw Error("Data do TOA divergente da data selecionada.");
-      const route=canonical(capture.route || capture.bucket || deps.route(capture.route_provider));
-      if(!isAdhesionBucket(profile,route)) throw Error("Bucket de adesao nao confirmado; nenhuma OS deste contrato sera enviada.");
+      const explicit=canonical(capture.bucket || capture.route || "");
+      const provider=canonical(deps.route(capture.route_provider));
+      const route=explicit || (/^(?:NTL|PWM|FTZ|JCR|MRO)-DMV(?:-|$)/.test(provider)?provider:"");
+      if(route && !isAdhesionBucket(profile,route)) throw Error("Bucket de adesao nao confirmado; nenhuma OS deste contrato sera enviada.");
       for(const task of matching) {
         const os=String(task.os_number), activeOrder=byNumber.get(os);
         const exact=(capture.imperium_matches||[]).filter(o=>String(o.num_os)===os && String(o.contract)===contract && Number(o.id_os)===Number(activeOrder.id_os));
@@ -49,6 +66,10 @@
         const code=String(task.close_code||"").trim();
         if(!code || !deps.knownCode(code)) throw Error("Codigo de baixa ausente ou invalido: "+os);
         const order=exact[0], service=String(order.service||"");
+        const origin=importBucket(order,scope,capture);
+        if(!route && !isAdhesionBucket(profile,origin)) throw Error("Bucket de origem sem comprovacao no arquivo de importacao.");
+        if(order.operation_source==="toa_import" && !isAdhesionBucket(profile,origin)) throw Error("Escopo de importacao fora de adesao.");
+        if(route && origin && route!==origin) throw Error("Bucket TOA diverge da origem importada.");
         if(!service || /DESCONEX|RETIRADA\s+DE\s+ASSINATURA/i.test(service)) throw Error("Servico fora do escopo de adesao: "+os);
         seen.add(os);
         candidates.push({capture,task:{...task,close_code:code},order,numOs:os,code,isDisconnect:false,batchAdhesion:true,batchScope:{profile,date,epoch:scope.epoch},batchCodeOnly:codeOnly(service)});

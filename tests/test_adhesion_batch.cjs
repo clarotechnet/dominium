@@ -14,9 +14,10 @@ test("multiple separators, duplicate contracts, invalid values and limit",()=>{
  assert.throws(()=>parseContracts("12345a")); assert.throws(()=>parseContracts(""));
  assert.throws(()=>parseContracts(Array.from({length:51},(_,i)=>String(10000+i)).join(",")));
 });
-test("Natal adhesion only, not Parnamirim, ADM, unspecified or other city",()=>{
+test("Natal and Parnamirim adhesion only, not ADM, unspecified or other city",()=>{
  assert.equal(isAdhesionBucket("natal","NTL-DMV"),true);
- for(const r of ["PWM-DMV","NTL-DMV_ADM","FTZ-DMV",""])assert.equal(isAdhesionBucket("natal",r),false);
+ assert.equal(isAdhesionBucket("natal","PWM-DMV"),true);
+ for(const r of ["PWM-DMV_ADM","NTL-DMV_ADM","FTZ-DMV",""])assert.equal(isAdhesionBucket("natal",r),false);
  assert.equal(isAdhesionBucket("fortaleza","FTZ-DMV"),false);
 });
 test("exact code-only exceptions",()=>{
@@ -47,4 +48,27 @@ test("stop prevents next write",async()=>{
  let active=true;const sent=[];
  await runBatch(["12345678","23456789"],{active:()=>active,update:()=>{},prepare:async()=>[{numOs:"1"},{numOs:"2"}],send:async c=>{sent.push(c.numOs);active=false;return {closed:true}},confirm:async()=>"confirmed"});
  assert.deepEqual(sent,["1"]);
+});
+
+test("legacy production lookup uses signed import scope, not technician as bucket",()=>{
+ const f=fixture();
+ delete f.payload.resolved_contract;delete f.payload.query_type;
+ f.payload.contract=scope.contract;f.payload.ok=true;
+ delete f.capture.route;delete f.capture.decision;delete f.capture.materials_complete;
+ f.capture.found=true;f.capture.validation_errors=[];f.capture.operation_blockers=[];
+ f.capture.route_provider={name:"TECNICO TESTE"};
+ f.deps.route=p=>p?.name||"";
+ f.order.operation_source="toa_import";
+ f.order.operation_identity={profile_key:"natal",contract:scope.contract,activity_id:f.capture.aid};
+ f.order.import_scope={source_file:"Atividades-NTL-DMV_24_11_26.csv",expected_profile_key:"natal",source_hash:"fixture"};
+ assert.equal(selectCandidates(f.payload,[f.order],scope,f.deps).length,1);
+ f.order.import_scope.source_file="Atividades-PWM-DMV_24_11_26.csv";
+ assert.equal(selectCandidates(f.payload,[f.order],scope,f.deps).length,1);
+ for(const source of ["Atividades-PWM-DMV_ADM_24_11_26.csv","Atividades-FTZ-DMV_24_11_26.csv","Atividades-NTL-DMV_23_11_26.csv"]){
+   f.order.import_scope.source_file=source;
+   assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps));
+ }
+ f.order.import_scope.source_file="Atividades-PWM-DMV_24_11_26.csv";
+ f.order.operation_identity.activity_id="different";
+ assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps));
 });
