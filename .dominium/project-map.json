@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T00:58:22+00:00",
+  "generated_at": "2026-11-24T01:03:17+00:00",
   "schema": 2,
-  "source_fingerprint": "041867fb0fc5a4e2481fca0163ccca426e441902ea0de16b5650365806b3be76",
+  "source_fingerprint": "68779ba815873b2b1b1bd1cc73e1e3f4feaf4c7dd08ec572c9a3623d47b37f2d",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1558,8 +1558,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 15695,
-      "sha256": "c961b41174212381d6a02d8d9ac8815430d94628d20304410c96606536fbe1d6",
+      "bytes": 16207,
+      "sha256": "725d6ba52c740f8ac4f4ede84d3ef34f2b9b3b36b617f7b51a6e6f699f74717d",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -2856,6 +2856,19 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 22
+    },
+    {
+      "path": "integrations/fora-rota-legacy-sync/worker.mjs",
+      "category": "shared",
+      "bytes": 3129,
+      "sha256": "9e95cb9deac32835c46a3ae9ca655e353e5ccfe7073ca3c499ed9d82617d67fb",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
     },
     {
       "path": "integrations/import_bridge/commission_reports.test.mjs",
@@ -6311,6 +6324,48 @@
       "symbol_count": 0
     },
     {
+      "path": "supabase/functions/dominium-fora-rota-legacy-sync/core.mjs",
+      "category": "shared",
+      "bytes": 4348,
+      "sha256": "87039e4164c11443119ddaaaf92562017e9b581053a80c2a6e27885646c1a4f8",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 9
+    },
+    {
+      "path": "supabase/functions/dominium-fora-rota-legacy-sync/index.ts",
+      "category": "shared",
+      "bytes": 3172,
+      "sha256": "229e9390f9cf042818467c591afe755c0a7aee41d7fc9e90a65050d8292d1c2f",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TOKEN_HASH.charCodeAt",
+        "TOKEN_HASH.length"
+      ],
+      "entrypoint": false,
+      "symbol_count": 3
+    },
+    {
+      "path": "supabase/functions/dominium-fora-rota-legacy-sync/merge.mjs",
+      "category": "shared",
+      "bytes": 2964,
+      "sha256": "07891305cef9ea1b72b253c97c9056e2e4cd8f21eb45415f2e5582a3ccb67b3e",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
+    },
+    {
       "path": "supabase/functions/dominium-fora-rota-state/core.mjs",
       "category": "shared",
       "bytes": 4349,
@@ -7750,6 +7805,19 @@
       ],
       "entrypoint": true,
       "symbol_count": 8
+    },
+    {
+      "path": "tests/test_fora_rota_legacy_sync.mjs",
+      "category": "tests",
+      "bytes": 2083,
+      "sha256": "e949fac884531f35cf8a2974b64f3a37aaa8c285b86ca133fc78aae9a77bf9d7",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "tests/test_fora_rota_shared_state.mjs",
@@ -10598,6 +10666,8 @@
     "TOA_LOOKUP_PRIVATE_BRIDGE_20261027.md",
     "TOA_PROVIDER_TREE_REPAIR_20261027.md",
     "TOA_REPLAY_HEADER_NAMES.has",
+    "TOKEN_HASH.charCodeAt",
+    "TOKEN_HASH.length",
     "TOKEN_PATTERN.test",
     "Tabela_codigo_baixa0711.catalog",
     "Tabela_codigo_baixa0711.pdf",

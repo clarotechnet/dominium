@@ -79,7 +79,7 @@ docs	docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md				Dominium — consul
 docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/IMPERIUM_VIDEO_ATLAS_AUDIT_20261106.md				Dominium — Fluxo comprovado nos vídeos operacionais, 06/11/2026	d6ab164c441c4db7
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	c961b41174212381
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	725d6ba52c740f8a
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
@@ -157,6 +157,7 @@ tests	integrations/desc_runtime/test_persisted_removed_movements.py	22			Legacy 
 tests	integrations/desc_runtime/test_runtime_official_materials.py	2				7f7709987deaf79c
 tests	integrations/desc_runtime/test_whatsapp_bridge_service.py	13				156846f081cd3a97
 shared	integrations/desc_runtime/whatsapp_bridge_service.py	22				931cf8de8b9ce09b
+shared	integrations/fora-rota-legacy-sync/worker.mjs	4				9e95cb9deac32835
 shared	integrations/import_bridge/commission_reports.test.mjs		1			3e755d67c5f79d30
 shared	integrations/import_bridge/daily_stock_service.py	7			Leitura e snapshots de estoque diario no Supabase operacional do Dominium.	4bfea8bad6b4d792
 shared	integrations/import_bridge/order_reports.test.mjs		1			090b92e9055c18fb
@@ -342,6 +343,9 @@ shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias e
 shared	stock_protocol_templates.json			2		d4310f519e27cc25
 shared	supabase/config.toml				For detailed configuration reference documentation, visit:	c6cfb0e691f6ac10
 shared	supabase/fora_rota_snapshot_schema.sql					e14c971cc199c647
+shared	supabase/functions/dominium-fora-rota-legacy-sync/core.mjs	9				87039e4164c11443
+shared	supabase/functions/dominium-fora-rota-legacy-sync/index.ts	3		2		229e9390f9cf0428
+shared	supabase/functions/dominium-fora-rota-legacy-sync/merge.mjs	4				07891305cef9ea1b
 shared	supabase/functions/dominium-fora-rota-state/core.mjs	9				6a1337752c413458
 shared	supabase/functions/dominium-fora-rota-state/index.ts	4				c89f0ec843c1efc4
 shared	supabase/migrations/20260917202620_dominium_auth_schema.sql					62ed33bcd27847c6
@@ -419,6 +423,7 @@ tests	tests/test_equipment_daily_catalog.py	6	10		Daily equipment workbooks are 
 tests	tests/test_equipment_group_matching.py	24				abb0031d8ae437aa
 tests	tests/test_equipment_video_transform.py	7			Synthetic video-workbook transformation tests; no client data in Git.	e0bbc492c75d9e3a
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38
+tests	tests/test_fora_rota_legacy_sync.mjs					e949fac884531f35
 tests	tests/test_fora_rota_shared_state.mjs					6913a58d29f36e95
 tests	tests/test_hostinger_dataset_regression.cjs	4	1			ec6b2b088eea6eb2
 tests	tests/test_hostinger_runtime_dependencies.py	2			Prevent Node startup failure due to missing relative require() files in release.	853302619ce6a698

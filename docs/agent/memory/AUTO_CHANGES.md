@@ -402,3 +402,14 @@ Alterações preparadas para commit (11 arquivos). Para motivação e resultado 
 - `tests/test_backlog_fora_rota.cjs`
 - `tests/test_backlog_status_reload_20261107.cjs`
 - `tests/test_fora_rota_shared_state.mjs`
+
+## 2026-11-24 | staged:d00b6d370224bc0e
+
+Alterações preparadas para commit (6 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `integrations/fora-rota-legacy-sync/worker.mjs`
+- `integrations/fora-rota-legacy-sync/wrangler.jsonc`
+- `supabase/functions/dominium-fora-rota-legacy-sync/core.mjs`
+- `supabase/functions/dominium-fora-rota-legacy-sync/index.ts`
+- `supabase/functions/dominium-fora-rota-legacy-sync/merge.mjs`
+- `tests/test_fora_rota_legacy_sync.mjs`

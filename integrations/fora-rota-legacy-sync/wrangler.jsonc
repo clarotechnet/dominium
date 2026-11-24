@@ -1,0 +1,19 @@
+{
+  "name": "dominium-fora-rota-sync",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-06-12",
+  "workers_dev": true,
+  "preview_urls": false,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "analise-backlog-db",
+      "database_id": "6c61e232-38c0-4b5e-87cf-4fa60192b6cb"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "*/15 * * * *"
+    ]
+  }
+}
