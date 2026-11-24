@@ -484,3 +484,11 @@ Alterações preparadas para commit (5 arquivos). Para motivação e resultado c
 - `static/app.js`
 - `static/index.html`
 - `tests/test_adhesion_batch.cjs`
+
+## 2026-11-24 | staged:5a2e18ee2cbf27d1
+
+Alterações preparadas para commit (3 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `static/adhesion-batch.js`
+- `static/index.html`
+- `tests/test_adhesion_batch.cjs`

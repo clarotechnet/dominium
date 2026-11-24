@@ -26,9 +26,26 @@
        String(identity.contract)!==scope.contract || String(identity.activity_id)!==String(capture.aid))return "";
     return parts[1].toUpperCase()+"-DMV";
   }
+  // The operational endpoint returns HTTP 200 + stale=true (or 409)
+  // while its shared lock is held. Only retry reads, never a close.
+  async function freshOrders(read, {active,wait,notify=()=>{},attempts=24,delay=5000}) {
+    for(let attempt=1;attempt<=attempts;attempt++){
+      if(!active())throw Error("Lote interrompido.");
+      let payload;
+      try {payload=await read();}
+      catch(err){if(err.status!==409)throw err;}
+      if(!active())throw Error("Lote interrompido.");
+      if(payload && payload.stale!==true && Array.isArray(payload.orders))return payload;
+      if(payload && payload.stale!==true)throw Error("Resposta invalida da lista Imperium.");
+      if(attempt===attempts)break;
+      notify(attempt,attempts);
+      await wait(delay);
+    }
+    throw Error("Imperium ocupado: nao foi possivel obter lista atualizada. Nenhuma baixa deste contrato foi enviada.");
+  }
   function codeOnly(service) {
     const s=String(service||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
-    return s.includes("ASSINATURA") || /INST(?:ALACAO)?\.?\s+GPON\s*-\s*INST(?:ALACAO)?\.?\s+CABO/.test(s);
+    return s.includes("ASSINATURA") || /INST(?:ALACAO)?\.?\s+GPON\s*-\s*INST(?:ALACAO)?\.?\s+CABO/.test(s) || /INSTALACAO (?:DE )?CABO GPON/.test(s);
   }
   function materialAudit(preparation) {
     if(!preparation || typeof preparation!=="object") return "";
@@ -171,7 +188,7 @@
       } catch(err) {hooks.update(contract,"Tratativa",String(err.message||err).slice(0,300));}
     }
   }
-  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch};return;}
+  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders};return;}
   const panel=document.getElementById("adhesionBatch");
   if(!panel)return;
   const input=document.getElementById("adhesionBatchInput"),start=document.getElementById("adhesionBatchStart"),
@@ -207,12 +224,20 @@
         active,update,
         async prepare(contract) {
           const path="/api/orders?date="+encodeURIComponent(date)+"&status=field&service_type=all";
-          const orders=await request(apiUrlForProfile(path,profile),{timeoutMs:180000});
-          if(!active() || orders.stale || !Array.isArray(orders.orders)) throw Error("Lista Imperium indisponivel ou desatualizada.");
+          const orders=await freshOrders(
+            ()=>request(apiUrlForProfile(path,profile),{timeoutMs:180000}),
+            {active,wait:sleep,notify:(attempt,max)=>update(contract,"Consultando","Imperium ocupado; aguardando lista atualizada ("+attempt+"/"+max+").")}
+          );
           if(!orders.orders.some(o=>String(o.contract)===contract)) return [];
           const payload=await request(apiUrlForProfile("/api/toa-live/lookup",profile),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:contract,expected_profile_key:profile,expected_date:date}),timeoutMs:300000});
           if(!active()) throw Error("Cidade/data alterada; fila interrompida.");
-          return selectCandidates(payload,orders.orders,{profile,contract,date,epoch},{
+          // Revalidate the field list if the TOA correlation itself could
+          // not refresh Imperium. The initial snapshot alone is insufficient.
+          const current=payload.imperium_refresh?.refreshed===true ? orders : await freshOrders(
+            ()=>request(apiUrlForProfile(path,profile),{timeoutMs:180000}),
+            {active,wait:sleep,notify:(attempt,max)=>update(contract,"Consultando","Aguardando reconfirmacao do Imperium ("+attempt+"/"+max+").")}
+          );
+          return selectCandidates(payload,current.orders,{profile,contract,date,epoch},{
             complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,
             valid:validToaCloseSnapshot,knownCode:code=>state.closeCodes.some(c=>c.code===code),
             assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials,expectedType:expectedEquipmentType,productive:code=>Boolean(state.closeCodes.find(c=>c.code===code)?.productive)
