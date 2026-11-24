@@ -420,3 +420,9 @@ Alterações preparadas para commit (2 arquivos). Para motivação e resultado c
 
 - `integrations/fora-rota-legacy-sync/worker.mjs`
 - `tests/test_fora_rota_legacy_worker.mjs`
+
+## 2026-11-24 | staged:451f061a9a4e1a6c
+
+Alterações preparadas para commit (1 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `supabase/functions/dominium-fora-rota-legacy-sync/index.ts`

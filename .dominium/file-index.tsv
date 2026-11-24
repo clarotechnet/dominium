@@ -79,7 +79,7 @@ docs	docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md				Dominium — consul
 docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/IMPERIUM_VIDEO_ATLAS_AUDIT_20261106.md				Dominium — Fluxo comprovado nos vídeos operacionais, 06/11/2026	d6ab164c441c4db7
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	b97da1f9193d7354
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	3c3c656a8254f8ea
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
@@ -344,7 +344,7 @@ shared	stock_protocol_templates.json			2		d4310f519e27cc25
 shared	supabase/config.toml				For detailed configuration reference documentation, visit:	c6cfb0e691f6ac10
 shared	supabase/fora_rota_snapshot_schema.sql					e14c971cc199c647
 shared	supabase/functions/dominium-fora-rota-legacy-sync/core.mjs	9				87039e4164c11443
-shared	supabase/functions/dominium-fora-rota-legacy-sync/index.ts	3		2		229e9390f9cf0428
+shared	supabase/functions/dominium-fora-rota-legacy-sync/index.ts	3		2		a3be95f71cd4be93
 shared	supabase/functions/dominium-fora-rota-legacy-sync/merge.mjs	4				07891305cef9ea1b
 shared	supabase/functions/dominium-fora-rota-state/core.mjs	9				6a1337752c413458
 shared	supabase/functions/dominium-fora-rota-state/index.ts	4				c89f0ec843c1efc4

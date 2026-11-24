@@ -1,6 +1,6 @@
 import { profileForCity, cleanRecords } from './core.mjs';
 import { mergeSync } from './merge.mjs';
-const TOKEN_HASH='3d69a41bba7867bf05da57f0a2c0ae75b28d47e37fc6924b800bff59ae77664f';
+const TOKEN_HASH='7f14acf7a266a5495d8731b412479eb2330427a99c1eeb54aa6c155df4e9ad73';
 const url=Deno.env.get('SUPABASE_URL')||'';
 const service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
 const profiles=['natal','fortaleza','mossoro','recife','unassigned'];
