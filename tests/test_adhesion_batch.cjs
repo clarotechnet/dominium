@@ -144,6 +144,45 @@ test("persistent cache, cancellation and nonbusy errors fail closed",async()=>{
  assert.equal(codeOnly("INSTALACAO DE CABO GPON"),true);
 });
 
+test("persistent busy stops after four reads and passes the remaining time to each read", async () => {
+ const {freshOrders} = require("../static/adhesion-batch.js");
+ let elapsed = 0;
+ const budgets = [];
+ await assert.rejects(freshOrders(async timeout => {
+  budgets.push(timeout);
+  return {stale: true, orders: []};
+ }, {active: () => true, now: () => elapsed, wait: async delay => {elapsed += delay;}}), /Imperium ocupado/);
+ assert.deepEqual(budgets, [15000, 13500, 12000, 10500]);
+ assert.equal(elapsed, 4500);
+
+ elapsed = 0;
+ budgets.length = 0;
+ await assert.rejects(freshOrders(async timeout => {
+  budgets.push(timeout);
+  elapsed += Math.min(8000, timeout);
+  return {stale: true, orders: []};
+ }, {active: () => true, now: () => elapsed, wait: async delay => {elapsed += delay;}}), /Imperium ocupado/);
+ assert.deepEqual(budgets, [15000, 5500]);
+ assert.equal(elapsed, 15000);
+});
+
+test("uses the refreshed lookup status list without repeating the initial field read", async () => {
+ const {ordersForBatchContract} = require("../static/adhesion-batch.js");
+ const active = {contract: scope.contract, num_os: "1", status: "EM CAMPO"};
+ const payload = {
+  imperium_refresh: {refreshed: true},
+  imperium_all_orders: [active, {...active, num_os: "2", status: "CONCLUIDA"}, {...active, contract: "23456789"}],
+ };
+ let reads = 0;
+ const readFresh = async () => {reads++; return {orders: [active]};};
+ assert.deepEqual(await ordersForBatchContract(payload, scope.contract, readFresh), [active]);
+ assert.deepEqual(await ordersForBatchContract({...payload, imperium_all_orders: []}, scope.contract, readFresh), []);
+ assert.equal(reads, 0);
+ assert.deepEqual(await ordersForBatchContract({...payload, imperium_refresh: {busy: true}}, scope.contract, readFresh), [active]);
+ assert.deepEqual(await ordersForBatchContract({...payload, imperium_all_orders: [{}]}, scope.contract, readFresh), [active]);
+ assert.equal(reads, 2);
+});
+
 test("refresh approval before companion without changing OS identity",()=>{
  const {refreshCandidate}=require("../static/adhesion-batch.js");
  const old={id_os:2,num_os:"999",contract:"12345678",service:"INSTALACAO DE CABO GPON",operation_source:"toa_import",operation_identity:{profile_key:"natal",contract:"12345678",activity_id:"123"},import_scope:{source_file:"Atividades-NTL-DMV_24_11_26.csv",expected_profile_key:"natal",source_hash:"fixture"},approved_state_hash:"old"};
