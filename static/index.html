@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/impeccable.css">
   <link rel="stylesheet" href="/workspace.css?v=20261013-photo-assist">
   <link rel="stylesheet" href="/backlog-analysis.css?v=20261103-image-1">
+  <link rel="stylesheet" href="/backlog-fora-rota.css?v=20261123-1">
   <link rel="stylesheet" href="/all-cities-scope.css?v=20261103-global-1">
   <link rel="stylesheet" href="/close-control.css?v=20261109-mro-ui-1">
 </head>
@@ -1850,6 +1851,24 @@
           </div>
         </header>
 
+        <section class="semi-auto-agenda manual-close-batch" aria-labelledby="manualCloseTitle">
+          <div class="semi-auto-agenda-copy">
+            <span class="toa-live-kicker">LISTA MANUAL</span>
+            <h3 id="manualCloseTitle">Baixa automática por contratos</h3>
+            <p>Cole os contratos separados por linhas, vírgulas, espaços ou ponto e vírgula. Somente esta lista será processada, na base e data selecionadas.</p>
+          </div>
+          <label for="manualCloseContracts">Contratos</label>
+          <textarea id="manualCloseContracts" rows="4" maxlength="12000" placeholder="12323123&#10;21343243, 35234343"></textarea>
+          <label for="manualCloseScope">Tratativa</label>
+          <select id="manualCloseScope">
+            <option value="">Selecione a tratativa</option>
+            <option value="normal">Adesão / demais OS DMV</option>
+            <option value="adm">Desconexão ADM</option>
+          </select>
+          <p id="manualCloseSummary" aria-live="polite">Nenhum contrato informado.</p>
+          <button class="button primary" id="manualCloseStart" type="button" disabled>Iniciar baixa da lista</button>
+          <p>Somente OS em campo com atividade concluída, rota e código compatíveis. Pendências e resultados incertos exigem revisão; não há reenvio automático.</p>
+        </section>
         <section class="auto-improductive-card" aria-label="Auto-baixa de improdutivas">
           <div class="auto-improductive-heading">
             <div>
@@ -2413,6 +2432,79 @@
           <button type="button" class="button secondary" id="backlogCopyOffRoute">Copiar lista</button></div>
           <div id="backlogOffRouteResult" class="backlog-results"></div>
         </section>
+
+        <section class="backlog-card dominium-fora-rota" aria-label="Gerador detalhado de Fora de Rota">
+          <h3>Gerador detalhado — Claro + Imperium</h3>
+          <p>Importe o backlog Claro e o historico Imperium, escolha cidade e bairro e gere uma mensagem por contrato. Sem envio automatico de WhatsApp ou baixa de OS.</p>
+          <p class="dfr-note">As planilhas com dados de clientes permanecem somente nesta sessao do navegador. Registros de envio sao gravados pela API autenticada do Dominium.</p>
+          <div class="dfr-imports">
+            <label class="drop-card">Backlog Claro (.xlsx/.xls/.csv)
+              <input id="foraRotaInput" type="file" accept=".xlsx,.xls,.csv">
+              <small id="foraRotaFileName">Selecione a planilha Claro</small>
+            </label>
+            <label class="drop-card">Historico Imperium (.xlsx/.xls/.csv)
+              <input id="foraRotaImperiumInput" type="file" accept=".xlsx,.xls,.csv">
+              <small id="foraRotaImperiumFileName">Selecione o historico da base 106</small>
+            </label>
+          </div>
+          <div class="dfr-controls">
+            <label>Cidade
+              <select id="foraRotaCidadeSelect">
+                <option value="natal_parnamirim">Natal / Parnamirim</option>
+                <option value="fortaleza">Fortaleza</option>
+                <option value="pernambuco">Recife / Pernambuco</option>
+                <option value="mossoro">Mossoro</option>
+              </select>
+            </label>
+            <button type="button" class="button secondary" id="foraRotaAdicionarCidadeButton">Adicionar base 106 a cidade</button>
+            <label>Bairro
+              <select id="foraRotaBairroSelect"><option value="">Importe o backlog Claro</option></select>
+            </label>
+            <label>Quantidade
+              <input id="foraRotaQuantidadeInput" type="number" min="1" max="100" value="5">
+            </label>
+            <label>Tecnico
+              <input id="foraRotaTecnicoInput" type="text" placeholder="A DEFINIR" maxlength="100">
+            </label>
+            <label>Data de envio
+              <input id="foraRotaDataInput" type="date">
+            </label>
+            <label>Agenda
+              <input id="foraRotaAgendaInput" type="text" value="08:00 - 22:00" maxlength="80">
+            </label>
+          </div>
+          <div class="dfr-stats" id="foraRotaStats" aria-live="polite"></div>
+          <div id="foraRotaSavedBases" class="dfr-saved-bases"></div>
+          <details>
+            <summary>Gerenciar bases 106 desta sessao</summary>
+            <div class="backlog-actions dfr-clear">
+              <button type="button" class="button secondary compact" data-clear-fora-rota-city="natal_parnamirim">Limpar Natal</button>
+              <button type="button" class="button secondary compact" data-clear-fora-rota-city="fortaleza">Limpar Fortaleza</button>
+              <button type="button" class="button secondary compact" data-clear-fora-rota-city="pernambuco">Limpar Recife</button>
+              <button type="button" class="button secondary compact" data-clear-fora-rota-city="mossoro">Limpar Mossoro</button>
+              <button type="button" class="button secondary compact" data-clear-fora-rota-city="all">Limpar todas</button>
+            </div>
+          </details>
+          <div class="backlog-actions">
+            <button type="button" class="button primary" id="foraRotaGerarButton">Gerar mensagem</button>
+            <button type="button" class="button secondary" id="foraRotaCopiarButton">Copiar texto</button>
+            <button type="button" class="button secondary" id="foraRotaMarcarButton">Registrar como enviado</button>
+            <button type="button" class="button secondary" id="foraRotaLimparButton">Limpar selecao</button>
+          </div>
+          <p role="status" id="foraRotaStatus" class="dfr-status">Importe as planilhas para gerar mensagens.</p>
+          <textarea id="foraRotaOutput" rows="11" readonly placeholder="As mensagens geradas aparecerao aqui."></textarea>
+          <details>
+            <summary>Acompanhamento dos registros de envio no Dominium</summary>
+            <div class="dfr-tracking-tools">
+              <label>Pesquisar
+                <input id="foraRotaTrackingSearchInput" type="search" placeholder="Contrato, cidade ou observacao">
+              </label>
+              <button type="button" class="button secondary" id="foraRotaRefreshTrackingButton">Atualizar historico</button>
+            </div>
+            <p class="dfr-note">O registro de envio nao comprova retorno tecnico ou baixa. A verificacao da OS permanece no TOA/Imperium.</p>
+            <div id="foraRotaTrackingRoot" class="dfr-tracking"></div>
+          </details>
+        </section>
       </div>
       <div class="backlog-panel hidden" data-backlog-pane="sent">
         <section class="backlog-card">
@@ -2935,6 +3027,7 @@
   <script src="/backlog-report.js?v=20261103-whatsapp-1"></script>
   <script src="/backlog-report-image.js?v=20261103-image-2"></script>
   <script src="/backlog-analysis.js?v=20261107-restore-status-1"></script>
+  <script src="/backlog-fora-rota.js?v=20261123-2"></script>
   <script src="/quality-control.js?v=20261029-analysis-1"></script>
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>

@@ -104,6 +104,8 @@ pathlib	auto_improductive_close.py
 threading	auto_improductive_close.py
 time	auto_improductive_close.py
 typing	auto_improductive_close.py
+__future__	backlog_technician_names.py
+re	backlog_technician_names.py
 datetime	bulk_orders.py
 pathlib	bulk_orders.py
 re	bulk_orders.py
@@ -1019,6 +1021,7 @@ json	scripts/generate_agent_context.py
 pathlib	scripts/generate_agent_context.py
 re	scripts/generate_agent_context.py
 subprocess	scripts/generate_agent_context.py
+pathlib	scripts/incorporate_fora_rota_20261123.py
 json	scripts/inspect_atlas_bridge_readonly.py
 urllib	scripts/inspect_atlas_bridge_readonly.py
 pathlib	scripts/inspect_confront_wiring.py
@@ -1224,6 +1227,12 @@ json	tests/test_auto_improductive_close.py
 pathlib	tests/test_auto_improductive_close.py
 tempfile	tests/test_auto_improductive_close.py
 unittest	tests/test_auto_improductive_close.py
+backlog_technician_names	tests/test_backlog_technician_names.py
+json	tests/test_backlog_technician_names.py
+pathlib	tests/test_backlog_technician_names.py
+technician_directory	tests/test_backlog_technician_names.py
+tempfile	tests/test_backlog_technician_names.py
+unittest	tests/test_backlog_technician_names.py
 pathlib	tests/test_build_hostinger_node_release.py
 scripts	tests/test_build_hostinger_node_release.py
 tempfile	tests/test_build_hostinger_node_release.py

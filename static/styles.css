@@ -7707,3 +7707,23 @@ body.sidebar-collapsed .stock-group-chevron { display:none; }
 .stock-daily-search-loading{cursor:progress;opacity:.88}
 @keyframes stock-daily-spinner{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.stock-daily-loading-spinner{animation:none}}
+
+/* Manual contract batch: independent of the bucket agenda. */
+.manual-close-batch {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+}
+.manual-close-batch textarea, .manual-close-batch select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+}
+.manual-close-batch textarea { resize: vertical; min-height: 100px; }
+.manual-close-batch .button { justify-self: start; }

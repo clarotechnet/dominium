@@ -3402,8 +3402,10 @@ async function loadProfile() {
     const payload = await request(apiUrl("/api/status"));
     if (profileKey !== state.profile) return;
     const company = String(payload.label || payload.company || "").trim() || "NATAL";
-    state.closeEnabled = Boolean(payload.close_enabled);
+    // A hospedagem encaminha baixas apenas pela ponte HTTP oficial.
+    const hostedOfficialOnly = globalThis.location?.hostname === "dominium.clarotechnet.com.br";
     state.officialCloseEnabled = Boolean(payload.official_close_enabled);
+    state.closeEnabled = Boolean(payload.close_enabled) && (!hostedOfficialOnly || state.officialCloseEnabled);
     state.materialWriteoffEnabled = Boolean(payload.material_writeoff_enabled);
     state.nativeCreationEnabled = Boolean(payload.native_creation_enabled);
     state.installerChangeEnabled = Boolean(payload.installer_change_enabled);
@@ -3418,10 +3420,12 @@ async function loadProfile() {
     );
     const dataSnapOpt = elements.closeTransport.querySelector('[value="datasnap"]');
     if (dataSnapOpt) {
-      dataSnapOpt.disabled = !hasDataSnapIdentity;
-      dataSnapOpt.textContent = "DataSnap (protocolo direto)";
+      dataSnapOpt.disabled = hostedOfficialOnly || !hasDataSnapIdentity;
+      dataSnapOpt.textContent = hostedOfficialOnly
+        ? "DataSnap indisponível na hospedagem"
+        : "DataSnap (protocolo direto)";
     }
-    elements.closeTransport.value = state.officialCloseEnabled
+    elements.closeTransport.value = hostedOfficialOnly || state.officialCloseEnabled
       ? "official_http"
       : hasDataSnapIdentity
         ? "datasnap"
@@ -8318,7 +8322,8 @@ async function processDisconnectClaim(claim) {
       progress.message = `Codigo ${plan.code} | ${plan.service}`;
       await updateDisconnectClaim(claim, "submitting", { result: progress });
       const hasDataSnap = Boolean(state.authUser?.imperium_identities?.[state.profile]);
-      const transport = (
+      const hostedOfficialOnly = globalThis.location?.hostname === "dominium.clarotechnet.com.br";
+      const transport = hostedOfficialOnly ? "official_http" : (
         (state.activeModule === "close" && elements.closeTransport?.value)
         || (state.officialCloseEnabled ? "official_http" : (hasDataSnap ? "datasnap" : "official_http"))
       );
@@ -8796,17 +8801,19 @@ function semiAutoJobRoutePrefixes(job) {
 function semiAutoRouteMatchesJob(capture, job) {
   const route = semiAutoCanonicalRoute(automationProviderLabel(capture?.route_provider));
   const prefixes = semiAutoJobRoutePrefixes(job);
+  if (job?.manualBatch && (!prefixes.length || !route || route === "NAOINFORMADO")) return false;
   if (!prefixes.length) return true;
   if (!route || route === "NAOINFORMADO") return true;
   const matchedPrefix = prefixes.find((prefix) => route.startsWith(`${prefix}-DMV`));
   if (!matchedPrefix) return false;
+  if (job?.manualBatch && route !== matchedPrefix + "-DMV" && !route.startsWith(matchedPrefix + "-DMV-")) return false;
   const admRoute = /(?:^|-)ADM(?:-|$)/.test(route);
   if (job?.isDisconnect) {
     // Algumas respostas diretas do TOA devolvem o bucket pai (ex.: NTL-DMV)
     // mesmo quando a atividade veio do bucket ADM. O expected_profile_key
     // continua validando a base; se o sufixo vier explícito, ele deve ser ADM.
     const hasSpecificSuffix = route !== `${matchedPrefix}-DMV`;
-    return !hasSpecificSuffix || admRoute;
+    return job?.manualBatch ? admRoute : (!hasSpecificSuffix || admRoute);
   }
   return !admRoute;
 }
@@ -8902,7 +8909,7 @@ function renderSemiAutoAgenda() {
   const filename = state.semiAutoAgenda?.filename
     || records[0]?.source_files?.[0]
     || "";
-  elements.semiAutoAgendaChoose.disabled = state.semiAutoAgendaLoading || state.semiAutoRunning;
+  elements.semiAutoAgendaChoose.disabled = state.semiAutoAgendaLoading || state.semiAutoRunning || state.manualCloseStarting || state.semiAutoJobs.some((job) => job.manualBatch && job.candidates?.some((c) => c.pending));
   elements.semiAutoAgendaChoose.querySelector("span").textContent = state.semiAutoAgendaLoading
     ? "Lendo agenda..." : "Carregar agenda manual (opcional)";
   elements.semiAutoAgendaName.textContent = sourceMode === "bucket"
@@ -8952,7 +8959,7 @@ async function loadSemiAutoAgenda({ quiet = true } = {}) {
 }
 
 async function importSemiAutoAgenda(file) {
-  if (!file || state.semiAutoAgendaLoading) return;
+  if (!file || state.semiAutoAgendaLoading || state.manualCloseStarting || state.semiAutoRunning || state.semiAutoJobs.some((job) => job.manualBatch && job.candidates?.some((c) => c.pending))) return;
   state.semiAutoAgendaLoading = true;
   renderSemiAutoAgenda();
   try {
@@ -9103,6 +9110,7 @@ function semiAutoReconcileJobsWithOrders(orders) {
     activeByContract.set(contract, list);
   });
   state.semiAutoJobs.forEach((job) => {
+    if (job.manualBatch && job.state !== "pending") return;
     const activeOrders = activeByContract.get(String(job.contract || "")) || [];
     const activeNumbers = new Set(activeOrders.map((order) => (
       String(order.num_os || order.os_number || "").replace(/\D/g, "")
@@ -9346,9 +9354,10 @@ async function semiAutoRefreshActiveOrders({ announce = false } = {}) {
 }
 
 async function semiAutoWakeAwaitingImperiumImports() {
+  if (state.manualCloseStarting || state.semiAutoJobs.some((job) => job.manualBatch)) return 0;
   const waitingContracts = new Set(
     state.semiAutoJobs
-      .filter((job) => job.state === "skipped" && job.skipCategory === "awaiting_imperium_import")
+      .filter((job) => !job.manualBatch && job.state === "skipped" && job.skipCategory === "awaiting_imperium_import")
       .map((job) => String(job.contract || "")),
   );
   if (!waitingContracts.size || state.semiAutoProfile !== state.profile) return 0;
@@ -9548,6 +9557,7 @@ function semiAutoCandidates(payload, job) {
       if (
         !match
         || !eligibleOs.has(numOs)
+        || (job?.manualBatch && (String(match.contract || "") !== job.contract || String(capture.contract || "") !== job.contract))
         || !disconnectTaskExecuted(task.status)
       ) return;
 
@@ -9567,6 +9577,13 @@ function semiAutoCandidates(payload, job) {
     });
 
   });
+  if (job?.manualBatch) {
+    const counts = new Map();
+    candidates.forEach((candidate) => counts.set(candidate.numOs, (counts.get(candidate.numOs) || 0) + 1));
+    if ([...counts.values()].some((count) => count > 1)) {
+      throw new Error("OS duplicada no TOA; revisar o contrato antes de baixar");
+    }
+  }
   semiAutoAssignMaterialOwners(candidates);
   return candidates;
 }
@@ -10171,14 +10188,14 @@ function renderSemiAutoQueue() {
   const toaPending = jobs.filter((job) => job.skipCategory === "toa_pending").length;
   const awaitingImperium = jobs.filter((job) => job.skipCategory === "awaiting_imperium_import").length;
   const activePending = jobs.filter((job) => ["pending", "searching"].includes(job.state)).length;
-  const temporaryWaiting = toaPending + awaitingImperium;
+  const temporaryWaiting = jobs.filter((job) => !job.manualBatch && temporaryWaitCategories.has(job.skipCategory)).length;
   const processed = jobs.filter((job) => (
     ["ready", "skipped", "error"].includes(job.state)
-    && !temporaryWaitCategories.has(job.skipCategory)
+    && (job.manualBatch || !temporaryWaitCategories.has(job.skipCategory))
   )).length;
   const skipped = jobs.filter((job) => (
     ["skipped", "error"].includes(job.state)
-    && !temporaryWaitCategories.has(job.skipCategory)
+    && (job.manualBatch || !temporaryWaitCategories.has(job.skipCategory))
   )).length;
   const pending = activePending + temporaryWaiting;
   const imperiumClosed = jobs.filter((job) => ["imperium_no_os", "imperium_closed"].includes(job.skipCategory)).length;
@@ -10205,7 +10222,7 @@ function renderSemiAutoQueue() {
         : temporaryWaiting
           ? `Aguardando dependências externas: ${temporaryWaiting} contrato(s)`
           : jobs.length
-            ? (state.autoCloseMode ? "Baixa automatica concluida!" : "Pesquisa concluida; aguardando revisao humana")
+            ? (jobs.some((job) => job.manualBatch) ? "Lista processada; confira as baixas confirmadas e pendencias." : (state.autoCloseMode ? "Baixa automatica concluida!" : "Pesquisa concluida; aguardando revisao humana"))
             : "Aguardando inicio";
   const toaRetryMinutes = state.semiAutoToaRetryWaitingUntil > Date.now()
     ? Math.max(1, Math.ceil((state.semiAutoToaRetryWaitingUntil - Date.now()) / 60000))
@@ -10326,7 +10343,9 @@ function renderSemiAutoQueue() {
   const online = Boolean(state.toaLiveStatus?.connected && state.toaLiveStatus?.authenticated);
   const resumable = jobs.some((job) => job.state === "pending");
   const agendaCount = semiAutoAgendaRecords().length;
-  const isBusy = state.semiAutoRefreshing || !online || !agendaCount || (state.semiAutoRunning && !state.semiAutoPaused);
+  const manualOutstanding = jobs.some((job) => job.manualBatch && (state.semiAutoRunning || job.candidates?.some((c) => c.pending)));
+  const isBusy = state.semiAutoRefreshing || !online || !agendaCount || state.manualCloseStarting || manualOutstanding
+    || (state.semiAutoWorker && !state.semiAutoPaused) || (state.semiAutoRunning && !state.semiAutoPaused);
   elements.semiAutoStart.disabled = isBusy;
   elements.semiAutoStart.querySelector("span").textContent = state.semiAutoRefreshing
     ? "Conferindo Imperium"
@@ -10336,12 +10355,13 @@ function renderSemiAutoQueue() {
       ? "Pesquisando contratos"
       : "Baixa semiautomatica";
   if (elements.autoCloseStart) {
-    elements.autoCloseStart.disabled = isBusy;
+    elements.autoCloseStart.disabled = isBusy || !state.closeEnabled;
     elements.autoCloseStart.querySelector("span").textContent = state.autoCloseMode && state.semiAutoRunning
       ? "Baixando 100%..."
       : "Baixa Automatica (100%)";
   }
   renderSemiAutoAgenda();
+  renderManualCloseBatch();
 }
 
 function semiAutoExpectedSkip(error) {
@@ -10460,6 +10480,9 @@ function semiAutoClassifyErrorSkip(job, error) {
 }
 
 async function executeDirectAutoClose(candidate, materials = []) {
+  if (!state.closeEnabled || (globalThis.location?.hostname === "dominium.clarotechnet.com.br" && !state.officialCloseEnabled)) {
+    return { closed: false, reason: "Baixa indisponivel: API oficial nao habilitada" };
+  }
   const match = candidate.order || toaLiveImperiumMatch(candidate.capture, candidate.task);
   if (!match) return false;
   const capture = candidate.capture || {};
@@ -10492,7 +10515,8 @@ async function executeDirectAutoClose(candidate, materials = []) {
   const hasMaterials = Array.isArray(materials) && materials.length > 0;
 
   const hasDataSnap = Boolean(state.authUser?.imperium_identities?.[state.profile]);
-  const transport = (
+  const hostedOfficialOnly = globalThis.location?.hostname === "dominium.clarotechnet.com.br";
+  const transport = hostedOfficialOnly ? "official_http" : (
     (state.activeModule === "close" && elements.closeTransport?.value)
     || (state.officialCloseEnabled ? "official_http" : (hasDataSnap ? "datasnap" : "official_http"))
   );
@@ -10792,6 +10816,10 @@ async function runSemiAutoQueue() {
         await sleep(Math.min(waitMs, 3000));
         continue;
       }
+      if (job.manualBatch && elements.date.value !== job.batchDate) {
+        stopSemiAutoQueue();
+        break;
+      }
       state.semiAutoWaitingWindow = "";
       job.state = "searching";
       state.semiAutoCurrentContract = job.contract;
@@ -10824,6 +10852,12 @@ async function runSemiAutoQueue() {
 
         if (state.autoCloseMode && job.candidates.length) {
           for (const candidate of job.candidates) {
+            if (job.manualBatch && (state.semiAutoStopRequested || !state.semiAutoRunning
+              || state.profile !== profile || state.profileEpoch !== epoch || elements.date.value !== job.batchDate)) {
+              candidate.humanReview = true;
+              candidate.humanReviewReason = "Lote interrompido; nenhuma baixa enviada para esta OS";
+              continue;
+            }
             if (candidate.reviewed || candidate.closed) continue;
             const res = await processAutoCloseCandidate(candidate, job.profile);
             if (res.pending) {
@@ -10903,6 +10937,73 @@ async function runSemiAutoQueue() {
   }
 }
 
+function parseManualCloseContracts(raw) {
+  const tokens = String(raw || "").trim().split(/[\s,;]+/).filter(Boolean);
+  const invalid = tokens.filter((token) => !/^\d{5,18}$/.test(token));
+  const contracts = [...new Set(tokens.filter((token) => /^\d{5,18}$/.test(token)))];
+  return { contracts, invalid, duplicates: tokens.length - invalid.length - contracts.length };
+}
+
+function renderManualCloseBatch() {
+  const input = document.getElementById("manualCloseContracts");
+  const button = document.getElementById("manualCloseStart");
+  if (!input || !button) return;
+  const scope = document.getElementById("manualCloseScope");
+  const summary = document.getElementById("manualCloseSummary");
+  const parsed = parseManualCloseContracts(input.value);
+  const pending = state.semiAutoJobs.some((job) => job.candidates?.some((c) => c.pending));
+  summary.textContent = parsed.invalid.length
+    ? "Contratos inválidos: " + parsed.invalid.slice(0, 5).join(", ")
+    : parsed.contracts.length + " contrato(s) válido(s); " + parsed.duplicates + " duplicado(s) removido(s).";
+  if (parsed.contracts.length > 100) summary.textContent += " Limite: 100 contratos por lote.";
+  if (pending) summary.textContent += " Aguarde a confirmação do lote anterior.";
+  button.disabled = !parsed.contracts.length || parsed.contracts.length > 100 || !!parsed.invalid.length
+    || !scope.value || !state.closeEnabled || !state.toaLiveStatus?.connected || !state.toaLiveStatus?.authenticated
+    || state.running || state.loading || state.profileSwitching || state.semiAutoAgendaLoading
+    || state.semiAutoRunning || state.semiAutoWorker || state.semiAutoRefreshing || state.manualCloseStarting || pending;
+}
+
+async function startManualCloseBatch() {
+  renderManualCloseBatch();
+  if (document.getElementById("manualCloseStart").disabled) return;
+  const parsed = parseManualCloseContracts(document.getElementById("manualCloseContracts").value);
+  const scope = document.getElementById("manualCloseScope").value;
+  const profile = state.profile;
+  const epoch = state.profileEpoch;
+  const date = elements.date.value;
+  if (!date || !window.confirm("Enviar baixas reais para as OS aptas de " + parsed.contracts.length
+      + " contrato(s)? Base: " + profile + " | Data: " + date + " | " + scope)) return;
+  state.manualCloseStarting = true;
+  renderManualCloseBatch();
+  try {
+    if (!await semiAutoRefreshActiveOrders({ announce: true })) return;
+    if (state.profile !== profile || state.profileEpoch !== epoch || elements.date.value !== date
+        || !state.closeEnabled || state.semiAutoRunning || state.semiAutoWorker) return;
+    const records = parsed.contracts.map((contract) => ({
+      contract, window_start: 0, window_end: 1439, window: "Lista manual", source_files: [],
+    }));
+    state.semiAutoJobs = semiAutoBuildJobs(records, state.orders, profile).map((job) => ({
+      ...job, manualBatch: true, batchDate: date, isDisconnect: scope === "adm",
+      route: semiAutoJobRouteLabel({ profile, isDisconnect: scope === "adm" }),
+    }));
+    state.semiAutoJobs.sort((a, b) => parsed.contracts.indexOf(a.contract) - parsed.contracts.indexOf(b.contract));
+    state.autoCloseMode = true;
+    state.autoCloseCount = 0;
+    state.humanReviewCount = 0;
+    state.semiAutoProfile = profile;
+    state.semiAutoStopRequested = false;
+    state.semiAutoPaused = false;
+    state.semiAutoWaitingWindow = "";
+    state.semiAutoToaRetryWaitingUntil = 0;
+    state.semiAutoRunning = true;
+    renderSemiAutoQueue();
+    void runSemiAutoQueue();
+  } finally {
+    state.manualCloseStarting = false;
+    renderSemiAutoQueue();
+  }
+}
+
 async function startAutoCloseQueue() {
   state.autoCloseMode = true;
   state.autoCloseCount = 0;
@@ -10911,6 +11012,7 @@ async function startAutoCloseQueue() {
 }
 
 async function startSemiAutoQueue() {
+  if (state.manualCloseStarting || (state.semiAutoWorker && !state.semiAutoPaused) || state.semiAutoJobs.some((job) => job.manualBatch && (state.semiAutoRunning || job.candidates?.some((c) => c.pending)))) return;
   if (state.semiAutoRunning && state.semiAutoPaused) {
     const refreshed = await semiAutoRefreshActiveOrders({ announce: true });
     if (!refreshed) return;
@@ -12191,10 +12293,14 @@ async function submitClose(order, definition, extra = {}) {
   }
   const hasMaterials = Array.isArray(extra.materials) && extra.materials.length > 0;
   const hasDataSnap = Boolean(state.authUser?.imperium_identities?.[state.profile]);
-  const transport = extra.transport || (
+  const hostedOfficialOnly = globalThis.location?.hostname === "dominium.clarotechnet.com.br";
+  if (hostedOfficialOnly && !state.officialCloseEnabled) {
+    throw new Error("A API oficial do Imperium nao esta habilitada no servidor. Nenhuma baixa foi enviada.");
+  }
+  const transport = hostedOfficialOnly ? "official_http" : (extra.transport || (
     (state.activeModule === "close" && elements.closeTransport?.value)
     || (state.officialCloseEnabled ? "official_http" : (hasDataSnap ? "datasnap" : "official_http"))
-  );
+  ));
   const maxAttempts = transport === "official_http" ? 1 : 60;
   const toaTechName = String(
     extra.toa_technician?.name
@@ -12968,6 +13074,9 @@ elements.semiAutoAgendaChoose.addEventListener("click", () => {
 elements.semiAutoAgendaFile.addEventListener("change", () => {
   void importSemiAutoAgenda(elements.semiAutoAgendaFile.files?.[0]);
 });
+document.getElementById("manualCloseContracts")?.addEventListener("input", renderManualCloseBatch);
+document.getElementById("manualCloseScope")?.addEventListener("change", renderManualCloseBatch);
+document.getElementById("manualCloseStart")?.addEventListener("click", startManualCloseBatch);
 elements.semiAutoStart.addEventListener("click", () => {
   state.autoCloseMode = false;
   startSemiAutoQueue();

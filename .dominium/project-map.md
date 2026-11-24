@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-18T19:56:16+00:00
-- Source fingerprint: `455db11d7efb85ee`
-- Indexed files: 547
-- Indexed symbols: 4487
-- API path references: 565
+- Generated: 2026-11-24T00:28:10+00:00
+- Source fingerprint: `0bb5a2d9ec3493e8`
+- Indexed files: 558
+- Indexed symbols: 4589
+- API path references: 569
 
 ## Navigation rule
 
@@ -99,6 +99,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/atlas-query-ui.js` (23 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
 - `static/backlog-analysis.css`
 - `static/backlog-analysis.js` (18 symbols, 7 API paths) - DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */
+- `static/backlog-fora-rota.css` - Somente a aba Análise Backlog > Fora de Rota. Sem sobrescrever o tema global. */
+- `static/backlog-fora-rota.js` (80 symbols, 1 API paths)
 - `static/backlog-report-image.js` (4 symbols) - DOMINIUM — export PNG do resumo de códigos históricos por cidade.
 - `static/backlog-report.js` (7 symbols) - Read-only WhatsApp report derived from the route × historical-code comparison.
 - `static/close-control-city-board.js` (4 symbols) - DOMINIUM Controle de baixas — painel por cidade.
@@ -132,6 +134,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/stock-report-preview-ui.js` (5 symbols, 2 API paths) - The three stock analysis processes have independent, paged workspace views. */
 - `static/styles.css`
 - `static/theme-init.js`
+- `static/vendor/LICENSE.sheetjs.txt` - Apache License
 - `static/workspace.css` - Shared workspace: the original Technet image, floating glass and Dominium red. */
 
 ## shared core
@@ -145,6 +148,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `auth_store.py` (28 symbols) - Autenticacao local do DOMINIUM.
 - `auth_store_postgres.py` (18 symbols) - Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.
 - `auto_improductive_close.py` (23 symbols)
+- `backlog_technician_names.py` (1 symbols) - Display enrichment for the read-only backlog comparison; no operational writes.
 - `bulk_orders.py` (2 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `cancel_all_open.py` (3 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `CLAUDE.md` (1 DataSnap methods) - DOMINIUM / Claude Code
@@ -200,10 +204,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 164 files
-- tooling-deploy: 52 files
-- docs: 52 files
-- tests: 171 files
+- shared: 166 files
+- tooling-deploy: 53 files
+- docs: 54 files
+- tests: 174 files
 
 ## Search indexes
 
