@@ -3271,6 +3271,15 @@ renderHealthCheck	function	tests/test_intelligence_frontend.js	20	-
 serialAuditStatusLabel	function	tests/test_intelligence_frontend.js	20	-
 loadIntelligence	function	tests/test_intelligence_frontend.js	21	-
 runSerialAudit	function	tests/test_intelligence_frontend.js	21	-
+extract	function	tests/test_manual_close_batch.cjs	8	-
+automationProviderLabel	function	tests/test_manual_close_batch.cjs	27	-
+semiAutoCanonicalRoute	function	tests/test_manual_close_batch.cjs	27	-
+semiAutoJobRoutePrefixes	function	tests/test_manual_close_batch.cjs	27	-
+disconnectActivityComplete	function	tests/test_manual_close_batch.cjs	41	-
+disconnectTaskExecuted	function	tests/test_manual_close_batch.cjs	41	-
+semiAutoAssignMaterialOwners	function	tests/test_manual_close_batch.cjs	41	-
+semiAutoRouteMatchesJob	function	tests/test_manual_close_batch.cjs	41	-
+toaLiveImperiumMatch	function	tests/test_manual_close_batch.cjs	41	-
 short_text	function	tests/test_manual_materials.py	17	-
 fmtdbcd	function	tests/test_manual_materials.py	22	-
 manual_record	function	tests/test_manual_materials.py	29	-
@@ -3743,6 +3752,10 @@ showToast	function	tests/test_productive_snapshot_frontend.js	77	-
 apiUrl	function	tests/test_productive_snapshot_frontend.js	78	-
 openConfirmation	function	tests/test_productive_snapshot_frontend.js	78	-
 request	function	tests/test_productive_snapshot_frontend.js	79	-
+apiUrl	function	tests/test_productive_snapshot_frontend.js	102	-
+request	function	tests/test_productive_snapshot_frontend.js	103	-
+apiUrl	function	tests/test_productive_snapshot_frontend.js	114	-
+request	function	tests/test_productive_snapshot_frontend.js	115	-
 QualityControlTests	class	tests/test_quality_control.py	6	-
 test_numeric_and_textual_quantities_are_preserved	method	tests/test_quality_control.py	7	QualityControlTests
 test_rejects_invalid_material_or_empty_rule	method	tests/test_quality_control.py	15	QualityControlTests

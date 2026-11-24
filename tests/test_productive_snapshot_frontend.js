@@ -94,3 +94,27 @@ test('the real editor and submit keep nine materials, equipment and one coherent
  assert.deepEqual(body.installed_equipment,c.installed_equipment);assert.deepEqual(body.materials,c.materials);
  assert.equal(body.materials.length,9);assert.equal(body.materials[0].quantity,78);
 });
+
+test('hosted DOMINIUM forces official HTTP even when a stale editor selected DataSnap',async()=>{
+ const h=new Function(`const globalThis={location:{hostname:'dominium.clarotechnet.com.br'}};
+ const state={profile:'natal',activeModule:'close',officialCloseEnabled:true,authUser:{imperium_identities:{natal:{username:'controller'}}},stopped:false};
+ const elements={closeTransport:{value:'datasnap'},runDetail:{textContent:''}};
+ const calls=[];const apiUrl=x=>x+'?profile=natal';
+ const request=async(url,options)=>{calls.push({url,body:JSON.parse(options.body)});return {ok:true,pending_confirmation:true};};
+ ${extract('submitClose')}
+ return {state,calls,submitClose};`)();
+ await h.submitClose(row('fresh'),{code:'409'},{transport:'datasnap'});
+ assert.equal(h.calls.length,1);
+ assert.equal(h.calls[0].body.transport,'official_http');
+});
+test('hosted DOMINIUM never sends a close when official credentials are unavailable',async()=>{
+ const h=new Function(`const globalThis={location:{hostname:'dominium.clarotechnet.com.br'}};
+ const state={profile:'natal',activeModule:'close',officialCloseEnabled:false,authUser:{imperium_identities:{natal:{}}},stopped:false};
+ const elements={closeTransport:{value:'datasnap'},runDetail:{textContent:''}};
+ const calls=[];const apiUrl=x=>x;
+ const request=async()=>{calls.push('sent');return {ok:true};};
+ ${extract('submitClose')}
+ return {state,calls,submitClose};`)();
+ await assert.rejects(()=>h.submitClose(row('fresh'),{code:'409'},{transport:'datasnap'}),/API oficial/);
+ assert.equal(h.calls.length,0);
+});

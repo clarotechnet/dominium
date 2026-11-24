@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-23T14:03:21+00:00",
+  "generated_at": "2026-11-24T00:28:10+00:00",
   "schema": 2,
-  "source_fingerprint": "90a27a56cf4fa01879f26fd1a7430f6913cb1b6382f75736f600b8fc51b30cf3",
+  "source_fingerprint": "0bb5a2d9ec3493e85c58175ce89e54ba437463fed1e477a1ee094d60ca14f4dd",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1599,8 +1599,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 16544,
-      "sha256": "931aa96e0a2b780883967e6b92eda6ff0af524e76e83e7a3f0dfcd356c598038",
+      "bytes": 16868,
+      "sha256": "68d0dc64fde298cd30718661d0b58dc9c7a359d330c03142324a3f69c28ab1f1",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -6021,8 +6021,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 183595,
-      "sha256": "86f2363ce130ee0592182cf5f53582278ccb922a1c80eccd60942ff02eade56d",
+      "bytes": 184952,
+      "sha256": "4e387b9e3c392cbdd9c75514bc5f60d6a7d1c839d9f5f6bfb42a2ca01275b5f5",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6246,8 +6246,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 226297,
-      "sha256": "14749da8ad85a46532c451ebe5b38c5cc3e07d605e24a5c6989d135769145918",
+      "bytes": 226840,
+      "sha256": "ded8a5b1f9dc2e0237a8aeead61750b8311d6091dd2c80b8a019c73cdb22172b",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -8133,6 +8133,19 @@
       "symbol_count": 6
     },
     {
+      "path": "tests/test_manual_close_batch.cjs",
+      "category": "tests",
+      "bytes": 3671,
+      "sha256": "e95308d0a2924f231826266105ac9803d681b6e0bbe49454867a116b98a51cf0",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 9
+    },
+    {
       "path": "tests/test_manual_materials.py",
       "category": "tests",
       "bytes": 7658,
@@ -8923,15 +8936,15 @@
     {
       "path": "tests/test_productive_snapshot_frontend.js",
       "category": "tests",
-      "bytes": 7376,
-      "sha256": "40c79179779f670282f2c26f07d0f833f1f72c2851d0c6f9e29b119f5bda979b",
+      "bytes": 8936,
+      "sha256": "3fafb265126ae9c0dd1248163983cf6ffa493e9b60ef28fde03be4f843714adf",
       "summary": "",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 18
+      "symbol_count": 22
     },
     {
       "path": "tests/test_quality_control.py",

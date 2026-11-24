@@ -1851,6 +1851,24 @@
           </div>
         </header>
 
+        <section class="semi-auto-agenda manual-close-batch" aria-labelledby="manualCloseTitle">
+          <div class="semi-auto-agenda-copy">
+            <span class="toa-live-kicker">LISTA MANUAL</span>
+            <h3 id="manualCloseTitle">Baixa automática por contratos</h3>
+            <p>Cole os contratos separados por linhas, vírgulas, espaços ou ponto e vírgula. Somente esta lista será processada, na base e data selecionadas.</p>
+          </div>
+          <label for="manualCloseContracts">Contratos</label>
+          <textarea id="manualCloseContracts" rows="4" maxlength="12000" placeholder="12323123&#10;21343243, 35234343"></textarea>
+          <label for="manualCloseScope">Tratativa</label>
+          <select id="manualCloseScope">
+            <option value="">Selecione a tratativa</option>
+            <option value="normal">Adesão / demais OS DMV</option>
+            <option value="adm">Desconexão ADM</option>
+          </select>
+          <p id="manualCloseSummary" aria-live="polite">Nenhum contrato informado.</p>
+          <button class="button primary" id="manualCloseStart" type="button" disabled>Iniciar baixa da lista</button>
+          <p>Somente OS em campo com atividade concluída, rota e código compatíveis. Pendências e resultados incertos exigem revisão; não há reenvio automático.</p>
+        </section>
         <section class="auto-improductive-card" aria-label="Auto-baixa de improdutivas">
           <div class="auto-improductive-heading">
             <div>
