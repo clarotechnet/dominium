@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-24T00:58:22+00:00
-- Source fingerprint: `041867fb0fc5a4e2`
-- Indexed files: 555
-- Indexed symbols: 4587
+- Generated: 2026-11-24T11:35:09+00:00
+- Source fingerprint: `d5b1375378073684`
+- Indexed files: 556
+- Indexed symbols: 4590
 - API path references: 571
 
 ## Navigation rule
@@ -100,7 +100,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/backlog-analysis.css`
 - `static/backlog-analysis.js` (18 symbols, 7 API paths) - DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */
 - `static/backlog-fora-rota.css` - Somente a aba Análise Backlog > Fora de Rota. Sem sobrescrever o tema global. */
-- `static/backlog-fora-rota.js` (86 symbols, 2 API paths)
+- `static/backlog-fora-rota.js` (87 symbols, 2 API paths)
 - `static/backlog-report-image.js` (4 symbols) - DOMINIUM — export PNG do resumo de códigos históricos por cidade.
 - `static/backlog-report.js` (7 symbols) - Read-only WhatsApp report derived from the route × historical-code comparison.
 - `static/close-control-city-board.js` (4 symbols) - DOMINIUM Controle de baixas — painel por cidade.
@@ -206,7 +206,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - shared: 167 files
 - tooling-deploy: 52 files
 - docs: 52 files
-- tests: 173 files
+- tests: 174 files
 
 ## Search indexes
 

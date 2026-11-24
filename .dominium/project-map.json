@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T00:58:22+00:00",
+  "generated_at": "2026-11-24T11:35:09+00:00",
   "schema": 2,
-  "source_fingerprint": "041867fb0fc5a4e2481fca0163ccca426e441902ea0de16b5650365806b3be76",
+  "source_fingerprint": "d5b137537807368491d3ab37b3804a1329cdb26a3628dd81f2fd0aea2671fc0c",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1558,8 +1558,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 15695,
-      "sha256": "c961b41174212381d6a02d8d9ac8815430d94628d20304410c96606536fbe1d6",
+      "bytes": 15967,
+      "sha256": "d7962e2b0bdf60352673f0d10f5f27a215d4c510c2fd560d14213335b6636b7e",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -5707,8 +5707,8 @@
     {
       "path": "static/backlog-fora-rota.js",
       "category": "frontend",
-      "bytes": 52444,
-      "sha256": "4f101f37f0d0d27809d57bb20619a5ea8dc430c3665760c649588c7a4a11a102",
+      "bytes": 52952,
+      "sha256": "32b70a5b0ea9e34ec8b4c61768dd37d884a3e62dd993a69a2cb1ebd6952dbe72",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -5718,7 +5718,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 86
+      "symbol_count": 87
     },
     {
       "path": "static/backlog-report-image.js",
@@ -5951,8 +5951,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 184317,
-      "sha256": "b6e32f0ec07629789461e0237475061ed38daf03e2f52576c45b625a99c20814",
+      "bytes": 184315,
+      "sha256": "073a85dcbe1dbf613a2734a6ce3f361c071e2965a05599be236b6f24581f80ca",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -7750,6 +7750,19 @@
       ],
       "entrypoint": true,
       "symbol_count": 8
+    },
+    {
+      "path": "tests/test_fora_rota_performance.cjs",
+      "category": "tests",
+      "bytes": 2154,
+      "sha256": "b96bd498c82be76e0e418cc69538a0914ff4bd7aa2d9e842c1e85c019def6017",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_fora_rota_shared_state.mjs",
