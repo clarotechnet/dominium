@@ -386,3 +386,19 @@ Alterações preparadas para commit (6 arquivos). Para motivação e resultado c
 - `static/vendor/LICENSE.sheetjs.txt`
 - `static/vendor/xlsx.full.min.js`
 - `tests/test_backlog_fora_rota.cjs`
+
+## 2026-11-24 | staged:97d3a3afa5bced24
+
+Alterações preparadas para commit (11 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `deploy/hostinger-web/server.js`
+- `static/app.js`
+- `static/backlog-analysis.js`
+- `static/backlog-fora-rota.js`
+- `static/index.html`
+- `supabase/fora_rota_snapshot_schema.sql`
+- `supabase/functions/dominium-fora-rota-state/core.mjs`
+- `supabase/functions/dominium-fora-rota-state/index.ts`
+- `tests/test_backlog_fora_rota.cjs`
+- `tests/test_backlog_status_reload_20261107.cjs`
+- `tests/test_fora_rota_shared_state.mjs`

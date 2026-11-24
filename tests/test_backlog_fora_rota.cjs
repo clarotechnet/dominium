@@ -82,49 +82,42 @@ assert.ok(!src.includes("fetch('/api/fora-rota/sent"),"must not call legacy API"
 console.log("OK: 106 limpo, no 430, BASE_CD_NET, city isolation, HTML and API wiring");
 
 (async()=>{
-  // Teste da chamada real de registro atraves de um servidor falso; nenhuma OS real.
-  const writes=[],serverRows=[];
-  ctx.sessionStorage={setItem(){},getItem(){return null;}};
+  const writes=[], serverRows=[];
+  const profiles=['natal','fortaleza','mossoro','recife','unassigned'];
+  function snapshots(){
+    return profiles.flatMap(profile=>['claro','clean106','legacy_sent'].filter(kind=>profile!=='unassigned'||kind==='legacy_sent').map(kind=>({
+      profile,kind,revision:1,source_name:'test',created_at:'2026-11-23T12:00:00Z',
+      records:kind==='legacy_sent'?serverRows.filter(r=>r.profile===profile):kind==='clean106'?(['natal','fortaleza'].includes(profile)?['123456']:[]):records.filter(r=>r.city===(profile==='natal'?'NATAL':profile==='fortaleza'?'FORTALEZA':''))
+    })));
+  }
   ctx.request=async(path,options={})=>{
-    assert.equal(path,"/api/backlog/year/sent");
-    if(!options.method) return {rows:serverRows.slice()};
-    assert.equal(options.method,"POST");
-    const body=JSON.parse(options.body);
+    if(path==='/api/backlog/year/sent')return {rows:[]};
+    assert.equal(path,'/api/fora-rota/state');
+    if(!options.method)return {ok:true,snapshots:snapshots()};
+    const body=JSON.parse(options.body);assert.equal(body.action,'mark_sent');
     writes.push(body);
-    serverRows.push({profile:body.profile,contract:body.contract,note:body.note,sent_at:"2026-11-23T12:00:00Z"});
-    return {ok:true};
+    for(const row of body.records)serverRows.push({...row,profile:body.profile,sentAt:'2026-11-23T12:00:00Z'});
+    return {ok:true,count:body.records.length,revision:2};
   };
-  Object.assign(api.state,{
-    claroRecords:records,
-    clean106ByCity:{natal_parnamirim:["123456"],fortaleza:["123456"]},
-    selectedRecords:[natal],
-    sentContracts:{}
-  });
   Object.assign(api.els,{
-    cidade:{value:"natal_parnamirim"},
-    bairro:{value:"",innerHTML:""},
-    tecnico:{value:"TECNICO TESTE"},
-    data:{value:"2026-11-23"},
-    agenda:{value:"08:00 - 22:00"},
-    marcar:{disabled:false},
-    output:{value:"mensagem simulada"}
+    cidade:{value:'natal_parnamirim'},bairro:{value:'',innerHTML:''},
+    tecnico:{value:'TECNICO TESTE'},data:{value:'2026-11-23'},agenda:{value:'08:00 - 22:00'},
+    marcar:{disabled:false},output:{value:'mensagem simulada'}
   });
-  assert.equal(api.availableRecordsForBairro("").length,1);
-  await api.markSelectedAsSent();
-  assert.equal(writes.length,1,"register once using authenticated API");
-  assert.equal(writes[0].profile,"natal");
-  assert.equal(writes[0].contract,"123456");
-  assert.equal(api.availableRecordsForBairro("").length,0,"sent record excluded");
+  assert.equal(await api.refreshSentTracking(),true);
+  assert.equal(api.availableRecordsForBairro('').length,1);
   api.state.selectedRecords=[natal];
   await api.markSelectedAsSent();
-  assert.equal(writes.length,1,"remote duplicate must be skipped");
-  api.els.cidade.value="fortaleza";
-  assert.equal(api.availableRecordsForBairro("").length,1,"Natal sent must not hide Fortaleza contract");
-  api.els.cidade.value="natal_parnamirim";
-  api.state.selectedRecords=[natal];
-  const numberBefore=writes.length;
-  ctx.request=async()=>{throw Error("sessao indisponivel")};
-  await api.markSelectedAsSent();
-  assert.equal(writes.length,numberBefore,"failed GET must not register sends");
-  console.log("OK: register sent, no duplicate, city boundary and safe API failure");
+  assert.equal(writes.length,1);
+  assert.equal(writes[0].profile,'natal');
+  assert.equal(writes[0].records[0].contract,'123456');
+  assert.equal(api.availableRecordsForBairro('').length,0);
+  api.state.selectedRecords=[natal];await api.markSelectedAsSent();
+  assert.equal(writes.length,1);
+  api.els.cidade.value='fortaleza';assert.equal(api.availableRecordsForBairro('').length,1);
+  serverRows.push({profile:'unassigned',contract:'123456',city:'',lastReturnCode:'430'});
+  await api.refreshSentTracking();assert.equal(api.availableRecordsForBairro('').length,0,'unknown city conservatively blocked');
+  api.state.selectedRecords=[fortaleza];ctx.request=async()=>{throw Error('sessao indisponivel')};
+  await api.markSelectedAsSent();assert.equal(writes.length,1);
+  console.log('OK: central snapshots, sent dedup, isolation, unknown city, failure closed');
 })().catch(error=>{console.error(error);process.exitCode=1});

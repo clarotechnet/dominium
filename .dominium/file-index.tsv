@@ -43,7 +43,7 @@ tooling-deploy	deploy/hostinger-web/order-report-policy.js	1				d634fc2aab4a6d9f
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	37	1		ac7f1f342ba3ef5d
+tooling-deploy	deploy/hostinger-web/server.js	41	38	1		d7fc6d917d7691b7
 tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	6			ec489159895ad366
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
@@ -79,7 +79,7 @@ docs	docs/agent/IMPERIUM_TWO_PHASE_EQUIPMENTS_20261106.md				Dominium — consul
 docs	docs/agent/IMPERIUM_USED_EQUIPMENT_REPORT_20261104.md			3	Integração de leitura — Equipamentos Utilizados (Imperium / DataSnap)	57de7e9b2101b25f
 docs	docs/agent/IMPERIUM_VIDEO_ATLAS_AUDIT_20261106.md				Dominium — Fluxo comprovado nos vídeos operacionais, 06/11/2026	d6ab164c441c4db7
 docs	docs/agent/memory/ADESAO_IMPERIUM_EVIDENCIAS_20261029.md				Integração ADESÃO × Imperium — regras e evidências (29/10/2026)	e57ad5a314109325
-docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	2a77fad38d5d29bf
+docs	docs/agent/memory/AUTO_CHANGES.md				DOMINIUM — trilha automática de alterações versionadas	c961b41174212381
 docs	docs/agent/memory/BOT_PARCIAL_MANUAL_NTL_20261029.md				BotDMV — silenciar respostas TOA, recuperar !parcial e baixa manual nativa (29/10/2026)	6acbc0b9640169c1
 docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza — rechecagem de 25/10/2026, 12:17–12:19 (America/Sao_Paulo)	de86a098d21f58c7
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
@@ -299,9 +299,9 @@ frontend	static/all-cities-scope.css				DOMINIUM: "Todos" is a cross-module read
 frontend	static/all-operations.js	14	2		Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */	2bc9ea7f772fad01
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
 frontend	static/backlog-analysis.css					1adb5fde1c5b6ead
-frontend	static/backlog-analysis.js	18	7		DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */	05d3c0233b40c4af
+frontend	static/backlog-analysis.js	18	7		DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */	9f83d2bc7de02eb5
 frontend	static/backlog-fora-rota.css				Somente a aba Análise Backlog > Fora de Rota. Sem sobrescrever o tema global. */	3fa7ea7da617b97d
-frontend	static/backlog-fora-rota.js	82	1			d8ce9fe95ac6bd91
+frontend	static/backlog-fora-rota.js	86	2			4f101f37f0d0d278
 frontend	static/backlog-report-image.js	4			DOMINIUM — export PNG do resumo de códigos históricos por cidade.	19251bc949adc54d
 frontend	static/backlog-report.js	7			Read-only WhatsApp report derived from the route × historical-code comparison.	8d1b8adce447ba6f
 frontend	static/close-control-city-board.js	4			DOMINIUM Controle de baixas — painel por cidade.	77a4019a146774d1
@@ -318,7 +318,7 @@ frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			b892e494c78ffca3
+frontend	static/index.html		1			b6e32f0ec0762978
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/material-stock-audit.js	15	1			b484bd2f18b0b23e
@@ -341,6 +341,9 @@ imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
 shared	stock_protocol_templates.json			2		d4310f519e27cc25
 shared	supabase/config.toml				For detailed configuration reference documentation, visit:	c6cfb0e691f6ac10
+shared	supabase/fora_rota_snapshot_schema.sql					e14c971cc199c647
+shared	supabase/functions/dominium-fora-rota-state/core.mjs	9				6a1337752c413458
+shared	supabase/functions/dominium-fora-rota-state/index.ts	4				c89f0ec843c1efc4
 shared	supabase/migrations/20260917202620_dominium_auth_schema.sql					62ed33bcd27847c6
 shared	supabase/migrations/20260918000000_dominium_registration_v2.sql					d445e86d360cdf9c
 shared	supabase/migrations/20260928132700_harden_dominium_bridge_rpc_grants.sql					32524212d8abffa5
@@ -376,10 +379,10 @@ tests	tests/test_atlas_query_ui_status.js	4	1			f9172992b8656ecb
 tests	tests/test_auth_store.py	7				2131129f824fbae2
 tests	tests/test_auto_improductive_close.py	11				3f4803d2aafbb308
 tests	tests/test_backlog_action_buttons.cjs	8				5407a352d0b273a2
-tests	tests/test_backlog_fora_rota.cjs		2		Contratos do gerador original de Fora de Rota, sem acesso a dados reais. */	e4081e84cc06f0cb
+tests	tests/test_backlog_fora_rota.cjs	1	3		Contratos do gerador original de Fora de Rota, sem acesso a dados reais. */	8cc48eaca610730e
 tests	tests/test_backlog_hostinger_proxy.js	3	9			0ffdbca1cc822dd4
 tests	tests/test_backlog_report_image.js	1				b8b66a90f2cb8ddd
-tests	tests/test_backlog_status_reload_20261107.cjs	1				291bcba2431ffe6e
+tests	tests/test_backlog_status_reload_20261107.cjs	1				b8c6664881c88ae7
 tests	tests/test_backlog_todos_navigation.cjs	2				fe3d1917db6de65e
 tests	tests/test_backlog_ui_deploy_20261031.py		3			7e903cf8d3b04a3d
 tests	tests/test_backlog_whatsapp_report.js					c136df0853e1647d
@@ -416,6 +419,7 @@ tests	tests/test_equipment_daily_catalog.py	6	10		Daily equipment workbooks are 
 tests	tests/test_equipment_group_matching.py	24				abb0031d8ae437aa
 tests	tests/test_equipment_video_transform.py	7			Synthetic video-workbook transformation tests; no client data in Git.	e0bbc492c75d9e3a
 tests	tests/test_flow_reader.py	8		1		0971a6aac40c5b38
+tests	tests/test_fora_rota_shared_state.mjs					6913a58d29f36e95
 tests	tests/test_hostinger_dataset_regression.cjs	4	1			ec6b2b088eea6eb2
 tests	tests/test_hostinger_runtime_dependencies.py	2			Prevent Node startup failure due to missing relative require() files in release.	853302619ce6a698
 tests	tests/test_imperium_api.py	86		1		06cc74dc3a92ff00
