@@ -13,15 +13,27 @@ export async function sync(env,{full=false,now=Date.now()}={}){
  while(true){
   if(++pages>400)throw Error('D1 pagination limit');
   const statement=full
-   ?env.DB.prepare('SELECT contract,data_json,city,city_label,last_return_code,returned_at,updated_at FROM fora_rota_sent_contracts WHERE contract > ? ORDER BY contract LIMIT 250').bind(cursor)
-   :env.DB.prepare('SELECT contract,data_json,city,city_label,last_return_code,returned_at,updated_at FROM fora_rota_sent_contracts WHERE contract > ? AND updated_at >= ? ORDER BY contract LIMIT 250').bind(cursor,cutoff);
+   ?env.DB.prepare('SELECT contract,data_json,city,city_label,technician,sent_date,sent_at,status,last_return_code,returned_at,returned_by_technician,group_id,group_name,last_message,return_count,updated_at FROM fora_rota_sent_contracts WHERE contract > ? ORDER BY contract LIMIT 250').bind(cursor)
+   :env.DB.prepare('SELECT contract,data_json,city,city_label,technician,sent_date,sent_at,status,last_return_code,returned_at,returned_by_technician,group_id,group_name,last_message,return_count,updated_at FROM fora_rota_sent_contracts WHERE contract > ? AND updated_at >= ? ORDER BY contract LIMIT 250').bind(cursor,cutoff);
   const result=await statement.all();
   const rows=result.results||[];
   if(!rows.length)break;
   const records=rows.map(row=>{
    const record=JSON.parse(row.data_json);
    if(!record||typeof record!=='object'||Array.isArray(record))throw Error('Invalid D1 row');
-   return {...record,contract:String(row.contract),city:row.city||record.city||'',cityLabel:row.city_label||record.cityLabel||'',lastReturnCode:row.last_return_code||record.lastReturnCode||'',returnedAt:row.returned_at||record.returnedAt||'',updatedAt:row.updated_at||record.updatedAt||''};
+   const mapped={...record,contract:String(row.contract)};
+   const columns={city:'city',city_label:'cityLabel',technician:'technician',
+    sent_date:'sentDate',sent_at:'sentAt',status:'status',last_return_code:'lastReturnCode',
+    returned_at:'returnedAt',returned_by_technician:'returnedByTechnician',
+    group_id:'groupId',group_name:'groupName',last_message:'lastMessage',updated_at:'updatedAt'};
+   for(const [column,key] of Object.entries(columns)){
+    const value=row[column];
+    if(typeof value==='string'&&value.trim())mapped[key]=value;
+   }
+   if(Number.isSafeInteger(row.return_count)&&row.return_count>=0){
+    mapped.returnCount=Math.max(Number.isSafeInteger(record.returnCount)?record.returnCount:0,row.return_count);
+   }
+   return mapped;
   });
   const r=await fetch(ENDPOINT,{method:'POST',headers:{...headers,'X-Sync-Token':env.SYNC_TOKEN},body:JSON.stringify({records}),redirect:'error',signal:AbortSignal.timeout(45000)});
   const reply=await r.json().catch(()=>null);

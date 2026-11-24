@@ -413,3 +413,10 @@ Alterações preparadas para commit (6 arquivos). Para motivação e resultado c
 - `supabase/functions/dominium-fora-rota-legacy-sync/index.ts`
 - `supabase/functions/dominium-fora-rota-legacy-sync/merge.mjs`
 - `tests/test_fora_rota_legacy_sync.mjs`
+
+## 2026-11-24 | staged:8ece39f652b6c8bb
+
+Alterações preparadas para commit (2 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `integrations/fora-rota-legacy-sync/worker.mjs`
+- `tests/test_fora_rota_legacy_worker.mjs`
