@@ -387,3 +387,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 34 testes frontend e 23 testes Python focados, incluindo alocação de miscelâneas no ponto Virtua e payload oficial sem serializados.
 
 **Próximo passo/pendência:** Validar em produção somente com uma O.S. autorizada.
+
+## 2026-11-25 12:49 UTC — Expor falha de estoque anterior à baixa de adesão
+
+**Motivo:** A ponte web convertia o erro de estoque em falha de transporte genérica e o observador legado podia substituir o estado do relatório por envio pendente.
+
+**Alterado:** Preserva a resposta estruturada de transferência incerta quando a baixa ainda não saiu. A fila consulta tentativas anteriores e cruza falhas por O.S., contrato, código e horário antes de consultar o terminal.
+
+**Verificação:** 55 testes focados da fila e da ponte, incluindo erro estruturado, timeout genérico e bloqueio sem reenvio.
+
+**Próximo passo/pendência:** Conciliar a movimentação de estoque pendente antes de qualquer nova tentativa.

@@ -79,6 +79,31 @@ test("pending confirmation never resends, never submits companion while uncertai
  assert.deepEqual(sent,["1","3"]);assert.equal(events.findLast(v=>v[0]==="12345678")[1],"Aguardando confirmacao");assert.equal(events.at(-1)[1],"Baixado");
 });
 
+test("a matching legacy stock failure explains the blocked attempt before any write", async () => {
+ const {priorCloseOutcome} = require("../static/adhesion-batch.js");
+ const record = {contract: scope.contract, num_os: "2612345678", id_os: 42, close_code: "409", state: "sending", created_at: "2026-11-24T09:27:56-03:00"};
+ const failure = {...record, last_at: "2026-11-24T09:31:09", error: "O resultado do complemento das miscelaneas ficou incerto. A baixa da OS nao foi enviada. Codigo 22025139."};
+ const known = priorCloseOutcome(record, [failure]);
+ assert.match(known.reason, /nao foi enviada.*22025139/);
+ assert.equal(known.pending, undefined);
+ for(const irrelevant of [{...failure,id_os: 43},{...failure,last_at: "2026-11-24T09:26:00"},{...failure,close_code: "106"}]) {
+  assert.equal(priorCloseOutcome(record, [irrelevant]).pending, true);
+ }
+ assert.equal(priorCloseOutcome({...record,accepted_at: "2026-11-24T09:31:00-03:00"}, [failure]).pending, true);
+ const prepared = [], sent = [], events = [];
+ await runBatch([scope.contract, "87654321"], {
+  active: () => true,
+  update: (...event) => events.push(event),
+  priorContract: async contract => contract === scope.contract ? known : undefined,
+  prepare: async contract => {prepared.push(contract);return [{numOs: "2"}];},
+  send: async candidate => {sent.push(candidate.numOs);return {closed:true};},
+ });
+ assert.deepEqual(prepared, ["87654321"]);
+ assert.deepEqual(sent, ["2"]);
+ assert.equal(events.findLast(event => event[0] === scope.contract)[1], "Tratativa");
+ assert.match(events.findLast(event => event[0] === scope.contract)[2], /22025139/);
+});
+
 test("keeps confirmed OS and material audit when companion approval fails", async () => {
  const events = [], sent = [];
  await runBatch([scope.contract], {

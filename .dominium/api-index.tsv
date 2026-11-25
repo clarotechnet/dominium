@@ -263,6 +263,7 @@ endpoint	path
 /api/confront/status	scripts/smoke_confront_private_relay.py
 /api/disconnection/reports	scripts/smoke_confront_private_relay.py
 /api/close-report?date=	static/adhesion-batch.js
+/api/failures	static/adhesion-batch.js
 /api/orders?date=	static/adhesion-batch.js
 /api/toa-live/lookup	static/adhesion-batch.js
 /api/orders?status=field&service_type=all&date=	static/all-operations.js

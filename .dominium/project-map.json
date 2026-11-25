@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T11:59:18+00:00",
+  "generated_at": "2026-11-25T12:49:59+00:00",
   "schema": 2,
-  "source_fingerprint": "0d13595a2bf9866b28b326a8437f97b7628e8fe900e793f800c18fe977fef23a",
+  "source_fingerprint": "da2be5b3d6f827be8094bf30c320261730a82f726adf65bce6ec68feff790d46",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -913,8 +913,8 @@
     {
       "path": "deploy/hostinger-web/order-close-proxy.js",
       "category": "tooling-deploy",
-      "bytes": 3632,
-      "sha256": "78fc563fd7b62d771eeb5f3f88f72a194af31932edfa982597e82743d0e2f1f8",
+      "bytes": 3903,
+      "sha256": "e8108812d88d552fc471f324e7ed30913f71990d4b9d963cc472430214bae890",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -1652,8 +1652,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 26944,
-      "sha256": "6640ab1c8aa781e95dbf444dff5674d452a8c178279502b8a3c76dd5aa515e8b",
+      "bytes": 27662,
+      "sha256": "1ea998831135c798c0f64688f002357e8f3e1ea04da2fbd88db713ee2f6e08c3",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -5654,19 +5654,20 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 22845,
-      "sha256": "e0cfef33f551d0849c69313227630ab783997219d9c0638c6eabaf21bd094f8c",
+      "bytes": 25282,
+      "sha256": "dca29187b1c2216a2f5b42ea2d49a212c530f0e6b479e35abc989036f24ca791",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
         "/api/close-report?date=",
+        "/api/failures",
         "/api/orders?date=",
         "/api/toa-live/lookup"
       ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 18
+      "symbol_count": 22
     },
     {
       "path": "static/all-cities-scope.css",
@@ -6008,7 +6009,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 185723,
-      "sha256": "9af41104cfef567b5b2c223acf12e42c12e0a77ca7495bd01e707613540e4a7d",
+      "sha256": "aa5570bf679915b04b12655d9b074414d07137ac1d3de15caa5619f9066ef82a",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6702,8 +6703,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 16280,
-      "sha256": "d3ffbc63b3bf24648c44378228c8dc0bec48e2642b37aec552acef39b69f754e",
+      "bytes": 17907,
+      "sha256": "6549afe00c7d8293bfbeee0b57368fa45e1830babeca0e5f237f17c015e13971",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -8886,8 +8887,8 @@
     {
       "path": "tests/test_order_close_proxy.js",
       "category": "tests",
-      "bytes": 4225,
-      "sha256": "8b35993fda8b9e573b70c42d5f40fe2ea1d30863d6a08dc4b8631fc5f97c5181",
+      "bytes": 4953,
+      "sha256": "ed60c454bcf18cce511efc4b58294f4b8f45056d90807cbbee3b3ea956972ad0",
       "summary": "",
       "imports": [],
       "endpoints": [

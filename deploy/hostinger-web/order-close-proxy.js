@@ -41,6 +41,10 @@ function createOrderCloseMiddleware({connection=readConnection, fetchImpl=fetch}
       const payload=JSON.parse(text);
       if (!payload || typeof payload !== 'object' || Array.isArray(payload) || typeof payload.ok !== 'boolean') throw new Error('close_invalid_response');
       res.set('x-dominium-backend','private-order-close-bridge');
+      if (upstream.status===502 && payload.ok===false && payload.category==='MATERIAL_TRANSFER_UNCERTAIN' &&
+          payload.close_sent===false && payload.safe_to_retry===false && typeof payload.error==='string') {
+        return res.status(502).json(payload);
+      }
       if (upstream.status>=500) return res.status(502).json({...payload,...closeTransportFailure()});
       return res.status(upstream.status).json(payload);
     } catch {
