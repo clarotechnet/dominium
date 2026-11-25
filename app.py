@@ -15,6 +15,7 @@
 # A ordem executavel abaixo foi preservada para evitar regressao.
 # =============================================================================
 import argparse
+from adhesion_technician_evidence import AdhesionTechnicianEvidence
 from desc_review_proxy import DescReviewProxy, ProxyError
 import base64
 import csv
@@ -133,6 +134,7 @@ STATIC_ROOT = ROOT / "static"
 LOG_ROOT = ROOT / "logs"
 LOG_ROOT.mkdir(parents=True, exist_ok=True)
 TECHNICIANS = TechnicianDirectory(ROOT / "config" / "technicians.json")
+ADHESION_TECHNICIAN_EVIDENCE = AdhesionTechnicianEvidence()
 TOA_CONTEXT = TOAContextIndex(ROOT, TECHNICIANS.resolve)
 TOA_CAPTURE_CATALOG = TOACaptureCatalog(ROOT)
 TOA_CONTRACTS = TOAContractRegistry(ROOT / "config" / "toa_contract_registry.json")
@@ -4681,6 +4683,14 @@ def _official_technician_code(
         if not captured_name or _same_technician_name(current_name, captured_name):
             return captured_login, current_name or captured_name, installer_id
 
+    supplied = body.get("toa_technician") if isinstance(body, dict) else None
+    if ADHESION_TECHNICIAN_EVIDENCE.matches(
+        getattr(profile, "key", ""), order, scheduled_date, supplied,
+        installer_id, lambda: profile.api.list_stock_technicians(),
+    ):
+        login = str(supplied.get("external_id") or supplied.get("login")).strip().upper()
+        return login, current_name, installer_id
+
     technician = _technician_by_current_name(current_name)
     if technician is None:
         fallback = TECHNICIANS.resolve(enriched.get("technician_login", ""))
@@ -6924,16 +6934,15 @@ class PanelHandler(BaseHTTPRequestHandler):
                 )
                 _record_live_technician_evidence(profile, result)
                 _record_operational_toa_capture(profile, result)
-                self._json(
-                    HTTPStatus.OK,
-                    _prepare_toa_live_lookup(
-                        profile,
-                        result,
-                        query="".join(re.findall(r"\d", str(query or ""))),
-                        query_type=query_type,
-                        requested_os=requested_os,
-                    ),
+                prepared = _prepare_toa_live_lookup(
+                    profile,
+                    result,
+                    query="".join(re.findall(r"\d", str(query or ""))),
+                    query_type=query_type,
+                    requested_os=requested_os,
                 )
+                ADHESION_TECHNICIAN_EVIDENCE.record(profile.key, prepared)
+                self._json(HTTPStatus.OK, prepared)
             except ValueError as exc:
                 self._json(
                     HTTPStatus.BAD_REQUEST,

@@ -457,3 +457,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Cinco testes do leitor e 24 testes JS do lote aprovados. Simulação com 11 materiais reais conciliou equivalências e faltas, sem transferências previstas.
 
 **Próximo passo/pendência:** Instalar o leitor e o ajuste do runtime em produção por hashes, com backup e validação somente leitura.
+
+## 2026-11-25 18:35 UTC — Retomada segura do lote de adesão e confirmação do técnico
+
+**Motivo:** Consulta ocupada descarregava contratos não enviados, O.S. sem código bloqueava GPON independente e o diretório antigo conflitava com a identificação atual do TOA.
+
+**Alterado:** A fila reconsulta indisponibilidade antes de qualquer envio, mantém a tratativa do estoque incerto e processa serviços de código único estritamente correlacionados. Identidade do técnico usa evidência recente e escopo exato com confirmação no Imperium.
+
+**Verificação:** Testes focados de lote, histórico e identidade. Validar em produção em modo de leitura com a captura e o instalador reais.
+
+**Próximo passo/pendência:** Publicar e validar o ativo da fila após instalar as alterações verificadas no runtime legado.

@@ -28,6 +28,8 @@
   }
   // The operational endpoint returns HTTP 200 + stale=true (or 409)
   // while its shared lock is held. Only retry reads, never a close.
+  class FreshOrdersBusyError extends Error {}
+
   async function freshOrders(read, {active,wait,notify=()=>{},attempts=4,delay=1500,budgetMs=15000,now=Date.now}) {
     const deadline=now()+budgetMs;
     for(let attempt=1;attempt<=attempts;attempt++){
@@ -44,7 +46,7 @@
       notify(attempt,attempts);
       await wait(delay);
     }
-    throw Error("Imperium ocupado: nao foi possivel obter lista atualizada no tempo da fila.");
+    throw new FreshOrdersBusyError("Imperium ocupado: nao foi possivel obter lista atualizada no tempo da fila.");
   }
   async function readBatchToa(read, {active,wait,notify}) {
     const retryDelays = [1000, 3000, 5000];
@@ -186,6 +188,15 @@
     if(seen.size!==byNumber.size) {
       const missing=[...byNumber.keys()].filter(os=>!seen.has(os));
       const displayed=missing.filter(os=>imperiumOnly.has(os));
+      const independent = candidates.filter(candidate => candidate.batchCodeOnly);
+      if (deps.hold && displayed.length === missing.length && independent.length) {
+        deps.hold([
+          ...displayed.map(os => "OS " + os + " sem codigo de baixa confirmado no TOA"),
+          ...candidates.filter(candidate => !candidate.batchCodeOnly).map(candidate =>
+            "OS " + candidate.numOs + " retida para conciliar os itens da atividade"),
+        ]);
+        return independent;
+      }
       if(displayed.length) throw Error("OS "+displayed.join(", ")+" nao localizada no TOA; codigo de baixa nao confirmado.");
       throw Error("OS em campo sem conciliacao no TOA: "+missing.join(", ")+".");
     }
@@ -247,7 +258,8 @@
     return candidates.sort((a,b)=>Number(b.materialOwner)-Number(a.materialOwner));
   }
   async function runBatch(contracts, hooks) {
-    for(const contract of contracts) {
+    const queue = contracts.map(contract => ({contract, deferred: false}));
+    for(const {contract, deferred} of queue) {
       if(!hooks.active()) break;
       hooks.update(contract,"Consultando","Conferindo TOA e Imperium");
       try {
@@ -257,7 +269,8 @@
           hooks.update(contract,prior.pending?"Aguardando confirmacao":"Tratativa",prior.reason);
           continue;
         }
-        const candidates=await hooks.prepare(contract);
+        const held = [];
+        const candidates=await hooks.prepare(contract, reasons => held.push(...reasons));
         if(!hooks.active()) break;
         if(!candidates.length) {hooks.update(contract,"Sem OS em campo","Nenhuma baixa enviada.");continue;}
         let confirmed=0, waiting=0, blocked=0;
@@ -280,6 +293,7 @@
               }
             }
           } catch(err) {
+            if (err instanceof FreshOrdersBusyError && confirmed === 0 && outcomes.length === 0) throw err;
             detail=String(err.message || err).slice(0,240);
           }
           if(result==="confirmed") {
@@ -293,9 +307,16 @@
           break;
         }
         const rest=candidates.length-confirmed-waiting-blocked;
-        const detail=confirmed+" confirmada(s), "+waiting+" pendente(s), "+blocked+" em tratativa, "+rest+" nao enviada(s). "+outcomes.join(" | ");
-        hooks.update(contract,confirmed===candidates.length?"Baixado":waiting?"Aguardando confirmacao":blocked?"Tratativa":"Interrompido",detail);
-      } catch(err) {hooks.update(contract,"Tratativa",String(err.message||err).slice(0,300));}
+        const detail=confirmed+" confirmada(s), "+waiting+" pendente(s), "+(blocked+held.length)+" em tratativa, "+rest+" nao enviada(s). "+[...outcomes,...held].join(" | ");
+        hooks.update(contract,waiting?"Aguardando confirmacao":blocked||held.length?"Tratativa":confirmed===candidates.length?"Baixado":"Interrompido",detail);
+      } catch(err) {
+        if (err instanceof FreshOrdersBusyError && !deferred && hooks.active()) {
+          queue.push({contract, deferred: true});
+          hooks.update(contract, "Na fila", "Imperium ocupado. Nova consulta no fim do lote.");
+        } else {
+          hooks.update(contract, "Tratativa", String(err.message || err).slice(0, 300));
+        }
+      }
     }
   }
   if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,readBatchToa,ordersForBatchContract,refreshCandidate,priorCloseOutcome};return;}
@@ -358,7 +379,7 @@
             if(!outcome.stockRetryRequestId) return outcome;
           }
         },
-        async prepare(contract) {
+        async prepare(contract, hold) {
           const payload = await readBatchToa(
             () => request(apiUrlForProfile("/api/toa-live/lookup", profile), {
               method: "POST",
@@ -372,7 +393,7 @@
           const orders = await ordersForBatchContract(payload, contract, () =>
             readFieldOrders(contract, "Aguardando lista atualizada do Imperium."));
           return selectCandidates(payload,orders,{profile,contract,date,epoch},{
-            complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,
+            complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,hold,
             valid:validToaCloseSnapshot,knownCode:code=>state.closeCodes.some(c=>c.code===code),
             assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials,expectedType:expectedEquipmentType,productive:code=>Boolean(state.closeCodes.find(c=>c.code===code)?.productive)
           });
