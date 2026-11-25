@@ -372,7 +372,7 @@ tests	tests/test_adm_allocation.py	9				75b86d318f82567e
 tests	tests/test_agent_memory.py	9			Portable agent memory regression tests; no network, secrets or production changes.	a00628018291348f
 tests	tests/test_all_operations_view.cjs	2	3			7f88face26cb106a
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
-tests	tests/test_app.py	37	5	2		dec92061f9dc6147
+tests	tests/test_app.py	37	5	2		07b21c3913aa34b5
 tests	tests/test_atlas_bridge_client.py	14			Tests for the real BotDMV Atlas HTTP queue contract (synthetic only).	97a6ec2888879cf6
 tests	tests/test_atlas_query_data.py	6			QUERY Atlas table transformations and text-preserving exports.	0748addddb6b990d
 tests	tests/test_atlas_query_health.py	15			Session health must depend on a fresh queue response, not an open tab.	7962f15659401e64

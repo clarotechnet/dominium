@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T13:08:55+00:00",
+  "generated_at": "2026-11-25T13:11:21+00:00",
   "schema": 2,
-  "source_fingerprint": "2bb3511cd5428104cba308df2ca08a16106d3e53388910286ceb71d199e3d133",
+  "source_fingerprint": "2fe5fb94b084df28a1a7ad2140c4b3dea4540211506f80107940075be74fa99e",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -6799,8 +6799,8 @@
     {
       "path": "tests/test_app.py",
       "category": "tests",
-      "bytes": 42525,
-      "sha256": "dec92061f9dc61477e2f1c0279868ca26dea83df7edfda09d4ea6c0e9ae04fba",
+      "bytes": 42568,
+      "sha256": "07b21c3913aa34b5ef61e5af4cf8df6aed8f9081fc79c410b96db2137021df66",
       "summary": "",
       "imports": [
         "app",
