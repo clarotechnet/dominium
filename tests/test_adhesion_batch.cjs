@@ -353,3 +353,56 @@ test("display rows from another activity do not override the exact TOA task for 
  f.payload.results[1].tasks.pop();
  assert.throws(() => selectCandidates(f.payload, orders, scope, f.deps), /2612345679.*codigo de baixa nao confirmado/);
 });
+
+test("incomplete TOA capture explains the failed guard without relaxing it",()=>{
+ const f=fixture();
+ f.capture.activity_status="pending";
+ f.capture.materials_complete=false;
+ f.capture.operation_blockers=["test"];
+ assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps), /status da atividade: pending.*captura de materiais incompleta.*bloqueios operacionais: 1.*Nenhuma baixa enviada/);
+});
+
+test("TOA lookup failure is deferred once without ever repeating an uncertain write",async()=>{
+ const prepared=[],sent=[],events=[];
+ const opts={active:()=>true,wait:async()=>{},notify:()=>{}};
+ await runBatch(["bridge","ok","permanent"],{
+  active:()=>true,update:(...args)=>events.push(args),
+  async prepare(c){
+   prepared.push(c);
+   if(c==="permanent" || (c==="bridge" && prepared.filter(x=>x===c).length===1)){
+    await readBatchToa(async()=>{throw unavailableToa();},opts);
+   }
+   return [{numOs:c}];
+  },
+  async send(c){sent.push(c.numOs);return c.numOs==="ok"?{pending:true}:{closed:true};}
+ });
+ assert.deepEqual(prepared,["bridge","ok","permanent","bridge","permanent"]);
+ assert.deepEqual(sent,["ok","bridge"]);
+ assert.equal(events.findLast(x=>x[0]==="permanent")[1],"Tratativa");
+});
+test("one shared EMTA moves once in Virtua; VoIP code only; chip gets its own serial",()=>{
+ const f=fixture();
+ const virtua={...f.order,id_os:2,num_os:"2612345679",service:"ADESAO - INSTALAR PONTO VIRTUA"};
+ const voip={...f.order,id_os:3,num_os:"2612345680",service:"ADESAO - INSTALAR PONTO VOIP"};
+ const chip={...f.order,id_os:4,num_os:"2612345681",service:"ENVIO DE CHIP VIA TECNICO"};
+ const orders=[f.order,virtua,voip,chip];
+ f.capture.imperium_matches=orders;
+ f.capture.tasks=orders.map(o=>({os_number:o.num_os,status:"executed",close_code:o===chip?"706":"409"}));
+ const emta={serial:"AABBCCDDEEFF",type:"emta"};
+ const sim={serial:"89550000000000000001",type:"chip"};
+ f.capture.installed_equipment=[emta,{...emta,invid:"2"},sim];
+ f.capture.removed_equipment=[];
+ f.capture.materials=[{code:"22026223",quantity:1}];
+ f.deps.knownCode=c=>["409","706"].includes(c);
+ f.deps.equipmentType=i=>i.type;
+ f.deps.expectedType=s=>s===virtua.service?"emta":s===chip.service?"chip":"";
+ f.deps.productive=()=>true;
+ f.deps.assign=cs=>cs.forEach(c=>c.materialOwner=c.order===virtua);
+ f.deps.equipment=c=>({installed:c.order===virtua?[emta]:c.order===chip?[sim]:[emta],removed:[]});
+ const result=selectCandidates(f.payload,orders,scope,f.deps);
+ assert.equal(result.find(c=>c.order===voip).batchCodeOnly,true);
+ assert.equal(result.find(c=>c.order===virtua).materialOwner,true);
+ assert.equal(result.find(c=>c.order===chip).code,"706");
+ f.capture.installed_equipment[1]={...emta,serial:"112233445566"};
+ assert.throws(()=>selectCandidates(f.payload,orders,scope,f.deps),/EMTAs distintos/);
+});

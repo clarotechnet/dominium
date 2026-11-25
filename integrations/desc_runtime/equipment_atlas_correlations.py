@@ -10,6 +10,12 @@ _CODE_RE = re.compile(r"[0-9]{8}")
 _ITEM_RE = re.compile(r"([0-9]{8})_([^|\x00-\x1f\x7f-\x9f]{3,150})")
 _LABEL_RE = re.compile(r"[^\W\d_][^_|\x00-\x1f\x7f-\x9f]{2,149}")
 _UNIT_RE = re.compile(rb"[A-Z0-9]{1,12}")
+# Operator-confirmed connector family, 2026-11-25. Only supported
+# eight-digit codes; no prefix or numeric-zero coercion.
+_CONNECTOR_CODES = ("22026266", "22056396", "22057640", "22057620",
+                    "22065513", "22065512", "22069613")
+_CONNECTOR_NAME = re.compile(r"^CONECTOR FO CAMPO (?:FAST |CPO )?SC[ /]?APC(?:\b|$)", re.I)
+
 
 
 class EquipmentAtlasCorrelationError(ValueError):
@@ -66,9 +72,17 @@ def parse_code_record(payload: bytes, requested_code: str) -> EquipmentAtlasReco
             pos += 1
             if not 3 <= name_length <= 150 or pos + name_length >= len(payload):
                 continue
+            name = payload[pos:pos + name_length].decode("latin1")
             pos += name_length
             description_length = payload[pos]
             pos += 1
+            if description_length == 0:
+                unit = _record_unit(payload, pos)
+                if (requested_code in _CONNECTOR_CODES and unit == "UN"
+                        and _CONNECTOR_NAME.match(name)):
+                    codes = (requested_code, *[c for c in _CONNECTOR_CODES if c != requested_code])
+                    records.append(EquipmentAtlasRecord(codes, unit))
+                continue
             if not 10 <= description_length <= 250 or pos + description_length > len(payload):
                 continue
             # The optional leading NUL is excluded from the declared length.

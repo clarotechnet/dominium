@@ -29,6 +29,7 @@
   // The operational endpoint returns HTTP 200 + stale=true (or 409)
   // while its shared lock is held. Only retry reads, never a close.
   class FreshOrdersBusyError extends Error {}
+  class ToaBridgeUnavailableError extends Error {}
 
   async function freshOrders(read, {active,wait,notify=()=>{},attempts=4,delay=1500,budgetMs=15000,now=Date.now}) {
     const deadline=now()+budgetMs;
@@ -62,7 +63,7 @@
         await wait(retryDelays[attempt]);
       }
     }
-    throw Error("A ponte do TOA nao respondeu. Nenhuma baixa foi enviada nesta tentativa.");
+    throw new ToaBridgeUnavailableError("A ponte do TOA nao respondeu. Nenhuma baixa foi enviada nesta tentativa.");
   }
   async function ordersForBatchContract(payload, contract, readFresh) {
     const orders=payload.imperium_all_orders;
@@ -132,6 +133,38 @@
     if(isUnresolvedClose(record)) return {pending:true,reason:os+" possui tentativa anterior sem confirmacao no Imperium."};
     return {reason:os+" possui tentativa anterior sem liberacao para reenvio."};
   }
+  // One physical EMTA can support both Virtua and VoIP. Only an exact
+  // completed activity with both tasks in field may use this rule.
+  function applySharedEmtaRule(candidates, deps) {
+    const groups=new Map();
+    for(const c of candidates){const group=groups.get(c.capture.aid)||[];group.push(c);groups.set(c.capture.aid,group);}
+    const kind=c=>serviceLabel(c.order.service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"");
+    for(const group of groups.values()){
+      const virtua=group.filter(c=>kind(c)==="ADESAO INSTALAR PONTO VIRTUA");
+      const voip=group.filter(c=>kind(c)==="ADESAO INSTALAR PONTO VOIP");
+      if(virtua.length!==1 || voip.length!==1)continue;
+      const capture=virtua[0].capture;
+      if(!deps.equipmentType || !group.every(c=>c.capture===capture))continue;
+      const chip=group.filter(c=>kind(c)==="ENVIO DE CHIP VIA TECNICO");
+      const allowed=group.every(c=>c===virtua[0]||c===voip[0]||chip.includes(c)||kind(c)==="ADESAO INSTALACAO DE ASSINATURA");
+      const installed=capture.installed_equipment, removed=capture.removed_equipment;
+      if(!allowed || chip.length>1 || !Array.isArray(installed) || !Array.isArray(removed) || removed.length)continue;
+      if(virtua[0].code!=="409" || voip[0].code!=="409" || chip.some(c=>c.code!=="706"))continue;
+      const bySerial=new Map();
+      for(const item of installed){
+        const serial=String(item.serial||"").replace(/[^A-Z0-9]/gi,"").toUpperCase();
+        const type=deps.equipmentType(item);
+        if(!serial || !["emta","chip"].includes(type) || (bySerial.has(serial)&&bySerial.get(serial)!==type))throw Error("Inventario Virtua/VoIP sem identidade segura.");
+        bySerial.set(serial,type);
+      }
+      const emtas=[...bySerial].filter(([,type])=>type==="emta");
+      const chips=[...bySerial].filter(([,type])=>type==="chip");
+      if(emtas.length>1)throw Error("Virtua/VoIP com EMTAs distintos: confirmar vinculo por OS/ponto antes de movimentar.");
+      if(emtas.length!==1 || chips.length!==chip.length)continue;
+      voip[0].batchCodeOnly=true;
+      voip[0].batchSharedEmta=true;
+    }
+  }
   function selectCandidates(payload, active, scope, deps) {
     const {profile,contract,date}=scope;
     if(profile!=="natal") throw Error("Lote exclusivo da base Natal/Parnamirim.");
@@ -159,9 +192,15 @@
       const legacyValidated=capture.decision==null && capture.found===true &&
         Array.isArray(capture.validation_errors) && capture.validation_errors.length===0 &&
         Array.isArray(capture.operation_blockers) && capture.operation_blockers.length===0;
-      if(String(capture.contract)!==contract || !capture.aid || !deps.complete(capture.activity_status) ||
-         (capture.decision!=="candidate_after_validation" && !legacyValidated) || capture.materials_complete===false ||
-         (capture.validation_errors||[]).length || (capture.operation_blockers||[]).length) throw Error("Atividade incompleta ou bloqueada no TOA.");
+      const captureIssues=[];
+      if(String(capture.contract)!==contract)captureIssues.push("contrato divergente");
+      if(!capture.aid)captureIssues.push("ID da atividade ausente");
+      if(!deps.complete(capture.activity_status))captureIssues.push("status da atividade: "+String(capture.activity_status||"nao informado").slice(0,80));
+      if(capture.decision!=="candidate_after_validation" && !legacyValidated)captureIssues.push("decisao: "+String(capture.decision||"nao validada").slice(0,80));
+      if(capture.materials_complete===false)captureIssues.push("captura de materiais incompleta");
+      if((capture.validation_errors||[]).length)captureIssues.push("erros de validacao: "+capture.validation_errors.length);
+      if((capture.operation_blockers||[]).length)captureIssues.push("bloqueios operacionais: "+capture.operation_blockers.length);
+      if(captureIssues.length)throw Error("Atividade incompleta ou bloqueada no TOA. OS "+matching.map(t=>String(t.os_number)).join(", ")+": "+captureIssues.join("; ")+". Nenhuma baixa enviada.");
       const rawDate=String(capture.scheduled_date||"").slice(0,10);
       const normalizedDate=/^\d{2}\/\d{2}\/\d{4}$/.test(rawDate)?rawDate.split("/").reverse().join("-"):rawDate;
       if(normalizedDate!==date) throw Error("Data do TOA divergente da data selecionada.");
@@ -215,6 +254,7 @@
         if(!other || !codeOnly(other.service))throw Error("Atividade com OS acompanhante fora de campo; risco de duplicar estoque.");
       }
     }
+    applySharedEmtaRule(candidates,deps);
     deps.assign(candidates);
     const serials=new Set(), byActivity=new Map();
     for(const candidate of candidates) {
@@ -310,9 +350,9 @@
         const detail=confirmed+" confirmada(s), "+waiting+" pendente(s), "+(blocked+held.length)+" em tratativa, "+rest+" nao enviada(s). "+[...outcomes,...held].join(" | ");
         hooks.update(contract,waiting?"Aguardando confirmacao":blocked||held.length?"Tratativa":confirmed===candidates.length?"Baixado":"Interrompido",detail);
       } catch(err) {
-        if (err instanceof FreshOrdersBusyError && !deferred && hooks.active()) {
+        if ((err instanceof FreshOrdersBusyError || err instanceof ToaBridgeUnavailableError) && !deferred && hooks.active()) {
           queue.push({contract, deferred: true});
-          hooks.update(contract, "Na fila", "Imperium ocupado. Nova consulta no fim do lote.");
+          hooks.update(contract, "Na fila", err instanceof ToaBridgeUnavailableError ? "Ponte TOA indisponivel. Nova consulta no fim do lote; nenhuma baixa enviada." : "Imperium ocupado. Nova consulta no fim do lote.");
         } else {
           hooks.update(contract, "Tratativa", String(err.message || err).slice(0, 300));
         }
@@ -395,7 +435,7 @@
           return selectCandidates(payload,orders,{profile,contract,date,epoch},{
             complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,hold,
             valid:validToaCloseSnapshot,knownCode:code=>state.closeCodes.some(c=>c.code===code),
-            assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials,expectedType:expectedEquipmentType,productive:code=>Boolean(state.closeCodes.find(c=>c.code===code)?.productive)
+            assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials,equipmentType:item=>toaLiveEquipmentType(item,true),expectedType:expectedEquipmentType,productive:code=>Boolean(state.closeCodes.find(c=>c.code===code)?.productive)
           });
         },
         async send(candidate) {

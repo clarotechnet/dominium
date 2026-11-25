@@ -60,3 +60,24 @@ class EquipmentAtlasCorrelationsTests(unittest.TestCase):
             with self.subTest(payload=payload):
                 with self.assertRaisesRegex(EquipmentAtlasCorrelationError, "22024800"):
                     parse_code_group(payload, "22024800")
+
+
+    def test_confirmed_connector_without_atlas_description(self):
+        def empty(code, name, unit):
+            raw = name.encode("ascii")
+            return (b"\x08" + code.encode("ascii") + bytes([len(raw)]) + raw
+                    + b"\x00\x06\x00\x00\x00\x08DIVERSOS\x02\x00\x00\x00"
+                    + bytes([len(unit)]) + unit.encode("ascii"))
+        good = empty("22026266", "CONECTOR FO CAMPO FAST SC APC", "UN")
+        parsed = parse_code_record(good, "22026266")
+        self.assertEqual(parsed.unit, "UN")
+        self.assertEqual(parsed.codes[0], "22026266")
+        self.assertIn("22056396", parsed.codes)
+        for bad in (
+            empty("22025102", "CONECTOR FO CAMPO FAST SC APC", "UN"),
+            empty("22026266", "OUTRO MATERIAL", "UN"),
+            empty("22026266", "CONECTOR FO CAMPO FAST SC APC", "M"),
+            good + good,
+        ):
+            with self.assertRaises(EquipmentAtlasCorrelationError):
+                parse_code_record(bad, "22026266")

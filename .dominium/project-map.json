@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T18:35:07+00:00",
+  "generated_at": "2026-11-25T19:57:01+00:00",
   "schema": 2,
-  "source_fingerprint": "94650c83f4869a2c511b10ebb4c88d96193e2cee97d7cb3c47d199ae599de31a",
+  "source_fingerprint": "1f22bc1ff43fcce3dc8628a6fde578d3837e5f108a33b596b3db0b934fd289fa",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -2649,8 +2649,8 @@
     {
       "path": "integrations/desc_runtime/equipment_atlas_correlations.py",
       "category": "shared",
-      "bytes": 4472,
-      "sha256": "83cbba3306a1cd1ecd99d2181f1df2eef90acfc873d5d0555da02ac73750490d",
+      "bytes": 5294,
+      "sha256": "f9158a6d308219691f0c71b096bafa3b1c3d13a295e520435857776cf51c3371",
       "summary": "Read-only Codigo -> DescricaoAtlas correlation in the legacy runtime.",
       "imports": [
         "re",
@@ -5692,8 +5692,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 27605,
-      "sha256": "4e45e0975014506911fed7e0209b88774a4903f102e0df2a21225e1735eec655",
+      "bytes": 30752,
+      "sha256": "2bbf4a7005eb508f16dfa7c7a42c96eeed95db963a113b7eee1cc5c0bcdc1294",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -5705,7 +5705,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 24
+      "symbol_count": 27
     },
     {
       "path": "static/all-cities-scope.css",
@@ -6741,8 +6741,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 21167,
-      "sha256": "be68e2330d5f698ef54619e1577c90a493fecfd15de849a0a362b3da34589007",
+      "bytes": 23979,
+      "sha256": "5b5e2c7312991a1311353f2ab63614649e481fe8d1a48249936db246f45c73ab",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7834,8 +7834,8 @@
     {
       "path": "tests/test_equipment_atlas_correlations.py",
       "category": "tests",
-      "bytes": 2910,
-      "sha256": "89e6430e8eb6b9ef9cf329697d38fe00b1d20ae2467f7c31e91381a2e1a7830a",
+      "bytes": 3911,
+      "sha256": "38ee73a17311af5ac49a1b8e7643db5df9efb5e3f4af63c4ad81c17c70b0cf19",
       "summary": "",
       "imports": [
         "integrations",
@@ -7845,7 +7845,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 7
+      "symbol_count": 8
     },
     {
       "path": "tests/test_equipment_daily_catalog.py",
