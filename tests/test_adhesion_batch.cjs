@@ -1,6 +1,6 @@
 "use strict";
 const test=require("node:test"),assert=require("node:assert/strict");
-const {parseContracts,isAdhesionBucket,codeOnly,selectCandidates,runBatch}=require("../static/adhesion-batch.js");
+const {parseContracts,isAdhesionBucket,codeOnly,selectCandidates,runBatch,readBatchToa}=require("../static/adhesion-batch.js");
 const scope={profile:"natal",date:"2026-11-24",contract:"12345678",epoch:4};
 function fixture(){
  const order={id_os:1,num_os:"2612345678",contract:scope.contract,service:"ADESAO - INSTALACAO DE ASSINATURA"};
@@ -224,6 +224,41 @@ test("persistent busy stops after four reads and passes the remaining time to ea
  }, {active: () => true, now: () => elapsed, wait: async delay => {elapsed += delay;}}), /Imperium ocupado/);
  assert.deepEqual(budgets, [15000, 5500]);
  assert.equal(elapsed, 15000);
+});
+
+const unavailableToa = () => Object.assign(new Error("TOA secundario nao localizado"), {status: 502});
+
+test("recovers from transient TOA bridge timeouts using only contract reads", async () => {
+  const payload = {ok: true, contract: scope.contract};
+  const replies = [unavailableToa(), unavailableToa(), payload];
+  const waits = [];
+  let notices = 0;
+  const result = await readBatchToa(async () => {
+    const reply = replies.shift();
+    if (reply instanceof Error) throw reply;
+    return reply;
+  }, {active: () => true, wait: async delay => waits.push(delay), notify: () => notices++});
+  assert.equal(result, payload);
+  assert.deepEqual(waits, [1000, 3000]);
+  assert.equal(notices, 2);
+});
+
+test("limits bridge retries and preserves cancellation and other lookup failures", async () => {
+  let reads = 0;
+  const read = async () => { reads++; throw unavailableToa(); };
+  const hooks = {active: () => true, wait: async () => {}, notify: () => {}};
+  await assert.rejects(readBatchToa(read, hooks), /Nenhuma baixa foi enviada/);
+  assert.equal(reads, 4);
+
+  let active = true;
+  await assert.rejects(readBatchToa(read, {
+    ...hooks, active: () => active, wait: async () => { active = false; },
+  }), /Lote interrompido/);
+  assert.equal(reads, 5);
+
+  const error = Object.assign(new Error("Contrato nao localizado no TOA"), {status: 502});
+  await assert.rejects(readBatchToa(async () => { reads++; throw error; }, hooks), error);
+  assert.equal(reads, 6);
 });
 
 test("uses the refreshed lookup status list without repeating the initial field read", async () => {

@@ -46,6 +46,22 @@
     }
     throw Error("Imperium ocupado: nao foi possivel obter lista atualizada no tempo da fila.");
   }
+  async function readBatchToa(read, {active,wait,notify}) {
+    const retryDelays = [1000, 3000, 5000];
+    for (let attempt = 0; attempt <= retryDelays.length; attempt++) {
+      if (!active()) throw Error("Lote interrompido.");
+      try {
+        return await read();
+      } catch (error) {
+        if (error.status !== 502 || error.message !== "TOA secundario nao localizado") throw error;
+        if (!active()) throw Error("Lote interrompido.");
+        if (attempt === retryDelays.length) break;
+        notify();
+        await wait(retryDelays[attempt]);
+      }
+    }
+    throw Error("A ponte do TOA nao respondeu. Nenhuma baixa foi enviada nesta tentativa.");
+  }
   async function ordersForBatchContract(payload, contract, readFresh) {
     const orders=payload.imperium_all_orders;
     if(payload.imperium_refresh?.refreshed===true && Array.isArray(orders) &&
@@ -282,7 +298,7 @@
       } catch(err) {hooks.update(contract,"Tratativa",String(err.message||err).slice(0,300));}
     }
   }
-  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,ordersForBatchContract,refreshCandidate,priorCloseOutcome};return;}
+  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,readBatchToa,ordersForBatchContract,refreshCandidate,priorCloseOutcome};return;}
   const panel=document.getElementById("adhesionBatch");
   if(!panel)return;
   const input=document.getElementById("adhesionBatchInput"),start=document.getElementById("adhesionBatchStart"),
@@ -306,7 +322,6 @@
     let contracts;
     try{contracts=parseContracts(input.value);}catch(err){status.textContent=err.message;return;}
     if(!state.authUser || !["admin","controller"].includes(state.authUser.role) || !state.officialCloseEnabled || !state.closeEnabled){status.textContent="Baixa oficial indisponivel para esta sessao/cidade.";return;}
-    if(!state.toaLiveStatus?.connected || !state.toaLiveStatus?.authenticated){status.textContent="Ponte TOA desconectada.";return;}
     const profile=state.profile,epoch=state.profileEpoch,date=elements.date.value;
     if(profile!=="natal" || !/^\d{4}-\d{2}-\d{2}$/.test(date)){status.textContent="Selecione cidade e data validas.";return;}
     state.adhesionBatchRunning=true;stopped=false;
@@ -338,7 +353,15 @@
           }
         },
         async prepare(contract) {
-          const payload=await request(apiUrlForProfile("/api/toa-live/lookup",profile),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:contract,expected_profile_key:profile,expected_date:date}),timeoutMs:300000});
+          const payload = await readBatchToa(
+            () => request(apiUrlForProfile("/api/toa-live/lookup", profile), {
+              method: "POST",
+              headers: {"Content-Type": "application/json"},
+              body: JSON.stringify({query: contract, expected_profile_key: profile, expected_date: date}),
+              timeoutMs: 300000,
+            }),
+            {active, wait: sleep, notify: () => update(contract, "Consultando", "Ponte do TOA aguardando resposta.")},
+          );
           if(!active()) throw Error("Cidade/data alterada; fila interrompida.");
           const orders=await ordersForBatchContract(payload,contract,()=>freshOrders(
             readFieldOrders,
