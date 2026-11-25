@@ -447,3 +447,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 30 testes Python de escopo, fila e vistoria e 31 testes JS do lote e relay aprovados. Runtime legado preparado por substituições verificadas.
 
 **Próximo passo/pendência:** Validar as duas rotas em produção sem executar baixa nem movimentação de estoque.
+
+## 2026-11-25 18:01 UTC — Descrições e unidades do Atlas na baixa de adesão
+
+**Motivo:** O leitor legado rejeitava registros exatos com rótulo de grupo ou só com códigos alternativos. O estoque também não tinha o código original de alguns cabos para confirmar a unidade.
+
+**Alterado:** O leitor mantém o código exato do cadastro, extrai apenas aliases explícitos e usa a unidade lida no Atlas para conferir o saldo alternativo quando necessário.
+
+**Verificação:** Cinco testes do leitor e 24 testes JS do lote aprovados. Simulação com 11 materiais reais conciliou equivalências e faltas, sem transferências previstas.
+
+**Próximo passo/pendência:** Instalar o leitor e o ajuste do runtime em produção por hashes, com backup e validação somente leitura.

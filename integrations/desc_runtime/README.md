@@ -18,6 +18,9 @@ as versões têm diferenças operacionais que precisam ser preservadas.
 - `patch_runtime_safety.py` contém transformações cirúrgicas para o preparo
   de materiais e o plano oficial legados. Não é instalador: validar hashes,
   compilar, testar em staging e salvar backups antes de substituir fontes.
+- `equipment_atlas_correlations.py` acompanha o cliente Imperium legado no
+  diretório do painel. A leitura utiliza códigos explícitos de `DescricaoAtlas`
+  a partir do registro exato do material.
 
 Não versionar configuração privada, filas, mensagens, fotos, credenciais
 ou arquivos dos grupos. Os exemplos novos de mensagens usam dados fictícios.

@@ -86,7 +86,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	330f52c971f3444b
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	c0ee667294ebbceb
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -146,10 +146,11 @@ shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f
 shared	integrations/desc_runtime/bot/disconnectPilot.js	20				198dc0a3510591c8
 shared	integrations/desc_runtime/bot/disconnectPilotCoordinator.js	33				18b277d1cceb6ac0
 shared	integrations/desc_runtime/disconnect_local_runner.py	36		1	Executa um único job de desconexão recebido do BotDMV no PC local.	9a3c4f51a3d89409
+shared	integrations/desc_runtime/equipment_atlas_correlations.py	6		1	Read-only Codigo -> DescricaoAtlas correlation in the legacy runtime.	83cbba3306a1cd1e
 shared	integrations/desc_runtime/nightly_backlog_106.py	7	3		Operator-authorized 23h backlog batch. Default is read-only preview.	0c9ef41fc1d83645
 shared	integrations/desc_runtime/nightly_backlog_service.py	10			Daily backlog scheduling owned by the Dominium HTTP server, not by a browser.	0746da639cac79e4
-shared	integrations/desc_runtime/patch_runtime_safety.py	6			Small source transformations for the legacy server; no network or writes.	0c353cdebc4a3c85
-shared	integrations/desc_runtime/README.md				Runtime DESC do servidor TECHNET	3f5be9609cd2033c
+shared	integrations/desc_runtime/patch_runtime_safety.py	7			Small source transformations for the legacy server; no network or writes.	792ed49940fee13a
+shared	integrations/desc_runtime/README.md				Runtime DESC do servidor TECHNET	19bbc1a2c0ef3ad2
 tests	integrations/desc_runtime/test_desc_multi_owner_runtime.py	2		1		b7c145e05d4781d6
 tests	integrations/desc_runtime/test_desc_sector_scope.py	10			Read-only sector scope regression for BotDMV DESC -> DataSnap executor.	0fa5396e16d5d30f
 tests	integrations/desc_runtime/test_nightly_backlog_106.py	13	1			5fc4ff778ec23768
@@ -423,6 +424,7 @@ tests	tests/test_disconnection_access.py	6	5			cba855ef00508a97
 tests	tests/test_disconnection_frontend.js	1	1			65b81e61b3966421
 tests	tests/test_disconnection_hostinger.js	2	13			73827cfd80596bf7
 tests	tests/test_edge_voice.py	4				4e8791562f884964
+tests	tests/test_equipment_atlas_correlations.py	7				89e6430e8eb6b9ef
 tests	tests/test_equipment_daily_catalog.py	6	10		Daily equipment workbooks are by date and city, never the Atlas QUERY.	cfa68f07b606fe6b
 tests	tests/test_equipment_group_matching.py	24				abb0031d8ae437aa
 tests	tests/test_equipment_video_transform.py	7			Synthetic video-workbook transformation tests; no client data in Git.	e0bbc492c75d9e3a
