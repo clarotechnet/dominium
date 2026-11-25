@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-25T13:29:11+00:00
-- Source fingerprint: `9d58b143962f6c75`
+- Generated: 2026-11-25T16:29:59+00:00
+- Source fingerprint: `021493367ff1fc2e`
 - Indexed files: 566
-- Indexed symbols: 4643
+- Indexed symbols: 4646
 - API path references: 575
 
 ## Navigation rule
@@ -95,7 +95,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## frontend
 
 - `static/adhesion-batch.css`
-- `static/adhesion-batch.js` (22 symbols, 4 API paths) - Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */
+- `static/adhesion-batch.js` (23 symbols, 4 API paths) - Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */
 - `static/all-cities-scope.css` - DOMINIUM: "Todos" is a cross-module read-only scope, not an operational profile. */
 - `static/all-operations.js` (14 symbols, 2 API paths) - Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */
 - `static/atlas-query-ui.js` (23 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */

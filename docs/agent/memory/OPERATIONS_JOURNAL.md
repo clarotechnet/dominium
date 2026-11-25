@@ -417,3 +417,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Regressão de ausência de reenvio de transferência, vínculo do log legado, confirmação anterior e dupla submissão.
 
 **Próximo passo/pendência:** Validar no runtime com operações simuladas e verificar flags após publicação.
+
+## 2026-11-25 16:29 UTC — Baixar OS: consulta TOA na abertura do lote
+
+**Motivo:** O Chrome gerenciado manteve uma aba TOA e a ponte respondeu intermitentemente. Leituras de status com limite de um segundo foram registradas como desconexão.
+
+**Alterado:** O lote de adesão consulta o contrato mesmo com status anterior indisponível. Somente o erro específico da ponte antes da consulta recebe até três novas leituras.
+
+**Verificação:** 24 testes do lote aprovados. Consulta real com HTTP 200 e duas O.S. no TOA. Nenhuma baixa ou transferência enviada nos testes.
+
+**Próximo passo/pendência:** Acompanhar a latência do gateway compartilhado e validar o novo ativo público após publicação.
