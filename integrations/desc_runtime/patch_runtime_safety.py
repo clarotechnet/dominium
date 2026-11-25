@@ -253,6 +253,72 @@ def patch_official_atlas_before_return(text: str) -> str:
     return patched
 
 
+def patch_official_atlas_master_unit(text: str) -> str:
+    """Read the unit from the exact master record when the original is absent from stock."""
+    replacements = (
+        (
+            '    parse_code_group,\n',
+            '    EquipmentAtlasRecord,\n    parse_code_record,\n',
+        ),
+        (
+            '''    ) -> tuple[str, ...]:
+        """Official read-only equipment master: Codigo -> DescricaoAtlas list."""
+''',
+            '''    ) -> tuple[str, ...]:
+        return self._master_atlas_record_on(client, code).codes
+
+    def _master_atlas_record_on(
+        self,
+        client: DataSnapClient,
+        code: str,
+    ) -> EquipmentAtlasRecord:
+        """Official read-only equipment master: exact code, aliases and unit."""
+''',
+        ),
+        (
+            '        return parse_code_group(payload, code)\n',
+            '        return parse_code_record(payload, code)\n',
+        ),
+        (
+            '''                    master_group = (
+                        self._master_atlas_group_on(client, requested_code)
+                        if re.fullmatch(r"[0-9]{8}", requested_code)
+                        else ()
+                    )
+''',
+            '''                    master_group, master_unit = (
+                        self._master_atlas_record_on(client, requested_code)
+                        if re.fullmatch(r"[0-9]{8}", requested_code)
+                        else ((), "")
+                    )
+''',
+        ),
+        (
+            '''                            if original_material is None:
+                                raise ValueError(f"Unidade da miscelanea {requested_code} nao confirmada no Atlas")
+                            if alternate.identified == "N" and alternate.unit == original_material.unit:
+                                candidate_codes.add(code)
+''',
+            '''                            if alternate.identified != "N":
+                                continue
+                            unit = original_material.unit if original_material is not None else master_unit
+                            if not unit or (master_unit and unit != master_unit):
+                                raise ValueError(f"Unidade da miscelanea {requested_code} nao confirmada no Atlas")
+                            if alternate.unit == unit:
+                                candidate_codes.add(code)
+''',
+        ),
+    )
+    if all(new in text for _, new in replacements):
+        return text
+    for old, new in replacements:
+        if text.count(old) != 1:
+            raise ValueError('Unsupported legacy Atlas material layout')
+        text = text.replace(old, new, 1)
+    ast.parse(text)
+    return text
+
+
 def patch_official_code_only(text: str, *, helper_source: str) -> str:
     marker = '    if not productive and (installed_source or removed_source or material_source):'
     guard = '''    if is_code_only_adhesion_service(_value(order, "service")) and (

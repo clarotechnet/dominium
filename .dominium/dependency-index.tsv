@@ -336,6 +336,8 @@ traceback	integrations/desc_runtime/disconnect_local_runner.py
 typing	integrations/desc_runtime/disconnect_local_runner.py
 unicodedata	integrations/desc_runtime/disconnect_local_runner.py
 whatsapp_auto_close	integrations/desc_runtime/disconnect_local_runner.py
+re	integrations/desc_runtime/equipment_atlas_correlations.py
+typing	integrations/desc_runtime/equipment_atlas_correlations.py
 argparse	integrations/desc_runtime/nightly_backlog_106.py
 datetime	integrations/desc_runtime/nightly_backlog_106.py
 json	integrations/desc_runtime/nightly_backlog_106.py
@@ -1330,6 +1332,8 @@ types	tests/test_disconnection_access.py
 unittest	tests/test_disconnection_access.py
 edge_voice	tests/test_edge_voice.py
 unittest	tests/test_edge_voice.py
+integrations	tests/test_equipment_atlas_correlations.py
+unittest	tests/test_equipment_atlas_correlations.py
 base64	tests/test_equipment_daily_catalog.py
 equipment_daily_catalog	tests/test_equipment_daily_catalog.py
 pathlib	tests/test_equipment_daily_catalog.py

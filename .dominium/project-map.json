@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T17:41:45+00:00",
+  "generated_at": "2026-11-25T18:01:13+00:00",
   "schema": 2,
-  "source_fingerprint": "d04f2ae5a045b0261810182432706773c57510f7e2b242102754a28f0945a4af",
+  "source_fingerprint": "d7b8ec869dbb9359b54d362e7651bd21a574953e9b6d268004031c9eb71835e5",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1652,8 +1652,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 31262,
-      "sha256": "330f52c971f3444bed9124db4145d8809cf51bb8b092377c3a72088436255b67",
+      "bytes": 32042,
+      "sha256": "c0ee667294ebbceb13408856b20d17fc0d4babf660b8cfe210a01db4e7d2f8b5",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -2627,6 +2627,24 @@
       "symbol_count": 36
     },
     {
+      "path": "integrations/desc_runtime/equipment_atlas_correlations.py",
+      "category": "shared",
+      "bytes": 4472,
+      "sha256": "83cbba3306a1cd1ecd99d2181f1df2eef90acfc873d5d0555da02ac73750490d",
+      "summary": "Read-only Codigo -> DescricaoAtlas correlation in the legacy runtime.",
+      "imports": [
+        "re",
+        "typing"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TDtmEquipamentos.AS_GetRecords"
+      ],
+      "entrypoint": false,
+      "symbol_count": 6
+    },
+    {
       "path": "integrations/desc_runtime/nightly_backlog_106.py",
       "category": "shared",
       "bytes": 9755,
@@ -2675,8 +2693,8 @@
     {
       "path": "integrations/desc_runtime/patch_runtime_safety.py",
       "category": "shared",
-      "bytes": 18985,
-      "sha256": "0c353cdebc4a3c8586898836a0976c6a3277cac9137a9385e388f097f37bcf4c",
+      "bytes": 21670,
+      "sha256": "792ed49940fee13aa7162c0879c827b117ee73b206b3716b7f3281d5fc0e9c91",
       "summary": "Small source transformations for the legacy server; no network or writes.",
       "imports": [
         "ast"
@@ -2685,13 +2703,13 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 6
+      "symbol_count": 7
     },
     {
       "path": "integrations/desc_runtime/README.md",
       "category": "shared",
-      "bytes": 5909,
-      "sha256": "3f5be9609cd2033c62e74da4a4422aa2f49d8f911851eac2796525fcaa1da147",
+      "bytes": 6109,
+      "sha256": "19bbc1a2c0ef3ad214807f4fc201a9cff628f51e8ec32be0137191f605a44522",
       "summary": "Runtime DESC do servidor TECHNET",
       "imports": [],
       "endpoints": [],
@@ -7774,6 +7792,22 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 4
+    },
+    {
+      "path": "tests/test_equipment_atlas_correlations.py",
+      "category": "tests",
+      "bytes": 2910,
+      "sha256": "89e6430e8eb6b9ef9cf329697d38fe00b1d20ae2467f7c31e91381a2e1a7830a",
+      "summary": "",
+      "imports": [
+        "integrations",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 7
     },
     {
       "path": "tests/test_equipment_daily_catalog.py",
