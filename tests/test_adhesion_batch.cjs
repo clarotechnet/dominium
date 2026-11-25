@@ -22,8 +22,42 @@ test("Natal and Parnamirim adhesion only, not ADM, unspecified or other city",()
 });
 test("exact code-only exceptions",()=>{
  assert.equal(codeOnly("ADESAO - INSTALACAO DE ASSINATURA"),true);
+ assert.equal(codeOnly("MUDANCA DE ENDERECO - INSTALAR ASSINATURA"),true);
  assert.equal(codeOnly("INST GPON - INST CABO"),true);
  assert.equal(codeOnly("INSTALACAO VIRTUA"),false);
+});
+
+test("additional Virtua relocation can use materials while keeping the customer's EMTA", () => {
+ const f = fixture();
+ f.order.service = "Mudança de endereço - Instalar ponto adicional Virtua";
+ const signature = {...f.order, id_os: 2, num_os: "2612345680", service: "MUDANCA DE ENDERECO - INSTALAR ASSINATURA"};
+ f.capture.tasks.push({os_number: signature.num_os, status: "executed", close_code: "409"});
+ f.capture.imperium_matches.push(signature);
+ f.capture.installed_equipment = [];
+ f.capture.removed_equipment = [];
+ f.capture.customer_equipment = [{serial: "AABBCCDDEEFF", type: "emta"}];
+ f.capture.materials = [{code: "22026219", quantity: 1}];
+ f.deps.expectedType = () => "emta";
+ f.deps.productive = () => true;
+ const plans = [];
+ f.deps.equipment = candidate => {
+  plans.push(candidate.numOs);
+  return {installed: f.capture.installed_equipment || [], removed: f.capture.removed_equipment};
+ };
+ f.deps.assign = candidates => candidates.forEach(candidate => {candidate.materialOwner = !candidate.batchCodeOnly;});
+
+ assert.deepEqual(selectCandidates(f.payload, [f.order, signature], scope, f.deps).map(candidate => [candidate.batchCodeOnly, candidate.materialOwner]), [
+  [false, true], [true, false],
+ ]);
+ assert.deepEqual(plans, [f.order.num_os]);
+
+ delete f.capture.installed_equipment;
+ assert.throws(() => selectCandidates(f.payload, [f.order, signature], scope, f.deps), /Serial obrigatorio/);
+ f.capture.installed_equipment = [];
+ f.capture.removed_equipment = [{serial: "CCDDEEFFAABB", type: "emta"}];
+ assert.throws(() => selectCandidates(f.payload, [f.order, signature], scope, f.deps), /Serial obrigatorio/);
+ f.capture.installed_equipment = [{serial: "AABBCC112233", type: "emta"}];
+ assert.equal(selectCandidates(f.payload, [f.order, signature], scope, f.deps).length, 2);
 });
 test("validated contract produces scoped candidate",()=>{
  const f=fixture();const [c]=selectCandidates(f.payload,[f.order],scope,f.deps);

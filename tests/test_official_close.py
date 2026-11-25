@@ -114,7 +114,11 @@ class OfficialClosePlanTests(unittest.TestCase):
                         self.plan(body)
 
     def test_adhesion_signature_and_gpon_keep_empty_arrays(self) -> None:
-        for service in ("ADESAO - INSTALACAO DE ASSINATURA", "INST GPON - INST CABO"):
+        for service in (
+            "ADESAO - INSTALACAO DE ASSINATURA",
+            "INST GPON - INST CABO",
+            "MUDANCA DE ENDERECO - INSTALAR ASSINATURA",
+        ):
             with self.subTest(service=service):
                 self.order.service = service
                 payload = self.plan({})["payload"]["ordemservico"]
@@ -122,6 +126,14 @@ class OfficialClosePlanTests(unittest.TestCase):
                 self.assertEqual(payload["instaladosserializados"], [])
                 self.assertEqual(payload["removidosserializados"], [])
                 self.assertEqual(payload["instaladosmiscelaneas"], [])
+
+    def test_additional_virtua_relocation_can_send_only_materials(self) -> None:
+        self.order.service = "MUDANCA DE ENDERECO - INSTALAR PONTO ADICIONAL VIRTUA"
+        payload = self.plan({"materials": [{"code": "22026219", "quantity": 1}]})["payload"]["ordemservico"]
+        self.assertEqual(payload["codigobaixa"], 409)
+        self.assertEqual(payload["instaladosserializados"], [])
+        self.assertEqual(payload["removidosserializados"], [])
+        self.assertEqual(payload["instaladosmiscelaneas"], [{"codigoequipamento": "22026219", "qtd": "1"}])
 
     def test_non_postable_accessories_are_not_sent(self) -> None:
         result = self.plan(

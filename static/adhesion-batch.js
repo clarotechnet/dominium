@@ -56,8 +56,11 @@
     }
     return (await readFresh()).orders;
   }
+  function serviceLabel(service) {
+    return String(service||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
+  }
   function codeOnly(service) {
-    const s=String(service||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
+    const s=serviceLabel(service);
     return s.includes("ASSINATURA") || /INST(?:ALACAO)?\.?\s+GPON\s*-\s*INST(?:ALACAO)?\.?\s+CABO/.test(s) || /INSTALACAO (?:DE )?CABO GPON/.test(s);
   }
   function refreshCandidate(candidate, orders, valid) {
@@ -169,7 +172,11 @@
       const plan=deps.equipment(candidate);
       if(plan.error || plan.correction) throw Error("Equipamentos exigem tratativa: "+candidate.numOs);
       const expected=deps.expectedType?.(candidate.order.service);
-      if(expected && deps.productive?.(candidate.code) && !plan.installed.some(item=>item.type===expected || (expected==="decoder" && item.type==="smart"))) {
+      const {installed_equipment:installed,removed_equipment:removed}=candidate.capture;
+      const service=serviceLabel(candidate.order.service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"");
+      const keepsEquipment=service==="MUDANCA DE ENDERECO INSTALAR PONTO ADICIONAL VIRTUA" &&
+        Array.isArray(installed) && installed.length===0 && Array.isArray(removed) && removed.length===0;
+      if(expected && deps.productive?.(candidate.code) && !keepsEquipment && !plan.installed.some(item=>item.type===expected || (expected==="decoder" && item.type==="smart"))) {
         throw Error("Serial obrigatorio nao conciliado para OS "+candidate.numOs+" ("+expected+").");
       }
       for(const item of [...plan.installed,...plan.removed]) {

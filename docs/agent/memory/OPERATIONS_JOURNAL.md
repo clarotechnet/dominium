@@ -377,3 +377,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 33 testes focados na fila, no TOA e na ponte oficial, incluindo snapshot atualizado, resposta antiga e limite de espera.
 
 **Próximo passo/pendência:** Observar lotes reais sem reabrir envios incertos.
+
+## 2026-11-25 11:59 UTC — Aplicar regras de mudança de endereço na adesão
+
+**Motivo:** O ponto adicional Virtua exigia serial novo mesmo com inventário TOA completo e sem movimentação de equipamento.
+
+**Alterado:** Libera somente o serviço de mudança de endereço para ponto adicional Virtua quando as listas de instalação e retirada do TOA estão explicitamente vazias. A assinatura segue com código apenas. Itens movimentados continuam sujeitos à conciliação.
+
+**Verificação:** 34 testes frontend e 23 testes Python focados, incluindo alocação de miscelâneas no ponto Virtua e payload oficial sem serializados.
+
+**Próximo passo/pendência:** Validar em produção somente com uma O.S. autorizada.
