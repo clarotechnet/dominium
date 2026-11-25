@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-24T20:26:36+00:00",
+  "generated_at": "2026-11-25T11:59:18+00:00",
   "schema": 2,
-  "source_fingerprint": "10ae9f956d24375f5c8bfb16e30faece91ab4f64e49a424bef0062ec448b9e13",
+  "source_fingerprint": "0d13595a2bf9866b28b326a8437f97b7628e8fe900e793f800c18fe977fef23a",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1652,8 +1652,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 26222,
-      "sha256": "c84f358f988b8ee8bcd4020615b333139ab0ed9dc86f2b2b8afe2c04333608fd",
+      "bytes": 26944,
+      "sha256": "6640ab1c8aa781e95dbf444dff5674d452a8c178279502b8a3c76dd5aa515e8b",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -5654,8 +5654,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 22351,
-      "sha256": "aae591759ad7747decfebf7cb65f48317e516417e2c3542787830e0960733bc3",
+      "bytes": 22845,
+      "sha256": "e0cfef33f551d0849c69313227630ab783997219d9c0638c6eabaf21bd094f8c",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -5666,7 +5666,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 17
+      "symbol_count": 18
     },
     {
       "path": "static/all-cities-scope.css",
@@ -6008,7 +6008,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 185723,
-      "sha256": "1d6e21dabf17375331b89cec4146022e28aaf1219434d5870fb77946206e88e3",
+      "sha256": "9af41104cfef567b5b2c223acf12e42c12e0a77ca7495bd01e707613540e4a7d",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6702,8 +6702,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 14394,
-      "sha256": "ac4d1e6d9728a19884338e2977cd9d174420ba57a14bb410f7335f13e9e3ab2a",
+      "bytes": 16280,
+      "sha256": "d3ffbc63b3bf24648c44378228c8dc0bec48e2642b37aec552acef39b69f754e",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -8464,8 +8464,8 @@
     {
       "path": "tests/test_official_close.py",
       "category": "tests",
-      "bytes": 6074,
-      "sha256": "571cb0bb570b4bb5cd6e77b7d1f78d39a86c34f0e7ff67939f0b350afc87cacb",
+      "bytes": 6731,
+      "sha256": "8583cd990afdfd630ac05affe3ec040cab48de1dcaf489dfc3e2955781a7b903",
       "summary": "",
       "imports": [
         "datetime",
@@ -8477,7 +8477,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 10
+      "symbol_count": 11
     },
     {
       "path": "tests/test_official_close_code_catalog.py",
