@@ -89,6 +89,27 @@
     if(preparation.fallback_removed_after_rejection?.length)parts.push("Itens retirados apos rejeicao confirmada: "+preparation.fallback_removed_after_rejection.join(", "));
     return parts.join("; ");
   }
+  function isUnresolvedClose(record) {
+    return ["sending","pending","uncertain"].includes(record.state);
+  }
+  function priorCloseOutcome(record, failures=[]) {
+    if(record.state==="confirmed") return {closed:true};
+    const os="OS "+record.num_os+(record.close_code?" ("+record.close_code+")":"");
+    // The legacy observer can overwrite an uncertain stock result with a
+    // sending state. The day failure log retains the stock failure instead.
+    const stockFailure=!record.accepted_at && !record.official_http_status && failures.find(f=>String(f.id_os)===String(record.id_os) &&
+      String(f.num_os)===String(record.num_os) && String(f.contract)===String(record.contract) &&
+      String(f.close_code)===String(record.close_code) &&
+      /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d/.test(String(f.last_at||"")) &&
+      /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d/.test(String(record.created_at||"")) &&
+      f.last_at.slice(0,19)>=record.created_at.slice(0,19) &&
+      /complemento das miscelaneas ficou incerto.*a baixa da os nao foi enviada/i.test(String(f.error||"")));
+    if(record.category==="MATERIAL_TRANSFER_UNCERTAIN" || stockFailure) {
+      return {reason:os+": "+String(stockFailure?.error||record.message||"Complemento de estoque sem confirmacao. A baixa da OS nao foi enviada.")};
+    }
+    if(isUnresolvedClose(record)) return {pending:true,reason:os+" possui tentativa anterior sem confirmacao no Imperium."};
+    return {reason:os+" possui tentativa anterior sem liberacao para reenvio."};
+  }
   function selectCandidates(payload, active, scope, deps) {
     const {profile,contract,date}=scope;
     if(profile!=="natal") throw Error("Lote exclusivo da base Natal/Parnamirim.");
@@ -210,6 +231,12 @@
       if(!hooks.active()) break;
       hooks.update(contract,"Consultando","Conferindo TOA e Imperium");
       try {
+        const prior=await hooks.priorContract?.(contract);
+        if(!hooks.active()) break;
+        if(prior) {
+          hooks.update(contract,prior.pending?"Aguardando confirmacao":"Tratativa",prior.reason);
+          continue;
+        }
         const candidates=await hooks.prepare(contract);
         if(!hooks.active()) break;
         if(!candidates.length) {hooks.update(contract,"Sem OS em campo","Nenhuma baixa enviada.");continue;}
@@ -251,7 +278,7 @@
       } catch(err) {hooks.update(contract,"Tratativa",String(err.message||err).slice(0,300));}
     }
   }
-  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,ordersForBatchContract,refreshCandidate};return;}
+  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,ordersForBatchContract,refreshCandidate,priorCloseOutcome};return;}
   const panel=document.getElementById("adhesionBatch");
   if(!panel)return;
   const input=document.getElementById("adhesionBatchInput"),start=document.getElementById("adhesionBatchStart"),
@@ -284,9 +311,26 @@
     const active=()=>!stopped && state.profile===profile && state.profileEpoch===epoch && elements.date.value===date && state.officialCloseEnabled && state.closeEnabled;
     const fieldPath="/api/orders?date="+encodeURIComponent(date)+"&status=field&service_type=all";
     const readFieldOrders=timeoutMs=>request(apiUrlForProfile(fieldPath,profile),{timeoutMs});
+    const readCloseReport=()=>request(apiUrlForProfile("/api/close-report?date="+encodeURIComponent(date),profile),{timeoutMs:60000});
+    let initialReport;
+    async function outcomeFor(record) {
+      if(!isUnresolvedClose(record) || record.category==="MATERIAL_TRANSFER_UNCERTAIN") return priorCloseOutcome(record);
+      let failures=[];
+      try {
+        const report=await request(apiUrlForProfile("/api/failures",profile),{timeoutMs:10000});
+        if(Array.isArray(report.failures)) failures=report.failures;
+      } catch {/* Preserve the known block while the failure log is unavailable. */}
+      return priorCloseOutcome(record,failures);
+    }
     try {
       await runBatch(contracts,{
         active,update,
+        async priorContract(contract) {
+          try {initialReport ??= await readCloseReport();} catch {return null;}
+          if(!Array.isArray(initialReport.records)) return null;
+          const previous=initialReport.records.find(r=>String(r.contract)===contract && isUnresolvedClose(r));
+          if(previous) return outcomeFor(previous);
+        },
         async prepare(contract) {
           const payload=await request(apiUrlForProfile("/api/toa-live/lookup",profile),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:contract,expected_profile_key:profile,expected_date:date}),timeoutMs:300000});
           if(!active()) throw Error("Cidade/data alterada; fila interrompida.");
@@ -302,14 +346,11 @@
         },
         async send(candidate) {
           // A previously accepted/uncertain order is not submitted again.
-          const report=await request(apiUrlForProfile("/api/close-report?date="+encodeURIComponent(date),profile),{timeoutMs:60000});
+          const report=await readCloseReport();
           if(!active() || !Array.isArray(report.records)) throw Error("Relatorio de baixa indisponivel.");
           const previous=report.records.find(r=>String(r.id_os)===String(candidate.order.id_os) &&
-            (["sending","pending","uncertain","confirmed"].includes(String(r.state)) || (r.state==="failed" && r.safe_to_retry!==true)));
-          if(previous){
-            if(previous.state==="confirmed")return {closed:true};
-            return {humanReview:true,reason:"OS possui tentativa anterior sem liberacao para reenvio."};
-          }
+            (isUnresolvedClose(r) || r.state==="confirmed" || (r.state==="failed" && r.safe_to_retry!==true)));
+          if(previous) return outcomeFor(previous);
           if(!active()) throw Error("Lote interrompido.");
           const fresh=await freshOrders(
             readFieldOrders,
@@ -325,7 +366,7 @@
             await sleep(10000);
             if(!active()) return "pending";
             try{
-              const report=await request(apiUrlForProfile("/api/close-report?date="+encodeURIComponent(date),profile),{timeoutMs:60000});
+              const report=await readCloseReport();
               const row=(report.records||[]).find(r=>String(r.request_id)===requestId);
               if(row?.state==="confirmed")return "confirmed";
               if(["failed","uncertain"].includes(row?.state))return "review";

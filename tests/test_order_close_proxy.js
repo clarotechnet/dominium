@@ -58,3 +58,16 @@ test('backend validation rejection remains visible and transport failures are un
     else {assert.equal(res.code,502);assert.equal(res.payload.uncertain,true);assert.equal(res.payload.safe_to_retry,false);assert.match(res.payload.error,/confir|relat/i);}
   }
 });
+test('preserves a stock failure that occurred before the official close', async () => {
+  const known={ok:false,error:'Complemento sem confirmacao; a baixa nao foi enviada.',category:'MATERIAL_TRANSFER_UNCERTAIN',safe_to_retry:false,close_sent:false};
+  for (const payload of [known,{...known,close_sent:true}]) {
+    let calls=0;
+    const res=response();
+    const handler=createOrderCloseMiddleware({connection:()=>({token}),fetchImpl:async()=>{calls++;return Response.json(payload,{status:502});}});
+    await handler(request(),res);
+    assert.equal(calls,1);
+    assert.equal(res.code,502);
+    if(payload.close_sent===false) assert.deepEqual(res.payload,known);
+    else assert.equal(res.payload.uncertain,true);
+  }
+});
