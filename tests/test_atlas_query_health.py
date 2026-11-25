@@ -2,6 +2,7 @@
 import importlib.util
 import json
 import sqlite3
+from contextlib import closing
 import sys
 import tempfile
 import unittest
@@ -34,7 +35,7 @@ class HealthTests(unittest.TestCase):
         self.output = Path(self.temp.name) / "health.json"
 
     def make_db(self):
-        with sqlite3.connect(self.db) as db:
+        with closing(sqlite3.connect(self.db)) as db, db:
             db.execute("CREATE TABLE query_jobs(remote_queue_id TEXT, created_at REAL)")
             db.executemany("INSERT INTO query_jobs VALUES(?,?)", [
                 ("276908463", 1), ("276908572", 2), ("not-an-id", 3), (None, 4)])

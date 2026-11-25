@@ -118,8 +118,19 @@ class TechnicianDirectory:
             technicians.sort(key=lambda item: (normalize(item["name"]), item["login"]))
             self._source = payload.get("source", {}) if isinstance(payload, dict) else {}
             self._technicians = technicians
-            self._by_login = {normalize(item["login"]): item for item in technicians}
-            self._by_name = {normalize(item["name"]): item for item in technicians}
+            # A dictionary comprehension would silently choose the last
+            # matching technician. Ambiguous identities must not authorize OS.
+            login_counts = Counter(normalize(item["login"]) for item in technicians)
+            name_counts = Counter(normalize(item["name"]) for item in technicians)
+            self._by_login = {
+                normalize(item["login"]): item for item in technicians
+                if login_counts[normalize(item["login"])] == 1
+            }
+            self._by_name = {
+                normalize(item["name"]): item for item in technicians
+                if name_counts[normalize(item["name"])] == 1
+                and login_counts[normalize(item["login"])] == 1
+            }
             self._mtime_ns = mtime_ns
 
     def resolve(self, value: object) -> dict | None:

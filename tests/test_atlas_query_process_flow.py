@@ -1,6 +1,7 @@
 """Use the official process state before trusting an advertised attachment."""
 import base64
 import sqlite3
+from contextlib import closing
 import sys
 import tempfile
 import unittest
@@ -143,7 +144,7 @@ class ProcessTests(unittest.TestCase):
                 self.assertEqual(result['state'], process_state)
                 self.assertEqual(read_job(job, db)['remote_queue_id'], QUEUE)
                 self.assertEqual(read_job(job, db)['state'], process_state)
-            with sqlite3.connect(db) as connection:
+            with closing(sqlite3.connect(db)) as connection, connection:
                 self.assertEqual(connection.execute('select count(*) from query_jobs').fetchone()[0], 1)
 
 

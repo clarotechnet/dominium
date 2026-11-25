@@ -154,5 +154,21 @@ class TechnicianDirectoryTests(unittest.TestCase):
             self.assertEqual(rows[0]["technician_source"], "toa_export")
 
 
+    def test_duplicate_names_and_logins_are_not_selected_by_order(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "technicians.json"
+            path.write_text(json.dumps({"technicians": [
+                {"login": "Z1234", "name": "JOSE TESTE"},
+                {"login": "Z1235", "name": "JOSE TESTE"},
+                {"login": "Z1236", "name": "ANA TESTE"},
+                {"login": "Z1236", "name": "MARIA TESTE"},
+            ]}), encoding="utf-8")
+            index = TechnicianDirectory(path)
+            self.assertIsNone(index.resolve("JOSE TESTE"))
+            self.assertIsNone(index.resolve("Z1236"))
+            self.assertIsNone(index.resolve("ANA TESTE"))
+            self.assertEqual(index.resolve("Z1234")["name"], "JOSE TESTE")
+
+
 if __name__ == "__main__":
     unittest.main()
