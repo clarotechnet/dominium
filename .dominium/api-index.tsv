@@ -343,6 +343,7 @@ endpoint	path
 /api/imperium-official/stocks?profile=natal	tests/test_app.py
 /api/orders/2207229/material-inventory?profile=natal	tests/test_app.py
 /api/orders/{order.id_os}/close?profile=natal	tests/test_app.py
+/api/orders?profile=natal&status=field&service_type=all&date={date}	tests/test_app.py
 /api/atlas-query/jobs	tests/test_atlas_query_http.py
 /api/atlas-query/jobs/	tests/test_atlas_query_http.py
 /api/atlas-query/jobs?user=other	tests/test_atlas_query_http.py

@@ -61,8 +61,7 @@ def operational_stock_client(city):
     from imperium_api import ImperiumAPI
     from order_reports import RUNTIME
 
-    return ImperiumAPI(RUNTIME, port=PORTS[city], company=city, profile_key=city,
-                       expected_username="DOMINIUM")
+    return ImperiumAPI(RUNTIME, port=PORTS[city], company=city, profile_key=city)
 
 
 class TechnicianStockSnapshots:

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T16:43:07+00:00",
+  "generated_at": "2026-11-25T17:41:45+00:00",
   "schema": 2,
-  "source_fingerprint": "28551eac27ce4cde1d79a5e9ca41e8cec992e1a5af12708be79c0cd6ae982c23",
+  "source_fingerprint": "d04f2ae5a045b0261810182432706773c57510f7e2b242102754a28f0945a4af",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -162,8 +162,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 363134,
-      "sha256": "72a124969aa0290252c23cc9a27f97702b8b90097e41ee128128515bf82b2e0d",
+      "bytes": 363616,
+      "sha256": "12f84042935f7a123f35cdc019a1902d906163a0636725e176caf539a282519c",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -1652,8 +1652,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 30538,
-      "sha256": "c2af531de5c944ac969ca6d94a73ba3dabdc32b86c596691524587b1b83190d1",
+      "bytes": 31262,
+      "sha256": "330f52c971f3444bed9124db4145d8809cf51bb8b092377c3a72088436255b67",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3964,8 +3964,8 @@
     {
       "path": "integrations/serial_consult/technician_stock_snapshots.py",
       "category": "shared",
-      "bytes": 9784,
-      "sha256": "a5ce5e2b23f43757c1e6d14cab11254f023ee129760d0bb723785d6cd4c1ec83",
+      "bytes": 9731,
+      "sha256": "c66fd94f9b7d03fd6d4504514495465a67702344b204287ed0f5084962519540",
       "summary": "Persist daily balances read from the existing Imperium stock consultation.",
       "imports": [
         "__future__",
@@ -5654,8 +5654,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 26481,
-      "sha256": "c7fbc6d0eb435499ffc606d7c859042b5e2eb7d7bb3b9626f7a073fd2de82ee2",
+      "bytes": 26461,
+      "sha256": "97d23ccd92145d5ce0f3b03dac6a43a4e6f02176e7a1ff6ac4a70eefd12bfbca",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -6008,8 +6008,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 185730,
-      "sha256": "8cd925f699b15fac63d9b6fc12d33047e9c34196ec5366d28950336d22787bb0",
+      "bytes": 185735,
+      "sha256": "808d7cf76b330b5b7409a9df8237158d8fd4ef78541b64ca8bf40b8fc9368412",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6799,8 +6799,8 @@
     {
       "path": "tests/test_app.py",
       "category": "tests",
-      "bytes": 42568,
-      "sha256": "07b21c3913aa34b5ef61e5af4cf8df6aed8f9081fc79c410b96db2137021df66",
+      "bytes": 43951,
+      "sha256": "7b0da9ec07c5535333592b649fb37c61bb70bf0122987172d2d1889f00430a22",
       "summary": "",
       "imports": [
         "app",
@@ -6821,7 +6821,8 @@
         "/api/imperium-official/stocks/77/items?profile=natal",
         "/api/imperium-official/stocks?profile=natal",
         "/api/orders/2207229/material-inventory?profile=natal",
-        "/api/orders/{order.id_os}/close?profile=natal"
+        "/api/orders/{order.id_os}/close?profile=natal",
+        "/api/orders?profile=natal&status=field&service_type=all&date={date}"
       ],
       "env_vars": [],
       "datasnap_methods": [
@@ -6829,7 +6830,7 @@
         "TECHNICIANS.resolve"
       ],
       "entrypoint": true,
-      "symbol_count": 37
+      "symbol_count": 38
     },
     {
       "path": "tests/test_atlas_bridge_client.py",
@@ -8351,8 +8352,8 @@
     {
       "path": "tests/test_material_stock_audit.py",
       "category": "tests",
-      "bytes": 5780,
-      "sha256": "fe92d22e32f39087a5e1748d8cccd9a80682ea20337b8fdd83179c53bc7d6c84",
+      "bytes": 6275,
+      "sha256": "69e090845ce07dbc965dc61d1b1c60aa19019b9ba99c08a2649955334947c426",
       "summary": "",
       "imports": [
         "datetime",
@@ -8368,7 +8369,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 11
+      "symbol_count": 12
     },
     {
       "path": "tests/test_material_writeoff.py",

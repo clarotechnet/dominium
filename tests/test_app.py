@@ -5,7 +5,7 @@ import threading
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from app import (
     CLOSE_CONFIRM_RUNNING,
@@ -1068,6 +1068,34 @@ class OfficialImperiumReadApiTests(unittest.TestCase):
         handler._current_user = lambda: {"id": 1, "username": "teste", "role": role}
         handler._json = lambda status, payload: responses.append((int(status), payload))
         return handler, responses
+
+    def test_natal_batch_can_wait_for_live_orders_without_using_the_cache(self) -> None:
+        date = dt.date.today()
+        order = Order(10, "1234567890", "4346905", 20, "ADESAO - INSTALACAO DE ASSINATURA")
+        query = f"/api/orders?profile=natal&status=field&service_type=all&date={date}"
+        profile = SimpleNamespace(
+            key="natal", label="Natal", cache_lock=threading.RLock(),
+            cache_date=date, order_cache={order.id_os: order},
+        )
+        gate = SimpleNamespace(acquire=Mock(return_value=False))
+        with (
+            patch("app._profile_from_query", return_value=profile),
+            patch("app.OPERATION_GATE", gate),
+            patch("app._enrich_orders", return_value=[{"id_os": order.id_os}]) as enrich,
+            patch("app._record_operational_orders"),
+        ):
+            handler, responses = self._handler(query + "&wait_for_fresh=1")
+            handler.do_GET()
+            gate.acquire.assert_called_once_with(timeout=35.0)
+            self.assertEqual(responses[0][0], 409)
+            enrich.assert_not_called()
+
+            gate.acquire.reset_mock()
+            handler, responses = self._handler(query)
+            handler.do_GET()
+            gate.acquire.assert_called_once_with(blocking=False)
+            self.assertEqual(responses[0][0], 200)
+            self.assertTrue(responses[0][1]["stale"])
 
     def test_official_session_exposes_jader_identity_without_token(self) -> None:
         client = SimpleNamespace(

@@ -437,3 +437,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Testes do relay, Worker e lote: 50 aprovados. Consulta direta de status nas quatro categorias encontrou ambas as OS de cada contrato ainda em campo.
 
 **Próximo passo/pendência:** Validar publicação Hostinger e acompanhar latência da ponte TOA.
+
+## 2026-11-25 17:41 UTC — Atualização de aprovação de adesão e vistoria de estoque
+
+**Motivo:** O lote recebeu várias listas em cache enquanto o terminal estava ocupado. A vistoria falhava antes do primeiro local por argumento de construtor indisponível no runtime.
+
+**Alterado:** A consulta de O.S. do lote Natal pode esperar o terminal por uma leitura atualizada. A vistoria cria um cliente compatível com o runtime operacional.
+
+**Verificação:** 30 testes Python de escopo, fila e vistoria e 31 testes JS do lote e relay aprovados. Runtime legado preparado por substituições verificadas.
+
+**Próximo passo/pendência:** Validar as duas rotas em produção sem executar baixa nem movimentação de estoque.
