@@ -225,6 +225,17 @@ class CloseReportStore:
                     continue
                 if record.get("category") == "STOCK_RECHECKED":
                     return dict(record)
+                if (
+                    record.get("category") == "MATERIAL_TRANSFER_UNCERTAIN"
+                    and record.get("attribution") == "stock_preparation"
+                    and not record.get("official_http_status")
+                    and not record.get("accepted_at")
+                    and changes.get("state") in ACTIVE_STATES
+                    and changes.get("category") != "MATERIAL_TRANSFER_UNCERTAIN"
+                    and not changes.get("official_http_status")
+                    and not changes.get("accepted_at")
+                ):
+                    return dict(record)
                 value = dict(record)
                 state = _text(changes.get("state", value.get("state")), 40)
                 if state not in VALID_STATES:

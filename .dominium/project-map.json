@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T18:01:13+00:00",
+  "generated_at": "2026-11-25T18:35:07+00:00",
   "schema": 2,
-  "source_fingerprint": "d7b8ec869dbb9359b54d362e7651bd21a574953e9b6d268004031c9eb71835e5",
+  "source_fingerprint": "94650c83f4869a2c511b10ebb4c88d96193e2cee97d7cb3c47d199ae599de31a",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -95,6 +95,25 @@
       "symbol_count": 0
     },
     {
+      "path": "adhesion_technician_evidence.py",
+      "category": "shared",
+      "bytes": 5232,
+      "sha256": "49956bbbd94bf38bda5f328020e06229299267e222225cc5bce04c856245369a",
+      "summary": "Short-lived TOA evidence for the exact Natal adhesion order.",
+      "imports": [
+        "pathlib",
+        "re",
+        "threading",
+        "time",
+        "unicodedata"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
       "path": "adm_allocation.py",
       "category": "shared",
       "bytes": 3529,
@@ -162,10 +181,11 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 363616,
-      "sha256": "12f84042935f7a123f35cdc019a1902d906163a0636725e176caf539a282519c",
+      "bytes": 364180,
+      "sha256": "fba45d5dc8a18180127692be65f7de74688ca60af39f3a611f1703154861dbe3",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
+        "adhesion_technician_evidence",
         "api_security",
         "argparse",
         "auth_store",
@@ -502,8 +522,8 @@
     {
       "path": "close_report.py",
       "category": "shared",
-      "bytes": 17044,
-      "sha256": "c6f41a279d063ed04b2e0771815c7506ecbd42e015b14fd66a25c145a2e8023e",
+      "bytes": 17652,
+      "sha256": "ab7baab5c38a7f9830d8fb5b6f0c15ee601a92736acf2ae971d664d30c182f2f",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "__future__",
@@ -1652,8 +1672,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 32042,
-      "sha256": "c0ee667294ebbceb13408856b20d17fc0d4babf660b8cfe210a01db4e7d2f8b5",
+      "bytes": 32867,
+      "sha256": "d98a52dff48afd3727fcf305896eaf0e94b663712b4e4dfc871559c7da8513e7",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -2693,8 +2713,8 @@
     {
       "path": "integrations/desc_runtime/patch_runtime_safety.py",
       "category": "shared",
-      "bytes": 21670,
-      "sha256": "792ed49940fee13aa7162c0879c827b117ee73b206b3716b7f3281d5fc0e9c91",
+      "bytes": 23446,
+      "sha256": "5268335226b6f882beb3ef25b981396f34ed5b59782c41c0d6f58734707e2605",
       "summary": "Small source transformations for the legacy server; no network or writes.",
       "imports": [
         "ast"
@@ -2703,7 +2723,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 7
+      "symbol_count": 8
     },
     {
       "path": "integrations/desc_runtime/README.md",
@@ -5672,8 +5692,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 26461,
-      "sha256": "97d23ccd92145d5ce0f3b03dac6a43a4e6f02176e7a1ff6ac4a70eefd12bfbca",
+      "bytes": 27605,
+      "sha256": "4e45e0975014506911fed7e0209b88774a4903f102e0df2a21225e1735eec655",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -5685,7 +5705,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 23
+      "symbol_count": 24
     },
     {
       "path": "static/all-cities-scope.css",
@@ -6026,8 +6046,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 185735,
-      "sha256": "808d7cf76b330b5b7409a9df8237158d8fd4ef78541b64ca8bf40b8fc9368412",
+      "bytes": 185725,
+      "sha256": "7434afdc9b20ffa12e976aadd11f8c87f0a9513fe0eb774fb5611fb3e74155c8",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6721,8 +6741,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 19486,
-      "sha256": "f047082aa4a4804c52bf6cc4883d9b8a8c960a04bb370519f90a978d04ab2394",
+      "bytes": 21167,
+      "sha256": "be68e2330d5f698ef54619e1577c90a493fecfd15de849a0a362b3da34589007",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6730,6 +6750,24 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 5
+    },
+    {
+      "path": "tests/test_adhesion_technician_evidence.py",
+      "category": "tests",
+      "bytes": 3213,
+      "sha256": "012e70da1db46fe803606f37a32f7ea9f49a3a5b67d2424dee7a3ed323b26e97",
+      "summary": "",
+      "imports": [
+        "adhesion_technician_evidence",
+        "datetime",
+        "types",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 8
     },
     {
       "path": "tests/test_adm_allocation.py",
@@ -7357,8 +7395,8 @@
     {
       "path": "tests/test_close_report.py",
       "category": "tests",
-      "bytes": 10396,
-      "sha256": "df31b76cc4e1d34e0fcab5bdce925cec1ee5df4acfb02d28d0c246307e6a4ae7",
+      "bytes": 11161,
+      "sha256": "a10b6c2a0a580d077561f7435adfb9c4ed62a19b30cec78a6d2137dfcd300670",
       "summary": "",
       "imports": [
         "close_report",
@@ -7372,7 +7410,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 16
+      "symbol_count": 17
     },
     {
       "path": "tests/test_close_report_excel.py",

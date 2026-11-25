@@ -1,4 +1,9 @@
 import	path
+pathlib	adhesion_technician_evidence.py
+re	adhesion_technician_evidence.py
+threading	adhesion_technician_evidence.py
+time	adhesion_technician_evidence.py
+unicodedata	adhesion_technician_evidence.py
 __future__	adm_allocation.py
 dataclasses	adm_allocation.py
 toa_adm_task_splitter	adm_allocation.py
@@ -12,6 +17,7 @@ threading	api_security.py
 time	api_security.py
 typing	api_security.py
 urllib	api_security.py
+adhesion_technician_evidence	app.py
 api_security	app.py
 argparse	app.py
 auth_store	app.py
@@ -1123,6 +1129,10 @@ dataclasses	tests/fixtures/legacy_movement_reader.py
 datasnap_client	tests/fixtures/legacy_movement_reader.py
 re	tests/fixtures/legacy_movement_reader.py
 struct	tests/fixtures/legacy_movement_reader.py
+adhesion_technician_evidence	tests/test_adhesion_technician_evidence.py
+datetime	tests/test_adhesion_technician_evidence.py
+types	tests/test_adhesion_technician_evidence.py
+unittest	tests/test_adhesion_technician_evidence.py
 adm_allocation	tests/test_adm_allocation.py
 toa_adm_task_splitter	tests/test_adm_allocation.py
 unittest	tests/test_adm_allocation.py

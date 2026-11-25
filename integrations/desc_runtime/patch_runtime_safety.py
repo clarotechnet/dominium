@@ -337,6 +337,50 @@ def patch_official_code_only(text: str, *, helper_source: str) -> str:
     return text.replace('def _items(', helper_source + '\n\ndef _items(', 1).replace(marker, guard + marker, 1)
 
 
+def patch_adhesion_live_technician(text: str) -> str:
+    """Keep the legacy identity checks and accept corroborated current TOA evidence."""
+    replacements = (
+        (
+            'TECHNICIANS = TechnicianDirectory(ROOT / "config" / "technicians.json")\n',
+            'from adhesion_technician_evidence import AdhesionTechnicianEvidence\n\n'
+            'TECHNICIANS = TechnicianDirectory(ROOT / "config" / "technicians.json")\n'
+            'ADHESION_TECHNICIAN_EVIDENCE = AdhesionTechnicianEvidence()\n',
+        ),
+        (
+            '''                self._json(
+                    HTTPStatus.OK,
+                    _match_live_capture_to_orders(profile, result),
+                )
+''',
+            '''                prepared = _match_live_capture_to_orders(profile, result)
+                ADHESION_TECHNICIAN_EVIDENCE.record(profile.key, prepared)
+                self._json(HTTPStatus.OK, prepared)
+''',
+        ),
+        (
+            '''            capture_login_matches = False
+            if not supplied_identity_matches:
+''',
+            '''            if not supplied_identity_matches and ADHESION_TECHNICIAN_EVIDENCE.matches(
+                profile.key, order, scheduled_date, toa_technician,
+                installer_id, profile.api.list_stock_technicians,
+            ):
+                return supplied_login, current_name, installer_id
+            capture_login_matches = False
+            if not supplied_identity_matches:
+''',
+        ),
+    )
+    if all(new in text for _, new in replacements):
+        return text
+    for old, new in replacements:
+        if text.count(old) != 1:
+            raise ValueError('Unsupported legacy technician evidence layout')
+        text = text.replace(old, new, 1)
+    ast.parse(text)
+    return text
+
+
 def patch_stock_retry_runtime(app: str, ledger: str, api: str, *, web_app: str, web_ledger: str) -> tuple[str, str, str]:
     """Port the verified stock-recheck path without replacing legacy services."""
     def replace_once(text, old, new):

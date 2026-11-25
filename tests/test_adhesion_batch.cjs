@@ -79,6 +79,29 @@ test("pending confirmation never resends, never submits companion while uncertai
  assert.deepEqual(sent,["1","3"]);assert.equal(events.findLast(v=>v[0]==="12345678")[1],"Aguardando confirmacao");assert.equal(events.at(-1)[1],"Baixado");
 });
 
+test("a busy read defers one contract and never repeats a close with an uncertain result", async () => {
+ const {freshOrders} = require("../static/adhesion-batch.js");
+ const order = [], sends = [];
+ let reads = 0;
+ await runBatch(["busy", "uncertain", "ready"], {
+  active: () => true, update: () => {},
+  async prepare(contract) {
+   order.push(contract);
+   if (contract === "busy" && ++reads === 1) {
+    await freshOrders(async () => {throw Object.assign(Error("busy"), {status:409});},
+      {active: () => true, wait: async () => {}, attempts: 1});
+   }
+   return [{numOs: contract}];
+  },
+  async send(candidate) {
+   sends.push(candidate.numOs);
+   return candidate.numOs === "uncertain" ? {pending: true} : {closed: true};
+  },
+ });
+ assert.deepEqual(order, ["busy", "uncertain", "ready", "busy"]);
+ assert.deepEqual(sends, ["uncertain", "ready", "busy"]);
+});
+
 test("a matching legacy stock failure explains the blocked attempt before any write", async () => {
  const {priorCloseOutcome} = require("../static/adhesion-batch.js");
  const record = {request_id: "stock-attempt", contract: scope.contract, num_os: "2612345678", id_os: 42, close_code: "409", state: "sending", created_at: "2026-11-24T09:27:56-03:00"};
@@ -292,6 +315,22 @@ test("refresh approval before companion without changing OS identity",()=>{
 test("Imperium-only companion without confirmed TOA code is not inferred",()=>{
  const f=fixture();f.capture.tasks[0].imperium_only=true;f.capture.tasks[0].close_code="";
  assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps),/codigo de baixa nao confirmado/);
+});
+
+test("an exact GPON task can proceed with code alone while uncorrelated orders stay in review", async () => {
+ const f=fixture();
+ f.order.service="INSTALACAO DE CABO GPON";
+ const other={...f.order,id_os:2,num_os:"2612345680",service:"MUDANCA DE PACOTE"};
+ f.capture.tasks.push({os_number:other.num_os,imperium_only:true});
+ const sent=[], events=[];
+ await runBatch([scope.contract], {
+  active:()=>true, update:(...args)=>events.push(args),
+  prepare:async (_contract,hold)=>selectCandidates(f.payload,[f.order,other],scope,{...f.deps,hold}),
+  send:async c=>{sent.push(c); return {closed:true};},
+ });
+ assert.deepEqual(sent.map(c=>[c.numOs,c.batchCodeOnly]), [[f.order.num_os,true]]);
+ assert.equal(events.at(-1)[1], "Tratativa");
+ assert.match(events.at(-1)[2], /2612345680.*sem codigo de baixa/);
 });
 
 test("display rows from another activity do not override the exact TOA task for GPON", () => {

@@ -72,6 +72,18 @@ class CloseReportStoreTests(unittest.TestCase):
         self.assertTrue(duplicate)
         self.assertEqual(repeated["request_id"], retry["request_id"])
 
+    def test_observer_preserves_stock_failure_before_official_send(self):
+        record, _ = self.store.begin(self.base, date=self.date)
+        changes = {"state": "uncertain", "category": "MATERIAL_TRANSFER_UNCERTAIN",
+                   "attribution": "stock_preparation", "message": "Complemento incerto"}
+        self.store.update(record["request_id"], changes, date=self.date)
+
+        observed = self.store.update(record["request_id"], {"state": "sending", "category": "PROCESSING"}, date=self.date)
+        self.assertEqual(observed["state"], "uncertain")
+        self.assertEqual(observed["category"], "MATERIAL_TRANSFER_UNCERTAIN")
+        self.assertFalse(observed["safe_to_retry"])
+        self.assertEqual(observed["message"], "Complemento incerto")
+
     def test_public_report_removes_internal_values(self) -> None:
         record, _ = self.store.begin(
             {**self.base, "toa_paste_key": "private-assignment-key"},
