@@ -406,3 +406,33 @@ test("one shared EMTA moves once in Virtua; VoIP code only; chip gets its own se
  f.capture.installed_equipment[1]={...emta,serial:"112233445566"};
  assert.throws(()=>selectCandidates(f.payload,orders,scope,f.deps),/EMTAs distintos/);
 });
+
+test("generic close error is reconciled against exact durable stock result without write",async()=>{
+ const {reconcileCloseRead}=require("../static/adhesion-batch.js");
+ const candidate={order:{id_os:42,contract:"12345678"},numOs:"2612345678",code:"409"};
+ const response={closed:false,humanReview:true,reason:"Outra operacao esta em andamento"};
+ const record={id_os:42,contract:"12345678",num_os:"2612345678",close_code:"409",state:"uncertain",category:"MATERIAL_TRANSFER_UNCERTAIN",message:"Complemento sem confirmacao"};
+ const result=await reconcileCloseRead(candidate,response,async()=>({records:[record]}));
+ assert.match(result.reason,/Complemento sem confirmacao/);
+ assert.equal(result.closed,false);
+ assert.equal((await reconcileCloseRead(candidate,response,async()=>({records:[{...record,contract:"other"}]}))).reason,response.reason);
+ assert.equal((await reconcileCloseRead(candidate,response,async()=>{throw Error("offline")})).pending,true);
+ assert.equal((await reconcileCloseRead(candidate,response,async()=>({records:[{...record,state:"confirmed"}]}))).closed,true);
+});
+
+test("confirmed executed chip task maps generic TOA success to official 706",()=>{
+ const f=fixture();f.order.service="ENVIO DE CHIP VIA TECNICO";
+ const chip={serial:"89550000000000000001",type:"chip"};
+ f.capture.installed_equipment=[chip];f.capture.removed_equipment=[];
+ f.capture.tasks[0].status="E";
+ f.deps.executed=()=>true;
+ f.deps.equipmentType=i=>i.type;
+ f.deps.expectedType=()=>"chip";f.deps.knownCode=c=>["409","706"].includes(c);
+ f.deps.equipment=()=>({installed:[chip],removed:[]});
+ assert.equal(selectCandidates(f.payload,[f.order],scope,f.deps)[0].code,"706");
+ f.capture.tasks[0].status="N";
+ assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps),/Chip sem ICCID/);
+ f.capture.tasks[0].status="E";
+ f.capture.installed_equipment=[];
+ assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps),/Chip sem ICCID/);
+});

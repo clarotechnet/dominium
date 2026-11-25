@@ -1743,6 +1743,9 @@ def _match_live_capture_to_orders(
         cache_date = profile.cache_date or dt.date.today()
     cached_rows = _enrich_orders(profile, cache_date, cached)
     for capture in result.get("results", []):
+        if profile.key == "natal":
+            from toa_export_task_recovery import reconcile_export_tasks
+            capture["tasks"] = reconcile_export_tasks(capture, ROOT / "logs" / "toa-exports")
         contract = str(capture.get("contract", "")).strip()
         activity_id = str(capture.get("aid", "")).strip()
         capture_city = str(capture.get("city", "")).strip()

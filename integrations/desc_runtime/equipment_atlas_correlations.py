@@ -77,11 +77,30 @@ def parse_code_record(payload: bytes, requested_code: str) -> EquipmentAtlasReco
             description_length = payload[pos]
             pos += 1
             if description_length == 0:
-                unit = _record_unit(payload, pos)
-                if (requested_code in _CONNECTOR_CODES and unit == "UN"
-                        and _CONNECTOR_NAME.match(name)):
-                    codes = (requested_code, *[c for c in _CONNECTOR_CODES if c != requested_code])
-                    records.append(EquipmentAtlasRecord(codes, unit))
+                # The live dataset uses a second NUL before the group ID
+                # for an empty Atlas field. Require a unique valid group/unit
+                # layout and a real catalogue name, not just a byte match.
+                units = set()
+                for offset in (pos, pos + 1) if payload[pos:pos+1] == b"\x00" else (pos,):
+                    group = payload[offset:offset+4]
+                    if len(group) != 4 or not 0 < int.from_bytes(group, "little") < 65536:
+                        continue
+                    if payload[offset+4:offset+13] != b"\x08DIVERSOS":
+                        continue
+                    candidate_unit = _record_unit(payload, offset)
+                    if candidate_unit in {"UN", "M", "PC", "PCA", "MT"}:
+                        units.add(candidate_unit)
+                if len(units) != 1 or not _LABEL_RE.fullmatch(name):
+                    continue
+                unit = next(iter(units))
+                codes = (requested_code,)
+                if requested_code in _CONNECTOR_CODES:
+                    if unit != "UN" or not _CONNECTOR_NAME.match(name):
+                        continue
+                    codes += tuple(c for c in _CONNECTOR_CODES if c != requested_code)
+                # A blank Atlas field proves only the exact code. No fuzzy
+                # substitution for other items; stock remains authoritative.
+                records.append(EquipmentAtlasRecord(codes, unit))
                 continue
             if not 10 <= description_length <= 250 or pos + description_length > len(payload):
                 continue

@@ -212,9 +212,18 @@
         const os=String(task.os_number), activeOrder=byNumber.get(os);
         const exact=(capture.imperium_matches||[]).filter(o=>String(o.num_os)===os && String(o.contract)===contract && Number(o.id_os)===Number(activeOrder.id_os));
         if(seen.has(os) || exact.length!==1 || !deps.valid(exact[0],capture) || !deps.executed(task.status)) throw Error("OS sem correspondencia unica, aprovada e executada: "+os);
-        const code=String(task.close_code||"").trim();
+        let code=String(task.close_code||"").trim();
         if(!code || code==="430" || !deps.knownCode(code)) throw Error("Codigo de baixa ausente ou invalido: "+os);
         const order=exact[0], service=String(order.service||"");
+        const chipService=serviceLabel(service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"")==="ENVIO DE CHIP VIA TECNICO";
+        // TOA records generic success 409; the Imperium chip service uses 706.
+        // Do not convert a nonexecuted task or an unidentified ICCID.
+        if(chipService && code==="409"){
+          const chips=new Set((capture.installed_equipment||[]).filter(i=>deps.equipmentType?.(i)==="chip" && /^\d{18,25}$/.test(String(i.serial||""))).map(i=>String(i.serial)));
+          const chipOrders=(capture.imperium_matches||[]).filter(o=>serviceLabel(o.service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"")==="ENVIO DE CHIP VIA TECNICO");
+          if(!["E","EXECUTADA","EXECUTADO","EXECUTED"].includes(serviceLabel(task.status).trim()) || chips.size!==1 || chipOrders.length!==1 || !deps.knownCode("706"))throw Error("Chip sem ICCID ou tarefa executada confirmada para codigo 706: "+os);
+          code="706";
+        }
         const origin=importBucket(order,scope,capture);
         if(!route && !isAdhesionBucket(profile,origin)) throw Error("Bucket de origem sem comprovacao no arquivo de importacao.");
         if(order.operation_source==="toa_import" && !isAdhesionBucket(profile,origin)) throw Error("Escopo de importacao fora de adesao.");
@@ -268,9 +277,10 @@
       const service=serviceLabel(candidate.order.service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"");
       const keepsEquipment=service==="MUDANCA DE ENDERECO INSTALAR PONTO ADICIONAL VIRTUA" &&
         Array.isArray(installed) && installed.length===0 && Array.isArray(removed) && removed.length===0;
-      if(expected && deps.productive?.(candidate.code) && !keepsEquipment && !plan.installed.some(item=>item.type===expected || (expected==="decoder" && item.type==="smart"))) {
+      if(expected && (candidate.code==="706" || deps.productive?.(candidate.code)) && !keepsEquipment && !plan.installed.some(item=>item.type===expected || (expected==="decoder" && item.type==="smart"))) {
         throw Error("Serial obrigatorio nao conciliado para OS "+candidate.numOs+" ("+expected+").");
       }
+      if(candidate.code==="706" && (plan.installed.length!==1 || plan.installed[0].type!=="chip" || !/^\d{18,25}$/.test(String(plan.installed[0].serial||"")) || plan.removed.length))throw Error("Codigo 706 exige um unico ICCID instalado.");
       for(const item of [...plan.installed,...plan.removed]) {
         const key=String(item.serial||"").replace(/[^A-Z0-9]/gi,"").toUpperCase();
         if(!key || serials.has(key)) throw Error("Serial ausente ou repetido no contrato: "+candidate.numOs);
@@ -296,6 +306,30 @@
     }
     // Movimentacao principal antes de acompanhantes; confirmar antes da proxima OS do contrato.
     return candidates.sort((a,b)=>Number(b.materialOwner)-Number(a.materialOwner));
+  }
+  // A transport failure or generic busy response is not proof of no write.
+  // Reconcile only the exact order, then preserve the server's durable outcome.
+  async function reconcileCloseRead(candidate, response, readReport) {
+    if(response?.closed || response?.pending || !readReport) return response;
+    const order=candidate.order;
+    if(!order?.id_os || !order?.contract || !candidate.numOs) return response;
+    let report;
+    try { report=await readReport(); }
+    catch { return { ...response, pending:true, reason:"Resultado nao conciliado no relatorio; nao reenviar automaticamente." }; }
+    if(!Array.isArray(report?.records))return {...response,pending:true,reason:"Relatorio indisponivel; nao reenviar automaticamente."};
+    const matches=report.records.filter(r=>String(r.id_os)===String(order.id_os) && String(r.num_os)===String(candidate.numOs) && String(r.contract)===String(order.contract));
+    const unresolved=matches.find(isUnresolvedClose);
+    if(unresolved){
+      const outcome=priorCloseOutcome(unresolved);
+      // An uncertain stock transfer remains a review, never an automatic
+      // resend or a retry of the material transfer in this execution.
+      return {...response,...outcome,reason:outcome.reason||unresolved.message};
+    }
+    const confirmed=matches.find(r=>r.state==="confirmed" && String(r.close_code)===String(candidate.code));
+    if(confirmed)return {...response,closed:true,pending:false,reason:"Confirmada no relatorio do Imperium."};
+    const failed=matches.find(r=>r.state==="failed" && String(r.close_code)===String(candidate.code));
+    if(failed)return {...response,reason:failed.message||response?.reason};
+    return response;
   }
   async function runBatch(contracts, hooks) {
     const queue = contracts.map(contract => ({contract, deferred: false}));
@@ -359,7 +393,7 @@
       }
     }
   }
-  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,readBatchToa,ordersForBatchContract,refreshCandidate,priorCloseOutcome};return;}
+  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,readBatchToa,ordersForBatchContract,refreshCandidate,priorCloseOutcome,reconcileCloseRead};return;}
   const panel=document.getElementById("adhesionBatch");
   if(!panel)return;
   const input=document.getElementById("adhesionBatchInput"),start=document.getElementById("adhesionBatchStart"),
@@ -452,7 +486,9 @@
           );
           const refreshed=refreshCandidate(candidate,fresh.orders,validToaCloseSnapshot);
           if(!active()) throw Error("Lote interrompido.");
-          return processAutoCloseCandidate({...refreshed,stockRetryRequestId:outcome?.stockRetryRequestId},profile);
+          const result=await processAutoCloseCandidate({...refreshed,stockRetryRequestId:outcome?.stockRetryRequestId},profile);
+          if(!active())return result;
+          return reconcileCloseRead(refreshed,result,readCloseReport);
         },
         async confirm(requestId) {
           for(let attempt=0;attempt<12;attempt++){

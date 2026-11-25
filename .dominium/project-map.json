@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T19:57:01+00:00",
+  "generated_at": "2026-11-25T20:30:34+00:00",
   "schema": 2,
-  "source_fingerprint": "1f22bc1ff43fcce3dc8628a6fde578d3837e5f108a33b596b3db0b934fd289fa",
+  "source_fingerprint": "7dc3152d1a816baa1a4a571cff8d1c72662626349124881c19933be1a7fc285c",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -181,8 +181,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 364180,
-      "sha256": "fba45d5dc8a18180127692be65f7de74688ca60af39f3a611f1703154861dbe3",
+      "bytes": 364381,
+      "sha256": "c2070289aa7efb17306686f530c0e9ca775e300c9e9ad34a7c886a4c37b6788a",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "adhesion_technician_evidence",
@@ -238,6 +238,7 @@
         "toa_context",
         "toa_contract_registry",
         "toa_datalake_store",
+        "toa_export_task_recovery",
         "toa_import",
         "toa_inventory",
         "toa_local_collector",
@@ -2649,8 +2650,8 @@
     {
       "path": "integrations/desc_runtime/equipment_atlas_correlations.py",
       "category": "shared",
-      "bytes": 5294,
-      "sha256": "f9158a6d308219691f0c71b096bafa3b1c3d13a295e520435857776cf51c3371",
+      "bytes": 6408,
+      "sha256": "2e51cea3ca4f0a1ec8ca9121c8e2ef75ef1067b7fd092b4aae4489ba5f07c162",
       "summary": "Read-only Codigo -> DescricaoAtlas correlation in the legacy runtime.",
       "imports": [
         "re",
@@ -5692,8 +5693,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 30752,
-      "sha256": "2bbf4a7005eb508f16dfa7c7a42c96eeed95db963a113b7eee1cc5c0bcdc1294",
+      "bytes": 33821,
+      "sha256": "4d71c41ca7a1fcfb1bc0ad8cd1f68a402fdb3efc817722d48e343077cec647ab",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -5705,7 +5706,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 27
+      "symbol_count": 28
     },
     {
       "path": "static/all-cities-scope.css",
@@ -6611,8 +6612,8 @@
     {
       "path": "technician_directory.py",
       "category": "shared",
-      "bytes": 5879,
-      "sha256": "c428cc21c4d30f179eb0ddf7d4158019a4a363bf29436bca79c017b7e0b0cd7c",
+      "bytes": 6446,
+      "sha256": "8f4072b9da2b80238d915ee10bfbfabf41ff760abba9f72e8d49e249d7303621",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "collections",
@@ -6741,8 +6742,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 23979,
-      "sha256": "5b5e2c7312991a1311353f2ab63614649e481fe8d1a48249936db246f45c73ab",
+      "bytes": 25934,
+      "sha256": "15197af6c549c681ef41e75bcbc30e0daa0e5086d083decf742b088f4ecf3c1f",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7834,8 +7835,8 @@
     {
       "path": "tests/test_equipment_atlas_correlations.py",
       "category": "tests",
-      "bytes": 3911,
-      "sha256": "38ee73a17311af5ac49a1b8e7643db5df9efb5e3f4af63c4ad81c17c70b0cf19",
+      "bytes": 4673,
+      "sha256": "a4c27f196923d8165480bdf567f291319571226257981341b7a4e322bfe82a19",
       "summary": "",
       "imports": [
         "integrations",
@@ -7845,7 +7846,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 8
+      "symbol_count": 9
     },
     {
       "path": "tests/test_equipment_daily_catalog.py",
@@ -9528,8 +9529,8 @@
     {
       "path": "tests/test_technician_directory.py",
       "category": "tests",
-      "bytes": 6348,
-      "sha256": "d78aba13b7ad30e2b1793575a79e45791712305a1004483906674fa5d74ae64d",
+      "bytes": 7152,
+      "sha256": "72b7fa68e34697e00a41af74e1223f434f9bfe4b1a7883f1552f39c023454468",
       "summary": "",
       "imports": [
         "datetime",
@@ -9546,7 +9547,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 5
+      "symbol_count": 6
     },
     {
       "path": "tests/test_toa_adm_task_splitter.py",
@@ -9769,6 +9770,27 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 3
+    },
+    {
+      "path": "tests/test_toa_export_task_recovery.py",
+      "category": "tests",
+      "bytes": 2541,
+      "sha256": "b604190ec1d2452f808b8424471558e490b15939c17a50e22971af6ae810b3e5",
+      "summary": "",
+      "imports": [
+        "csv",
+        "datetime",
+        "os",
+        "pathlib",
+        "tempfile",
+        "toa_export_task_recovery",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 2
     },
     {
       "path": "tests/test_toa_import.py",
@@ -10517,6 +10539,25 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 1
+    },
+    {
+      "path": "toa_export_task_recovery.py",
+      "category": "toa",
+      "bytes": 4696,
+      "sha256": "d8b6a9a0fe70c0753f1b391b7c4a10dd8404084facf164be3617e11ab942cb7f",
+      "summary": "Read-only reconciliation of additional TOA tasks from a fresh bucket export.",
+      "imports": [
+        "csv",
+        "datetime",
+        "pathlib",
+        "re",
+        "unicodedata"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 4
     },
     {
       "path": "toa_import.py",

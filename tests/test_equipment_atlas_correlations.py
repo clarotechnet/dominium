@@ -81,3 +81,13 @@ class EquipmentAtlasCorrelationsTests(unittest.TestCase):
         ):
             with self.assertRaises(EquipmentAtlasCorrelationError):
                 parse_code_record(bad, "22026266")
+
+    def test_live_empty_atlas_field_with_extra_nul(self):
+        record = b"\x0822025349\x1bFIXA FIO CABO DROP FO CHATO\x00\x00\x06\x00\x00\x00\x08DIVERSOS\x02\x00\x00\x00\x02UN"
+        self.assertEqual(parse_code_record(record, "22025349").codes, ("22025349",))
+        self.assertEqual(parse_code_record(record, "22025349").unit, "UN")
+        connector = b"\x0822026266\x1dCONECTOR FO CAMPO FAST SC APC\x00\x00\x06\x00\x00\x00\x08DIVERSOS\x02\x00\x00\x00\x02UN"
+        self.assertIn("22065513", parse_code_record(connector, "22026266").codes)
+        for bad in (record + record, record[:-1], record.replace(b"DIVERSOS", b"INVALIDO")):
+            with self.assertRaises(EquipmentAtlasCorrelationError):
+                parse_code_record(bad, "22025349")
