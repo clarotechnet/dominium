@@ -427,3 +427,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 24 testes do lote aprovados. Consulta real com HTTP 200 e duas O.S. no TOA. Nenhuma baixa ou transferência enviada nos testes.
 
 **Próximo passo/pendência:** Acompanhar a latência do gateway compartilhado e validar o novo ativo público após publicação.
+
+## 2026-11-25 16:43 UTC — Preservar falhas de leitura TOA no proxy web
+
+**Motivo:** O proxy Hostinger transformava HTTP 502 da consulta de TOA em baixa Imperium incerta devido ao metodo POST. A nova tentativa de leitura nao recebia o motivo esperado.
+
+**Alterado:** Apenas o lookup TOA recebe erro de leitura no proxy. A causa pre-consulta conhecida atravessa a ponte para permitir a retentativa do lote.
+
+**Verificação:** Testes do relay, Worker e lote: 50 aprovados. Consulta direta de status nas quatro categorias encontrou ambas as OS de cada contrato ainda em campo.
+
+**Próximo passo/pendência:** Validar publicação Hostinger e acompanhar latência da ponte TOA.

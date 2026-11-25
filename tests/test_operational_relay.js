@@ -4,7 +4,8 @@ const assert = require('node:assert/strict');
 const { allowedOperationalRead } = require('../deploy/hostinger-web/operational-policy');
 const { resolveOperationalRead } = require('../deploy/hostinger-web/operational-relay');
 const { allowedToaLookup } = require('../deploy/hostinger-web/operational-policy');
-const { restorePrivateJsonContentType } = require('../deploy/hostinger-web/operational-relay');
+const { restorePrivateJsonContentType, toaLookupFailure } = require('../deploy/hostinger-web/operational-relay');
+const { readBatchToa } = require('../static/adhesion-batch');
 const privateConnection = () => ({token:'x'.repeat(43)});
 const req = (method, originalUrl, role = 'viewer') => ({
   method, originalUrl, dominiumSession:{id:'fixture'},
@@ -36,6 +37,33 @@ test('TOA lookup uses the private bridge only for the exact scoped read action',
     assert.equal(allowedToaLookup('POST',target),false,target);
   }
   assert.equal(allowedToaLookup('GET','/api/toa-live/lookup?profile=natal'),false);
+});
+
+test('the read-only TOA failure reaches the batch retry without indicating a submission', async () => {
+  const expected = { ok: false, error: 'TOA secundario nao localizado' };
+  const upstream = Response.json(expected, { status: 502 });
+  const failure = await toaLookupFailure(upstream);
+  assert.deepEqual(failure, expected);
+
+  let reads = 0;
+  const result = await readBatchToa(async () => {
+    if (++reads === 1) throw Object.assign(new Error(failure.error), { status: 502 });
+    return { ok: true };
+  }, { active: () => true, wait: async () => {}, notify: () => {} });
+  assert.deepEqual(result, { ok: true });
+  assert.equal(reads, 2);
+});
+
+test('unrecognized TOA errors and timeouts return sanitized lookup failures', async () => {
+  const expected = { ok: false, error: 'Consulta ao TOA indisponivel. Nenhuma baixa foi enviada nesta tentativa.' };
+  for (const upstream of [
+    undefined,
+    Response.json({ ok: false, error: 'internal exception' }, { status: 502 }),
+    new Response('unexpected response', { status: 502 }),
+    Response.json({ ok: false, error: 'TOA secundario nao localizado' }, { status: 504 }),
+  ]) {
+    assert.deepEqual(await toaLookupFailure(upstream), expected);
+  }
 });
 
 test('only explicit, safe GET routes may access the internal Windows API', () => {

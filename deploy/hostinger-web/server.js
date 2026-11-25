@@ -986,7 +986,7 @@ const { createDisconnectionMiddleware } = require('./disconnection-proxy');
 app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }));
 const { createImportMiddleware } = require('./import-proxy');
 const { createOrderCloseMiddleware } = require('./order-close-proxy');
-const { resolveOperationalRead, restorePrivateJsonContentType } = require('./operational-relay');
+const { resolveOperationalRead, restorePrivateJsonContentType, toaLookupFailure } = require('./operational-relay');
 const { allowedOperationalRead, allowedToaLookup, allowedQualityControl, allowedDailyStock } = require('./operational-policy');
 app.use(['/api/import-targets', '/api/import-history', '/api/imports'], createImportMiddleware());
 app.post(/^\/api\/orders\/[^/]+\/close$/, createOrderCloseMiddleware());
@@ -1050,6 +1050,7 @@ async function proxyOperationalRequest(req, res, next) {
       signal: controller.signal,
     });
     if (relay && upstream.status >= 500) {
+      if (toaLookup) return res.status(502).json(await toaLookupFailure(upstream));
       return res.status(502).json(req.method === 'POST'
         ? {ok:false,uncertain:true,safe_to_retry:false,error:'O Imperium pode ter processado a operacao. Confira antes de repetir.'}
         : {ok:false,error:'Servidor operacional temporariamente indisponivel'});
@@ -1071,7 +1072,8 @@ async function proxyOperationalRequest(req, res, next) {
       method: req.method,
       error: error instanceof Error ? error.message : "bridge_error",
     });
-    if (toaLookup || allowedQualityControl(req.method, req.originalUrl) || allowedDailyStock(req.method, req.originalUrl) || allowedOperationalRead(req.method, req.originalUrl) || req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/')) {
+    if (toaLookup) return res.status(502).json(await toaLookupFailure());
+    if (allowedQualityControl(req.method, req.originalUrl) || allowedDailyStock(req.method, req.originalUrl) || allowedOperationalRead(req.method, req.originalUrl) || req.path.startsWith('/api/confront/') || req.path.startsWith('/api/atlas-query/')) {
       return res.status(502).json({ ok: false, error: 'Consulta operacional indisponivel; dados nao confirmados' });
     }
     return res.status(502).json(req.method === 'POST'
