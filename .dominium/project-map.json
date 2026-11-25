@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T16:29:59+00:00",
+  "generated_at": "2026-11-25T16:43:07+00:00",
   "schema": 2,
-  "source_fingerprint": "021493367ff1fc2e10d4e07d2d74d83e5a35f07d6a322972f686d0c8f0790950",
+  "source_fingerprint": "28551eac27ce4cde1d79a5e9ca41e8cec992e1a5af12708be79c0cd6ae982c23",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -898,8 +898,8 @@
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 3892,
-      "sha256": "b970603e681fb4f3a33ed48090575e25df3412c3ffe42d13b68531f9e500303d",
+      "bytes": 4322,
+      "sha256": "4974ad9ebe20168e59e9871bef6a973cb4fe7f7fe855e006352a7c865ed5193c",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -908,7 +908,7 @@
       ],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 3
+      "symbol_count": 4
     },
     {
       "path": "deploy/hostinger-web/order-close-proxy.js",
@@ -980,8 +980,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 45352,
-      "sha256": "d7fc6d917d7691b76f059bb5411132c344518b41d380946dc4f7e59e8776c1e1",
+      "bytes": 45515,
+      "sha256": "3902d9de63ca3af82c213d60a7079628377fd6fe958b2b2af4e85a871ced8453",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1652,8 +1652,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 29861,
-      "sha256": "3ad24d29cb57bbb0cd76595fcaa00fffe951fd6b203f1f8e5cbcaf725b5ced67",
+      "bytes": 30538,
+      "sha256": "c2af531de5c944ac969ca6d94a73ba3dabdc32b86c596691524587b1b83190d1",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -8784,8 +8784,8 @@
     {
       "path": "tests/test_operational_relay.js",
       "category": "tests",
-      "bytes": 6320,
-      "sha256": "ddee632805f288f03f36c6199b2bf02f916afc4cc2b8626b7e8bb14766649beb",
+      "bytes": 7615,
+      "sha256": "b4b03febf610fcfbbb06e179a153b24c02af6f930559979cccf4213258b1ffd1",
       "summary": "",
       "imports": [],
       "endpoints": [

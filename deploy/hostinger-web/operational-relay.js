@@ -61,4 +61,13 @@ function restorePrivateJsonContentType(req, headers, body) {
   if (!original.startsWith('application/json')) return;
   headers['content-type']='application/json';
 }
-module.exports = { resolveOperationalRead, restorePrivateJsonContentType };
+async function toaLookupFailure(upstream) {
+  if (upstream?.status === 502) {
+    const payload = await upstream.json().catch(() => null);
+    if (payload?.ok === false && payload.error === 'TOA secundario nao localizado') {
+      return { ok: false, error: 'TOA secundario nao localizado' };
+    }
+  }
+  return { ok: false, error: 'Consulta ao TOA indisponivel. Nenhuma baixa foi enviada nesta tentativa.' };
+}
+module.exports = { resolveOperationalRead, restorePrivateJsonContentType, toaLookupFailure };

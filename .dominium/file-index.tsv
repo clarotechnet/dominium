@@ -37,13 +37,13 @@ tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
 tooling-deploy	deploy/hostinger-web/operational-policy.js	13	48			c226c85143e3767a
-tooling-deploy	deploy/hostinger-web/operational-relay.js	3				b970603e681fb4f3
+tooling-deploy	deploy/hostinger-web/operational-relay.js	4				4974ad9ebe20168e
 tooling-deploy	deploy/hostinger-web/order-close-proxy.js	2				e8108812d88d552f
 tooling-deploy	deploy/hostinger-web/order-report-policy.js	1				d634fc2aab4a6d9f
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	38	1		d7fc6d917d7691b7
+tooling-deploy	deploy/hostinger-web/server.js	41	38	1		3902d9de63ca3af8
 tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	6			ec489159895ad366
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
@@ -86,7 +86,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	3ad24d29cb57bbb0
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	c2af531de5c944ac
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -474,7 +474,7 @@ tests	tests/test_official_stock_relay.py	6	11		Read-only official inventory brid
 tests	tests/test_official_stock_remediation_plan.py	22		1		a64ed28f5256d2d9
 tests	tests/test_offline_candidate_and_resolver.py	12			Comprehensive test suite for frontend block, candidate locator, and material resolver.	2c65244509db2c6a
 tests	tests/test_operation_scope.py	42				f804afda128c9e71
-tests	tests/test_operational_relay.js	2	37			ddee632805f288f0
+tests	tests/test_operational_relay.js	2	37			b4b03febf610fcfb
 tests	tests/test_operational_store.py	5				ec3aeac75e1dfebb
 tests	tests/test_operations_intelligence.py	11				dc597e4943edd292
 tests	tests/test_operations_monitor.js					6e5f6241957f3296
