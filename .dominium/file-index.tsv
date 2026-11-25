@@ -324,7 +324,7 @@ frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			7434afdc9b20ffa1
+frontend	static/index.html		1			174477e78c814e06
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/material-stock-audit.js	15	1			b484bd2f18b0b23e
@@ -378,11 +378,11 @@ tests	tests/test_api_security.py	14	2			6a9274ff24f39348
 tests	tests/test_app.py	38	6	2		7b0da9ec07c55353
 tests	tests/test_atlas_bridge_client.py	14			Tests for the real BotDMV Atlas HTTP queue contract (synthetic only).	97a6ec2888879cf6
 tests	tests/test_atlas_query_data.py	6			QUERY Atlas table transformations and text-preserving exports.	0748addddb6b990d
-tests	tests/test_atlas_query_health.py	15			Session health must depend on a fresh queue response, not an open tab.	7962f15659401e64
+tests	tests/test_atlas_query_health.py	15			Session health must depend on a fresh queue response, not an open tab.	18d06c63a5a23aa4
 tests	tests/test_atlas_query_http.py	24	3		QUERY Atlas authenticated API contract without contacting real Atlas.	79bd4a7467dcce54
 tests	tests/test_atlas_query_pipeline.py	23			NetTask 404 handling: no duplicate report generation or insecure URLs.	6dcc5d70a7dbdf6d
 tests	tests/test_atlas_query_policy.js	2	4			350c51201727bacf
-tests	tests/test_atlas_query_process_flow.py	18			Use the official process state before trusting an advertised attachment.	e91c22b950e5858a
+tests	tests/test_atlas_query_process_flow.py	18			Use the official process state before trusting an advertised attachment.	9f3f2aec72427535
 tests	tests/test_atlas_query_proxy_json.js	1	3			4e8277a7c89ce12f
 tests	tests/test_atlas_query_report.py	13			Safe report generator: no duplicate Atlas task after uncertainty.	9a490f5df2a54a18
 tests	tests/test_atlas_query_reserve_delay.py	22	1		The user's two-ID policy is durable and never depends on an open browser UI.	b76749bf70c93139
@@ -395,7 +395,7 @@ tests	tests/test_backlog_hostinger_proxy.js	3	9			0ffdbca1cc822dd4
 tests	tests/test_backlog_report_image.js	1				b8b66a90f2cb8ddd
 tests	tests/test_backlog_status_reload_20261107.cjs	1				b8c6664881c88ae7
 tests	tests/test_backlog_todos_navigation.cjs	2				fe3d1917db6de65e
-tests	tests/test_backlog_ui_deploy_20261031.py		3			7e903cf8d3b04a3d
+tests	tests/test_backlog_ui_deploy_20261031.py		3			5ddbde944ea55d3c
 tests	tests/test_backlog_whatsapp_report.js					c136df0853e1647d
 tests	tests/test_build_hostinger_node_release.py	3				157aef4ebdf049a3
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc

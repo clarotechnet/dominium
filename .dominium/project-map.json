@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T20:30:34+00:00",
+  "generated_at": "2026-11-25T20:36:49+00:00",
   "schema": 2,
-  "source_fingerprint": "7dc3152d1a816baa1a4a571cff8d1c72662626349124881c19933be1a7fc285c",
+  "source_fingerprint": "93a5d9699eed371c9e558aa78ec008a1b44c58cd7313f2db50b1981101e309b8",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -6047,8 +6047,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 185725,
-      "sha256": "7434afdc9b20ffa12e976aadd11f8c87f0a9513fe0eb774fb5611fb3e74155c8",
+      "bytes": 185732,
+      "sha256": "174477e78c814e06c4b63bdcab4a336053a5a0c58aecf8ee327a2f3a12dfafef",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6932,11 +6932,12 @@
     {
       "path": "tests/test_atlas_query_health.py",
       "category": "tests",
-      "bytes": 5595,
-      "sha256": "7962f15659401e641e1a69ca2dbab473367f79dd25bd76facbb74d1d72724d25",
+      "bytes": 5639,
+      "sha256": "18d06c63a5a23aa4d2f86ad0b375cb78602e7fe9b5c53f47f5de5f6c84db2453",
       "summary": "Session health must depend on a fresh queue response, not an open tab.",
       "imports": [
         "atlas_query_report",
+        "contextlib",
         "importlib",
         "json",
         "pathlib",
@@ -7023,13 +7024,14 @@
     {
       "path": "tests/test_atlas_query_process_flow.py",
       "category": "tests",
-      "bytes": 7554,
-      "sha256": "e91c22b950e5858adf08d8daae88cc6f49de762c45518729484755a04705893e",
+      "bytes": 7606,
+      "sha256": "9f3f2aec724275350ca976a6524a8970f3cb246ba9f7c1af7a8a88dab079eb26",
       "summary": "Use the official process state before trusting an advertised attachment.",
       "imports": [
         "atlas_query_pipeline",
         "atlas_query_report",
         "base64",
+        "contextlib",
         "pathlib",
         "sqlite3",
         "sys",
@@ -7250,8 +7252,8 @@
     {
       "path": "tests/test_backlog_ui_deploy_20261031.py",
       "category": "tests",
-      "bytes": 4321,
-      "sha256": "7e903cf8d3b04a3db3941df66854961486af922e935ba9dd12ed4ba5fe3efcef",
+      "bytes": 4318,
+      "sha256": "5ddbde944ea55d3cf92bfed036aaef4501ac8d81da110a37bb9de0f6e7593d7f",
       "summary": "",
       "imports": [],
       "endpoints": [
