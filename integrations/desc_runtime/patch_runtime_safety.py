@@ -269,3 +269,57 @@ def patch_official_code_only(text: str, *, helper_source: str) -> str:
         raise ValueError('Missing tested official service classifier')
     text = text.replace('import json\n', 'import json\nimport re\nimport unicodedata\n', 1)
     return text.replace('def _items(', helper_source + '\n\ndef _items(', 1).replace(marker, guard + marker, 1)
+
+
+def patch_stock_retry_runtime(app: str, ledger: str, api: str, *, web_app: str, web_ledger: str) -> tuple[str, str, str]:
+    """Port the verified stock-recheck path without replacing legacy services."""
+    def replace_once(text, old, new):
+        if text.count(old) != 1:
+            raise ValueError(f'Unsupported stock retry anchor: {old.strip()[:80]}')
+        return text.replace(old, new, 1)
+
+    def before(text, first, last):
+        start = text.index(first)
+        return text[start:text.index(last, start)]
+
+    if 'def _prepare_stock_close_retry(' in app:
+        raise ValueError('Stock retry already installed')
+    prepare = before(web_app, 'def _prepare_stock_close_retry(', 'def _report_base(')
+    proof = before(web_ledger, 'def stock_prepare_failure(', 'class CloseReportStore:')
+    app = replace_once(app, 'from close_report import CloseReportStore\n', 'from close_report import CloseReportStore, stock_prepare_failure\n')
+    app = replace_once(app, 'def _report_base(', prepare + 'def _report_base(')
+    retry_var = '            retry_of_request_id = str(body.get("retry_of_request_id", "")).strip()[:80]\n'
+    app = replace_once(app, retry_var, retry_var + '            stock_retry_request_id = str(body.get("stock_retry_request_id", "")).strip()[:80]\n            prepared_stock_retry = None\n')
+    controlled = '            if retry_of_request_id:\n'
+    stock_check = before(web_app, '            if stock_retry_request_id:\n                try:', controlled)
+    app = replace_once(app, controlled, stock_check + controlled)
+    app = replace_once(app, '                    retry_of_request_id=retry_of_request_id,\n', '                    retry_of_request_id=stock_retry_request_id or retry_of_request_id,\n')
+    app = replace_once(app, '                block_active_duplicate=True,\n', '                block_active_duplicate=True,\n                **({"stock_retry_request_id": stock_retry_request_id} if stock_retry_request_id else {}),\n')
+    app = replace_once(app, '                material_preparation = profile.api.prepare_official_materials(\n', '                material_preparation = prepared_stock_retry or profile.api.prepare_official_materials(\n')
+
+    ledger = replace_once(ledger, 'class CloseReportStore:', proof + 'class CloseReportStore:')
+    begin_arg = '        block_active_duplicate: bool = False,\n'
+    ledger = replace_once(ledger, begin_arg, begin_arg + '        stock_retry_request_id: str = "",\n')
+    start = '            fingerprint = _text(record.get("fingerprint"), 128)\n'
+    end = '            value = {\n'
+    ledger = replace_once(ledger, before(ledger, start, end), before(web_ledger, start, end))
+    insert = '            records.insert(0, value)\n'
+    ledger = replace_once(ledger, insert, before(web_ledger, '            if stock_previous is not None:\n', insert) + insert)
+    update = '                if record.get("request_id") != identifier:\n                    continue\n                value = dict(record)'
+    ledger = replace_once(ledger, update, update.replace('                value = dict(record)', '                if record.get("category") == "STOCK_RECHECKED":\n                    return dict(record)\n                value = dict(record)'))
+
+    method = '    def prepare_official_materials(\n'
+    end = '    @classmethod\n    def _installed_parts('
+    prepare_api = before(api, method, end)
+    signature = '        expected_installer_id: int,\n'
+    edited = replace_once(prepare_api, signature, signature + '        allow_transfer: bool = True,\n')
+    transfer = '                if transfer_materials:\n                    self._transfer_material_shortfalls('
+    edited = replace_once(edited, transfer, '''                if transfer_materials:
+                    if not allow_transfer:
+                        codes = ", ".join(dict.fromkeys(row.code for row in transfer_materials))
+                        raise ValueError(f"RETORNO tem saldo para {codes}; o complemento anterior precisa ser conciliado")
+                    self._transfer_material_shortfalls(''')
+    api = replace_once(api, prepare_api, edited)
+    for result in (app, ledger, api):
+        ast.parse(result)
+    return app, ledger, api

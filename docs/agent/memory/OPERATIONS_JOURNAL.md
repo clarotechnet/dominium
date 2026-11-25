@@ -407,3 +407,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 115 testes Python focados e cinco cenários da versão instalada com leituras e transferências simuladas, incluindo timeout do Atlas e estoque zerado.
 
 **Próximo passo/pendência:** Verificar o serviço após a recarga sem disparar baixas ou transferências.
+
+## 2026-11-25 13:29 UTC — Retomar baixa com revalidação de miscelâneas
+
+**Motivo:** Uma falha antes do envio ao Imperium podia deixar a O.S. permanentemente em tratativa de estoque.
+
+**Alterado:** A fila pede revalidação somente de uma tentativa comprovadamente anterior ao POST. Se o saldo atual permitir montar a baixa sem novo complemento, substitui a tentativa anterior com garantia de idempotência. Um complemento ainda possível no RETORNO mantém a pendência.
+
+**Verificação:** Regressão de ausência de reenvio de transferência, vínculo do log legado, confirmação anterior e dupla submissão.
+
+**Próximo passo/pendência:** Validar no runtime com operações simuladas e verificar flags após publicação.

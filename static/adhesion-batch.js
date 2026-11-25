@@ -105,7 +105,11 @@
       f.last_at.slice(0,19)>=record.created_at.slice(0,19) &&
       /complemento das miscelaneas ficou incerto.*a baixa da os nao foi enviada/i.test(String(f.error||"")));
     if(record.category==="MATERIAL_TRANSFER_UNCERTAIN" || stockFailure) {
-      return {reason:os+": "+String(stockFailure?.error||record.message||"Complemento de estoque sem confirmacao. A baixa da OS nao foi enviada.")};
+      return {
+        reason:os+": "+String(stockFailure?.error||record.message||"Complemento de estoque sem confirmacao. A baixa da OS nao foi enviada."),
+        stockRetryRequestId:isUnresolvedClose(record) && !record.accepted_at && !record.official_http_status
+          ? String(record.request_id||"") : "",
+      };
     }
     if(isUnresolvedClose(record)) return {pending:true,reason:os+" possui tentativa anterior sem confirmacao no Imperium."};
     return {reason:os+" possui tentativa anterior sem liberacao para reenvio."};
@@ -328,8 +332,10 @@
         async priorContract(contract) {
           try {initialReport ??= await readCloseReport();} catch {return null;}
           if(!Array.isArray(initialReport.records)) return null;
-          const previous=initialReport.records.find(r=>String(r.contract)===contract && isUnresolvedClose(r));
-          if(previous) return outcomeFor(previous);
+          for(const prior of initialReport.records.filter(r=>String(r.contract)===contract && isUnresolvedClose(r))) {
+            const outcome=await outcomeFor(prior);
+            if(!outcome.stockRetryRequestId) return outcome;
+          }
         },
         async prepare(contract) {
           const payload=await request(apiUrlForProfile("/api/toa-live/lookup",profile),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:contract,expected_profile_key:profile,expected_date:date}),timeoutMs:300000});
@@ -350,7 +356,8 @@
           if(!active() || !Array.isArray(report.records)) throw Error("Relatorio de baixa indisponivel.");
           const previous=report.records.find(r=>String(r.id_os)===String(candidate.order.id_os) &&
             (isUnresolvedClose(r) || r.state==="confirmed" || (r.state==="failed" && r.safe_to_retry!==true)));
-          if(previous) return outcomeFor(previous);
+          const outcome=previous?await outcomeFor(previous):null;
+          if(outcome && !outcome.stockRetryRequestId) return outcome;
           if(!active()) throw Error("Lote interrompido.");
           const fresh=await freshOrders(
             readFieldOrders,
@@ -358,7 +365,7 @@
           );
           const refreshed=refreshCandidate(candidate,fresh.orders,validToaCloseSnapshot);
           if(!active()) throw Error("Lote interrompido.");
-          return processAutoCloseCandidate(refreshed,profile);
+          return processAutoCloseCandidate({...refreshed,stockRetryRequestId:outcome?.stockRetryRequestId},profile);
         },
         async confirm(requestId) {
           for(let attempt=0;attempt<12;attempt++){

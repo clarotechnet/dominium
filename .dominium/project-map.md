@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-25T13:11:21+00:00
-- Source fingerprint: `2fe5fb94b084df28`
+- Generated: 2026-11-25T13:29:11+00:00
+- Source fingerprint: `9d58b143962f6c75`
 - Indexed files: 566
-- Indexed symbols: 4638
+- Indexed symbols: 4643
 - API path references: 575
 
 ## Navigation rule
@@ -16,7 +16,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (151 symbols, 81 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (152 symbols, 81 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operational_store.py` (25 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -153,7 +153,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `bulk_orders.py` (2 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `cancel_all_open.py` (3 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `CLAUDE.md` (1 DataSnap methods) - DOMINIUM / Claude Code
-- `close_report.py` (15 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `close_report.py` (16 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `close_report_excel.py` (3 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `consolidate_dominium.ps1` (4 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `datasnap_client.py` (23 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE

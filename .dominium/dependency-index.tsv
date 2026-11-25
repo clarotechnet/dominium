@@ -1249,6 +1249,7 @@ close_report	tests/test_close_report.py
 datetime	tests/test_close_report.py
 pathlib	tests/test_close_report.py
 tempfile	tests/test_close_report.py
+types	tests/test_close_report.py
 unittest	tests/test_close_report.py
 __future__	tests/test_close_report_excel.py
 close_report_excel	tests/test_close_report_excel.py

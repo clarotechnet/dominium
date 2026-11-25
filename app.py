@@ -57,7 +57,7 @@ from auto_improductive_close import (
     toa_activity_is_complete,
 )
 from bulk_orders import DEFAULT_SERVICE, build_bulk_preview
-from close_report import CloseReportStore
+from close_report import CloseReportStore, stock_prepare_failure
 from close_report_excel import (
     build_close_report_xlsx,
     format_equipment_readable,
@@ -4817,6 +4817,22 @@ def _official_material_preparation_items(
     ]
 
 
+def _prepare_stock_close_retry(profile, order, close_code, plan, body, report_date, request_id):
+    previous = profile.close_report.get(request_id, date=report_date) or {}
+    failure = next((item for item in _failure_list(profile) if str(item.get("id_os")) == str(order.id_os)), {})
+    if not stock_prepare_failure(previous, failure, order, close_code):
+        raise ValueError("A tentativa anterior nao foi comprovada como falha antes do envio")
+    detail = profile.api._fetch_detail(order.id_os, timeout=20.0)
+    if order.num_os.encode("ascii") not in detail or profile.api._detail_close_code(detail):
+        raise ValueError("Nao foi possivel confirmar a OS aberta para retomada")
+    items = _official_material_preparation_items(plan, body)
+    if not items:
+        raise ValueError("Revalide as miscelaneas do TOA antes de retomar a baixa")
+    return profile.api.prepare_official_materials(
+        order, items, expected_installer_id=plan["installer_id"], allow_transfer=False,
+    )
+
+
 def _report_base(
     order: Order,
     close_definition,
@@ -8236,14 +8252,13 @@ class PanelHandler(BaseHTTPRequestHandler):
                         report_date,
                     )
             retry_of_request_id = str(body.get("retry_of_request_id", "")).strip()[:80]
+            stock_retry_request_id = str(body.get("stock_retry_request_id", "")).strip()[:80]
+            prepared_stock_retry = None
             effective_scheduled_date = report_date.isoformat()
-            _reconcile_order_installer_with_toa(
-                profile,
-                order,
-                body,
-                report_date,
-                gate_already_acquired=gate_acquired,
-            )
+            if not stock_retry_request_id:
+                _reconcile_order_installer_with_toa(
+                    profile, order, body, report_date, gate_already_acquired=gate_acquired,
+                )
             official_plan = (
                 _build_official_panel_plan(
                     profile,
@@ -8263,6 +8278,16 @@ class PanelHandler(BaseHTTPRequestHandler):
             # ----------------------------------------------------------------
             # Controlled retry gate
             # ----------------------------------------------------------------
+            if stock_retry_request_id:
+                try:
+                    if profile.key != "natal" or official_plan is None or retry_of_request_id:
+                        raise ValueError("Retomada de estoque exige baixa oficial de Natal/Parnamirim")
+                    prepared_stock_retry = _prepare_stock_close_retry(
+                        profile, order, close_code, official_plan, body, report_date, stock_retry_request_id,
+                    )
+                except (ValueError, DataSnapError, OSError) as exc:
+                    self._json(HTTPStatus.CONFLICT, {"ok": False, "error": str(exc), "safe_to_retry": False})
+                    return
             if retry_of_request_id:
                 # 1. Confirm the OS is still EM CAMPO in the live cache.
                 with profile.cache_lock:
@@ -8301,7 +8326,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                     },
                     toa_paste_key=paste_key if materials else "",
                     scheduled_date=effective_scheduled_date,
-                    retry_of_request_id=retry_of_request_id,
+                    retry_of_request_id=stock_retry_request_id or retry_of_request_id,
                     installed_equipment=body.get("installed_equipment"),
                     removed_equipment=body.get("removed_equipment"),
                     materials=materials,
@@ -8337,6 +8362,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 report_payload,
                 date=report_date,
                 block_active_duplicate=True,
+                **({"stock_retry_request_id": stock_retry_request_id} if stock_retry_request_id else {}),
             )
             if duplicate:
                 self._json(
@@ -8359,7 +8385,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                 )
                 return
             if transport == "official_http":
-                material_preparation = profile.api.prepare_official_materials(
+                material_preparation = prepared_stock_retry or profile.api.prepare_official_materials(
                     order,
                     _official_material_preparation_items(official_plan, body),
                     expected_installer_id=official_plan["installer_id"],

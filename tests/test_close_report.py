@@ -2,8 +2,9 @@ import datetime as dt
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
-from close_report import CloseReportStore
+from close_report import CloseReportStore, stock_prepare_failure
 
 
 class CloseReportStoreTests(unittest.TestCase):
@@ -48,6 +49,28 @@ class CloseReportStoreTests(unittest.TestCase):
         self.assertTrue(duplicate)
         self.assertEqual(repeated["request_id"], first["request_id"])
         self.assertEqual(len(self.store.list(self.date)), 1)
+
+    def test_stock_recheck_atomically_replaces_only_the_pending_attempt(self):
+        first, _ = self.store.begin(self.base, date=self.date)
+        order = SimpleNamespace(**self.base)
+        observed = {**self.base, "last_at": first["created_at"][:19],
+                    "error": "O resultado do complemento das miscelaneas ficou incerto. A baixa da OS nao foi enviada."}
+        self.assertTrue(stock_prepare_failure(first, observed, order, "409"))
+        self.assertFalse(stock_prepare_failure({**first, "accepted_at": "sent"}, observed, order, "409"))
+        self.assertFalse(stock_prepare_failure(first, {**observed, "num_os": "999"}, order, "409"))
+
+        retry, duplicate = self.store.begin(
+            {**self.base, "retry_of_request_id": first["request_id"]}, date=self.date,
+            block_active_duplicate=True, stock_retry_request_id=first["request_id"],
+        )
+        self.assertFalse(duplicate)
+        self.assertNotEqual(first["request_id"], retry["request_id"])
+        old = self.store.update(first["request_id"], {"state": "sending", "category": "PROCESSING"}, date=self.date)
+        self.assertEqual(old["category"], "STOCK_RECHECKED")
+        repeated, duplicate = self.store.begin(self.base, date=self.date, block_active_duplicate=True,
+                                               stock_retry_request_id=first["request_id"])
+        self.assertTrue(duplicate)
+        self.assertEqual(repeated["request_id"], retry["request_id"])
 
     def test_public_report_removes_internal_values(self) -> None:
         record, _ = self.store.begin(
