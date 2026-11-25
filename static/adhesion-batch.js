@@ -328,8 +328,14 @@
     rows=new Map(contracts.map(contract=>[contract,{contract,label:"Na fila",detail:"Aguardando"}]));
     render();renderToaLiveStatus();
     const active=()=>!stopped && state.profile===profile && state.profileEpoch===epoch && elements.date.value===date && state.officialCloseEnabled && state.closeEnabled;
-    const fieldPath="/api/orders?date="+encodeURIComponent(date)+"&status=field&service_type=all";
-    const readFieldOrders=timeoutMs=>request(apiUrlForProfile(fieldPath,profile),{timeoutMs});
+    const fieldPath="/api/orders?date="+encodeURIComponent(date)+"&status=field&service_type=all&wait_for_fresh=1";
+    const readFieldOrders = (contract, detail) => {
+      update(contract, "Consultando", detail);
+      return freshOrders(
+        timeoutMs => request(apiUrlForProfile(fieldPath, profile), {timeoutMs}),
+        {active, wait: sleep, attempts: 1, budgetMs: 75000},
+      );
+    };
     const readCloseReport=()=>request(apiUrlForProfile("/api/close-report?date="+encodeURIComponent(date),profile),{timeoutMs:60000});
     let initialReport;
     async function outcomeFor(record) {
@@ -363,10 +369,8 @@
             {active, wait: sleep, notify: () => update(contract, "Consultando", "Ponte do TOA aguardando resposta.")},
           );
           if(!active()) throw Error("Cidade/data alterada; fila interrompida.");
-          const orders=await ordersForBatchContract(payload,contract,()=>freshOrders(
-            readFieldOrders,
-            {active,wait:sleep,notify:(attempt,max)=>update(contract,"Consultando","Imperium ocupado; aguardando lista atualizada ("+attempt+"/"+max+").")}
-          ));
+          const orders = await ordersForBatchContract(payload, contract, () =>
+            readFieldOrders(contract, "Aguardando lista atualizada do Imperium."));
           return selectCandidates(payload,orders,{profile,contract,date,epoch},{
             complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,
             valid:validToaCloseSnapshot,knownCode:code=>state.closeCodes.some(c=>c.code===code),
@@ -382,9 +386,8 @@
           const outcome=previous?await outcomeFor(previous):null;
           if(outcome && !outcome.stockRetryRequestId) return outcome;
           if(!active()) throw Error("Lote interrompido.");
-          const fresh=await freshOrders(
-            readFieldOrders,
-            {active,wait:sleep,notify:(attempt,max)=>update(String(candidate.order.contract),"Consultando","Atualizando aprovacao da OS "+candidate.numOs+" ("+attempt+"/"+max+").")}
+          const fresh = await readFieldOrders(
+            String(candidate.order.contract), "Atualizando aprovacao da OS " + candidate.numOs + ".",
           );
           const refreshed=refreshCandidate(candidate,fresh.orders,validToaCloseSnapshot);
           if(!active()) throw Error("Lote interrompido.");

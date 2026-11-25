@@ -6264,12 +6264,24 @@ class PanelHandler(BaseHTTPRequestHandler):
                     raise ValueError("Filtro de tipo de servico invalido")
                 if date != dt.date.today():
                     raise ValueError("O painel permite consultar somente a data de hoje")
-                if not OPERATION_GATE.acquire(blocking=False):
+                wait_for_fresh = (
+                    query.get("wait_for_fresh") == ["1"]
+                    and profile.key == "natal"
+                    and status_filter == "field"
+                    and service_type_filter == "all"
+                )
+                acquired = (
+                    OPERATION_GATE.acquire(timeout=35.0)
+                    if wait_for_fresh
+                    else OPERATION_GATE.acquire(blocking=False)
+                )
+                if not acquired:
                     with profile.cache_lock:
                         cached_orders = list(profile.order_cache.values())
                         cached_date = profile.cache_date
                     if (
-                        cached_date == date
+                        not wait_for_fresh
+                        and cached_date == date
                         and status_filter == "field"
                         and service_type_filter == "all"
                     ):

@@ -4,11 +4,12 @@ from pathlib import Path
 import sys
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "integrations" / "serial_consult"))
 
 from material_stock_audit import MaterialStockAudit, audit_rows, sap_day
-from technician_stock_snapshots import TechnicianStockSnapshots
+from technician_stock_snapshots import TechnicianStockSnapshots, operational_stock_client
 
 OPENED = datetime.fromisoformat("2026-11-18T06:00:00-03:00")
 CLOSED = datetime.fromisoformat("2026-11-19T06:00:00-03:00")
@@ -40,6 +41,15 @@ class MaterialStockAuditTests(unittest.TestCase):
         self.snapshots = TechnicianStockSnapshots(
             folder.name, client_factory=lambda city: self.source, clock=lambda: self.clock,
         )
+
+    def test_snapshot_client_supports_the_operational_runtime_constructor(self):
+        class OperationalImperiumAPI:
+            def __init__(self, root, *, port, company, profile_key):
+                self.scope = port, company, profile_key
+
+        with patch("imperium_api.ImperiumAPI", OperationalImperiumAPI):
+            client = operational_stock_client("natal")
+        self.assertEqual(client.scope, (212, "natal", "natal"))
 
     def test_snapshot_is_versioned_by_day_and_never_replaces_opening_balance(self):
         first = self.snapshots.start("natal", "user-1", background=False)

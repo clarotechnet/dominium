@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-25T16:43:07+00:00
-- Source fingerprint: `28551eac27ce4cde`
+- Generated: 2026-11-25T17:41:45+00:00
+- Source fingerprint: `d04f2ae5a045b026`
 - Indexed files: 566
-- Indexed symbols: 4647
-- API path references: 575
+- Indexed symbols: 4649
+- API path references: 576
 
 ## Navigation rule
 
