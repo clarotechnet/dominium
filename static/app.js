@@ -10540,6 +10540,7 @@ async function executeDirectAutoClose(candidate, materials = []) {
     approved_state_hash: approvedStateHash,
     manual_scope: manualScope,
     movement,
+    ...(batch && candidate.stockRetryRequestId ? {stock_retry_request_id: candidate.stockRetryRequestId} : {}),
     installed_equipment: installed,
     removed_equipment: removed,
     materials: (batch ? candidate.batchCodeOnly : isNoEquipmentService(service)) ? [] : materials.map((m) => ({

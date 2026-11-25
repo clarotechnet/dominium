@@ -3842,8 +3842,11 @@ class ImperiumAPI:
         *,
         expected_installer_id: int,
         omit_unavailable: bool = False,
+        allow_transfer: bool = True,
     ) -> dict:
         """Prepare technician stock before the single official HTTP close."""
+        if not allow_transfer:
+            omit_unavailable = True
         if not isinstance(values, list):
             raise ValueError("A lista de miscelaneas da integracao IMPERIUM e invalida")
         if len(values) > 300:
@@ -4249,6 +4252,9 @@ class ImperiumAPI:
                     )
 
                 if transfer_materials:
+                    if not allow_transfer:
+                        codes = ", ".join(dict.fromkeys(row.code for row in transfer_materials))
+                        raise ValueError(f"RETORNO tem saldo para {codes}; o complemento anterior precisa ser conciliado")
                     merged_transfers: dict[str, StockMaterial] = {}
                     for transfer_material in transfer_materials:
                         current = merged_transfers.get(transfer_material.code)

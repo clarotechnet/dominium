@@ -81,10 +81,11 @@ test("pending confirmation never resends, never submits companion while uncertai
 
 test("a matching legacy stock failure explains the blocked attempt before any write", async () => {
  const {priorCloseOutcome} = require("../static/adhesion-batch.js");
- const record = {contract: scope.contract, num_os: "2612345678", id_os: 42, close_code: "409", state: "sending", created_at: "2026-11-24T09:27:56-03:00"};
+ const record = {request_id: "stock-attempt", contract: scope.contract, num_os: "2612345678", id_os: 42, close_code: "409", state: "sending", created_at: "2026-11-24T09:27:56-03:00"};
  const failure = {...record, last_at: "2026-11-24T09:31:09", error: "O resultado do complemento das miscelaneas ficou incerto. A baixa da OS nao foi enviada. Codigo 22025139."};
  const known = priorCloseOutcome(record, [failure]);
  assert.match(known.reason, /nao foi enviada.*22025139/);
+ assert.equal(known.stockRetryRequestId, record.request_id);
  assert.equal(known.pending, undefined);
  for(const irrelevant of [{...failure,id_os: 43},{...failure,last_at: "2026-11-24T09:26:00"},{...failure,close_code: "106"}]) {
   assert.equal(priorCloseOutcome(record, [irrelevant]).pending, true);

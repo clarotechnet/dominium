@@ -9,14 +9,14 @@ shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	adm_allocation.py	3			Read-only allocation for DESC multi-OS activities.	a9434a5b2e81e0ca
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	151	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	c1bd1faebb162a8b
+orchestration	app.py	152	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	72a124969aa02902
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
 shared	bulk_orders.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	2775b7a068f33346
 shared	cancel_all_open.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	9dde6a0f10a22ffe
 shared	CLAUDE.md			1	DOMINIUM / Claude Code	de5472b9149c3be8
-shared	close_report.py	15			DOMINIUM | MAPA DE RESPONSABILIDADE	7639b2cf9981442b
+shared	close_report.py	16			DOMINIUM | MAPA DE RESPONSABILIDADE	c6f41a279d063ed0
 shared	close_report_excel.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	db6f655647eeb923
 toa	Conectar TOA.cmd					5b1f2a4fb8c3ec37
 shared	config/official_close_code_catalog/Tabela_codigo_baixa0711.catalog.json			1		c1f98a79ea40eb4e
@@ -86,7 +86,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	7cef3d5b223a5b46
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	87479699082ffd82
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -118,7 +118,7 @@ shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f3
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
 shared	GEMINI.md				DOMINIUM — instruções para Gemini	1b1a88b0e02ad6a0
-imperium	imperium_api.py	142		3	DOMINIUM | MAPA DE RESPONSABILIDADE	c9d0677b47b36cdf
+imperium	imperium_api.py	142		3	DOMINIUM | MAPA DE RESPONSABILIDADE	ac99115e9f5f5a8b
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 imperium	imperium_operation_gate.py	7			Serializacao justa das operacoes do terminal Imperium/DataSnap.	06d73ed2f5d60b10
@@ -148,7 +148,7 @@ shared	integrations/desc_runtime/bot/disconnectPilotCoordinator.js	33				18b277d
 shared	integrations/desc_runtime/disconnect_local_runner.py	36		1	Executa um único job de desconexão recebido do BotDMV no PC local.	9a3c4f51a3d89409
 shared	integrations/desc_runtime/nightly_backlog_106.py	7	3		Operator-authorized 23h backlog batch. Default is read-only preview.	0c9ef41fc1d83645
 shared	integrations/desc_runtime/nightly_backlog_service.py	10			Daily backlog scheduling owned by the Dominium HTTP server, not by a browser.	0746da639cac79e4
-shared	integrations/desc_runtime/patch_runtime_safety.py	5			Small source transformations for the legacy server; no network or writes.	f9ece574dff101dc
+shared	integrations/desc_runtime/patch_runtime_safety.py	6			Small source transformations for the legacy server; no network or writes.	0c353cdebc4a3c85
 shared	integrations/desc_runtime/README.md				Runtime DESC do servidor TECHNET	3f5be9609cd2033c
 tests	integrations/desc_runtime/test_desc_multi_owner_runtime.py	2		1		b7c145e05d4781d6
 tests	integrations/desc_runtime/test_desc_sector_scope.py	10			Read-only sector scope regression for BotDMV DESC -> DataSnap executor.	0fa5396e16d5d30f
@@ -298,7 +298,7 @@ imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/adhesion-batch.css					d4d12428bcc10df7
-frontend	static/adhesion-batch.js	22	4		Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */	dca29187b1c2216a
+frontend	static/adhesion-batch.js	22	4		Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */	82058d3571ae4a70
 frontend	static/all-cities-scope.css				DOMINIUM: "Todos" is a cross-module read-only scope, not an operational profile. */	d9fde79cee63719c
 frontend	static/all-operations.js	14	2		Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */	2bc9ea7f772fad01
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
@@ -322,7 +322,7 @@ frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			aa5570bf679915b0
+frontend	static/index.html		1			67765bf2f8bd4494
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/material-stock-audit.js	15	1			b484bd2f18b0b23e
@@ -367,7 +367,7 @@ tests	tests/fixtures/legacy_movement_reader.py	13			Frozen legacy Windows reader
 tests	tests/qa_disconnection_browser.js	1	6			513566fce070a1c2
 tests	tests/qa_photo_assist_browser.js	4	6			462b748e72dda892
 tests	tests/qa_workspace_browser.js	1	3			9e5faa386308b743
-tests	tests/test_adhesion_batch.cjs	3				6549afe00c7d8293
+tests	tests/test_adhesion_batch.cjs	3				3b492678085db91a
 tests	tests/test_adm_allocation.py	9				75b86d318f82567e
 tests	tests/test_agent_memory.py	9			Portable agent memory regression tests; no network, secrets or production changes.	a00628018291348f
 tests	tests/test_all_operations_view.cjs	2	3			7f88face26cb106a
@@ -401,7 +401,7 @@ tests	tests/test_city_scope_integration.py	18				02411a9b3190bb77
 tests	tests/test_close_control_city_board.cjs	3				da43c34f4a4d7472
 tests	tests/test_close_control_engine.js	2				3d2bb54ac8c0c076
 tests	tests/test_close_control_worker_mro.cjs	1				ded07a5210a5a010
-tests	tests/test_close_report.py	15				125242a6d2cff245
+tests	tests/test_close_report.py	16				df31b76cc4e1d34e
 tests	tests/test_close_report_excel.py	5				36de3899cae4ba75
 tests	tests/test_commission_reports.py	9	2		Synthetic read-only test suite for four-base Imperium commissions.	b18bb2bccedb8eb1
 tests	tests/test_commission_reports_ui.cjs	2	1			62d5a56598566549
@@ -467,7 +467,7 @@ tests	tests/test_official_close_dry_run.py	26				d4aec02f82c7d3ac
 tests	tests/test_official_close_sender.py	29				7308fd219528d01d
 tests	tests/test_official_close_toa_dry_run.py	34				f3a1ea940debcd05
 tests	tests/test_official_material_catalog.py	24				08cd1715009af381
-tests	tests/test_official_material_completeness.py	4			Políticas de estoque da baixa oficial, com consultas e transferências simuladas.	fbe76c4ae8385c99
+tests	tests/test_official_material_completeness.py	5			Políticas de estoque da baixa oficial, com consultas e transferências simuladas.	2e00fd58a43afa13
 tests	tests/test_official_stock_audit.py	19				5c870201eb1f0e37
 tests	tests/test_official_stock_blocker_review.py	21				2bb6e8566ad6e1e5
 tests	tests/test_official_stock_relay.py	6	11		Read-only official inventory bridge policy and response contracts.	12032c8dea0f41e4

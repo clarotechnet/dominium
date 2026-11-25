@@ -45,6 +45,32 @@ class OfficialMaterialCompletenessTests(unittest.TestCase):
             self.assertIn(("retorno", None), events)
             self.assertLess(events.index(("atlas", missing)), events.index(("retorno", None)))
 
+    def test_recheck_does_not_repeat_transfer_when_return_has_balance(self):
+        api = ImperiumAPI()
+        order = Order(123, "2663000001", "4000001", 10, "ADESAO - INSTALAR PONTO VIRTUA")
+        context = DetailContext(order.id_os, order.contract, 313363, "TECNICO TESTE")
+        material = StockMaterial(1, "22025139", "FIXADOR", 0, 260, "UN", 2, "N")
+        client = MagicMock()
+        client.__enter__.return_value = client
+        with (
+            patch.object(api, "_client", return_value=client),
+            patch.object(api, "_fetch_detail_on", return_value=order.num_os.encode()),
+            patch.object(api, "_detail_context", return_value=context),
+            patch.object(api, "_combined_material_catalog_on", return_value=[material]),
+            patch.object(api, "_lookup_equipment_group_by_code_on", return_value=None),
+            patch.object(api, "_material_virtual_stock_quantities_on", return_value={material.code: Decimal("5")}) as source,
+            patch.object(api, "_transfer_material_shortfalls") as transfer,
+        ):
+            with self.assertRaisesRegex(ValueError, "RETORNO tem saldo para 22025139"):
+                api.prepare_official_materials(order, [{"code": material.code, "quantity": 4}],
+                                               expected_installer_id=context.installer_id, allow_transfer=False)
+            source.return_value = {}
+            result = api.prepare_official_materials(order, [{"code": material.code, "quantity": 4}],
+                                                    expected_installer_id=context.installer_id, allow_transfer=False)
+            transfer.assert_not_called()
+            self.assertEqual(result["resolved_materials"], [])
+            self.assertEqual(result["discarded_shortfalls"][0]["missing_quantity"], "4")
+
     def test_uncovered_material_blocks_before_transferring_other_items(self):
         api = ImperiumAPI()
         order = Order(123, "2663000001", "4000001", 10, "ADESAO - INSTALAR PONTO VIRTUA")

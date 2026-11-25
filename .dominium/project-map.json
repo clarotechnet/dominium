@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T13:11:21+00:00",
+  "generated_at": "2026-11-25T13:29:11+00:00",
   "schema": 2,
-  "source_fingerprint": "2fe5fb94b084df28a1a7ad2140c4b3dea4540211506f80107940075be74fa99e",
+  "source_fingerprint": "9d58b143962f6c75e920b4e588baea60c2c3e28f524991281aee958b57c1111f",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -162,8 +162,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 361162,
-      "sha256": "c1bd1faebb162a8b694df0d749b435e89b4e5d778ce68f0418cb996e6d605465",
+      "bytes": 363134,
+      "sha256": "72a124969aa0290252c23cc9a27f97702b8b90097e41ee128128515bf82b2e0d",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -368,7 +368,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 151
+      "symbol_count": 152
     },
     {
       "path": "auth_store.py",
@@ -502,8 +502,8 @@
     {
       "path": "close_report.py",
       "category": "shared",
-      "bytes": 14148,
-      "sha256": "7639b2cf9981442bc09f48517012d61870cfb94c6cac2d8d405f8de628b22058",
+      "bytes": 17044,
+      "sha256": "c6f41a279d063ed04b2e0771815c7506ecbd42e015b14fd66a25c145a2e8023e",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "__future__",
@@ -519,7 +519,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 15
+      "symbol_count": 16
     },
     {
       "path": "close_report_excel.py",
@@ -1652,8 +1652,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 28421,
-      "sha256": "7cef3d5b223a5b46a0e9823951d8cdfdd9c86b9155b603c5d7bd180a1cc72d34",
+      "bytes": 29154,
+      "sha256": "87479699082ffd827fb3eed77d751a061d947f51006cf4ce4a9aa3cd46ed26c4",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -2117,8 +2117,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 265496,
-      "sha256": "c9d0677b47b36cdf8da1a7c7621fdee670cbe1475d59a4e6c361a1a123f4be73",
+      "bytes": 265863,
+      "sha256": "ac99115e9f5f5a8baae2886649be0e11068fcb63347788ba52d8abc2cc2a33ef",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -2675,8 +2675,8 @@
     {
       "path": "integrations/desc_runtime/patch_runtime_safety.py",
       "category": "shared",
-      "bytes": 14762,
-      "sha256": "f9ece574dff101dcdcfbe639e0dc9fcf552b98acb95f931dd0462d9d077b5889",
+      "bytes": 18985,
+      "sha256": "0c353cdebc4a3c8586898836a0976c6a3277cac9137a9385e388f097f37bcf4c",
       "summary": "Small source transformations for the legacy server; no network or writes.",
       "imports": [
         "ast"
@@ -2685,7 +2685,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 5
+      "symbol_count": 6
     },
     {
       "path": "integrations/desc_runtime/README.md",
@@ -5654,8 +5654,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 25282,
-      "sha256": "dca29187b1c2216a2f5b42ea2d49a212c530f0e6b479e35abc989036f24ca791",
+      "bytes": 25674,
+      "sha256": "82058d3571ae4a70f7095d6a2672265a1b93dd651463f35080193f6fb36a3725",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -6008,8 +6008,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 185723,
-      "sha256": "aa5570bf679915b04b12655d9b074414d07137ac1d3de15caa5619f9066ef82a",
+      "bytes": 185720,
+      "sha256": "67765bf2f8bd44941341fcd326a09ba8bf588cd89ee31048f42f55b71b3cdac7",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6703,8 +6703,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 17907,
-      "sha256": "6549afe00c7d8293bfbeee0b57368fa45e1830babeca0e5f237f17c015e13971",
+      "bytes": 17997,
+      "sha256": "3b492678085db91a57a1157ee8dd8d57313b2f819a197aa4d8b13c7dd6b2cc78",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7338,21 +7338,22 @@
     {
       "path": "tests/test_close_report.py",
       "category": "tests",
-      "bytes": 8865,
-      "sha256": "125242a6d2cff2456ed43da93ea2e2a1291c9c2bb758f17eec98a61a17c10649",
+      "bytes": 10396,
+      "sha256": "df31b76cc4e1d34e0fcab5bdce925cec1ee5df4acfb02d28d0c246307e6a4ae7",
       "summary": "",
       "imports": [
         "close_report",
         "datetime",
         "pathlib",
         "tempfile",
+        "types",
         "unittest"
       ],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 15
+      "symbol_count": 16
     },
     {
       "path": "tests/test_close_report_excel.py",
@@ -8636,8 +8637,8 @@
     {
       "path": "tests/test_official_material_completeness.py",
       "category": "tests",
-      "bytes": 5305,
-      "sha256": "fbe76c4ae8385c996eb576f7b178be0f740fcdefab422f14fb9a6507a1aa50b4",
+      "bytes": 7117,
+      "sha256": "2e00fd58a43afa13802d90474a0707df7ad4a8d709191be1cd5e955e1ecc139d",
       "summary": "Políticas de estoque da baixa oficial, com consultas e transferências simuladas.",
       "imports": [
         "decimal",
@@ -8648,7 +8649,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 4
+      "symbol_count": 5
     },
     {
       "path": "tests/test_official_stock_audit.py",

@@ -45,6 +45,30 @@ def _nonnegative_int(value: Any) -> int:
         return 0
 
 
+def stock_prepare_failure(record: dict, failure: dict, order: Any, close_code: str) -> bool:
+    """Recognize a recorded transfer error that occurred before the close POST."""
+    if (record.get("state") not in ACTIVE_STATES or record.get("transport") != "official_http"
+            or record.get("accepted_at") or record.get("official_http_status")
+            or str(record.get("id_os")) != str(order.id_os)
+            or str(record.get("num_os")) != str(order.num_os)
+            or str(record.get("contract")) != str(order.contract)
+            or str(record.get("close_code")) != str(close_code)):
+        return False
+    if record.get("category") == "MATERIAL_TRANSFER_UNCERTAIN" and record.get("attribution") == "stock_preparation":
+        return True
+    previous = str(record.get("created_at") or "")[:19]
+    observed = str(failure.get("last_at") or "")[:19]
+    if len(previous) != 19 or len(observed) != 19 or observed[:10] != previous[:10] or observed < previous:
+        return False
+    message = str(failure.get("error") or "").casefold()
+    return (str(failure.get("id_os")) == str(order.id_os)
+            and str(failure.get("num_os")) == str(order.num_os)
+            and str(failure.get("contract")) == str(order.contract)
+            and str(failure.get("close_code")) == str(close_code)
+            and "complemento das miscelaneas ficou incerto" in message
+            and "a baixa da os nao foi enviada" in message)
+
+
 class CloseReportStore:
     """Thread-safe, append-oriented audit for close attempts.
 
@@ -85,6 +109,7 @@ class CloseReportStore:
         *,
         date: dt.date | None = None,
         block_active_duplicate: bool = False,
+        stock_retry_request_id: str = "",
     ) -> tuple[dict[str, Any], bool]:
         report_date = date or dt.date.today()
         now = _now()
@@ -92,6 +117,7 @@ class CloseReportStore:
             records = self._read_unlocked(report_date)
             id_os = int(record.get("id_os") or 0)
             fingerprint = _text(record.get("fingerprint"), 128)
+            stock_previous = None
             if block_active_duplicate:
                 for previous in records:
                     same_order = int(previous.get("id_os") or 0) == id_os
@@ -103,9 +129,21 @@ class CloseReportStore:
                         previous.get("state") in ACTIVE_STATES
                         and (same_order or same_fingerprint)
                     ):
+                        if (stock_retry_request_id and same_order
+                                and previous.get("request_id") == stock_retry_request_id
+                                and previous.get("transport") == "official_http"
+                                and previous.get("close_code") == record.get("close_code")
+                                and not previous.get("accepted_at")
+                                and not previous.get("official_http_status")):
+                            stock_previous = previous
+                            continue
                         duplicate = dict(previous)
                         duplicate["duplicate_request"] = True
                         return duplicate, True
+                    if stock_retry_request_id and same_order and previous.get("state") == "confirmed":
+                        raise ValueError("A OS ja tem baixa confirmada")
+            if stock_retry_request_id and stock_previous is None:
+                raise ValueError("A tentativa de estoque mudou durante a revalidacao")
 
             value = {
                 "request_id": uuid.uuid4().hex,
@@ -160,6 +198,13 @@ class CloseReportStore:
                 "accepted_at": "",
                 "confirmed_at": "",
             }
+            if stock_previous is not None:
+                stock_previous.update({
+                    "state": "failed", "category": "STOCK_RECHECKED",
+                    "category_label": "Estoque revalidado",
+                    "message": "Retomada registrada sem repetir transferencia",
+                    "safe_to_retry": False, "updated_at": now,
+                })
             records.insert(0, value)
             self._write_unlocked(report_date, records)
             return dict(value), False
@@ -178,6 +223,8 @@ class CloseReportStore:
             for index, record in enumerate(records):
                 if record.get("request_id") != identifier:
                     continue
+                if record.get("category") == "STOCK_RECHECKED":
+                    return dict(record)
                 value = dict(record)
                 state = _text(changes.get("state", value.get("state")), 40)
                 if state not in VALID_STATES:
