@@ -8363,6 +8363,7 @@ class PanelHandler(BaseHTTPRequestHandler):
                     order,
                     _official_material_preparation_items(official_plan, body),
                     expected_installer_id=official_plan["installer_id"],
+                    omit_unavailable=profile.key == "natal",
                 )
                 resolved_materials = material_preparation.get("resolved_materials")
                 if resolved_materials is not None:
@@ -8401,6 +8402,14 @@ class PanelHandler(BaseHTTPRequestHandler):
                     preparation_detail = (
                         "Saldo das miscelaneas validado no estoque do tecnico. "
                     )
+                for key, label in (
+                    ("discarded_shortfalls", "Sem saldo, dispensadas"),
+                    ("partial_shortfalls", "Quantidade limitada ao saldo"),
+                ):
+                    shortages = material_preparation.get(key) or []
+                    if shortages:
+                        codes = ", ".join(row["code"] for row in shortages)
+                        preparation_detail += f"{label}: {codes}. "
                 report_record = profile.close_report.update(
                     report_record["request_id"],
                     {

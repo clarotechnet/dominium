@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T12:49:59+00:00",
+  "generated_at": "2026-11-25T13:08:55+00:00",
   "schema": 2,
-  "source_fingerprint": "da2be5b3d6f827be8094bf30c320261730a82f726adf65bce6ec68feff790d46",
+  "source_fingerprint": "2bb3511cd5428104cba308df2ca08a16106d3e53388910286ceb71d199e3d133",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -162,8 +162,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 360652,
-      "sha256": "419799f903859468b8f30251adab7cda29af1fd8284eba6904d0a2b7781351a4",
+      "bytes": 361162,
+      "sha256": "c1bd1faebb162a8b694df0d749b435e89b4e5d778ce68f0418cb996e6d605465",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "api_security",
@@ -1652,8 +1652,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 27662,
-      "sha256": "1ea998831135c798c0f64688f002357e8f3e1ea04da2fbd88db713ee2f6e08c3",
+      "bytes": 28421,
+      "sha256": "7cef3d5b223a5b46a0e9823951d8cdfdd9c86b9155b603c5d7bd180a1cc72d34",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -2117,8 +2117,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 263877,
-      "sha256": "629d1d08c1765e7362c6b1a3df8c9782cca9d05724f62960415b9d7cbcb2da52",
+      "bytes": 265496,
+      "sha256": "c9d0677b47b36cdf8da1a7c7621fdee670cbe1475d59a4e6c361a1a123f4be73",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -2675,8 +2675,8 @@
     {
       "path": "integrations/desc_runtime/patch_runtime_safety.py",
       "category": "shared",
-      "bytes": 10675,
-      "sha256": "6c799a4b273d49ebd33cccce5fd31291a3e34247860dab54ce2d40a1b6ebb9b2",
+      "bytes": 14762,
+      "sha256": "f9ece574dff101dcdcfbe639e0dc9fcf552b98acb95f931dd0462d9d077b5889",
       "summary": "Small source transformations for the legacy server; no network or writes.",
       "imports": [
         "ast"
@@ -2685,13 +2685,13 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 4
+      "symbol_count": 5
     },
     {
       "path": "integrations/desc_runtime/README.md",
       "category": "shared",
-      "bytes": 5713,
-      "sha256": "6de7a9f8f279c560a8b7fbd48e0ed2759d8bfe9d62bf107e21ef2c2563274b28",
+      "bytes": 5909,
+      "sha256": "3f5be9609cd2033c62e74da4a4422aa2f49d8f911851eac2796525fcaa1da147",
       "summary": "Runtime DESC do servidor TECHNET",
       "imports": [],
       "endpoints": [],
@@ -8636,9 +8636,9 @@
     {
       "path": "tests/test_official_material_completeness.py",
       "category": "tests",
-      "bytes": 3128,
-      "sha256": "ad9762e2031767f8700669f98088674dcbeb828018bac1b1a68095d452cfdfe6",
-      "summary": "A falta de um item bloqueia antes de qualquer movimentação de RETORNO.",
+      "bytes": 5305,
+      "sha256": "fbe76c4ae8385c996eb576f7b178be0f740fcdefab422f14fb9a6507a1aa50b4",
+      "summary": "Políticas de estoque da baixa oficial, com consultas e transferências simuladas.",
       "imports": [
         "decimal",
         "imperium_api",
@@ -8648,7 +8648,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 3
+      "symbol_count": 4
     },
     {
       "path": "tests/test_official_stock_audit.py",

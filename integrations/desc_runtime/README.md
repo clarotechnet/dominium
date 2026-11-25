@@ -36,8 +36,11 @@ ou arquivos dos grupos. Os exemplos novos de mensagens usam dados fictícios.
   **Múltiplas O.S. continuam bloqueadas para execução:** falta homologar o
   fechamento das demais O.S. sem duplicar equipamentos. O plano já lista o
   dono das movimentações e as acompanhantes.
-- API oficial: falta de qualquer material bloqueia antes da transferência;
-  assinatura e INST GPON - INST CABO aceitam apenas código de baixa.
+- API oficial NTL/PWM: consulte os códigos da Descrição Atlas no estoque do
+  técnico antes de complementar pelo RETORNO. Dispense da baixa apenas o
+  saldo faltante confirmado e registre a quantidade. Uma consulta ou
+  transferência incerta continua em tratativa. Assinatura e INST GPON - INST
+  CABO recebem apenas o código de baixa.
 
 ## Testes
 
