@@ -3801,9 +3801,13 @@ class ImperiumAPI:
             return None
         if code in self._equipment_group_cache:
             return self._equipment_group_cache[code]
-        with self._operation_lock:
-            with self._client(timeout=15.0) as client:
-                result = self._lookup_equipment_group_by_code_on(client, code)
+        try:
+            with self._operation_lock:
+                with self._client(timeout=15.0) as client:
+                    result = self._lookup_equipment_group_by_code_on(client, code)
+        except (DataSnapError, OSError) as exc:
+            LOGGER.warning("Erro ao consultar grupo do equipamento %s: %s", code, exc)
+            return None
         self._equipment_group_cache[code] = result
         return result
 
@@ -3817,27 +3821,16 @@ class ImperiumAPI:
             return None
         if code in self._equipment_group_cache:
             return self._equipment_group_cache[code]
+        handle = self._handle(client, "TDtmEquipamentos.AS_GetRecords")
+        query = self._build_dsploc_equipment_query(code)
+        response = client.request("execute", [{"handle": [handle]}, query])
+        client.request("execute", [{"handle": [handle]}, self._provider_close_query(query)])
         try:
-            handle = self._handle(client, "TDtmEquipamentos.AS_GetRecords")
-            query = self._build_dsploc_equipment_query(code)
-            response = client.request(
-                "execute",
-                [{"handle": [handle]}, query],
-            )
-            client.request(
-                "execute",
-                [{"handle": [handle]}, self._provider_close_query(query)],
-            )
             payload = response["result"][1]["data"][1]
-            if not isinstance(payload, (bytes, bytearray)):
-                return None
-        except Exception as exc:
-            LOGGER.warning(
-                "Erro ao consultar grupo do equipamento %s no DspLoc: %s",
-                code,
-                exc,
-            )
-            return None
+        except (KeyError, IndexError, TypeError) as exc:
+            raise DataSnapError("Resposta invalida da consulta Descricao Atlas") from exc
+        if not isinstance(payload, (bytes, bytearray)):
+            raise DataSnapError("Resposta invalida da consulta Descricao Atlas")
         result = self._parse_dsploc_equipment_record(payload, code)
         self._equipment_group_cache[code] = result
         return result
@@ -3848,6 +3841,7 @@ class ImperiumAPI:
         values: list[dict],
         *,
         expected_installer_id: int,
+        omit_unavailable: bool = False,
     ) -> dict:
         """Prepare technician stock before the single official HTTP close."""
         if not isinstance(values, list):
@@ -3941,6 +3935,27 @@ class ImperiumAPI:
                 available = {material.code: material for material in catalog}
                 lookup_handle: int | None = None
                 resolved: list[tuple[StockMaterial, Decimal]] = []
+                omitted: list[dict] = []
+                partial: list[dict] = []
+                remaining_return_by_code: dict[str, Decimal] | None = None
+
+                def atlas_group(code: str) -> dict | None:
+                    try:
+                        return self._lookup_equipment_group_by_code_on(client, code)
+                    except (DataSnapError, OSError):
+                        if omit_unavailable:
+                            raise
+                        return None
+
+                def return_balances() -> dict[str, Decimal]:
+                    nonlocal remaining_return_by_code
+                    if remaining_return_by_code is None:
+                        remaining_return_by_code = {
+                            code: Decimal(value)
+                            for code, value in self._material_virtual_stock_quantities_on(client).items()
+                        }
+                    return remaining_return_by_code
+
                 for item in requested:
                     material = available.get(item["code"])
                     if material is None and item["description"]:
@@ -3957,10 +3972,7 @@ class ImperiumAPI:
                             lookup_handle,
                         )
                     if material is None:
-                        group_info = self._lookup_equipment_group_by_code_on(
-                            client,
-                            item["code"],
-                        )
+                        group_info = atlas_group(item["code"])
                         if group_info is not None:
                             material = StockMaterial(
                                 id_equipment=group_info["id_equipment"],
@@ -3974,6 +3986,11 @@ class ImperiumAPI:
                                 id_group=0,
                                 group=group_info["group"],
                             )
+                    if material is None and omit_unavailable and return_balances().get(item["code"], 0) <= 0:
+                        omitted.append({
+                            "code": item["code"], "missing_quantity": self._decimal_text(item["quantity"]),
+                        })
+                        continue
                     if material is None:
                         raise ValueError(
                             f"A miscelanea {item['description'] or 'sem descricao'} "
@@ -3994,7 +4011,6 @@ class ImperiumAPI:
                     material.code: Decimal(material.stock_quantity)
                     for material in catalog
                 }
-                remaining_return_by_code: dict[str, Decimal] | None = None
                 for material, quantity in resolved:
                     needed = quantity
                     item_allocations: list[dict] = []
@@ -4018,10 +4034,7 @@ class ImperiumAPI:
                     # 2. If insufficient exact balance, check official DspLoc group equivalents
                     used_group = ""
                     if needed > 0:
-                        group_info = self._lookup_equipment_group_by_code_on(
-                            client,
-                            material.code,
-                        )
+                        group_info = atlas_group(material.code)
                         equivalents = (
                             group_info.get("equivalents", [])
                             if group_info
@@ -4033,7 +4046,7 @@ class ImperiumAPI:
                         # Some real TOA codes are valid but are not indexed by DspLoc
                         # (for example 22066906). Only after the exact code and DspLoc
                         # fail, fall back to the explicit operator-approved code group.
-                        if not equivalents:
+                        if not equivalents and not omit_unavailable:
                             approved_group = approved_equivalence_group_for_code(
                                 material.code
                             )
@@ -4044,6 +4057,9 @@ class ImperiumAPI:
                         if equivalents:
                             for eq_code in equivalents:
                                 if eq_code == material.code:
+                                    continue
+                                equivalent = available.get(eq_code)
+                                if omit_unavailable and (equivalent is None or equivalent.unit != material.unit):
                                     continue
                                 eq_stock = remaining_by_code.get(
                                     eq_code,
@@ -4061,7 +4077,7 @@ class ImperiumAPI:
                                     )
                                     if needed <= 0:
                                         break
-                        elif material.id_group > 0 or material.group.strip():
+                        elif not omit_unavailable and (material.id_group > 0 or material.group.strip()):
                             # Fallback to legacy distribute_by_group if DspLoc has no equivalents
                             inventory = []
                             for candidate in catalog:
@@ -4099,18 +4115,12 @@ class ImperiumAPI:
                     # 3. If technician group balance is insufficient, consume RETORNO
                     # using the same official DspLoc codes before declaring shortage.
                     if needed > 0:
-                        if needed != needed.to_integral_value():
+                        if not omit_unavailable and needed != needed.to_integral_value():
                             raise ValueError(
                                 "O complemento automatico de estoque aceita somente "
                                 f"quantidade inteira para a miscelanea {material.code}"
                             )
-                        if remaining_return_by_code is None:
-                            remaining_return_by_code = {
-                                code: Decimal(value)
-                                for code, value in self._material_virtual_stock_quantities_on(
-                                    client
-                                ).items()
-                            }
+                        remaining_return_by_code = return_balances()
                         return_codes = list(dict.fromkeys(
                             [material.code]
                             + [
@@ -4130,11 +4140,10 @@ class ImperiumAPI:
                                 continue
                             transfer_material = available.get(return_code)
                             if transfer_material is None:
-                                return_info = self._lookup_equipment_group_by_code_on(
-                                    client,
-                                    return_code,
-                                )
+                                return_info = atlas_group(return_code)
                                 if return_info is None:
+                                    if omit_unavailable:
+                                        raise ValueError(f"Cadastro da miscelanea {return_code} no RETORNO nao confirmado")
                                     continue
                                 transfer_material = StockMaterial(
                                     id_equipment=int(return_info.get("id_equipment") or 0),
@@ -4154,8 +4163,12 @@ class ImperiumAPI:
                                 catalog.append(transfer_material)
                                 available[return_code] = transfer_material
                                 remaining_by_code.setdefault(return_code, Decimal("0"))
+                            if omit_unavailable and transfer_material.unit != material.unit:
+                                continue
                             take_return = min(needed, source_available)
                             if take_return != take_return.to_integral_value():
+                                if omit_unavailable:
+                                    raise ValueError(f"O complemento da miscelanea {return_code} exige quantidade inteira")
                                 continue
                             remaining_return_by_code[return_code] -= take_return
                             needed -= take_return
@@ -4185,13 +4198,14 @@ class ImperiumAPI:
                             )
                         if needed > 0:
                             group_label = used_group or material.group or material.code
-                            tolerated_shortfalls.append(
-                                {
-                                    "code": material.code,
-                                    "group": group_label,
-                                    "missing_quantity": self._decimal_text(needed),
-                                }
-                            )
+                            shortage = {
+                                "code": material.code,
+                                "group": group_label,
+                                "missing_quantity": self._decimal_text(needed),
+                            }
+                            tolerated_shortfalls.append(shortage)
+                            if omit_unavailable:
+                                (partial if item_allocations else omitted).append(shortage)
                             needed = Decimal("0")
 
                     # Audit group distribution if equivalents were used
@@ -4222,7 +4236,7 @@ class ImperiumAPI:
                         )
 
                 shortfall_item_count = len(tolerated_shortfalls)
-                if shortfall_item_count > 0:
+                if shortfall_item_count > 0 and not omit_unavailable:
                     details = ", ".join(
                         f"{row['code']} ({row['group']}): {row['missing_quantity']}"
                         for row in tolerated_shortfalls
@@ -4276,6 +4290,8 @@ class ImperiumAPI:
             "shortfalls": shortfalls,
             "tolerated_shortfalls": tolerated_shortfalls,
             "tolerated_shortfall_count": len(tolerated_shortfalls),
+            "partial_shortfalls": partial,
+            "discarded_shortfalls": omitted,
             "resolved_materials": [
                 {
                     "codigoequipamento": code,

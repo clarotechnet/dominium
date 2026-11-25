@@ -397,3 +397,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 55 testes focados da fila e da ponte, incluindo erro estruturado, timeout genérico e bloqueio sem reenvio.
 
 **Próximo passo/pendência:** Conciliar a movimentação de estoque pendente antes de qualquer nova tentativa.
+
+## 2026-11-25 13:08 UTC — Priorizar Descrição Atlas antes do RETORNO em Natal
+
+**Motivo:** O saldo do código original no RETORNO podia evitar a consulta à Descrição Atlas no servidor, e a fonte web bloqueava a baixa por falta confirmada.
+
+**Alterado:** Consulta o grupo Atlas antes do RETORNO, usa o saldo de códigos compatíveis no técnico e registra as quantidades dispensadas na baixa oficial de Natal. O patch do servidor altera somente o caminho da API oficial.
+
+**Verificação:** 115 testes Python focados e cinco cenários da versão instalada com leituras e transferências simuladas, incluindo timeout do Atlas e estoque zerado.
+
+**Próximo passo/pendência:** Verificar o serviço após a recarga sem disparar baixas ou transferências.

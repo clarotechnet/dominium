@@ -9,7 +9,7 @@ shared	Abrir Painel.cmd					cc450d4a69af656f
 shared	adm_allocation.py	3			Read-only allocation for DESC multi-OS activities.	a9434a5b2e81e0ca
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	151	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	419799f903859468
+orchestration	app.py	151	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	c1bd1faebb162a8b
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -86,7 +86,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	1ea998831135c798
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	7cef3d5b223a5b46
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -118,7 +118,7 @@ shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f3
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
 shared	GEMINI.md				DOMINIUM — instruções para Gemini	1b1a88b0e02ad6a0
-imperium	imperium_api.py	142		3	DOMINIUM | MAPA DE RESPONSABILIDADE	629d1d08c1765e73
+imperium	imperium_api.py	142		3	DOMINIUM | MAPA DE RESPONSABILIDADE	c9d0677b47b36cdf
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 imperium	imperium_operation_gate.py	7			Serializacao justa das operacoes do terminal Imperium/DataSnap.	06d73ed2f5d60b10
@@ -148,8 +148,8 @@ shared	integrations/desc_runtime/bot/disconnectPilotCoordinator.js	33				18b277d
 shared	integrations/desc_runtime/disconnect_local_runner.py	36		1	Executa um único job de desconexão recebido do BotDMV no PC local.	9a3c4f51a3d89409
 shared	integrations/desc_runtime/nightly_backlog_106.py	7	3		Operator-authorized 23h backlog batch. Default is read-only preview.	0c9ef41fc1d83645
 shared	integrations/desc_runtime/nightly_backlog_service.py	10			Daily backlog scheduling owned by the Dominium HTTP server, not by a browser.	0746da639cac79e4
-shared	integrations/desc_runtime/patch_runtime_safety.py	4			Small source transformations for the legacy server; no network or writes.	6c799a4b273d49eb
-shared	integrations/desc_runtime/README.md				Runtime DESC do servidor TECHNET	6de7a9f8f279c560
+shared	integrations/desc_runtime/patch_runtime_safety.py	5			Small source transformations for the legacy server; no network or writes.	f9ece574dff101dc
+shared	integrations/desc_runtime/README.md				Runtime DESC do servidor TECHNET	3f5be9609cd2033c
 tests	integrations/desc_runtime/test_desc_multi_owner_runtime.py	2		1		b7c145e05d4781d6
 tests	integrations/desc_runtime/test_desc_sector_scope.py	10			Read-only sector scope regression for BotDMV DESC -> DataSnap executor.	0fa5396e16d5d30f
 tests	integrations/desc_runtime/test_nightly_backlog_106.py	13	1			5fc4ff778ec23768
@@ -372,7 +372,7 @@ tests	tests/test_adm_allocation.py	9				75b86d318f82567e
 tests	tests/test_agent_memory.py	9			Portable agent memory regression tests; no network, secrets or production changes.	a00628018291348f
 tests	tests/test_all_operations_view.cjs	2	3			7f88face26cb106a
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
-tests	tests/test_app.py	37	5	2		dec92061f9dc6147
+tests	tests/test_app.py	37	5	2		07b21c3913aa34b5
 tests	tests/test_atlas_bridge_client.py	14			Tests for the real BotDMV Atlas HTTP queue contract (synthetic only).	97a6ec2888879cf6
 tests	tests/test_atlas_query_data.py	6			QUERY Atlas table transformations and text-preserving exports.	0748addddb6b990d
 tests	tests/test_atlas_query_health.py	15			Session health must depend on a fresh queue response, not an open tab.	7962f15659401e64
@@ -467,7 +467,7 @@ tests	tests/test_official_close_dry_run.py	26				d4aec02f82c7d3ac
 tests	tests/test_official_close_sender.py	29				7308fd219528d01d
 tests	tests/test_official_close_toa_dry_run.py	34				f3a1ea940debcd05
 tests	tests/test_official_material_catalog.py	24				08cd1715009af381
-tests	tests/test_official_material_completeness.py	3			A falta de um item bloqueia antes de qualquer movimentação de RETORNO.	ad9762e2031767f8
+tests	tests/test_official_material_completeness.py	4			Políticas de estoque da baixa oficial, com consultas e transferências simuladas.	fbe76c4ae8385c99
 tests	tests/test_official_stock_audit.py	19				5c870201eb1f0e37
 tests	tests/test_official_stock_blocker_review.py	21				2bb6e8566ad6e1e5
 tests	tests/test_official_stock_relay.py	6	11		Read-only official inventory bridge policy and response contracts.	12032c8dea0f41e4

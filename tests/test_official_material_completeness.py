@@ -1,4 +1,4 @@
-"""A falta de um item bloqueia antes de qualquer movimentação de RETORNO."""
+"""Políticas de estoque da baixa oficial, com consultas e transferências simuladas."""
 import unittest
 from decimal import Decimal
 from unittest.mock import MagicMock, patch
@@ -7,6 +7,44 @@ from imperium_api import DetailContext, ImperiumAPI, Order, StockMaterial
 
 
 class OfficialMaterialCompletenessTests(unittest.TestCase):
+    def test_natal_uses_atlas_technician_stock_before_return_and_omits_unavailable(self):
+        api = ImperiumAPI()
+        order = Order(123, "2663000001", "4000001", 10, "ADESAO - INSTALAR PONTO VIRTUA")
+        context = DetailContext(order.id_os, order.contract, 313363, "TECNICO TESTE")
+        original, equivalent, missing = "22026219", "22066907", "99999999"
+        catalog = [StockMaterial(1, original, "CABO A", 0, 260, "M", 2, "N"),
+                   StockMaterial(2, equivalent, "CABO B", 3, 260, "M", 2, "N")]
+        client = MagicMock()
+        client.__enter__.return_value = client
+        events = []
+
+        def atlas(_client, code):
+            events.append(("atlas", code))
+            return {"group": "CABO", "equivalents": [original, equivalent]} if code == original else None
+
+        def stocks(_client):
+            events.append(("retorno", None))
+            return {original: Decimal("50")}
+
+        with (
+            patch.object(api, "_client", return_value=client),
+            patch.object(api, "_fetch_detail_on", return_value=order.num_os.encode()),
+            patch.object(api, "_detail_context", return_value=context),
+            patch.object(api, "_combined_material_catalog_on", return_value=catalog),
+            patch.object(api, "_lookup_equipment_group_by_code_on", side_effect=atlas),
+            patch.object(api, "_material_virtual_stock_quantities_on", side_effect=stocks),
+            patch.object(api, "_transfer_material_shortfalls") as transfer,
+        ):
+            result = api.prepare_official_materials(
+                order, [{"code": original, "quantity": 3}, {"code": missing, "quantity": 1}],
+                expected_installer_id=context.installer_id, omit_unavailable=True,
+            )
+            self.assertEqual(result["resolved_materials"], [{"codigoequipamento": equivalent, "qtd": "3"}])
+            self.assertEqual(result["discarded_shortfalls"], [{"code": missing, "missing_quantity": "1"}])
+            transfer.assert_not_called()
+            self.assertIn(("retorno", None), events)
+            self.assertLess(events.index(("atlas", missing)), events.index(("retorno", None)))
+
     def test_uncovered_material_blocks_before_transferring_other_items(self):
         api = ImperiumAPI()
         order = Order(123, "2663000001", "4000001", 10, "ADESAO - INSTALAR PONTO VIRTUA")

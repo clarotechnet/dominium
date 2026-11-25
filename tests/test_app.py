@@ -834,6 +834,7 @@ class AppSanitizeResponseTests(unittest.TestCase):
                         }
                     ],
                     expected_installer_id=328898,
+                    omit_unavailable=True,
                 )
                 self.assertEqual(responses[0][0], 202)
                 self.assertTrue(responses[0][1]["pending_confirmation"])

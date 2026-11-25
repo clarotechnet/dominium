@@ -186,6 +186,73 @@ def patch_material_completeness(text: str) -> str:
     return ''.join(lines[:method.lineno - 1]) + patched + ''.join(lines[method.end_lineno:])
 
 
+def patch_official_atlas_before_return(text: str) -> str:
+    """Use exact Atlas groups before RETORNO in the installed official path."""
+    methods = {
+        node.name: node for node in ast.walk(ast.parse(text))
+        if isinstance(node, ast.FunctionDef) and node.name in {
+            '_allocate_requested_material_groups_on', 'prepare_official_materials',
+        }
+    }
+    if len(methods) != 2:
+        raise ValueError('Unsupported legacy official material methods')
+    lines = text.splitlines(keepends=True)
+    allocator = methods['_allocate_requested_material_groups_on']
+    prepare = methods['prepare_official_materials']
+    allocation = ''.join(lines[allocator.lineno - 1:allocator.end_lineno])
+    official = ''.join(lines[prepare.lineno - 1:prepare.end_lineno])
+    if 'official_atlas_first: bool = False,' in allocation and 'official_atlas_first=True,' in official:
+        return text
+    keyword = '        lookup_handle: int | None = None,\n'
+    previous_start = '            candidate_codes = set(candidate_by_code)\n'
+    previous_end = '            ordered_codes = sorted(candidate_codes)\n'
+    call = '                    requested,\n                )\n'
+    if any(allocation.count(marker) != 1 for marker in (keyword, previous_start, previous_end)) or official.count(call) != 1:
+        raise ValueError('Unsupported legacy official material layout')
+    start, end = allocation.index(previous_start), allocation.index(previous_end)
+    original = allocation[start:end]
+    official_branch = '''            if official_atlas_first:
+                candidate_codes = {requested_code}
+                if technician_remaining.get(requested_code, 0) < required:
+                    master_group = (
+                        self._master_atlas_group_on(client, requested_code)
+                        if re.fullmatch(r"[0-9]{8}", requested_code)
+                        else ()
+                    )
+                    original_material = available.get(requested_code) or candidate_by_code.get(requested_code)
+
+                    def add_stocked_equivalents(inventory, balances):
+                        for code in master_group:
+                            alternate = inventory.get(code)
+                            if code == requested_code or alternate is None or balances.get(code, 0) <= 0:
+                                continue
+                            if original_material is None:
+                                raise ValueError(f"Unidade da miscelanea {requested_code} nao confirmada no Atlas")
+                            if alternate.identified == "N" and alternate.unit == original_material.unit:
+                                candidate_codes.add(code)
+
+                    add_stocked_equivalents(available, technician_remaining)
+                    if sum(technician_remaining.get(code, 0) for code in candidate_codes) < required:
+                        ensure_source_catalog()
+                        original_material = original_material or source_available.get(requested_code)
+                        add_stocked_equivalents(source_available, source_remaining)
+                # The shared allocator now consumes the vetted codes in order.
+            else:
+'''
+    # An empty master group is authoritative. Read failures are propagated,
+    # so the existing zero-stock audit applies only to completed reads.
+    allocation = allocation[:start] + official_branch + ''.join(
+        '    ' + line if line.strip() else line for line in original.splitlines(keepends=True)
+    ) + allocation[end:]
+    allocation = allocation.replace(keyword, keyword + '        official_atlas_first: bool = False,\n', 1)
+    official = official.replace(call, '                    requested,\n                    official_atlas_first=True,\n                )\n', 1)
+    for node, segment in sorted(((allocator, allocation), (prepare, official)), key=lambda item: item[0].lineno, reverse=True):
+        lines[node.lineno - 1:node.end_lineno] = segment.splitlines(keepends=True)
+    patched = ''.join(lines)
+    ast.parse(patched)
+    return patched
+
+
 def patch_official_code_only(text: str, *, helper_source: str) -> str:
     marker = '    if not productive and (installed_source or removed_source or material_source):'
     guard = '''    if is_code_only_adhesion_service(_value(order, "service")) and (
