@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-26T01:47:23+00:00",
+  "generated_at": "2026-11-26T02:15:45+00:00",
   "schema": 2,
-  "source_fingerprint": "a4b35af8b5cfc27af0cfc8b648bcfb02cc500b1dd7bf9d57b8060e089d288354",
+  "source_fingerprint": "3d5e64bab9c38a57434096d60e05d0b9b61505226f9a9aa9f4574c316010af46",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1673,8 +1673,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 33590,
-      "sha256": "b971caa5ae2dbc63ea89e76e762e2f1ada0899cf7dd8bb3b9260f39c03cdcd53",
+      "bytes": 34329,
+      "sha256": "89558ecde19ead9880258b60e810aa786ca83027c69186618ae9e2bab980176e",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -2650,8 +2650,8 @@
     {
       "path": "integrations/desc_runtime/equipment_atlas_correlations.py",
       "category": "shared",
-      "bytes": 6408,
-      "sha256": "2e51cea3ca4f0a1ec8ca9121c8e2ef75ef1067b7fd092b4aae4489ba5f07c162",
+      "bytes": 7949,
+      "sha256": "32ed8a4a487de9c36d64081921630741b21ecf7e5acc2ec1461aff4a26dea960",
       "summary": "Read-only Codigo -> DescricaoAtlas correlation in the legacy runtime.",
       "imports": [
         "re",
@@ -2663,7 +2663,7 @@
         "TDtmEquipamentos.AS_GetRecords"
       ],
       "entrypoint": false,
-      "symbol_count": 6
+      "symbol_count": 8
     },
     {
       "path": "integrations/desc_runtime/nightly_backlog_106.py",
@@ -2714,8 +2714,8 @@
     {
       "path": "integrations/desc_runtime/patch_runtime_safety.py",
       "category": "shared",
-      "bytes": 28715,
-      "sha256": "c36e50b6428fdddd83a7eca48914582e84bb7652d6ec625620c39bbe5437ff61",
+      "bytes": 32523,
+      "sha256": "a9c85cef103b611291adf5af2e5e8c2ceecec6735e88822bdce739c05de34fbc",
       "summary": "Small source transformations for the legacy server; no network or writes.",
       "imports": [
         "ast"
@@ -2728,7 +2728,7 @@
         "TOA_LIVE.lookup_contract"
       ],
       "entrypoint": false,
-      "symbol_count": 10
+      "symbol_count": 11
     },
     {
       "path": "integrations/desc_runtime/README.md",
@@ -5697,8 +5697,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 34294,
-      "sha256": "82e966bc0a3743a70452bf3d66cd860e6bd5f0d6a5af1364bba2fc7c5a050907",
+      "bytes": 36161,
+      "sha256": "db0b14e1b14834d9c99c5f2c7e66df01c6e39d77c213105164bc43bddcf27059",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -5710,7 +5710,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 29
+      "symbol_count": 32
     },
     {
       "path": "static/all-cities-scope.css",
@@ -6052,7 +6052,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 185732,
-      "sha256": "2684052ffa1e983277f4b876ed6a6bc6d77bc4c20692306171acd9efb527f9ff",
+      "sha256": "df5dc74b21d7079a76a3788239dafe3b1ebeea04fbb0dbff537f97b1d23e73e6",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6746,8 +6746,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 27473,
-      "sha256": "da33960768242a8d5a67f9f75db76fed5e7a512a6c9d875cbe317f0588eba648",
+      "bytes": 28125,
+      "sha256": "3186735d8ab01fd3b5a09c9dba57d6976e62c7641bb30aa536ec7d63925bc367",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7841,10 +7841,12 @@
     {
       "path": "tests/test_equipment_atlas_correlations.py",
       "category": "tests",
-      "bytes": 4673,
-      "sha256": "a4c27f196923d8165480bdf567f291319571226257981341b7a4e322bfe82a19",
+      "bytes": 6684,
+      "sha256": "ffcc5396985be2775f405c5b4b7a38f538d88c796201a9baffd6669da09168e6",
       "summary": "",
       "imports": [
+        "dataclasses",
+        "imperium_api",
         "integrations",
         "unittest"
       ],
@@ -7852,7 +7854,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 9
+      "symbol_count": 11
     },
     {
       "path": "tests/test_equipment_daily_catalog.py",

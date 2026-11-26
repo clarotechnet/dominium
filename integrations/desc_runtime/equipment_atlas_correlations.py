@@ -136,3 +136,34 @@ def parse_code_record(payload: bytes, requested_code: str) -> EquipmentAtlasReco
 
 def parse_code_group(payload: bytes, requested_code: str) -> tuple[str, ...]:
     return parse_code_record(payload, requested_code).codes
+
+
+def parse_stock_atlas_record(payload: bytes, requested_code: str) -> EquipmentAtlasRecord:
+    """Accept the provider's complete empty dataset as a verified absence."""
+    if (isinstance(payload, bytes) and len(payload) >= 1120
+            and payload.startswith(b'\xc0\xc0\x60\xc0\xc0\xc0\x10\x00\x05\x02\x00\x00')
+            and _CODE_RE.fullmatch(requested_code)):
+        return EquipmentAtlasRecord((), '')
+    return parse_code_record(payload, requested_code)
+
+
+def stocked_return_group_codes(reference, description: str, inventory, balances) -> tuple[str, ...]:
+    """Find stock candidates by group prefix and prove their catalogue identity."""
+    def label(value: str) -> str:
+        return ' '.join(re.sub(r'^\s*[0-9]{8}_', '', value).upper().split())
+
+    if reference is None or reference.identified != 'N' or not reference.unit:
+        return ()
+    requested_name = label(description)
+    if len(requested_name.split()) < 3 or requested_name != label(reference.name):
+        return ()
+    first_word = requested_name.split()[0]
+    group = label(reference.group)
+    if not group or group.split()[0] != first_word or reference.id_group <= 0:
+        return ()
+    return tuple(sorted(
+        code for code, item in inventory.items()
+        if code != reference.code and _CODE_RE.fullmatch(code) and balances.get(code, 0) > 0
+        and item.identified == 'N' and item.id_group == reference.id_group and label(item.group) == group
+        and item.unit == reference.unit and label(item.name) == requested_name
+    ))

@@ -400,16 +400,50 @@
       }
     }
   }
-  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,readBatchToa,ordersForBatchContract,refreshCandidate,priorCloseOutcome,reconcileCloseRead};return;}
+  function restoreQueue(raw, date) {
+    const saved=JSON.parse(raw);
+    if(saved?.date!==date || !Array.isArray(saved.rows) || !saved.rows.length) return [];
+    const contracts=parseContracts(saved.rows.map(row=>row.contract).join("\n"));
+    if(contracts.length!==saved.rows.length) return [];
+    return saved.rows.map(({contract,label})=>{
+      if(["Na fila","Consultando","Executando"].includes(label)) {
+        return {contract,label:"Interrompido",detail:"Consulte o Imperium antes de retomar a fila."};
+      }
+      return {contract,label,detail:"Resultado salvo neste navegador. Confira no relatorio de baixas."};
+    });
+  }
+  if(typeof module!=="undefined" && module.exports){module.exports={parseContracts,isAdhesionBucket,codeOnly,materialAudit,selectCandidates,runBatch,freshOrders,readBatchToa,ordersForBatchContract,refreshCandidate,priorCloseOutcome,reconcileCloseRead,restoreQueue};return;}
   const panel=document.getElementById("adhesionBatch");
   if(!panel)return;
   const input=document.getElementById("adhesionBatchInput"),start=document.getElementById("adhesionBatchStart"),
     stop=document.getElementById("adhesionBatchStop"),status=document.getElementById("adhesionBatchStatus"),list=document.getElementById("adhesionBatchResults");
-  let stopped=false, rows=new Map();
+  let stopped=false, rows=new Map(), visibleScope="", queueScope=null;
+  function storageScope() {
+    const user=state.authUser;
+    if(state.profile!=="natal" || !user?.id || !["admin","controller"].includes(user.role))return null;
+    return {key:"dominium-adhesion-queue:"+user.id,date:elements.date.value};
+  }
+  function saveQueue() {
+    if(!queueScope || !rows.size) return;
+    const {key,date}=queueScope;
+    try {
+      localStorage.setItem(key,JSON.stringify({date,rows:[...rows.values()].map(({contract,label})=>({contract,label}))}));
+    } catch {/* Storage is optional and never controls a submission. */}
+  }
   function busy(){return state.adhesionBatchRunning || state.semiAutoRunning || state.semiAutoWorker || state.semiAutoRefreshing || state.semiAutoPendingConfirmationWorker || state.toaLiveLoading || state.running || state.loading || state.disconnectAutomationWorker;}
   function render() {
+    const scope=storageScope();
+    const scopeId=scope ? scope.key+":"+scope.date : "";
+    if(!state.adhesionBatchRunning && scopeId!==visibleScope) {
+      visibleScope=scopeId;
+      let restored=[];
+      try {if(scope)restored=restoreQueue(localStorage.getItem(scope.key),scope.date);} catch {/* Ignore invalid saved queues. */}
+      rows=new Map(restored.map(row=>[row.contract,row]));
+      input.value=restored.map(row=>row.contract).join("\n");
+      if(!restored.length) status.textContent="";
+    }
     start.disabled=Boolean(busy() || state.profile!=="natal");stop.disabled=!state.adhesionBatchRunning;input.disabled=!!state.adhesionBatchRunning;
-    const all=[...rows.values()], finished=all.filter(r=>!["Na fila","Consultando","Executando"].includes(r.label)).length;
+    const all=[...rows.values()], finished=all.filter(r=>!["Na fila","Consultando","Executando","Interrompido"].includes(r.label)).length;
     if(all.length) status.textContent=finished+" / "+all.length+" contratos | "+all.filter(r=>r.label==="Baixado").length+" baixados";
     list.replaceChildren(...all.map(r=>{
       const node=document.createElement("div");node.className="adhesion-batch-result";
@@ -417,7 +451,7 @@
       return node;
     }));
   }
-  function update(contract,label,detail){rows.set(contract,{contract,label,detail});render();}
+  function update(contract,label,detail){rows.set(contract,{contract,label,detail});saveQueue();render();}
   stop.addEventListener("click",()=>{stopped=true;status.textContent="Parando apos a solicitacao atual; nao sera reenviada.";});
   start.addEventListener("click",async()=>{
     if(busy()) return;
@@ -427,8 +461,9 @@
     const profile=state.profile,epoch=state.profileEpoch,date=elements.date.value;
     if(profile!=="natal" || !/^\d{4}-\d{2}-\d{2}$/.test(date)){status.textContent="Selecione cidade e data validas.";return;}
     state.adhesionBatchRunning=true;stopped=false;
+    queueScope=storageScope();
     rows=new Map(contracts.map(contract=>[contract,{contract,label:"Na fila",detail:"Aguardando"}]));
-    render();renderToaLiveStatus();
+    saveQueue();render();renderToaLiveStatus();
     const active=()=>!stopped && state.profile===profile && state.profileEpoch===epoch && elements.date.value===date && state.officialCloseEnabled && state.closeEnabled;
     const fieldPath="/api/orders?date="+encodeURIComponent(date)+"&status=field&service_type=all&wait_for_fresh=1";
     const readFieldOrders = (contract, detail) => {
@@ -515,6 +550,8 @@
     } finally {
       state.adhesionBatchRunning=false;
       for(const row of rows.values())if(["Na fila","Consultando","Executando"].includes(row.label)){row.label="Interrompido";row.detail="Nenhuma nova solicitacao sera enviada.";}
+      saveQueue();
+      queueScope=null;
       renderToaLiveStatus();
     }
   });

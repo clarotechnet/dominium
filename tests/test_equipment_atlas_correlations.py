@@ -1,9 +1,14 @@
 import unittest
+from dataclasses import replace
+
+from imperium_api import StockMaterial
 
 from integrations.desc_runtime.equipment_atlas_correlations import (
     EquipmentAtlasCorrelationError,
     parse_code_group,
     parse_code_record,
+    parse_stock_atlas_record,
+    stocked_return_group_codes,
 )
 
 
@@ -91,3 +96,31 @@ class EquipmentAtlasCorrelationsTests(unittest.TestCase):
         for bad in (record + record, record[:-1], record.replace(b"DIVERSOS", b"INVALIDO")):
             with self.assertRaises(EquipmentAtlasCorrelationError):
                 parse_code_record(bad, "22025349")
+
+    def test_return_group_requires_full_catalogue_identity_and_fresh_balance(self):
+        name = "FIXADOR FIO BR RG6 CIRCUL 7MM"
+        reference = StockMaterial(1, "22060738", name, 0, 12, "UN", 2, "N",
+                                  id_group=36, group="FIXADOR BR")
+        equivalent = replace(reference, code="22025139", id_equipment=2, stock_quantity=24)
+        wrong_items = [
+            replace(equivalent, code="22025091", group="FIXADOR PT", id_group=37),
+            replace(equivalent, code="22057635", name=name.replace("7MM", "6MM")),
+            replace(equivalent, code="22025349", unit="M"),
+            replace(equivalent, code="22025350", identified="S"),
+        ]
+        inventory = {item.code: item for item in [reference, equivalent, *wrong_items]}
+        balances = {item.code: item.stock_quantity for item in inventory.values()}
+        self.assertEqual(stocked_return_group_codes(reference, f"22060738_{name}", inventory, balances),
+                         (equivalent.code,))
+        self.assertEqual(stocked_return_group_codes(reference, "FIXADOR", inventory, balances), ())
+        self.assertEqual(stocked_return_group_codes(None, name, inventory, balances), ())
+        balances[equivalent.code] = 0
+        self.assertEqual(stocked_return_group_codes(reference, name, inventory, balances), ())
+
+    def test_stock_lookup_distinguishes_confirmed_empty_from_invalid_or_ambiguous(self):
+        empty = b'\xc0\xc0\x60\xc0\xc0\xc0\x10\x00\x05\x02\x00\x00' + bytes(1108)
+        self.assertEqual(parse_stock_atlas_record(empty, '22066630').codes, ())
+        duplicate = record('22066630', '22066630_ACOPLADOR VERTICAL') * 2
+        for invalid in (empty[:-1], empty.replace(b'\x60', b'\x61', 1), duplicate):
+            with self.assertRaises(EquipmentAtlasCorrelationError):
+                parse_stock_atlas_record(invalid, '22066630')
