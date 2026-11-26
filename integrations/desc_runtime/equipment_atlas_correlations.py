@@ -7,7 +7,8 @@ CAPTURED_CODE = "22060738"
 TEMPLATE_LENGTH = 826
 _TEMPLATE_PROVIDER = b"&DspLoc"
 _CODE_RE = re.compile(r"[0-9]{8}")
-_ITEM_RE = re.compile(r"([0-9]{8})_([^|\x00-\x1f\x7f-\x9f]{3,150})")
+# MIDAS can insert a field separator between the Atlas code and its underscore.
+_ITEM_RE = re.compile(r"([0-9]{8})\x1f?_([^|\x00-\x1f\x7f-\x9f]{3,150})")
 _LABEL_RE = re.compile(r"[^\W\d_][^_|\x00-\x1f\x7f-\x9f]{2,149}")
 _UNIT_RE = re.compile(rb"[A-Z0-9]{1,12}")
 # Operator-confirmed connector family, 2026-11-25. Only supported

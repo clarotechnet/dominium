@@ -43,6 +43,18 @@ class EquipmentAtlasCorrelationsTests(unittest.TestCase):
                 payload = record("22066906", original, leading_nul=leading_nul)
                 self.assertEqual(parse_code_group(payload, "22066906"), ("22066906", "22026223"))
 
+    def test_reads_midas_separator_before_the_atlas_underscore(self):
+        payload = record(
+            "22065723", "22026331\x1f_MARCADOR CASA PTO NR 5 | "
+            "22065723_MARCADOR CASA PRETO NR 5 | 22066611_MARCADOR CASA PRETO NR 5",
+        ) + b"\x06\x00\x00\x00\x08DIVERSOS\x02\x00\x00\x00\x02UN"
+        result = parse_code_record(payload, "22065723")
+        self.assertEqual(result.codes, ("22065723", "22026331", "22066611"))
+        self.assertEqual(result.unit, "UN")
+        for invalid in (b"22026331\x1e_", b"22026331_\x1f", b"22026331\x1f\x1f_"):
+            with self.assertRaises(EquipmentAtlasCorrelationError):
+                parse_code_record(payload.replace(b"22026331\x1f_", invalid), "22065723")
+
     def test_reads_the_unit_from_the_exact_record(self):
         payload = record("22066906", "22026223_CABO COAXIAL")
         group_and_unit_id = b"\x06\x00\x00\x00\x08DIVERSOS\x02\x00\x00\x00"

@@ -110,6 +110,19 @@ class TOASecondarySessionTests(unittest.TestCase):
         changed["normalizedCapture"]["responsibility"]["form_submitters"][0]["provider_id"] = "29"
         self.assertIsNone(_confirmed_adhesion_provider(changed, capture, day))
 
+        without_movements = deepcopy(raw)
+        normalized = without_movements["normalizedCapture"]
+        normalized.update(tasks=[{"os_number": "1234", "status": "N", "close_code": "301"}],
+                          installed_equipment=[], removed_equipment=[], materials=[])
+        normalized["responsibility"]["inventory_providers"] = []
+        self.assertEqual(_confirmed_adhesion_provider(without_movements, capture, day), provider)
+        for invalid in ({"tasks": [*normalized["tasks"], {"status": "E", "close_code": "409"}]},
+                        {"tasks": [{"status": "N"}]}, {"materials": [{"material_code": "22025072"}]},
+                        {"removed_equipment": [{"serial": "123"}]}, {"materials": None}):
+            with self.subTest(invalid=invalid):
+                changed = {**without_movements, "normalizedCapture": {**normalized, **invalid}}
+                self.assertIsNone(_confirmed_adhesion_provider(changed, capture, day))
+
 
 if __name__ == "__main__":
     unittest.main()

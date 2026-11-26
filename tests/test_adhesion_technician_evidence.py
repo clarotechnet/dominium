@@ -49,6 +49,33 @@ class AdhesionTechnicianEvidenceTests(unittest.TestCase):
         self.reader.record("natal", self.result("222222", "Outra Técnica"))
         self.assertFalse(self.matches())
 
+    def test_accepts_verified_stock_spelling_only_for_the_bound_installer(self):
+        self.assigned.update(name="ESLI MELQUISEDEQUE DA SILVA", external_id="Z657807")
+        self.reader.record("natal", self.result())
+        roster = [{"installer_id": 338736, "technician_name": "ESLI MELQUISEDEQUI DA SILVA"}]
+        self.assertTrue(self.reader.matches("natal", self.order, self.date, self.assigned, 338736, lambda: roster))
+        self.assertFalse(self.reader.matches("natal", self.order, self.date, self.assigned, 20,
+                                             lambda: [{**roster[0], "installer_id": 20}]))
+        roster.append({**roster[0], "technician_name": "OUTRA PESSOA"})
+        self.assertFalse(self.reader.matches("natal", self.order, self.date, self.assigned, 338736, lambda: roster))
+
+    def test_records_unproductive_task_with_code_and_no_reported_movements(self):
+        result = self.result()
+        capture = result["results"][0]
+        capture.update(installed_equipment=[], removed_equipment=[], materials=[])
+        task = capture["tasks"][0]
+        task.update(status="N", close_code="312")
+        self.reader.record("natal", result)
+        self.assertTrue(self.matches())
+        for field in ("installed_equipment", "removed_equipment", "materials"):
+            capture[field] = [{}]
+            self.reader.record("natal", result)
+            self.assertFalse(self.matches())
+            capture[field] = []
+        task.pop("close_code")
+        self.reader.record("natal", result)
+        self.assertFalse(self.matches())
+
     def test_ignores_cached_or_unscoped_evidence(self):
         cached = {**self.result(), "source": "productive_cache"}
         self.reader.record("natal", cached)

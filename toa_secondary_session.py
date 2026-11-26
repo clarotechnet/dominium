@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+from adhesion_technician_evidence import has_no_adhesion_movements, is_unproductive_task
+
 DEBUG_PORT = 9341
 TOA_HOSTS = {
     "clarobrasil.etadirect.com",
@@ -90,8 +92,13 @@ def _confirmed_adhesion_provider(value: dict, capture: dict, adhesion_date: str)
         return None
     inventory = responsibility.get("inventory_providers")
     forms = responsibility.get("form_submitters")
-    if not isinstance(inventory, list) or not inventory or not isinstance(forms, list) or not forms:
+    if not isinstance(inventory, list) or not isinstance(forms, list) or not forms:
         return None
+    if not inventory:
+        tasks = normalized.get("tasks")
+        if (not isinstance(tasks, list) or not tasks or not all(is_unproductive_task(task) for task in tasks)
+                or not has_no_adhesion_movements(normalized)):
+            return None
     if not all(isinstance(item, dict) and _text(item.get("id")) == pid
                and _text(item.get("external_id")).upper() == login
                and _text(item.get("name")).casefold() == name.casefold() for item in inventory):

@@ -7,9 +7,24 @@ import unicodedata
 from pathlib import PurePosixPath
 
 
+# Verified against the current TOA executor and the Imperium stock record.
+_IMPERIUM_STOCK_NAMES = {
+    ("338736", "Z657807", "ESLI MELQUISEDEQUE DA SILVA"): "ESLI MELQUISEDEQUI DA SILVA",
+}
+
+
 def _name(value):
     value = unicodedata.normalize("NFKD", str(value or "").upper())
     return " ".join("".join(ch for ch in value if not unicodedata.combining(ch)).split())
+
+
+def is_unproductive_task(task):
+    return (isinstance(task, dict) and str(task.get("status")).upper() == "N"
+            and re.fullmatch(r"\d{3}", str(task.get("close_code") or "")) is not None)
+
+
+def has_no_adhesion_movements(capture):
+    return all(capture.get(field) == [] for field in ("installed_equipment", "removed_equipment", "materials"))
 
 
 class AdhesionTechnicianEvidence:
@@ -46,10 +61,12 @@ class AdhesionTechnicianEvidence:
                     or str(capture.get("activity_status")).lower() not in {"complete", "completed", "concluido"}
                     or capture.get("validation_errors") or capture.get("operation_blockers")):
                 continue
+            no_movements = has_no_adhesion_movements(capture)
             tasks = [str(task.get("os_number") or "") for task in capture.get("tasks") or ()
                      if isinstance(task, dict) and not task.get("imperium_only") and not task.get("registry_only")
                      and task.get("source") != "imperium_contract_status"
-                     and str(task.get("status")).upper() in {"E", "EXECUTED", "EXECUTADA", "EXECUTADO"}]
+                     and (str(task.get("status")).upper() in {"E", "EXECUTED", "EXECUTADA", "EXECUTADO"}
+                          or (no_movements and is_unproductive_task(task)))]
             for order in capture.get("imperium_matches") or ():
                 if not isinstance(order, dict):
                     continue
@@ -90,4 +107,5 @@ class AdhesionTechnicianEvidence:
         technicians = get_technicians()
         same_installer = [row for row in technicians if str(row.get("installer_id")) == str(installer_id)]
         names = {_name(row.get("technician_name")) for row in same_installer}
-        return names == {name}
+        expected_stock_name = _IMPERIUM_STOCK_NAMES.get((str(installer_id), login, name))
+        return names == {name} or (expected_stock_name is not None and names == {expected_stock_name})
