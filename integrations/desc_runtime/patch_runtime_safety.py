@@ -433,3 +433,23 @@ def patch_stock_retry_runtime(app: str, ledger: str, api: str, *, web_app: str, 
     for result in (app, ledger, api):
         ast.parse(result)
     return app, ledger, api
+
+def patch_adhesion_fresh_export_runtime(text: str) -> str:
+    """Refresh stale adhesion evidence without importing orders or touching DESC."""
+    old = ('            from toa_export_task_recovery import reconcile_export_tasks\n'
+           '            capture["tasks"] = reconcile_export_tasks(capture, ROOT / "logs" / "toa-exports")')
+    new = ('            from toa_export_task_recovery import recover_tasks_with_refresh, download_adhesion_export\n'
+           '            def refresh_adhesion_export(route, day):\n'
+           '                if TOA_AUTOMATION.running or TOA_BUCKET_COLLECTOR.running:\n'
+           '                    raise RuntimeError("TOA busy; retry consultation later")\n'
+           '                download_adhesion_export(ROOT, route, day)\n'
+           '            capture["tasks"] = recover_tasks_with_refresh(\n'
+           '                capture, ROOT / "logs" / "toa-exports", all_status_rows or cached_rows,\n'
+           '                refresh_adhesion_export)')
+    if new in text:
+        return text
+    if text.count(old) != 1 or 'all_status_rows = result.get("imperium_all_orders")' not in text:
+        raise ValueError("Unsupported legacy adhesion task recovery layout")
+    result = text.replace(old, new, 1)
+    ast.parse(result)
+    return result

@@ -887,6 +887,7 @@ patch_official_atlas_master_unit	function	integrations/desc_runtime/patch_runtim
 patch_official_code_only	function	integrations/desc_runtime/patch_runtime_safety.py	322	-
 patch_adhesion_live_technician	function	integrations/desc_runtime/patch_runtime_safety.py	340	-
 patch_stock_retry_runtime	function	integrations/desc_runtime/patch_runtime_safety.py	384	-
+patch_adhesion_fresh_export_runtime	function	integrations/desc_runtime/patch_runtime_safety.py	437	-
 MultiOwnerTests	class	integrations/desc_runtime/test_desc_multi_owner_runtime.py	9	-
 test_companion_task_without_items_reaches_safe_aggregation_plan	method	integrations/desc_runtime/test_desc_multi_owner_runtime.py	10	MultiOwnerTests
 job	function	integrations/desc_runtime/test_desc_sector_scope.py	11	-
@@ -4149,6 +4150,7 @@ test_paths_are_isolated_and_manifest_exists	method	tests/test_toa_discovery_brow
 test_reuses_existing_discovery_browser	method	tests/test_toa_discovery_browser.py	15	TOADiscoveryBrowserTests
 ToaExportTaskRecoveryTests	class	tests/test_toa_export_task_recovery.py	11	-
 test_exact_fresh_export_recovers_only_missing_tasks	method	tests/test_toa_export_task_recovery.py	12	ToaExportTaskRecoveryTests
+test_runtime_patch_is_scoped_and_idempotent	method	tests/test_toa_export_task_recovery.py	60	ToaExportTaskRecoveryTests
 TOAImportTests	class	tests/test_toa_import.py	14	-
 _complete_csv	method	tests/test_toa_import.py	16	TOAImportTests
 test_expands_repeated_os_columns_and_ignores_control_rows	method	tests/test_toa_import.py	28	TOAImportTests
@@ -4586,10 +4588,12 @@ feed	method	toa_datalake_store.py	399	TOADatalakeStore
 _targets	function	toa_discovery_browser.py	33	-
 launch	function	toa_discovery_browser.py	45	-
 check	function	toa_discovery_check.py	26	-
-_norm	function	toa_export_task_recovery.py	9	-
-_status	function	toa_export_task_recovery.py	16	-
-_code	function	toa_export_task_recovery.py	25	-
-reconcile_export_tasks	function	toa_export_task_recovery.py	30	-
+_norm	function	toa_export_task_recovery.py	13	-
+_status	function	toa_export_task_recovery.py	20	-
+_code	function	toa_export_task_recovery.py	29	-
+reconcile_export_tasks	function	toa_export_task_recovery.py	34	-
+recover_tasks_with_refresh	function	toa_export_task_recovery.py	116	-
+download_adhesion_export	function	toa_export_task_recovery.py	177	-
 _key	function	toa_import.py	38	-
 TOAOrder	class	toa_import.py	51	-
 to_dict	method	toa_import.py	91	TOAOrder

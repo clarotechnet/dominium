@@ -1756,6 +1756,7 @@ toa_discovery_browser	tests/test_toa_discovery_browser.py
 unittest	tests/test_toa_discovery_browser.py
 csv	tests/test_toa_export_task_recovery.py
 datetime	tests/test_toa_export_task_recovery.py
+integrations	tests/test_toa_export_task_recovery.py
 os	tests/test_toa_export_task_recovery.py
 pathlib	tests/test_toa_export_task_recovery.py
 tempfile	tests/test_toa_export_task_recovery.py
@@ -1947,8 +1948,13 @@ toa_discovery_browser	toa_discovery_check.py
 urllib	toa_discovery_check.py
 csv	toa_export_task_recovery.py
 datetime	toa_export_task_recovery.py
+os	toa_export_task_recovery.py
 pathlib	toa_export_task_recovery.py
 re	toa_export_task_recovery.py
+tempfile	toa_export_task_recovery.py
+threading	toa_export_task_recovery.py
+time	toa_export_task_recovery.py
+toa_bucket_collector	toa_export_task_recovery.py
 unicodedata	toa_export_task_recovery.py
 base64	toa_import.py
 collections	toa_import.py

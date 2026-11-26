@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from toa_export_task_recovery import reconcile_export_tasks
+from toa_export_task_recovery import reconcile_export_tasks, recover_tasks_with_refresh
 
 
 class ToaExportTaskRecoveryTests(unittest.TestCase):
@@ -42,3 +42,31 @@ class ToaExportTaskRecoveryTests(unittest.TestCase):
             self.assertEqual(reconcile_export_tasks(cap, root, now=now), cap["tasks"])
             write([row], age=901)
             self.assertEqual(reconcile_export_tasks(cap, root, now=now), cap["tasks"])
+
+            calls = []
+            orders = [{"contract": "12345678", "num_os": "2600000003", "status": "EM CAMPO"}]
+            def refresh(route, day):
+                calls.append((route, day))
+                write([row])
+            self.assertEqual(len(recover_tasks_with_refresh(cap, root, orders, refresh, now=now)), 3)
+            self.assertEqual(calls, [("NTL-DMV", now.date())])
+            self.assertEqual(len(recover_tasks_with_refresh(cap, root, orders, refresh, now=now)), 3)
+            self.assertEqual(len(calls), 1)
+            write([row], age=901)
+            self.assertEqual(recover_tasks_with_refresh(dict(cap, route_name="NTL-DMV_ADM"), root, orders, refresh, now=now), cap["tasks"])
+            self.assertEqual(recover_tasks_with_refresh(cap, root, [], refresh, now=now), cap["tasks"])
+            self.assertEqual(len(calls), 1)
+
+    def test_runtime_patch_is_scoped_and_idempotent(self):
+        from integrations.desc_runtime.patch_runtime_safety import patch_adhesion_fresh_export_runtime
+        source = ('def match(profile, result):\n'
+                  '    all_status_rows = result.get("imperium_all_orders")\n'
+                  '    for capture in result.get("results", []):\n'
+                  '        if profile.key == "natal":\n'
+                  '            from toa_export_task_recovery import reconcile_export_tasks\n'
+                  '            capture["tasks"] = reconcile_export_tasks(capture, ROOT / "logs" / "toa-exports")\n')
+        patched = patch_adhesion_fresh_export_runtime(source)
+        self.assertIn("TOA_AUTOMATION.running or TOA_BUCKET_COLLECTOR.running", patched)
+        self.assertEqual(patch_adhesion_fresh_export_runtime(patched), patched)
+        with self.assertRaises(ValueError):
+            patch_adhesion_fresh_export_runtime("def match(): pass")

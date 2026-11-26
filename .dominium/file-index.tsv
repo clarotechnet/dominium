@@ -150,7 +150,7 @@ shared	integrations/desc_runtime/disconnect_local_runner.py	36		1	Executa um ún
 shared	integrations/desc_runtime/equipment_atlas_correlations.py	6		1	Read-only Codigo -> DescricaoAtlas correlation in the legacy runtime.	2e51cea3ca4f0a1e
 shared	integrations/desc_runtime/nightly_backlog_106.py	7	3		Operator-authorized 23h backlog batch. Default is read-only preview.	0c9ef41fc1d83645
 shared	integrations/desc_runtime/nightly_backlog_service.py	10			Daily backlog scheduling owned by the Dominium HTTP server, not by a browser.	0746da639cac79e4
-shared	integrations/desc_runtime/patch_runtime_safety.py	8			Small source transformations for the legacy server; no network or writes.	5268335226b6f882
+shared	integrations/desc_runtime/patch_runtime_safety.py	9		2	Small source transformations for the legacy server; no network or writes.	9d974f6b2acdb7f9
 shared	integrations/desc_runtime/README.md				Runtime DESC do servidor TECHNET	19bbc1a2c0ef3ad2
 tests	integrations/desc_runtime/test_desc_multi_owner_runtime.py	2		1		b7c145e05d4781d6
 tests	integrations/desc_runtime/test_desc_sector_scope.py	10			Read-only sector scope regression for BotDMV DESC -> DataSnap executor.	0fa5396e16d5d30f
@@ -523,7 +523,7 @@ tests	tests/test_toa_connector.py	9				0b0027f6f3c21936
 tests	tests/test_toa_contract_registry.py	12				24da45304414f57e
 tests	tests/test_toa_datalake_store.py	5				9a077ca9a38c9926
 tests	tests/test_toa_discovery_browser.py	3				f5606883d40c3cc1
-tests	tests/test_toa_export_task_recovery.py	2				b604190ec1d2452f
+tests	tests/test_toa_export_task_recovery.py	3		2		fc9ebd3350e64a30
 tests	tests/test_toa_import.py	15		1		28ef082b0cc1d01f
 tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
 tests	tests/test_toa_live.py	27		1		d2308d1bedea07a3
@@ -562,7 +562,7 @@ toa	toa_contract_registry.py	17			DOMINIUM | MAPA DE RESPONSABILIDADE	643a5826db
 toa	toa_datalake_store.py	19			DOMINIUM | MAPA DE RESPONSABILIDADE	f7c80584d8f7687e
 toa	toa_discovery_browser.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	70da7424e3e7a77f
 toa	toa_discovery_check.py	1			DOMINIUM | MAPA DE RESPONSABILIDADE	780c396748a6abe3
-toa	toa_export_task_recovery.py	4			Read-only reconciliation of additional TOA tasks from a fresh bucket export.	d8b6a9a0fe70c075
+toa	toa_export_task_recovery.py	6			Read-only reconciliation of additional TOA tasks from a fresh bucket export.	aa7923e5a97dfccf
 toa	toa_import.py	23			DOMINIUM | MAPA DE RESPONSABILIDADE	32013568e2e200cf
 toa	toa_inventory.py	11			DOMINIUM | MAPA DE RESPONSABILIDADE	4a753ed25a0c24b3
 toa	toa_live.py	34		3	DOMINIUM | MAPA DE RESPONSABILIDADE	06aef1bd07886d55
