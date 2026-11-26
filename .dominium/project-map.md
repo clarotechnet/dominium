@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-25T20:36:49+00:00
-- Source fingerprint: `93a5d9699eed371c`
+- Generated: 2026-11-26T00:58:23+00:00
+- Source fingerprint: `4ca0d0b7e7853e55`
 - Indexed files: 572
-- Indexed symbols: 4692
+- Indexed symbols: 4696
 - API path references: 576
 
 ## Navigation rule
@@ -63,7 +63,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `toa_datalake_store.py` (19 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_discovery_browser.py` (2 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_discovery_check.py` (1 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
-- `toa_export_task_recovery.py` (4 symbols) - Read-only reconciliation of additional TOA tasks from a fresh bucket export.
+- `toa_export_task_recovery.py` (6 symbols) - Read-only reconciliation of additional TOA tasks from a fresh bucket export.
 - `toa_import.py` (23 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_inventory.py` (11 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `toa_live.py` (34 symbols, 3 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE

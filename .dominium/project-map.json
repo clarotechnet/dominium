@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-25T20:36:49+00:00",
+  "generated_at": "2026-11-26T00:58:23+00:00",
   "schema": 2,
-  "source_fingerprint": "93a5d9699eed371c9e558aa78ec008a1b44c58cd7313f2db50b1981101e309b8",
+  "source_fingerprint": "4ca0d0b7e7853e55a9a42d8753f278dec0c8a7cf14fc6f1ed21f67e5588092b3",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -2714,17 +2714,20 @@
     {
       "path": "integrations/desc_runtime/patch_runtime_safety.py",
       "category": "shared",
-      "bytes": 23446,
-      "sha256": "5268335226b6f882beb3ef25b981396f34ed5b59782c41c0d6f58734707e2605",
+      "bytes": 24753,
+      "sha256": "9d974f6b2acdb7f9dc4d353f1952288a861775021858c8ffcef23aae515e4291",
       "summary": "Small source transformations for the legacy server; no network or writes.",
       "imports": [
         "ast"
       ],
       "endpoints": [],
       "env_vars": [],
-      "datasnap_methods": [],
+      "datasnap_methods": [
+        "TOA_AUTOMATION.running",
+        "TOA_BUCKET_COLLECTOR.running"
+      ],
       "entrypoint": false,
-      "symbol_count": 8
+      "symbol_count": 9
     },
     {
       "path": "integrations/desc_runtime/README.md",
@@ -9776,12 +9779,13 @@
     {
       "path": "tests/test_toa_export_task_recovery.py",
       "category": "tests",
-      "bytes": 2541,
-      "sha256": "b604190ec1d2452f808b8424471558e490b15939c17a50e22971af6ae810b3e5",
+      "bytes": 4400,
+      "sha256": "fc9ebd3350e64a30141bc18bd1ac43d5216a5852970b694db5e884612fb9df58",
       "summary": "",
       "imports": [
         "csv",
         "datetime",
+        "integrations",
         "os",
         "pathlib",
         "tempfile",
@@ -9790,9 +9794,12 @@
       ],
       "endpoints": [],
       "env_vars": [],
-      "datasnap_methods": [],
+      "datasnap_methods": [
+        "TOA_AUTOMATION.running",
+        "TOA_BUCKET_COLLECTOR.running"
+      ],
       "entrypoint": false,
-      "symbol_count": 2
+      "symbol_count": 3
     },
     {
       "path": "tests/test_toa_import.py",
@@ -10545,21 +10552,26 @@
     {
       "path": "toa_export_task_recovery.py",
       "category": "toa",
-      "bytes": 4696,
-      "sha256": "d8b6a9a0fe70c0753f1b391b7c4a10dd8404084facf164be3617e11ab942cb7f",
+      "bytes": 9147,
+      "sha256": "aa7923e5a97dfccf415f231c671d211b394f7f313d510eacbb8dcb03149899b5",
       "summary": "Read-only reconciliation of additional TOA tasks from a fresh bucket export.",
       "imports": [
         "csv",
         "datetime",
+        "os",
         "pathlib",
         "re",
+        "tempfile",
+        "threading",
+        "time",
+        "toa_bucket_collector",
         "unicodedata"
       ],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 4
+      "symbol_count": 6
     },
     {
       "path": "toa_import.py",
@@ -10821,6 +10833,7 @@
     "TOAImportProtocol.incomplete_result_length",
     "TOA_AUTOMATION.credentials_path",
     "TOA_AUTOMATION.public_state",
+    "TOA_AUTOMATION.running",
     "TOA_AUTOMATION.start",
     "TOA_AUTOMATION.stop",
     "TOA_AUTOMATION.trigger",
@@ -10830,6 +10843,7 @@
     "TOA_BUCKET_AUTOMATION.start",
     "TOA_BUCKET_AUTOMATION.stop",
     "TOA_BUCKET_AUTOMATION.trigger",
+    "TOA_BUCKET_COLLECTOR.running",
     "TOA_CAPTURE_CATALOG.analyze",
     "TOA_CAPTURE_CATALOG.public_state",
     "TOA_CONNECTOR.cloud_client",
