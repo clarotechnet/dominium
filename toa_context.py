@@ -60,7 +60,12 @@ class TOAContextIndex:
         export_day = self.root / "logs" / "toa-exports" / date.strftime("%Y%m%d")
         if export_day.is_dir():
             run_dirs = sorted(
-                (path for path in export_day.iterdir() if path.is_dir()),
+                # Supplemental adhesion downloads only recover task details.
+                # They cannot establish or replace an order's import scope.
+                (
+                    path for path in export_day.iterdir()
+                    if path.is_dir() and not path.name.startswith("adhesion-readonly-")
+                ),
                 reverse=True,
             )
             if run_dirs:

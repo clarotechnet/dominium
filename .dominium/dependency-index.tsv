@@ -1763,10 +1763,13 @@ toa_discovery_browser	tests/test_toa_discovery_browser.py
 unittest	tests/test_toa_discovery_browser.py
 csv	tests/test_toa_export_task_recovery.py
 datetime	tests/test_toa_export_task_recovery.py
+imperium_api	tests/test_toa_export_task_recovery.py
 integrations	tests/test_toa_export_task_recovery.py
+operation_scope	tests/test_toa_export_task_recovery.py
 os	tests/test_toa_export_task_recovery.py
 pathlib	tests/test_toa_export_task_recovery.py
 tempfile	tests/test_toa_export_task_recovery.py
+toa_context	tests/test_toa_export_task_recovery.py
 toa_export_task_recovery	tests/test_toa_export_task_recovery.py
 unittest	tests/test_toa_export_task_recovery.py
 dataclasses	tests/test_toa_import.py
