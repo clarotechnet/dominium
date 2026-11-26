@@ -60,6 +60,48 @@ def _toa_page() -> dict[str, Any] | None:
 def _now() -> str:
     return dt.datetime.now().astimezone().isoformat(timespec="seconds")
 
+def _confirmed_adhesion_provider(value: dict, capture: dict, adhesion_date: str) -> dict | None:
+    """Reconcile a historical assignment only with evidence from the completed activity."""
+    if (not adhesion_date or capture.get("scheduled_date") != adhesion_date
+            or capture.get("route_name") not in {"NTL-DMV", "PWM-DMV"}
+            or _text(capture.get("activity_status")).lower() not in {"complete", "completed"}
+            or capture.get("validation_errors") or capture.get("operation_blockers")):
+        return None
+    normalized = value.get("normalizedCapture")
+    responsibility = normalized.get("responsibility") if isinstance(normalized, dict) else None
+    search = value.get("searchRow")
+    if not isinstance(responsibility, dict) or not isinstance(search, dict):
+        return None
+    current = responsibility.get("route_provider")
+    historical = responsibility.get("assigned_technician")
+    if not isinstance(current, dict) or not isinstance(historical, dict):
+        return None
+    pid = _text(current.get("id"))
+    login = _text(current.get("external_id")).upper()
+    name = _text(current.get("name"))
+    if (not pid.isdecimal() or not re.fullmatch(r"Z\d+", login) or len(name.split()) < 2
+            or not _text(historical.get("id")).isdecimal() or _text(historical.get("id")) == pid
+            or _text(historical.get("external_id")).upper() != login
+            or _text(historical.get("name")).casefold() == name.casefold()
+            or _text(search.get("pid")) != pid or _text(search.get("external_id")).upper() != login
+            or _text(search.get("date")) != adhesion_date or _text(value.get("pid")) != pid
+            or _text(value.get("externalId")).upper() != login
+            or _text(value.get("tecnico")).casefold() != name.casefold()):
+        return None
+    inventory = responsibility.get("inventory_providers")
+    forms = responsibility.get("form_submitters")
+    if not isinstance(inventory, list) or not inventory or not isinstance(forms, list) or not forms:
+        return None
+    if not all(isinstance(item, dict) and _text(item.get("id")) == pid
+               and _text(item.get("external_id")).upper() == login
+               and _text(item.get("name")).casefold() == name.casefold() for item in inventory):
+        return None
+    if not all(isinstance(form, dict) and _text(form.get("provider_id")) == pid
+               and _text(form.get("user_name")).casefold() == name.casefold() for form in forms):
+        return None
+    return {"id": pid, "name": name, "external_id": login}
+
+
 class TOASecondarySession:
     """Read-only bridge to the TOA already open in the bot Chrome."""
 
@@ -218,6 +260,10 @@ class TOASecondarySession:
             capture = self._capture(direct)
             if capture["contract"] != wanted:
                 raise ValueError("A resposta do TOA nao corresponde ao contrato pesquisado")
+            provider = _confirmed_adhesion_provider(direct, capture, adhesion_date)
+            if provider is not None:
+                capture["assigned_technician"] = provider
+                capture["route_provider"] = provider
             self._last_contract = wanted
             self._last_lookup_at = _now()
             self._last_error = ""

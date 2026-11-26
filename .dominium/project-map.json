@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-26T12:45:45+00:00",
+  "generated_at": "2026-11-26T12:55:48+00:00",
   "schema": 2,
-  "source_fingerprint": "496ef3d4bcb33fc2477b37874773e84760a2ea75214374aa6abfde3db863aeaf",
+  "source_fingerprint": "cadbe382cf4e64f2abfa7f904bc931628072e6b4350fe3add7e3c8101448e9b6",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1673,8 +1673,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 35508,
-      "sha256": "97d281cafa57320387af526b08a23ef41991dde760d348187ca5c89c1b1da458",
+      "bytes": 36235,
+      "sha256": "f82bc0c4d7ba55cbff3711931f89af2121fc7e7eecf87c7d177522e4bd02d71d",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -9930,10 +9930,11 @@
     {
       "path": "tests/test_toa_secondary_session.py",
       "category": "tests",
-      "bytes": 2961,
-      "sha256": "56a9a09df9d84356e70fa457634ed23a27d2534a806912eb974fc3495d747667",
+      "bytes": 5018,
+      "sha256": "7ce95f7ecbda1b1a8b578dc54f73a0e098ef023cefd1941e5383a287f117f833",
       "summary": "",
       "imports": [
+        "copy",
         "json",
         "pathlib",
         "subprocess",
@@ -9945,7 +9946,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 8
+      "symbol_count": 9
     },
     {
       "path": "tests/test_toa_worker_cache.py",
@@ -10722,8 +10723,8 @@
     {
       "path": "toa_secondary_session.py",
       "category": "toa",
-      "bytes": 9986,
-      "sha256": "15f3cae185147f3156b2d55daaa29728010d08b699c1b12ba2d3739d86e7fd64",
+      "bytes": 12786,
+      "sha256": "747bee8b879e82ffed767a9307eb29a7d5e5b0d66596f348dfd54cc09c2c9f58",
       "summary": "",
       "imports": [
         "__future__",
@@ -10741,7 +10742,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 15
+      "symbol_count": 16
     },
     {
       "path": "verify_toa_cloud_bridge.py",

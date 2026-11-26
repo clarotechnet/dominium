@@ -507,3 +507,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Reproducao da terceira tarefa e da integridade de escopo, suites dirigidas e gate completo.
 
 **Próximo passo/pendência:** Conferir em producao apenas por consulta o caso de tres OS.
+
+## 2026-11-26 12:55 UTC — Adesao: identificar executor atual da atividade TOA
+
+**Motivo:** A atribuicao historica de roteamento do TOA tinha PID e nome de outro tecnico, com o login do responsavel atual. A ponte propagava a atribuicao historica ao preparar a baixa em lote.
+
+**Alterado:** Em consulta explicita de adesao concluida NTL/PWM, usa o responsavel atual quando busca, recurso, inventario e formularios concordam no PID e nome, com o mesmo login. Evidencia incompleta continua em tratativa.
+
+**Verificação:** Regressao de atribuicao antiga com login reaproveitado, rejeicao de provas incompletas e gate completo.
+
+**Próximo passo/pendência:** Conferir captura e titular do estoque no Imperium sem enviar baixa.
