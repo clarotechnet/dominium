@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-26T13:31:43+00:00
-- Source fingerprint: `f641cf39c92c5556`
+- Generated: 2026-11-26T14:08:58+00:00
+- Source fingerprint: `0897827f18faf6e4`
 - Indexed files: 572
-- Indexed symbols: 4720
+- Indexed symbols: 4725
 - API path references: 583
 
 ## Navigation rule
@@ -145,7 +145,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `.mcp.json`
 - `ABRIR LEITOR DE FLUXOS.cmd`
 - `Abrir Painel.cmd`
-- `adhesion_technician_evidence.py` (5 symbols) - Short-lived TOA evidence for the exact Natal adhesion order.
+- `adhesion_technician_evidence.py` (7 symbols) - Short-lived TOA evidence for the exact Natal adhesion order.
 - `adm_allocation.py` (3 symbols) - Read-only allocation for DESC multi-OS activities.
 - `AGENTS.md` (1 DataSnap methods) - DOMINIUM agent guide
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.

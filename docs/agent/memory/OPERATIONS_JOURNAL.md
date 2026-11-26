@@ -527,3 +527,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Regressao com serial ja instalado, serial diferente, outro tipo de equipamento, substituicao e par Virtua/VoIP. Consulta real da OS concluida sem reenvio.
 
 **Próximo passo/pendência:** Validar o arquivo publicado no Hostinger.
+
+## 2026-11-26 14:08 UTC — Adesao NTL/PWM concilia executor sem movimentos e le separador Atlas
+
+**Motivo:** O TOA pode reter o responsavel anterior em atividade improdutiva, e o nome de estoque do Imperium tem grafia diferente para um ID confirmado. O Atlas envia separador MIDAS dentro do alias do marcador.
+
+**Alterado:** Confirmacao de executor por rota, busca e formulario mesmo com inventario explicitamente vazio em tarefas N com codigo. Grafia de estoque conferida por ID, login e nome de origem. Parser aceita apenas o separador MIDAS entre codigo e underscore.
+
+**Verificação:** 20 testes direcionados passaram, incluindo identidade divergente, ausencia de prova de estoque, tarefas com movimentos e registro Atlas malformado.
+
+**Próximo passo/pendência:** Validar em producao por consulta, incluindo lotes com atividades improdutivas. Nunca reenviar tentativa de resultado incerto.
