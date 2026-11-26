@@ -2,6 +2,7 @@ import json
 import subprocess
 import tempfile
 import unittest
+from copy import deepcopy
 from pathlib import Path
 from unittest.mock import patch
 
@@ -9,6 +10,7 @@ from toa_secondary_session import (
     BUSY_RETRY_DELAYS,
     TOASecondaryBusyError,
     TOASecondarySession,
+    _confirmed_adhesion_provider,
 )
 
 
@@ -76,6 +78,37 @@ class TOASecondarySessionTests(unittest.TestCase):
         normal, adhesion = [call.args[0] for call in run.call_args_list]
         self.assertEqual(normal, ["node", str(self.session.lookup_script), "1234567"])
         self.assertEqual(adhesion, [*normal, "2026-11-25"])
+
+    def test_adhesion_recovers_confirmed_executor_from_current_provider(self) -> None:
+        day = "2026-11-26"
+        provider = {"id": "75", "name": "TECNICO ATUAL", "external_id": "Z456"}
+        responsibility = {
+            "assigned_technician": {**provider, "id": "29", "name": "TECNICO ANTERIOR"},
+            "route_provider": provider,
+            "inventory_providers": [provider],
+            "form_submitters": [{"provider_id": "75", "user_name": provider["name"]}],
+        }
+        raw = {
+            "ok": True, "contrato": "1234567", "aid": 123, "pid": 75,
+            "status": "complete", "date": day, "tecnico": provider["name"], "externalId": "Z456",
+            "searchRow": {"pid": 75, "external_id": "Z456", "date": day, "route_name": "NTL-DMV"},
+            "normalizedCapture": {"responsibility": responsibility},
+        }
+        with (patch("toa_secondary_session._toa_page", return_value={"url": "fixture"}),
+              patch.object(self.session, "_direct_lookup", return_value=raw)):
+            capture = self.session.lookup_contract("1234567", adhesion_date=day)["results"][0]
+        self.assertEqual(capture["assigned_technician"], provider)
+        self.assertEqual(capture["route_provider"], provider)
+        self.assertIsNone(_confirmed_adhesion_provider(raw, capture, ""))
+        self.assertIsNone(_confirmed_adhesion_provider(raw, capture, "2026-11-25"))
+        self.assertIsNone(_confirmed_adhesion_provider(raw, {**capture, "route_name": "NTL-DMV-ADM"}, day))
+        for field in ("route_provider", "inventory_providers", "form_submitters"):
+            changed = deepcopy(raw)
+            changed["normalizedCapture"]["responsibility"].pop(field)
+            self.assertIsNone(_confirmed_adhesion_provider(changed, capture, day))
+        changed = deepcopy(raw)
+        changed["normalizedCapture"]["responsibility"]["form_submitters"][0]["provider_id"] = "29"
+        self.assertIsNone(_confirmed_adhesion_provider(changed, capture, day))
 
 
 if __name__ == "__main__":
