@@ -15,6 +15,15 @@
   function isAdhesionBucket(profile, value) {
     return (PREFIXES[profile] || []).some(prefix => canonical(value) === prefix+"-DMV");
   }
+  function liveBucket(capture, profile, providerLabel) {
+    const routes = [capture.bucket, capture.route, capture.route_name].map(canonical).filter(Boolean);
+    const provider = canonical(providerLabel(capture.route_provider));
+    if (/^(?:NTL|PWM|FTZ|JCR|MRO|JPA)-DMV(?:-|$)/.test(provider)) routes.push(provider);
+    if (routes.some(route => !isAdhesionBucket(profile, route) || route !== routes[0])) {
+      throw Error("Bucket TOA divergente ou fora de adesao; nenhuma OS deste contrato sera enviada.");
+    }
+    return routes[0] || "";
+  }
   function importBucket(order, scope, capture) {
     const source=String(order?.import_scope?.source_file||"").split(/[\\/]/).pop();
     const parts=source.match(/^Atividades-(NTL|PWM)-DMV_(\d{2})_(\d{2})_(\d{2})(?:\s*\(\d+\))?\.(?:csv|xlsx)$/i);
@@ -204,10 +213,7 @@
       const rawDate=String(capture.scheduled_date||"").slice(0,10);
       const normalizedDate=/^\d{2}\/\d{2}\/\d{4}$/.test(rawDate)?rawDate.split("/").reverse().join("-"):rawDate;
       if(normalizedDate!==date) throw Error("Data do TOA divergente da data selecionada.");
-      const explicit=canonical(capture.bucket || capture.route || "");
-      const provider=canonical(deps.route(capture.route_provider));
-      const route=explicit || (/^(?:NTL|PWM|FTZ|JCR|MRO)-DMV(?:-|$)/.test(provider)?provider:"");
-      if(route && !isAdhesionBucket(profile,route)) throw Error("Bucket de adesao nao confirmado; nenhuma OS deste contrato sera enviada.");
+      const route=liveBucket(capture,profile,deps.route);
       for(const task of matching) {
         const os=String(task.os_number), activeOrder=byNumber.get(os);
         const exact=(capture.imperium_matches||[]).filter(o=>String(o.num_os)===os && String(o.contract)===contract && Number(o.id_os)===Number(activeOrder.id_os));
@@ -225,8 +231,8 @@
           code="706";
         }
         const origin=importBucket(order,scope,capture);
-        if(!route && !isAdhesionBucket(profile,origin)) throw Error("Bucket de origem sem comprovacao no arquivo de importacao.");
-        if(order.operation_source==="toa_import" && !isAdhesionBucket(profile,origin)) throw Error("Escopo de importacao fora de adesao.");
+        if(order.operation_source==="toa_import" && !origin) throw Error("OS "+os+": origem importada sem comprovacao de bucket, data e atividade de adesao.");
+        if(!route && !origin) throw Error("OS "+os+": bucket NTL/PWM sem comprovacao no TOA ou no arquivo de importacao.");
         if(route && origin && route!==origin) throw Error("Bucket TOA diverge da origem importada.");
         if(!service || /DESCONEX|RETIRADA\s+DE\s+ASSINATURA/i.test(service)) throw Error("Servico fora do escopo de adesao: "+os);
         seen.add(os);
@@ -265,7 +271,7 @@
     }
     applySharedEmtaRule(candidates,deps);
     deps.assign(candidates);
-    const serials=new Set(), byActivity=new Map();
+    const serials=new Map(), byActivity=new Map();
     for(const candidate of candidates) {
       if(candidate.batchCodeOnly) continue;
       const activitySerials=byActivity.get(candidate.capture.aid)||new Set();
@@ -283,8 +289,9 @@
       if(candidate.code==="706" && (plan.installed.length!==1 || plan.installed[0].type!=="chip" || !/^\d{18,25}$/.test(String(plan.installed[0].serial||"")) || plan.removed.length))throw Error("Codigo 706 exige um unico ICCID instalado.");
       for(const item of [...plan.installed,...plan.removed]) {
         const key=String(item.serial||"").replace(/[^A-Z0-9]/gi,"").toUpperCase();
-        if(!key || serials.has(key)) throw Error("Serial ausente ou repetido no contrato: "+candidate.numOs);
-        serials.add(key);activitySerials.add(key);
+        if(!key) throw Error("Serial obrigatorio ausente na OS "+candidate.numOs+".");
+        if(serials.has(key)) throw Error("Serial sem vinculo unico no inventario TOA. Confira instalacao e retirada nas OS "+[...new Set([serials.get(key),candidate.numOs])].join(", ")+". Nenhuma baixa enviada.");
+        serials.set(key,candidate.numOs);activitySerials.add(key);
       }
     }
     // Uma atividade com diversas OS nao pode perder itens por alocacao automatica.
@@ -458,7 +465,7 @@
             () => request(apiUrlForProfile("/api/toa-live/lookup", profile), {
               method: "POST",
               headers: {"Content-Type": "application/json"},
-              body: JSON.stringify({query: contract, expected_profile_key: profile, expected_date: date}),
+              body: JSON.stringify({query: contract, expected_profile_key: profile, expected_date: date, adhesion_batch: true}),
               timeoutMs: 300000,
             }),
             {active, wait: sleep, notify: () => update(contract, "Consultando", "Ponte do TOA aguardando resposta.")},

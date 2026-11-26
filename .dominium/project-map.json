@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-26T00:58:23+00:00",
+  "generated_at": "2026-11-26T01:47:23+00:00",
   "schema": 2,
-  "source_fingerprint": "4ca0d0b7e7853e55a9a42d8753f278dec0c8a7cf14fc6f1ed21f67e5588092b3",
+  "source_fingerprint": "a4b35af8b5cfc27af0cfc8b648bcfb02cc500b1dd7bf9d57b8060e089d288354",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -181,8 +181,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 364381,
-      "sha256": "c2070289aa7efb17306686f530c0e9ca775e300c9e9ad34a7c886a4c37b6788a",
+      "bytes": 364952,
+      "sha256": "d32817feb401153607625feba84428965d5c508d9eeff64e603018f5cb36818a",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "adhesion_technician_evidence",
@@ -1673,8 +1673,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 32867,
-      "sha256": "d98a52dff48afd3727fcf305896eaf0e94b663712b4e4dfc871559c7da8513e7",
+      "bytes": 33590,
+      "sha256": "b971caa5ae2dbc63ea89e76e762e2f1ada0899cf7dd8bb3b9260f39c03cdcd53",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -2714,8 +2714,8 @@
     {
       "path": "integrations/desc_runtime/patch_runtime_safety.py",
       "category": "shared",
-      "bytes": 24753,
-      "sha256": "9d974f6b2acdb7f9dc4d353f1952288a861775021858c8ffcef23aae515e4291",
+      "bytes": 28715,
+      "sha256": "c36e50b6428fdddd83a7eca48914582e84bb7652d6ec625620c39bbe5437ff61",
       "summary": "Small source transformations for the legacy server; no network or writes.",
       "imports": [
         "ast"
@@ -2724,10 +2724,11 @@
       "env_vars": [],
       "datasnap_methods": [
         "TOA_AUTOMATION.running",
-        "TOA_BUCKET_COLLECTOR.running"
+        "TOA_BUCKET_COLLECTOR.running",
+        "TOA_LIVE.lookup_contract"
       ],
       "entrypoint": false,
-      "symbol_count": 9
+      "symbol_count": 10
     },
     {
       "path": "integrations/desc_runtime/README.md",
@@ -4140,8 +4141,8 @@
     {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/content-main.js",
       "category": "shared",
-      "bytes": 111786,
-      "sha256": "50d32eab3b4048f3e7356e622df0358844b27ef9e0d527ab3f5a29a013773f54",
+      "bytes": 114196,
+      "sha256": "a14265fc47da36317d4a4ccb2dc1d32caab7556e57f079688b7af92d58ade017",
       "summary": "content-main.js - Roda no world: MAIN",
       "imports": [],
       "endpoints": [],
@@ -4151,7 +4152,7 @@
         "Time.get"
       ],
       "entrypoint": false,
-      "symbol_count": 107
+      "symbol_count": 111
     },
     {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/disconnect-inventory.js",
@@ -4299,8 +4300,8 @@
     {
       "path": "integrations/toa_cloud_bridge/extension-central-2.6.3/test-toa-route-tree.cjs",
       "category": "toa",
-      "bytes": 3344,
-      "sha256": "65ea098fd0fbf0788956bc0bb7e5e276b678654e9c8169333f9753472bd3c6ad",
+      "bytes": 4308,
+      "sha256": "5618b839afac00c656032e219c280f8c991a27e82b3573cf4ac8b8100c322813",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -5696,8 +5697,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 33821,
-      "sha256": "4d71c41ca7a1fcfb1bc0ad8cd1f68a402fdb3efc817722d48e343077cec647ab",
+      "bytes": 34294,
+      "sha256": "82e966bc0a3743a70452bf3d66cd860e6bd5f0d6a5af1364bba2fc7c5a050907",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -5709,7 +5710,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 28
+      "symbol_count": 29
     },
     {
       "path": "static/all-cities-scope.css",
@@ -6051,7 +6052,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 185732,
-      "sha256": "174477e78c814e06c4b63bdcab4a336053a5a0c58aecf8ee327a2f3a12dfafef",
+      "sha256": "2684052ffa1e983277f4b876ed6a6bc6d77bc4c20692306171acd9efb527f9ff",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6745,8 +6746,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 25934,
-      "sha256": "15197af6c549c681ef41e75bcbc30e0daa0e5086d083decf742b088f4ecf3c1f",
+      "bytes": 27473,
+      "sha256": "da33960768242a8d5a67f9f75db76fed5e7a512a6c9d875cbe317f0588eba648",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -9910,8 +9911,8 @@
     {
       "path": "tests/test_toa_secondary_session.py",
       "category": "tests",
-      "bytes": 2431,
-      "sha256": "9d5ca5c257461780e36aa058fcda49cb54aae9567f03514443cec019bfbd35f1",
+      "bytes": 2961,
+      "sha256": "56a9a09df9d84356e70fa457634ed23a27d2534a806912eb974fc3495d747667",
       "summary": "",
       "imports": [
         "json",
@@ -9925,7 +9926,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 7
+      "symbol_count": 8
     },
     {
       "path": "tests/test_toa_worker_cache.py",
@@ -10689,8 +10690,8 @@
     {
       "path": "toa_secondary_direct_lookup.mjs",
       "category": "toa",
-      "bytes": 1162,
-      "sha256": "c8ef3f34279460bf3d9c24995a57aef701b8e9dec1ac3e193cb792c100d3bae7",
+      "bytes": 1431,
+      "sha256": "938c8a1280f8fb9536a6c3eca96f688fd728b5771e3bba1dfd8ffe23bdd37ad2",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -10702,8 +10703,8 @@
     {
       "path": "toa_secondary_session.py",
       "category": "toa",
-      "bytes": 9751,
-      "sha256": "6cd2c12208d43c98d7a560823615a70fdc6317562c44fb6140ab8487161d14ae",
+      "bytes": 9986,
+      "sha256": "15f3cae185147f3156b2d55daaa29728010d08b699c1b12ba2d3739d86e7fd64",
       "summary": "",
       "imports": [
         "__future__",

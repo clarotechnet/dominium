@@ -79,4 +79,19 @@ assert.equal(resolve({}, {pid: '66627', external_id: 'z657615'}, {}), 'TECNICO E
 const returned = api.providerById('66627', 'Z657615');
 returned.name = 'ALTERADO';
 assert.equal(resolve({}, {pid:66627, external_id:'Z657615'}, {}), 'TECNICO EXATO');
+vm.runInNewContext(actualFunction('selectMirroredAdhesionActivity').split('\n  async function ')[0], context);
+const chooseAdhesion = context.selectMirroredAdhesionActivity;
+const contract = '1234567';
+const selected = {row:{aid:'111',route_name:'NTL-DMV'},contract,activity:{status:'complete'},
+  tasks:[{os_number:'2661234501'},{os_number:'2661234502'}]};
+const suspended = {...selected,row:{...selected.row,aid:'222'},activity:{status:'suspended'},tasks:[...selected.tasks].reverse()};
+assert.equal(chooseAdhesion([suspended, selected], contract), selected.row);
+for (const variant of [
+  {...suspended,activity:{status:'complete'}},
+  {...suspended,activity:{status:'cancelled'}},
+  {...suspended,tasks:[selected.tasks[0]]},
+  {...suspended,row:{...suspended.row,route_name:'NTL-DMV-ADM'}},
+  {...suspended,row:{...suspended.row,route_name:'PWM-DMV'}},
+  {...suspended,contract:'1234599'},
+]) assert.equal(chooseAdhesion([selected, variant], contract), null);
 console.log('test-toa-route-tree: ok');

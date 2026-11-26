@@ -1414,6 +1414,36 @@
     }
   }
 
+  function selectMirroredAdhesionActivity(candidates, contract) {
+    const completed = candidates.filter(({activity}) => /^(complete|completed)$/i.test(activity?.status || ''));
+    if (completed.length !== 1) return null;
+    const selected = completed[0];
+    const bucket = selected.row.route_name;
+    const orderNumbers = ({tasks}) => {
+      const numbers = (tasks || []).map(task => String(task.os_number || ''));
+      if (!numbers.length || new Set(numbers).size !== numbers.length || numbers.some(os => !/^\d{10}$/.test(os))) return '';
+      return numbers.sort().join(',');
+    };
+    const expected = orderNumbers(selected);
+    if (!expected || !['NTL-DMV', 'PWM-DMV'].includes(bucket)) return null;
+    return candidates.every(candidate =>
+      candidate.contract === contract && candidate.row.route_name === bucket && orderNumbers(candidate) === expected
+      && (candidate === selected || /^suspended$/i.test(candidate.activity?.status || ''))
+    ) ? selected.row : null;
+  }
+
+  async function resolveMirroredAdhesionActivity(rows, contract, prefetchedDetails) {
+    const candidates = [];
+    for (const row of rows) {
+      const key = `${row.aid}:${row.pid}:${row.date}`;
+      const details = prefetchedDetails.get(key) || await fetchActivityDirect(row);
+      prefetchedDetails.set(key, details);
+      const capture = normalizedCaptureFromResponse(details, row.aid, row);
+      candidates.push({...capture, row});
+    }
+    return selectMirroredAdhesionActivity(candidates, contract);
+  }
+
   async function lookupContractDirect(contract, options = {}) {
     if (state.directLookupBusy) throw makeToaError('toa_consulta_em_andamento');
     state.directLookupBusy = true;
@@ -1481,7 +1511,20 @@
       }
       if (!rows.length) return { ok: false, error: 'toa_sem_resultados', contrato_pesquisado: contractNorm };
       let row;
-      if (options.requireSingleActivity === true) {
+      if (options.requireSingleActivity === true && options.adhesionDate) {
+        const adhesionDate = String(options.adhesionDate);
+        const sameDay = candidate => String(candidate?.date || '') === adhesionDate;
+        const exactRows = rows.filter(sameDay);
+        if (rawRows.filter(sameDay).length !== exactRows.length
+          || exactRows.some(candidate => !['NTL-DMV', 'PWM-DMV'].includes(candidate.route_name))) {
+          return {ok: false, error: 'adhesion_activity_scope_unconfirmed', contrato_pesquisado: contractNorm};
+        }
+        if (exactRows.length === 1) row = exactRows[0];
+        if (exactRows.length > 1 && exactRows.length <= 4) {
+          row = await resolveMirroredAdhesionActivity(exactRows, contractNorm, prefetchedDetails);
+        }
+        if (!row) return {ok: false, error: 'multiple_toa_activities', contrato_pesquisado: contractNorm};
+      } else if (options.requireSingleActivity === true) {
         const today = todayIsoSaoPaulo();
         const rowsToday = rows.filter(
           candidate => String(candidate?.date || '') === today
