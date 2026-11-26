@@ -547,3 +547,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Testes de regressao cobrem provedores com dados ausentes, inventario divergente e formulario sem identificacao. Suite direcionada aprovada.
 
 **Próximo passo/pendência:** Verificar consulta e plano no runtime antes de repetir apenas baixas elegiveis.
+
+## 2026-11-26 19:09 UTC — Mudança de endereço com equipamento opcional e descrições Atlas longas
+
+**Motivo:** A fila exigia EMTA ou decoder em mudanças sem instalação daquele tipo. O isolador 22056394 falhava com uma descrição Atlas MIDAS de 352 bytes.
+
+**Alterado:** O lote aceita miscelâneas sem equipamento novo em mudança de endereço com inventário explícito. Seriais efetivos continuam sujeitos a identificação, alocação e antirreenvio. A leitura Atlas aceita comprimento de dois octetos com validação do registro.
+
+**Verificação:** 46 testes JavaScript e 19 testes Python focados. Consulta real somente leitura validou o isolador 22056394 e o marcador 22065723.
+
+**Próximo passo/pendência:** Conferir o asset e o parser depois de publicar, usando somente leituras. Acompanhar solicitações pendentes pelo relatório sem reenviar.

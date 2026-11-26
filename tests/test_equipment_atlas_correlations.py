@@ -17,7 +17,7 @@ def record(code: str, description: str, *, leading_nul: bool = True) -> bytes:
     raw = description.encode("latin1")
     return (
         b"\x08" + code.encode("ascii") + bytes([len(name)]) + name
-        + bytes([len(raw)]) + (b"\x00" if leading_nul else b"") + raw
+        + len(raw).to_bytes(2 if leading_nul else 1, "little") + raw
     )
 
 
@@ -62,6 +62,34 @@ class EquipmentAtlasCorrelationsTests(unittest.TestCase):
         self.assertEqual(result.codes, ("22066906", "22026223"))
         self.assertEqual(result.unit, "M")
         self.assertEqual(parse_code_record(payload + group_and_unit_id + b"\x02M", "22066906").unit, "")
+
+    def test_reads_long_midas_atlas_description_and_exact_trailer(self):
+        description = " | ".join((
+            "22056394_ISOLADOR CASA SURGE PROTEC 1G NET",
+            "22056126_ISOLADOR CASA SURGE PROTEC 1G",
+            "22056691_ISOLADOR CASA SURGE PROTEC 1G NET",
+            "22066517_ISOLADOR CASA SURGE PROTEC LOW COST",
+            "22025985_ISOLADOR CASA SURGE PROTECTOR",
+            "22026041_ISOLADOR COAX QUADRADO CISP-HR",
+            "22056366_ISOLADOR COAXIAL QUADRADO - CISP-HR",
+            "22056689_ISOLADOR COAXIAL QUADRADO - CISP-HR",
+        ))
+        self.assertEqual(len(description), 352)
+        trailer = b"\x06\x00\x00\x00\x08DIVERSOS\x02\x00\x00\x00\x02UN"
+        encoded = record("22056394", description)
+        result = parse_code_record(encoded + trailer, "22056394")
+        self.assertEqual(result.codes, tuple(item.split("_")[0] for item in description.split(" | ")))
+        self.assertEqual(result.unit, "UN")
+        for malformed in (encoded, encoded + trailer[:-1], encoded.replace(b"\x60\x01", b"\x61\x01") + trailer):
+            with self.assertRaisesRegex(EquipmentAtlasCorrelationError, "22056394"):
+                parse_code_record(malformed, "22056394")
+
+        exactly_256 = "22056394_" + "A" * 119 + " | 22056689_" + "B" * 116
+        self.assertEqual(len(exactly_256), 256)
+        self.assertEqual(
+            parse_code_record(record("22056394", exactly_256) + trailer, "22056394").codes,
+            ("22056394", "22056689"),
+        )
 
     def test_unusable_or_ambiguous_exact_records_are_rejected(self):
         valid = record("22024800", "22025321_ANEL VEDACAO PLASTICA")

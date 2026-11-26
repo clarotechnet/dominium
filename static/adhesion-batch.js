@@ -311,9 +311,10 @@
       if(plan.error || plan.correction) throw Error("Equipamentos exigem tratativa: "+candidate.numOs);
       const expected=deps.expectedType?.(candidate.order.service);
       const {installed_equipment:installed,removed_equipment:removed}=candidate.capture;
-      const service=serviceLabel(candidate.order.service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"");
-      const keepsEquipment=service==="MUDANCA DE ENDERECO INSTALAR PONTO ADICIONAL VIRTUA" &&
-        Array.isArray(installed) && installed.length===0 && Array.isArray(removed) && removed.length===0;
+      const service=serviceWords(candidate.order.service);
+      const keepsEquipment=/^(?:ADESAO )?MUD(?:ANCA)? (?:DE )?END(?:ERECO)?(?: |$)/.test(service)
+        && (expected==="emta" || expected==="decoder")
+        && Array.isArray(installed) && Array.isArray(removed) && !plan.installed.length;
       if(expected && (candidate.code==="706" || deps.productive?.(candidate.code)) && !keepsEquipment && !plan.installed.some(item=>item.type===expected || (expected==="decoder" && item.type==="smart"))) {
         throw Error("Serial obrigatorio nao conciliado para OS "+candidate.numOs+" ("+expected+").");
       }
