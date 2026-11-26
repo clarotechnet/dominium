@@ -10,6 +10,7 @@ from pathlib import PurePosixPath
 # Verified against the current TOA executor and the Imperium stock record.
 _IMPERIUM_STOCK_NAMES = {
     ("338736", "Z657807", "ESLI MELQUISEDEQUE DA SILVA"): "ESLI MELQUISEDEQUI DA SILVA",
+    ("249803", "Z660888", "SOMERREGILSON DA SILVA MEDEIROS"): "SONERREGILSON DA SILVA MEDEIROS",
 }
 
 

@@ -110,6 +110,24 @@ class TOASecondarySessionTests(unittest.TestCase):
         changed["normalizedCapture"]["responsibility"]["form_submitters"][0]["provider_id"] = "29"
         self.assertIsNone(_confirmed_adhesion_provider(changed, capture, day))
 
+        sparse = deepcopy(raw)
+        sparse_responsibility = sparse["normalizedCapture"]["responsibility"]
+        sparse_responsibility["route_provider"] = {"id": "75", "external_id": "", "name": ""}
+        sparse_responsibility["inventory_providers"] = [{"id": "75", "external_id": "", "name": ""}]
+        self.assertEqual(_confirmed_adhesion_provider(sparse, capture, day), provider)
+        for field, expected_key, conflicting_value in (
+            ("route_provider", "name", "OUTRO TECNICO"),
+            ("route_provider", "external_id", "Z123"),
+            ("inventory_providers", "id", "29"),
+            ("inventory_providers", "external_id", "Z123"),
+            ("form_submitters", "user_name", ""),
+        ):
+            with self.subTest(field=field, key=expected_key):
+                changed = deepcopy(sparse)
+                entry = changed["normalizedCapture"]["responsibility"][field]
+                (entry[0] if isinstance(entry, list) else entry)[expected_key] = conflicting_value
+                self.assertIsNone(_confirmed_adhesion_provider(changed, capture, day))
+
         without_movements = deepcopy(raw)
         normalized = without_movements["normalizedCapture"]
         normalized.update(tasks=[{"os_number": "1234", "status": "N", "close_code": "301"}],
