@@ -87,7 +87,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	89558ecde19ead98
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	08e6e1c9da9375b7
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -150,7 +150,7 @@ shared	integrations/desc_runtime/disconnect_local_runner.py	36		1	Executa um ún
 shared	integrations/desc_runtime/equipment_atlas_correlations.py	8		1	Read-only Codigo -> DescricaoAtlas correlation in the legacy runtime.	32ed8a4a487de9c3
 shared	integrations/desc_runtime/nightly_backlog_106.py	7	3		Operator-authorized 23h backlog batch. Default is read-only preview.	0c9ef41fc1d83645
 shared	integrations/desc_runtime/nightly_backlog_service.py	10			Daily backlog scheduling owned by the Dominium HTTP server, not by a browser.	0746da639cac79e4
-shared	integrations/desc_runtime/patch_runtime_safety.py	11		3	Small source transformations for the legacy server; no network or writes.	a9c85cef103b6112
+shared	integrations/desc_runtime/patch_runtime_safety.py	12	3	3	Small source transformations for the legacy server; no network or writes.	1316c5fa48b4a22b
 shared	integrations/desc_runtime/README.md				Runtime DESC do servidor TECHNET	19bbc1a2c0ef3ad2
 tests	integrations/desc_runtime/test_desc_multi_owner_runtime.py	2		1		b7c145e05d4781d6
 tests	integrations/desc_runtime/test_desc_sector_scope.py	10			Read-only sector scope regression for BotDMV DESC -> DataSnap executor.	0fa5396e16d5d30f
@@ -324,7 +324,7 @@ frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			df5dc74b21d7079a
+frontend	static/index.html		1			b25a4ff3b419818c
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/material-stock-audit.js	15	1			b484bd2f18b0b23e
@@ -395,7 +395,7 @@ tests	tests/test_backlog_hostinger_proxy.js	3	9			0ffdbca1cc822dd4
 tests	tests/test_backlog_report_image.js	1				b8b66a90f2cb8ddd
 tests	tests/test_backlog_status_reload_20261107.cjs	1				b8c6664881c88ae7
 tests	tests/test_backlog_todos_navigation.cjs	2				fe3d1917db6de65e
-tests	tests/test_backlog_ui_deploy_20261031.py		3			5ddbde944ea55d3c
+tests	tests/test_backlog_ui_deploy_20261031.py		3			8662ffd9dbb14987
 tests	tests/test_backlog_whatsapp_report.js					c136df0853e1647d
 tests	tests/test_build_hostinger_node_release.py	3				157aef4ebdf049a3
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
@@ -405,7 +405,7 @@ tests	tests/test_close_control_city_board.cjs	3				da43c34f4a4d7472
 tests	tests/test_close_control_engine.js	2				3d2bb54ac8c0c076
 tests	tests/test_close_control_worker_mro.cjs	1				ded07a5210a5a010
 tests	tests/test_close_report.py	17				a10b6c2a0a580d07
-tests	tests/test_close_report_excel.py	5				36de3899cae4ba75
+tests	tests/test_close_report_excel.py	6	4			6472a589661c19e7
 tests	tests/test_commission_reports.py	9	2		Synthetic read-only test suite for four-base Imperium commissions.	b18bb2bccedb8eb1
 tests	tests/test_commission_reports_ui.cjs	2	1			62d5a56598566549
 tests	tests/test_configure_imperium_credentials.py	4				931f61ff4157fbfa

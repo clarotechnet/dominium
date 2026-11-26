@@ -200,6 +200,9 @@ endpoint	path
 /api/orders/{int(row	integrations/desc_runtime/nightly_backlog_106.py
 /api/orders?	integrations/desc_runtime/nightly_backlog_106.py
 /api/profiles	integrations/desc_runtime/nightly_backlog_106.py
+/api/close-report	integrations/desc_runtime/patch_runtime_safety.py
+/api/close-report.xlsx	integrations/desc_runtime/patch_runtime_safety.py
+/api/close-report/export.xlsx	integrations/desc_runtime/patch_runtime_safety.py
 /api/profiles	integrations/desc_runtime/test_nightly_backlog_106.py
 /api/commission-reports/export.xlsx?profile=mossoro&start=2026-11-01&end=2026-11-11	integrations/import_bridge/commission_reports.test.mjs
 /api/order-reports/export.xlsx?profile=natal&start=2026-01-01&end=2026-01-02&type=all	integrations/import_bridge/order_reports.test.mjs
@@ -371,6 +374,10 @@ endpoint	path
 /api/backlog/year/routes	tests/test_backlog_ui_deploy_20261031.py
 /api/backlog/year/status	tests/test_backlog_ui_deploy_20261031.py
 /api/backlog/year/toa-import	tests/test_backlog_ui_deploy_20261031.py
+/api/close-report	tests/test_close_report_excel.py
+/api/close-report.xlsx	tests/test_close_report_excel.py
+/api/close-report/export.xlsx	tests/test_close_report_excel.py
+/api/close-report/export.xlsx?profile=natal&date={date}	tests/test_close_report_excel.py
 /api/commission-reports/export.xlsx?profile=natal&start=2026-11-01&end=2026-11-11	tests/test_commission_reports.py
 /api/commission-reports/export.xlsx?profile=recife&start=2026-11-01&end=2026-11-11	tests/test_commission_reports.py
 /api/commission-reports/export.xlsx?profile=natal&start=2026-11-01&end=2026-11-11	tests/test_commission_reports_ui.cjs

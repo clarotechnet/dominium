@@ -3,6 +3,11 @@ from __future__ import annotations
 import datetime as dt
 import io
 import unittest
+from http import HTTPStatus
+from pathlib import Path
+from types import SimpleNamespace
+from urllib.parse import parse_qs, urlsplit
+
 import openpyxl
 
 from close_report_excel import (
@@ -10,9 +15,43 @@ from close_report_excel import (
     format_equipment_readable,
     format_materials_readable,
 )
+from integrations.desc_runtime.patch_runtime_safety import patch_close_report_download
 
 
 class CloseReportExcelTests(unittest.TestCase):
+    def test_legacy_panel_exports_workbook_for_requested_date_and_profile(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        web_app = (root / "app.py").read_text(encoding="utf-8")
+        start = '            if parsed.path == "/api/close-report":\n'
+        export = '            if parsed.path in ("/api/close-report/export.xlsx", "/api/close-report.xlsx"):\n'
+        end = '            installer_detail_match = re.fullmatch(\n'
+        report_route = web_app[web_app.index(start):web_app.index(export)]
+        legacy = 'def get_report(self, parsed, profile):\n    if True:\n        if True:\n' + report_route + end + '                "", "",\n            )\n'
+        patched = patch_close_report_download(legacy, web_app=web_app)
+        self.assertEqual(patch_close_report_download(patched, web_app=web_app), patched)
+        scope = {"dt": dt, "parse_qs": parse_qs, "HTTPStatus": HTTPStatus}
+        exec(patched, scope)
+        outputs = []
+        handler = SimpleNamespace(_binary=lambda status, data, **headers: outputs.append((status, data, headers)))
+        date = dt.date.today() - dt.timedelta(days=1)
+        requested = []
+
+        def records(day):
+            requested.append(day)
+            return [{"contract": "0123456", "num_os": "2660000001", "state": "confirmed"}]
+
+        profile = SimpleNamespace(key="natal", label="Natal / Parnamirim", close_report=SimpleNamespace(list=records))
+        scope["get_report"](handler, urlsplit(f"/api/close-report/export.xlsx?profile=natal&date={date}"), profile)
+        self.assertEqual(requested, [date])
+        status, data, headers = outputs[0]
+        self.assertEqual(status, 200)
+        self.assertEqual(headers["filename"], f"relatorio-baixas-natal-{date:%Y%m%d}.xlsx")
+        with io.BytesIO(data) as stream:
+            workbook = openpyxl.load_workbook(stream, read_only=True)
+            self.assertEqual(workbook.active["A5"].value, "0123456")
+            self.assertEqual(workbook.active["D5"].value, "2660000001")
+            workbook.close()
+
     def test_format_materials_readable_with_list(self) -> None:
         materials = [
             {"name": "CABO 2FO", "quantity": 100, "unit": "m"},

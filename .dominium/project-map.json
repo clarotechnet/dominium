@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-26T02:15:45+00:00",
+  "generated_at": "2026-11-26T02:33:09+00:00",
   "schema": 2,
-  "source_fingerprint": "3d5e64bab9c38a57434096d60e05d0b9b61505226f9a9aa9f4574c316010af46",
+  "source_fingerprint": "16842bf94bb70f9e1bc55582f66dad81439f189b2fc6f38f96e7ae626a62b6dd",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1673,8 +1673,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 34329,
-      "sha256": "89558ecde19ead9880258b60e810aa786ca83027c69186618ae9e2bab980176e",
+      "bytes": 34843,
+      "sha256": "08e6e1c9da9375b79bcf40a249a3badca581c02c477cae6ec073ad9f129292e2",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -2714,13 +2714,17 @@
     {
       "path": "integrations/desc_runtime/patch_runtime_safety.py",
       "category": "shared",
-      "bytes": 32523,
-      "sha256": "a9c85cef103b611291adf5af2e5e8c2ceecec6735e88822bdce739c05de34fbc",
+      "bytes": 33735,
+      "sha256": "1316c5fa48b4a22bb5a617d9e0cd47da216a0a01856a728e1636960a75e85589",
       "summary": "Small source transformations for the legacy server; no network or writes.",
       "imports": [
         "ast"
       ],
-      "endpoints": [],
+      "endpoints": [
+        "/api/close-report",
+        "/api/close-report.xlsx",
+        "/api/close-report/export.xlsx"
+      ],
       "env_vars": [],
       "datasnap_methods": [
         "TOA_AUTOMATION.running",
@@ -2728,7 +2732,7 @@
         "TOA_LIVE.lookup_contract"
       ],
       "entrypoint": false,
-      "symbol_count": 11
+      "symbol_count": 12
     },
     {
       "path": "integrations/desc_runtime/README.md",
@@ -6051,8 +6055,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 185732,
-      "sha256": "df5dc74b21d7079a76a3788239dafe3b1ebeea04fbb0dbff537f97b1d23e73e6",
+      "bytes": 185736,
+      "sha256": "b25a4ff3b419818c10367d108da8baa6b5ea13ea1db9fc6b3849f225af9a0dd1",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -7256,8 +7260,8 @@
     {
       "path": "tests/test_backlog_ui_deploy_20261031.py",
       "category": "tests",
-      "bytes": 4318,
-      "sha256": "5ddbde944ea55d3cf92bfed036aaef4501ac8d81da110a37bb9de0f6e7593d7f",
+      "bytes": 4330,
+      "sha256": "8662ffd9dbb149878d818d4a103d701051ab83c2c4e1ab5beeff6858536bcbb5",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -7422,22 +7426,32 @@
     {
       "path": "tests/test_close_report_excel.py",
       "category": "tests",
-      "bytes": 3160,
-      "sha256": "36de3899cae4ba7511dc63d4bc318193cc34852f55c34dad73e2f8770518f7a3",
+      "bytes": 5432,
+      "sha256": "6472a589661c19e7248b8f3057573a2364f76ecb13ee023791172a7648ffd428",
       "summary": "",
       "imports": [
         "__future__",
         "close_report_excel",
         "datetime",
+        "http",
+        "integrations",
         "io",
         "openpyxl",
-        "unittest"
+        "pathlib",
+        "types",
+        "unittest",
+        "urllib"
       ],
-      "endpoints": [],
+      "endpoints": [
+        "/api/close-report",
+        "/api/close-report.xlsx",
+        "/api/close-report/export.xlsx",
+        "/api/close-report/export.xlsx?profile=natal&date={date}"
+      ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 5
+      "symbol_count": 6
     },
     {
       "path": "tests/test_commission_reports.py",

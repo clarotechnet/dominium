@@ -2443,10 +2443,24 @@ async function loadCloseReport({ quiet = false } = {}) {
   }
 }
 
-function exportCloseReportXlsx() {
+async function exportCloseReportXlsx() {
+  const button = elements.reportExportXlsx;
+  if (button.disabled) return;
   const date = elements.reportDate?.value || localDate();
   const url = apiUrl(`/api/close-report/export.xlsx?date=${encodeURIComponent(date)}`);
-  window.location.href = url;
+  const filename = `relatorio-baixas-${state.profile}-${date.replaceAll("-", "")}.xlsx`;
+  button.disabled = true;
+  try {
+    const result = await requestBlob(url, { timeoutMs: 60000 });
+    if (!result.blob.size || result.blob.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+      throw new Error("O servidor não retornou uma planilha XLSX.");
+    }
+    saveBlob(result.blob, result.filename?.toLowerCase().endsWith(".xlsx") ? result.filename : filename);
+  } catch (error) {
+    showToast(`Não foi possível baixar o relatório. ${error.message}`, "error");
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function showAllOperations(forceOverview = false) {
