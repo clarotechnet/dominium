@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-26T12:55:48+00:00",
+  "generated_at": "2026-11-26T13:31:43+00:00",
   "schema": 2,
-  "source_fingerprint": "cadbe382cf4e64f2abfa7f904bc931628072e6b4350fe3add7e3c8101448e9b6",
+  "source_fingerprint": "f641cf39c92c5556485c7a327d6e86076eeb3592adfe5567ed444baf38826b98",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1673,8 +1673,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 36235,
-      "sha256": "f82bc0c4d7ba55cbff3711931f89af2121fc7e7eecf87c7d177522e4bd02d71d",
+      "bytes": 36984,
+      "sha256": "4f15eb52399e97277bd0c7b71205c147234c7ee46a9a330280bf2346397782a2",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -5701,8 +5701,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 36161,
-      "sha256": "db0b14e1b14834d9c99c5f2c7e66df01c6e39d77c213105164bc43bddcf27059",
+      "bytes": 37931,
+      "sha256": "8bc09ed7eb7884286d613c95bd7cd9f22835bf104b00e4c4703d845a262dd6b8",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -5714,7 +5714,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 32
+      "symbol_count": 36
     },
     {
       "path": "static/all-cities-scope.css",
@@ -6055,8 +6055,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 185736,
-      "sha256": "b25a4ff3b419818c10367d108da8baa6b5ea13ea1db9fc6b3849f225af9a0dd1",
+      "bytes": 185735,
+      "sha256": "ec31b5c7bee099ad2b976b02be3c87999ffd436c30327ed613b2d973aeaf5d99",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6750,8 +6750,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 28125,
-      "sha256": "3186735d8ab01fd3b5a09c9dba57d6976e62c7641bb30aa536ec7d63925bc367",
+      "bytes": 30408,
+      "sha256": "d9d58483b92e929f5c2a22ef7f3904c0500126abaa2e64f63d0936ef798d8c6c",
       "summary": "",
       "imports": [],
       "endpoints": [],
