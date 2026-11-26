@@ -68,6 +68,15 @@ class TOASecondarySessionTests(unittest.TestCase):
         self.assertEqual(run.call_count, len(BUSY_RETRY_DELAYS) + 1)
         self.assertEqual(sleep.call_count, len(BUSY_RETRY_DELAYS))
 
+    def test_adhesion_scope_is_passed_only_for_explicit_lookups(self) -> None:
+        with patch("toa_secondary_session.subprocess.run", return_value=self._ok_result()) as run:
+            self.session._direct_lookup("1234567")
+            self.session._direct_lookup("1234567", adhesion_date="2026-11-25")
+
+        normal, adhesion = [call.args[0] for call in run.call_args_list]
+        self.assertEqual(normal, ["node", str(self.session.lookup_script), "1234567"])
+        self.assertEqual(adhesion, [*normal, "2026-11-25"])
+
 
 if __name__ == "__main__":
     unittest.main()

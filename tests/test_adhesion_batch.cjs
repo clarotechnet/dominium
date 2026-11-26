@@ -63,6 +63,33 @@ test("validated contract produces scoped candidate",()=>{
  const f=fixture();const [c]=selectCandidates(f.payload,[f.order],scope,f.deps);
  assert.equal(c.batchAdhesion,true);assert.equal(c.batchCodeOnly,true);assert.equal(c.batchScope.epoch,4);
 });
+test("trusted live route_name proves the bucket and cannot override conflicting signed import", () => {
+ const f = fixture();
+ delete f.capture.route;
+ f.capture.route_name = "NTL-DMV";
+ f.order.operation_source = "imperium_cache";
+ assert.equal(selectCandidates(f.payload, [f.order], scope, f.deps).length, 1);
+ f.capture.bucket = "PWM-DMV";
+ assert.throws(() => selectCandidates(f.payload, [f.order], scope, f.deps), /Bucket TOA divergente/);
+ delete f.capture.bucket;
+ f.order.operation_source = "toa_import";
+ f.order.operation_identity = {profile_key:"natal",contract:scope.contract,activity_id:f.capture.aid};
+ f.order.import_scope = {source_file:"Atividades-PWM-DMV_24_11_26.csv",expected_profile_key:"natal",source_hash:"fixture"};
+ assert.throws(() => selectCandidates(f.payload, [f.order], scope, f.deps), /diverge da origem importada/);
+ delete f.order.import_scope.source_hash;
+ assert.throws(() => selectCandidates(f.payload, [f.order], scope, f.deps), /origem importada sem comprovacao/);
+});
+
+test("reports both OS when a serialized movement lacks a unique owner", () => {
+ const f = fixture();
+ f.order.service = "MUDANCA DE PACOTE";
+ const other = {...f.order, num_os:"2612345679", id_os:2};
+ f.capture.tasks.push({...f.capture.tasks[0], os_number:other.num_os});
+ f.capture.imperium_matches.push(other);
+ f.deps.equipment = () => ({installed:[{serial:"AABBCCDDEEFF"}],removed:[]});
+ assert.throws(() => selectCandidates(f.payload, [f.order, other], scope, f.deps), /2612345678, 2612345679\. Nenhuma baixa enviada/);
+});
+
 test("blocks foreign bucket, bad date, incomplete capture, unapproved or ambiguous OS",()=>{
  for(const change of [f=>f.capture.route="NTL-DMV_ADM",f=>f.capture.scheduled_date="2026-11-23",f=>f.capture.materials_complete=false,f=>f.deps.valid=()=>false,f=>f.capture.tasks[0].status="pending",f=>f.capture.tasks.push({...f.capture.tasks[0]}),f=>f.payload.resolved_contract="99999999",f=>f.capture.decision="blocked_manual_review"]){
   const f=fixture();change(f);assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps));

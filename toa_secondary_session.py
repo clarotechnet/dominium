@@ -109,14 +109,17 @@ class TOASecondarySession:
         if not state["connected"]:
             raise RuntimeError("O TOA secundario ja aberto pelo bot nao foi localizado")
         return state
-    def _direct_lookup(self, contract: str) -> dict[str, Any]:
+    def _direct_lookup(self, contract: str, *, adhesion_date: str = "") -> dict[str, Any]:
         if not self.lookup_script.is_file():
             raise RuntimeError("Ponte CDP do TOA secundario nao localizada")
 
+        arguments = ["node", str(self.lookup_script), contract]
+        if adhesion_date:
+            arguments.append(adhesion_date)
         completed: subprocess.CompletedProcess[str] | None = None
         for attempt in range(len(BUSY_RETRY_DELAYS) + 1):
             completed = subprocess.run(
-                ["node", str(self.lookup_script), contract],
+                arguments,
                 cwd=str(self.root),
                 capture_output=True,
                 text=True,
@@ -203,7 +206,7 @@ class TOASecondarySession:
             "validation_warnings": list(validation.get("warnings") or ()),
             "route_name": _text((value.get("searchRow") or {}).get("route_name") if isinstance(value.get("searchRow"), dict) else ""),
         }
-    def lookup_contract(self, contract: object) -> dict[str, Any]:
+    def lookup_contract(self, contract: object, *, adhesion_date: str = "") -> dict[str, Any]:
         wanted = _digits(contract)
         if not re.fullmatch(r"\d{5,18}", wanted):
             raise ValueError("Informe um contrato com 5 a 18 digitos")
@@ -211,7 +214,7 @@ class TOASecondarySession:
             self._last_error = "TOA secundario nao localizado"
             raise RuntimeError(self._last_error)
         try:
-            direct = self._direct_lookup(wanted)
+            direct = self._direct_lookup(wanted, adhesion_date=adhesion_date) if adhesion_date else self._direct_lookup(wanted)
             capture = self._capture(direct)
             if capture["contract"] != wanted:
                 raise ValueError("A resposta do TOA nao corresponde ao contrato pesquisado")

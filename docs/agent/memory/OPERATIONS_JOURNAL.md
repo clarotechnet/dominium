@@ -467,3 +467,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Testes focados de lote, histórico e identidade. Validar em produção em modo de leitura com a captura e o instalador reais.
 
 **Próximo passo/pendência:** Publicar e validar o ativo da fila após instalar as alterações verificadas no runtime legado.
+
+## 2026-11-26 01:47 UTC — Adesao NTL/PWM: origem online e duplicidade de atividade
+
+**Motivo:** A fila precisa certificar a origem informada pela ponte e distinguir reabertura suspensa da atividade concluida do mesmo contrato e O.S.
+
+**Alterado:** Consultar data selecionada somente no fluxo de adesao. A ponte so seleciona uma atividade concluida com as mesmas O.S. das suspensas no mesmo bucket. Manter validacao do arquivo/identidade aprovada e sinalizar O.S. concorrentes por serial sem vinculo.
+
+**Verificação:** Fila JavaScript, arvore de rotas, transporte de consulta secundario e gate completo.
+
+**Próximo passo/pendência:** Validar leitura em producao e conferir baixas pendentes no Imperium, sem reenviar.

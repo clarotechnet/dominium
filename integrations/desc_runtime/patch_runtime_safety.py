@@ -453,3 +453,68 @@ def patch_adhesion_fresh_export_runtime(text: str) -> str:
     result = text.replace(old, new, 1)
     ast.parse(result)
     return result
+
+
+def patch_adhesion_lookup_runtime(app, secondary, bridge, gateway, extension, source_extension):
+    """Port the opt-in adhesion lookup to the active Windows runtime layout."""
+    def replace(text, old, new):
+        if text.count(new) == 1:
+            return text
+        if text.count(old) != 1:
+            raise ValueError(f"Unsupported legacy adhesion lookup: {old[:100]}")
+        return text.replace(old, new, 1)
+
+    app = replace(app,
+        '                else:\n                    result = TOA_LIVE.lookup_contract(lookup_value)\n',
+        '''                else:
+                    if body.get("adhesion_batch") is True:
+                        if profile.key != "natal":
+                            raise ValueError("Consulta de adesao exclusiva de NTL/PWM")
+                        adhesion_date = dt.date.fromisoformat(str(body.get("expected_date") or "")).isoformat()
+                        result = TOA_LIVE.lookup_contract(lookup_value, adhesion_date=adhesion_date)
+                    else:
+                        result = TOA_LIVE.lookup_contract(lookup_value)
+''')
+    secondary = replace(secondary,
+        'def _direct_lookup(self, contract: str)',
+        'def _direct_lookup(self, contract: str, *, adhesion_date: str = "")')
+    secondary = replace(secondary,
+        '        with self._lookup_lock:\n            last_detail = ""',
+        '        arguments = ["node", str(self.lookup_script), contract]\n'
+        '        if adhesion_date:\n            arguments.append(adhesion_date)\n'
+        '        with self._lookup_lock:\n            last_detail = ""')
+    secondary = replace(secondary, '["node", str(self.lookup_script), contract],', 'arguments,')
+    secondary = replace(secondary,
+        'def lookup_contract(self, contract: object)',
+        'def lookup_contract(self, contract: object, *, adhesion_date: str = "")')
+    secondary = replace(secondary,
+        'direct = self._direct_lookup(wanted)',
+        'direct = self._direct_lookup(wanted, adhesion_date=adhesion_date)')
+
+    bridge = replace(bridge,
+        "const response = await fetch('http://127.0.0.1:9341/toa/lookup?contract=' + encodeURIComponent(contract),",
+        "const query = new URLSearchParams({contract});\n"
+        "const adhesionDate = String(process.argv[3] || '');\n"
+        "if (adhesionDate) query.set('adhesion_date', adhesionDate);\n"
+        "const response = await fetch('http://127.0.0.1:9341/toa/lookup?' + query,")
+    old_expression = ('        return "globalThis.__TN_TOA_DIRECT_LOOKUP__(" + json.dumps(contract)'
+                      ' + ", {requireSingleActivity: true})"')
+    gateway = replace(gateway, old_expression,
+        '        adhesion_date = (query.get("adhesion_date") or [""])[0]\n'
+        '        if adhesion_date:\n'
+        '            if dt.date.fromisoformat(adhesion_date).isoformat() != adhesion_date:\n'
+        '                raise ValueError("invalid_adhesion_date")\n'
+        '            options = {"requireSingleActivity": True, "adhesionDate": adhesion_date}\n'
+        '            return "globalThis.__TN_TOA_DIRECT_LOOKUP__(" + json.dumps(contract) + ", " + json.dumps(options) + ")"\n'
+        + old_expression)
+
+    lookup = '  async function lookupContractDirect(contract, options = {}) {'
+    helpers = source_extension.split('  function selectMirroredAdhesionActivity(', 1)[1].split(lookup, 1)[0]
+    extension = replace(extension, lookup, '  function selectMirroredAdhesionActivity(' + helpers + lookup)
+    start = '      if (options.requireSingleActivity === true && options.adhesionDate) {'
+    end = '      } else if (options.requireSingleActivity === true) {'
+    branch = start + source_extension.split(start, 1)[1].split(end, 1)[0] + end
+    extension = replace(extension, '      if (options.requireSingleActivity === true) {', branch)
+    for source in (app, secondary, gateway):
+        ast.parse(source)
+    return app, secondary, bridge, gateway, extension

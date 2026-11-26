@@ -6897,6 +6897,12 @@ class PanelHandler(BaseHTTPRequestHandler):
                 expected_date = str(body.get("expected_date") or "").strip()
                 if expected_date and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", expected_date):
                     raise ValueError("Data esperada do cache TOA invalida")
+                adhesion_batch = body.get("adhesion_batch") is True
+                if adhesion_batch and (profile.key != "natal" or query_type != "contract" or not expected_date
+                                       or prefer_cached or cache_only):
+                    raise ValueError("Consulta de adesao exige contrato, data e sessao ao vivo NTL/PWM")
+                if adhesion_batch:
+                    dt.date.fromisoformat(expected_date)
                 try:
                     cache_max_age_seconds = int(
                         body.get("cache_max_age_seconds", 420)
@@ -6930,7 +6936,8 @@ class PanelHandler(BaseHTTPRequestHandler):
                             time.monotonic() - lookup_started_at,
                         )
                     else:
-                        result = TOA_LIVE.lookup_contract(contract)
+                        result = (TOA_LIVE.lookup_contract(contract, adhesion_date=expected_date)
+                                  if adhesion_batch else TOA_LIVE.lookup_contract(contract))
                 result["imperium_refresh"] = _refresh_live_lookup_imperium_cache(
                     profile,
                     result,
