@@ -418,6 +418,46 @@ test("TOA lookup failure is deferred once without ever repeating an uncertain wr
  assert.deepEqual(sent,["ok","bridge"]);
  assert.equal(events.findLast(x=>x[0]==="permanent")[1],"Tratativa");
 });
+test("standalone VoIP keeps its materials and omits only an EMTA already in Cliente", async () => {
+ const f=fixture();
+ f.order.service="INSTALAR PONTO VOIP";
+ const installed={serial:"112233AABBCC", type:"3 - EMTA", pool:"install"};
+ const customer={...installed, serial:"112233aabbcc", pool:"customer"};
+ f.capture.installed_equipment=[installed];
+ f.capture.customer_equipment=[customer];
+ f.capture.removed_equipment=[];
+ f.capture.materials=[{code:"22025139",quantity:5}];
+ f.deps.productive=code=>code==="409";
+ f.deps.assign=cs=>cs.forEach(c=>{c.materialOwner=!c.batchCodeOnly;});
+ f.deps.equipment=c=>({installed:c.capture.installed_equipment,removed:c.capture.removed_equipment});
+ const [candidate]=selectCandidates(f.payload,[f.order],scope,f.deps);
+ assert.equal(candidate.batchCodeOnly,false);
+ assert.equal(candidate.materialOwner,true);
+ assert.deepEqual(candidate.capture.installed_equipment,[]);
+ assert.deepEqual(candidate.capture.materials,f.capture.materials);
+ assert.deepEqual(candidate.batchCustomerEmta,[installed.serial]);
+ assert.deepEqual(f.capture.installed_equipment,[installed]);
+
+ const events=[];
+ await runBatch([scope.contract],{
+  active:()=>true,update:(...args)=>events.push(args),prepare:async()=>[candidate],send:async()=>({closed:true})
+ });
+ assert.match(events.at(-1)[2],/EMTA ja cadastrado no cliente .*112233AABBCC/);
+
+ for(const different of [[],[{...customer,serial:"AABBCCDDEEFF"}],[{...customer,type:"5 - DECODER"}]]){
+  f.capture.customer_equipment=different;
+  const [other]=selectCandidates(f.payload,[f.order],scope,f.deps);
+  assert.deepEqual(other.capture.installed_equipment,[installed]);
+  assert.equal(other.batchCustomerEmta,undefined);
+ }
+ f.capture.customer_equipment=[customer];
+ const replacement={...installed,serial:"AABBCCDDEEFF"};
+ f.capture.removed_equipment=[replacement];
+ const [swap]=selectCandidates(f.payload,[f.order],scope,f.deps);
+ assert.deepEqual(swap.capture.installed_equipment,[installed]);
+ assert.deepEqual(swap.capture.removed_equipment,[replacement]);
+});
+
 test("one shared EMTA moves once in Virtua; VoIP code only; chip gets its own serial",()=>{
  const f=fixture();
  const virtua={...f.order,id_os:2,num_os:"2612345679",service:"ADESAO - INSTALAR PONTO VIRTUA"};
@@ -443,6 +483,10 @@ test("one shared EMTA moves once in Virtua; VoIP code only; chip gets its own se
  assert.equal(result.find(c=>c.order===chip).code,"706");
  f.capture.installed_equipment[1]={...emta,serial:"112233445566"};
  assert.throws(()=>selectCandidates(f.payload,orders,scope,f.deps),/EMTAs distintos/);
+ f.capture.installed_equipment[1]={...emta,invid:"2"};
+ virtua.service="INSTALAR PONTO VIRTUA";
+ voip.service="INSTALAR PONTO VOIP";
+ assert.equal(selectCandidates(f.payload,orders,scope,f.deps).find(c=>c.order===voip).batchCodeOnly,true);
 });
 
 test("generic close error is reconciled against exact durable stock result without write",async()=>{

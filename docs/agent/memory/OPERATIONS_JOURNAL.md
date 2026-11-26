@@ -517,3 +517,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Regressao de atribuicao antiga com login reaproveitado, rejeicao de provas incompletas e gate completo.
 
 **Próximo passo/pendência:** Conferir captura e titular do estoque no Imperium sem enviar baixa.
+
+## 2026-11-26 13:30 UTC — VoIP isolado: manter o EMTA ja cadastrado no cliente
+
+**Motivo:** TOA repete o serial do EMTA atual nas linhas Cliente e Instalado para o ponto de telefone; o envio acabava exigindo o serial no estoque do tecnico.
+
+**Alterado:** Na baixa produtiva de adesao em lote, VoIP isolado com EMTA identico em Cliente reaproveita o serial sem movimentar o equipamento e continua preparando as miscelaneas. VoIP com Virtua continua apenas com codigo quando o EMTA e compartilhado.
+
+**Verificação:** Regressao com serial ja instalado, serial diferente, outro tipo de equipamento, substituicao e par Virtua/VoIP. Consulta real da OS concluida sem reenvio.
+
+**Próximo passo/pendência:** Validar o arquivo publicado no Hostinger.

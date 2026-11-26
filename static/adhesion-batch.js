@@ -91,6 +91,12 @@
     const s=serviceLabel(service);
     return s.includes("ASSINATURA") || /INST(?:ALACAO)?\.?\s+GPON\s*-\s*INST(?:ALACAO)?\.?\s+CABO/.test(s) || /INSTALACAO (?:DE )?CABO GPON/.test(s);
   }
+  function serviceWords(service) {
+    return serviceLabel(service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"");
+  }
+  function installsVoip(service) {
+    return /^(?:ADESAO )?(?:INSTALAR|INSTALACAO DE) PONTO VOIP$/.test(serviceWords(service));
+  }
   function refreshCandidate(candidate, orders, valid) {
     const previous=candidate.order, scope=candidate.batchScope;
     const matches=orders.filter(o=>String(o.num_os)===String(previous.num_os) && String(o.id_os)===String(previous.id_os) && String(o.contract)===String(previous.contract));
@@ -147,10 +153,10 @@
   function applySharedEmtaRule(candidates, deps) {
     const groups=new Map();
     for(const c of candidates){const group=groups.get(c.capture.aid)||[];group.push(c);groups.set(c.capture.aid,group);}
-    const kind=c=>serviceLabel(c.order.service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"");
+    const kind=c=>serviceWords(c.order.service);
     for(const group of groups.values()){
-      const virtua=group.filter(c=>kind(c)==="ADESAO INSTALAR PONTO VIRTUA");
-      const voip=group.filter(c=>kind(c)==="ADESAO INSTALAR PONTO VOIP");
+      const virtua=group.filter(c=>/^(?:ADESAO )?(?:INSTALAR|INSTALACAO DE) PONTO VIRTUA$/.test(kind(c)));
+      const voip=group.filter(c=>installsVoip(c.order.service));
       if(virtua.length!==1 || voip.length!==1)continue;
       const capture=virtua[0].capture;
       if(!deps.equipmentType || !group.every(c=>c.capture===capture))continue;
@@ -173,6 +179,30 @@
       voip[0].batchCodeOnly=true;
       voip[0].batchSharedEmta=true;
     }
+  }
+  function keepCustomerEmtaForStandaloneVoip(candidates, deps) {
+    if (candidates.length !== 1) return;
+    const [candidate] = candidates;
+    const {capture, code, numOs, order} = candidate;
+    const {installed_equipment: installed, removed_equipment: removed, customer_equipment: customer} = capture;
+    if (!deps.productive?.(code) || !installsVoip(order.service)
+      || (capture.tasks || []).some(task => task.os_number && String(task.os_number) !== numOs)
+      || !Array.isArray(installed) || !Array.isArray(removed) || removed.length || !Array.isArray(customer)) return;
+
+    // Use the TOA equipment type and the exact serial shown in the Cliente pool.
+    const emtaSerial = item => /\bEMTA\b/.test(serviceWords(item?.type))
+      ? String(item?.serial || "").trim().toUpperCase() : "";
+    const existingSerials = new Set(customer.map(emtaSerial).filter(Boolean));
+    const reused = new Set();
+    const newInstallations = installed.filter(item => {
+      const serial = emtaSerial(item);
+      if (!existingSerials.has(serial)) return true;
+      reused.add(serial);
+      return false;
+    });
+    if (!reused.size) return;
+    candidate.capture = {...capture, installed_equipment: newInstallations};
+    candidate.batchCustomerEmta = [...reused];
   }
   function selectCandidates(payload, active, scope, deps) {
     const {profile,contract,date}=scope;
@@ -269,6 +299,7 @@
         if(!other || !codeOnly(other.service))throw Error("Atividade com OS acompanhante fora de campo; risco de duplicar estoque.");
       }
     }
+    keepCustomerEmtaForStandaloneVoip(candidates,deps);
     applySharedEmtaRule(candidates,deps);
     deps.assign(candidates);
     const serials=new Map(), byActivity=new Map();
@@ -363,7 +394,9 @@
           let audit="", detail="", result="review";
           try {
             const res=await hooks.send(candidate);
-            audit=materialAudit(res.materialPreparation);
+            const reused = candidate.batchCustomerEmta?.length
+              ? "EMTA ja cadastrado no cliente (sem movimentacao): " + candidate.batchCustomerEmta.join(", ") : "";
+            audit=[reused, materialAudit(res.materialPreparation)].filter(Boolean).join(". ");
             detail=String(res.reason || res.error || "").slice(0,240);
             if(res.closed) result="confirmed";
             else if(res.pending) {
