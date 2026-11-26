@@ -487,3 +487,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Fixtures de retorno e de aba interrompida, gate completo e consultas de producao em leitura.
 
 **Próximo passo/pendência:** Conferir a primeira execucao supervisionada com o novo planejamento, sem reenviar resultados incertos.
+
+## 2026-11-26 02:31 UTC — Restaurar XLSX do relatorio de baixas
+
+**Motivo:** O painel legado servia o relatorio JSON, mas nao tinha a rota binaria utilizada pelo botao Baixar XLSX.
+
+**Alterado:** Reutilizar o renderer de XLSX e a rota do painel atual no legado. O botao baixa com a sessao ativa e informa erros sem navegar.
+
+**Verificação:** Teste do workbook, rota portada, politica do relay e gate completo.
+
+**Próximo passo/pendência:** Verificar o XLSX do dia 25/11 na origem operacional apos publicar.

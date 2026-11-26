@@ -1269,9 +1269,14 @@ unittest	tests/test_close_report.py
 __future__	tests/test_close_report_excel.py
 close_report_excel	tests/test_close_report_excel.py
 datetime	tests/test_close_report_excel.py
+http	tests/test_close_report_excel.py
+integrations	tests/test_close_report_excel.py
 io	tests/test_close_report_excel.py
 openpyxl	tests/test_close_report_excel.py
+pathlib	tests/test_close_report_excel.py
+types	tests/test_close_report_excel.py
 unittest	tests/test_close_report_excel.py
+urllib	tests/test_close_report_excel.py
 __future__	tests/test_commission_reports.py
 commission_reports	tests/test_commission_reports.py
 io	tests/test_commission_reports.py

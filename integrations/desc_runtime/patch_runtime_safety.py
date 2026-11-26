@@ -394,6 +394,28 @@ def patch_official_return_group_search(text: str) -> str:
     return text
 
 
+def patch_close_report_download(text: str, *, web_app: str) -> str:
+    """Reuse the web export route in the legacy panel, beside its JSON report."""
+    marker = '            if parsed.path in ("/api/close-report/export.xlsx", "/api/close-report.xlsx"):\n'
+    if text.count(marker) == 1:
+        return text
+    start = '            if parsed.path == "/api/close-report":\n'
+    end = '            installer_detail_match = re.fullmatch(\n'
+    if any(source.count(token) != 1 for source in (text, web_app) for token in (start, end)):
+        raise ValueError('Unsupported close report layout')
+    if web_app.count(marker) != 1:
+        raise ValueError('Web export route not found')
+    index = text.index(end, text.index(start))
+    route = web_app[web_app.index(marker):web_app.index(end, web_app.index(marker))]
+    export_call = '                xlsx_bytes = build_close_report_xlsx('
+    if route.count(export_call) != 1:
+        raise ValueError('Web export builder not found')
+    route = route.replace(export_call, '                from close_report_excel import build_close_report_xlsx\n\n' + export_call)
+    patched = text[:index] + route + text[index:]
+    ast.parse(patched)
+    return patched
+
+
 def patch_official_code_only(text: str, *, helper_source: str) -> str:
     marker = '    if not productive and (installed_source or removed_source or material_source):'
     guard = '''    if is_code_only_adhesion_service(_value(order, "service")) and (
