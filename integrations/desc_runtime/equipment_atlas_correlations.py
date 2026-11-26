@@ -77,6 +77,14 @@ def parse_code_record(payload: bytes, requested_code: str) -> EquipmentAtlasReco
             pos += name_length
             description_length = payload[pos]
             pos += 1
+            description_start = pos
+            # MIDAS stores populated DescricaoAtlas lengths as little-endian
+            # words. Older records can start the text after a single byte.
+            if payload[pos] == 0 or (
+                payload[pos] < 16 and pos + 1 < len(payload) and payload[pos + 1] >= 32
+            ):
+                description_length += payload[pos] << 8
+                description_start += 1
             if description_length == 0:
                 # The live dataset uses a second NUL before the group ID
                 # for an empty Atlas field. Require a unique valid group/unit
@@ -103,15 +111,13 @@ def parse_code_record(payload: bytes, requested_code: str) -> EquipmentAtlasReco
                 # substitution for other items; stock remains authoritative.
                 records.append(EquipmentAtlasRecord(codes, unit))
                 continue
-            if not 10 <= description_length <= 250 or pos + description_length > len(payload):
+            description_end = description_start + description_length
+            if not 10 <= description_length <= 4095 or description_end > len(payload):
                 continue
-            # The optional leading NUL is excluded from the declared length.
-            if payload[pos] == 0:
-                pos += 1
-            if pos + description_length > len(payload):
+            unit = _record_unit(payload, description_end)
+            if description_length > 255 and not unit:
                 continue
-            description_end = pos + description_length
-            description = payload[pos:description_end].decode("latin1")
+            description = payload[description_start:description_end].decode("latin1")
             fragments = [value.strip() for value in description.split("|")]
             if len(fragments) > 1 and _LABEL_RE.fullmatch(fragments[0]):
                 fragments = fragments[1:]
@@ -124,7 +130,7 @@ def parse_code_record(payload: bytes, requested_code: str) -> EquipmentAtlasReco
             # the exact requested item even when that item is absent from the list.
             codes = (requested_code, *(item.group(1) for item in items))
             records.append(EquipmentAtlasRecord(
-                tuple(dict.fromkeys(codes)), _record_unit(payload, description_end),
+                tuple(dict.fromkeys(codes)), unit,
             ))
         except IndexError:
             continue

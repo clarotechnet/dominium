@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-26T18:21:49+00:00",
+  "generated_at": "2026-11-26T19:09:38+00:00",
   "schema": 2,
-  "source_fingerprint": "90927d005e219f9a2680af4c4a8e80106a0278fb6f423739a4854993c3ef7c66",
+  "source_fingerprint": "ec0621dd0e44ae877130cb68ee72778c2144fd4e8c90efb5d48e1a75464fe519",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1673,8 +1673,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 38610,
-      "sha256": "c9d6bd75a51dbd9df0adf4d5af8b0a8c36b9a62ddff40900a090dba08fd88392",
+      "bytes": 39474,
+      "sha256": "d18f093cd6c927527faabfbd6dd4340bd43aeb9eee8ef8a6e8ce01e8d668e74e",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -2650,8 +2650,8 @@
     {
       "path": "integrations/desc_runtime/equipment_atlas_correlations.py",
       "category": "shared",
-      "bytes": 8034,
-      "sha256": "8469aeb3259bd38acd9994e38995160166937fd65577dc136da000b86b1c7afa",
+      "bytes": 8364,
+      "sha256": "b7fb05f3fa20faacd3fdb3676417a9191243c8b8798a93f9e2db4674fb90c123",
       "summary": "Read-only Codigo -> DescricaoAtlas correlation in the legacy runtime.",
       "imports": [
         "re",
@@ -5701,8 +5701,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 37931,
-      "sha256": "8bc09ed7eb7884286d613c95bd7cd9f22835bf104b00e4c4703d845a262dd6b8",
+      "bytes": 37919,
+      "sha256": "eb07d50d0eae37a4218236cd1529cc400a070081b776ba004aeb9533e3cb4e7a",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -6055,8 +6055,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 185735,
-      "sha256": "ec31b5c7bee099ad2b976b02be3c87999ffd436c30327ed613b2d973aeaf5d99",
+      "bytes": 185739,
+      "sha256": "1668b1eec0e8421171a3d3eb4109457061a3d05248d3d67cb49d253d71aedc1e",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6750,8 +6750,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 30408,
-      "sha256": "d9d58483b92e929f5c2a22ef7f3904c0500126abaa2e64f63d0936ef798d8c6c",
+      "bytes": 33256,
+      "sha256": "65852e1b152a38b48f78eac4046ea1dec51b4f7ccf3636fe690e40cbe43da169",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7855,8 +7855,8 @@
     {
       "path": "tests/test_equipment_atlas_correlations.py",
       "category": "tests",
-      "bytes": 7415,
-      "sha256": "379f77b89208d2584f75a1e6b9d03972fd0b6440f1ea400f8633c1efb0eb829f",
+      "bytes": 8921,
+      "sha256": "db7dc060356f39acef0e608b71971fff1a2751babf1ab7a16ac98cc0922f6c93",
       "summary": "",
       "imports": [
         "dataclasses",
@@ -7868,7 +7868,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 12
+      "symbol_count": 13
     },
     {
       "path": "tests/test_equipment_daily_catalog.py",

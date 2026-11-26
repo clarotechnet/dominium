@@ -87,7 +87,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	c9d6bd75a51dbd9d
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	d18f093cd6c92752
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -147,7 +147,7 @@ shared	integrations/desc_review_photo/tests/primary-reader.test.js					f2ab0d68f
 shared	integrations/desc_runtime/bot/disconnectPilot.js	20				198dc0a3510591c8
 shared	integrations/desc_runtime/bot/disconnectPilotCoordinator.js	33				18b277d1cceb6ac0
 shared	integrations/desc_runtime/disconnect_local_runner.py	36		1	Executa um único job de desconexão recebido do BotDMV no PC local.	9a3c4f51a3d89409
-shared	integrations/desc_runtime/equipment_atlas_correlations.py	8		1	Read-only Codigo -> DescricaoAtlas correlation in the legacy runtime.	8469aeb3259bd38a
+shared	integrations/desc_runtime/equipment_atlas_correlations.py	8		1	Read-only Codigo -> DescricaoAtlas correlation in the legacy runtime.	b7fb05f3fa20faac
 shared	integrations/desc_runtime/nightly_backlog_106.py	7	3		Operator-authorized 23h backlog batch. Default is read-only preview.	0c9ef41fc1d83645
 shared	integrations/desc_runtime/nightly_backlog_service.py	10			Daily backlog scheduling owned by the Dominium HTTP server, not by a browser.	0746da639cac79e4
 shared	integrations/desc_runtime/patch_runtime_safety.py	12	3	3	Small source transformations for the legacy server; no network or writes.	1316c5fa48b4a22b
@@ -300,7 +300,7 @@ imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/adhesion-batch.css					d4d12428bcc10df7
-frontend	static/adhesion-batch.js	36	4		Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */	8bc09ed7eb788428
+frontend	static/adhesion-batch.js	36	4		Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */	eb07d50d0eae37a4
 frontend	static/all-cities-scope.css				DOMINIUM: "Todos" is a cross-module read-only scope, not an operational profile. */	d9fde79cee63719c
 frontend	static/all-operations.js	14	2		Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */	2bc9ea7f772fad01
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
@@ -324,7 +324,7 @@ frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			ec31b5c7bee099ad
+frontend	static/index.html		1			1668b1eec0e84211
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/material-stock-audit.js	15	1			b484bd2f18b0b23e
@@ -369,7 +369,7 @@ tests	tests/fixtures/legacy_movement_reader.py	13			Frozen legacy Windows reader
 tests	tests/qa_disconnection_browser.js	1	6			513566fce070a1c2
 tests	tests/qa_photo_assist_browser.js	4	6			462b748e72dda892
 tests	tests/qa_workspace_browser.js	1	3			9e5faa386308b743
-tests	tests/test_adhesion_batch.cjs	5				d9d58483b92e929f
+tests	tests/test_adhesion_batch.cjs	5				65852e1b152a38b4
 tests	tests/test_adhesion_technician_evidence.py	10				9e51e256153c9811
 tests	tests/test_adm_allocation.py	9				75b86d318f82567e
 tests	tests/test_agent_memory.py	9			Portable agent memory regression tests; no network, secrets or production changes.	a00628018291348f
@@ -426,7 +426,7 @@ tests	tests/test_disconnection_access.py	6	5			cba855ef00508a97
 tests	tests/test_disconnection_frontend.js	1	1			65b81e61b3966421
 tests	tests/test_disconnection_hostinger.js	2	13			73827cfd80596bf7
 tests	tests/test_edge_voice.py	4				4e8791562f884964
-tests	tests/test_equipment_atlas_correlations.py	12				379f77b89208d258
+tests	tests/test_equipment_atlas_correlations.py	13				db7dc060356f39ac
 tests	tests/test_equipment_daily_catalog.py	6	10		Daily equipment workbooks are by date and city, never the Atlas QUERY.	cfa68f07b606fe6b
 tests	tests/test_equipment_group_matching.py	24				abb0031d8ae437aa
 tests	tests/test_equipment_video_transform.py	7			Synthetic video-workbook transformation tests; no client data in Git.	e0bbc492c75d9e3a

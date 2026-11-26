@@ -66,9 +66,63 @@ test("additional Virtua relocation can use materials while keeping the customer'
  assert.throws(() => selectCandidates(f.payload, [f.order, signature], scope, f.deps), /Serial obrigatorio/);
  f.capture.installed_equipment = [];
  f.capture.removed_equipment = [{serial: "CCDDEEFFAABB", type: "emta"}];
- assert.throws(() => selectCandidates(f.payload, [f.order, signature], scope, f.deps), /Serial obrigatorio/);
+ assert.equal(selectCandidates(f.payload, [f.order, signature], scope, f.deps).length, 2);
  f.capture.installed_equipment = [{serial: "AABBCC112233", type: "emta"}];
  assert.equal(selectCandidates(f.payload, [f.order, signature], scope, f.deps).length, 2);
+});
+
+test("relocation can use materials without a new EMTA or decoder across service labels", () => {
+ for (const [service, expected] of [
+  ["Mudança de endereço - Internet", "emta"],
+  ["Mudança de endereço - Instalar ponto digital TV", "decoder"],
+  ["123 - MUD. DE END. - TV", "decoder"],
+ ]) {
+  const f = fixture();
+  f.order.service = service;
+  f.capture.installed_equipment = [];
+  f.capture.removed_equipment = [];
+  f.capture.materials = [{code: "22026219", quantity: 1}];
+  f.deps.expectedType = () => expected;
+  f.deps.productive = () => true;
+  f.deps.assign = candidates => candidates.forEach(candidate => {candidate.materialOwner = true;});
+  f.deps.equipment = () => ({installed: f.capture.installed_equipment, removed: []});
+
+  let [candidate] = selectCandidates(f.payload, [f.order], scope, f.deps);
+  assert.equal(candidate.batchCodeOnly, false);
+  assert.equal(candidate.materialOwner, true);
+  assert.deepEqual(f.deps.equipment(candidate).installed, []);
+  assert.deepEqual(candidate.capture.materials, f.capture.materials);
+
+  const serial = expected === "emta" ? "AABBCC112233" : "123456789";
+  f.capture.installed_equipment = [{serial, type: expected}];
+  [candidate] = selectCandidates(f.payload, [f.order], scope, f.deps);
+  assert.deepEqual(f.deps.equipment(candidate).installed, [{serial, type: expected}]);
+  f.deps.equipment = () => ({installed: [], removed: []});
+  assert.throws(() => selectCandidates(f.payload, [f.order], scope, f.deps), /sem alocacao segura/);
+
+  f.capture.installed_equipment = [];
+  f.order.service = "ADESAO - INSTALAR PONTO VIRTUA";
+  assert.throws(() => selectCandidates(f.payload, [f.order], scope, f.deps), /Serial obrigatorio/);
+ }
+});
+
+test("a relocation companion can use existing equipment when the only new serial belongs to another OS", () => {
+ const f = fixture();
+ f.order.service = "MUDANCA DE ENDERECO - VIRTUA";
+ const tv = {...f.order, id_os: 2, num_os: "2612345680", service: "MUDANCA DE ENDERECO - TV"};
+ f.capture.tasks.push({...f.capture.tasks[0], os_number: tv.num_os});
+ f.capture.imperium_matches.push(tv);
+ const decoder = {serial: "123456789", type: "decoder"};
+ f.capture.installed_equipment = [decoder];
+ f.capture.removed_equipment = [];
+ f.capture.materials = [{code: "22026219", quantity: 1}];
+ f.deps.expectedType = service => service.endsWith("TV") ? "decoder" : "emta";
+ f.deps.productive = () => true;
+ f.deps.assign = candidates => candidates.forEach(candidate => {candidate.materialOwner = candidate.order === f.order;});
+ f.deps.equipment = candidate => ({installed: candidate.order === tv ? [decoder] : [], removed: []});
+ assert.deepEqual(selectCandidates(f.payload, [f.order, tv], scope, f.deps).map(candidate => [
+  candidate.numOs, candidate.materialOwner, f.deps.equipment(candidate).installed,
+ ]), [[f.order.num_os, true, []], [tv.num_os, false, [decoder]]]);
 });
 test("validated contract produces scoped candidate",()=>{
  const f=fixture();const [c]=selectCandidates(f.payload,[f.order],scope,f.deps);
