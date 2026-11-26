@@ -6,7 +6,7 @@ imperium	.imperium-project.json					a6c72b51e8822cc7
 shared	.mcp.json					488abc9205f55770
 shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
-shared	adhesion_technician_evidence.py	7			Short-lived TOA evidence for the exact Natal adhesion order.	15ca815fa46290b0
+shared	adhesion_technician_evidence.py	7			Short-lived TOA evidence for the exact Natal adhesion order.	ffc72017281198cb
 shared	adm_allocation.py	3			Read-only allocation for DESC multi-OS activities.	a9434a5b2e81e0ca
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
@@ -87,7 +87,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	80439af3f24a6449
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	c9d6bd75a51dbd9d
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -529,7 +529,7 @@ tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
 tests	tests/test_toa_live.py	27		1		d2308d1bedea07a3
 tests	tests/test_toa_live_lookup.py	15		1		dee51f885f154318
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
-tests	tests/test_toa_secondary_session.py	9				fb63f3fefa2b71ea
+tests	tests/test_toa_secondary_session.py	9				205a98640ff56fc4
 tests	tests/test_toa_worker_cache.py	7				84d409c3fed69bd5
 tests	tests/test_ui_runtime_regression.py	11	2			5f410632ef3473f4
 tests	tests/test_used_equipment_live_datasnap.py	8		1	Tests for capture-verified, read-only Equipamentos Utilizados adapter.	94b967d784921e4a
@@ -569,5 +569,5 @@ toa	toa_live.py	34		3	DOMINIUM | MAPA DE RESPONSABILIDADE	06aef1bd07886d55
 toa	toa_local_collector.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	88bb369658f48698
 toa	toa_secondary_bucket_export.mjs	2		2		9f4a0fb9a6f478cc
 toa	toa_secondary_direct_lookup.mjs					938c8a1280f8fb95
-toa	toa_secondary_session.py	16				ef2bb6a839d2aa67
+toa	toa_secondary_session.py	16				0e9d9bab5e04a4e9
 toa	verify_toa_cloud_bridge.py	3			Teste online seguro da ponte Cloudflare/D1 sem expor as chaves.	99d1169ad8c2856a

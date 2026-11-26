@@ -537,3 +537,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 20 testes direcionados passaram, incluindo identidade divergente, ausencia de prova de estoque, tarefas com movimentos e registro Atlas malformado.
 
 **Próximo passo/pendência:** Validar em producao por consulta, incluindo lotes com atividades improdutivas. Nunca reenviar tentativa de resultado incerto.
+
+## 2026-11-26 18:21 UTC — Adesao concilia executor com cadastro incompleto no TOA
+
+**Motivo:** A rota e o inventario do TOA podem fornecer o ID correto do executor sem preencher nome e login; o login pode vir associado ao responsavel anterior na captura.
+
+**Alterado:** Usa busca e formulario concordantes, com IDs da rota e inventario, preservando rejeicao de divergencias. Cadastra grafia de estoque validada para o ID 249803 apenas com prova da OS.
+
+**Verificação:** Testes de regressao cobrem provedores com dados ausentes, inventario divergente e formulario sem identificacao. Suite direcionada aprovada.
+
+**Próximo passo/pendência:** Verificar consulta e plano no runtime antes de repetir apenas baixas elegiveis.

@@ -79,16 +79,17 @@ def _confirmed_adhesion_provider(value: dict, capture: dict, adhesion_date: str)
     if not isinstance(current, dict) or not isinstance(historical, dict):
         return None
     pid = _text(current.get("id"))
-    login = _text(current.get("external_id")).upper()
-    name = _text(current.get("name"))
+    login = _text(search.get("external_id")).upper()
+    name = _text(value.get("tecnico"))
     if (not pid.isdecimal() or not re.fullmatch(r"Z\d+", login) or len(name.split()) < 2
+            or _text(current.get("external_id")).upper() not in {"", login}
+            or _text(current.get("name")).casefold() not in {"", name.casefold()}
             or not _text(historical.get("id")).isdecimal() or _text(historical.get("id")) == pid
             or _text(historical.get("external_id")).upper() != login
             or _text(historical.get("name")).casefold() == name.casefold()
-            or _text(search.get("pid")) != pid or _text(search.get("external_id")).upper() != login
+            or _text(search.get("pid")) != pid
             or _text(search.get("date")) != adhesion_date or _text(value.get("pid")) != pid
-            or _text(value.get("externalId")).upper() != login
-            or _text(value.get("tecnico")).casefold() != name.casefold()):
+            or _text(value.get("externalId")).upper() != login):
         return None
     inventory = responsibility.get("inventory_providers")
     forms = responsibility.get("form_submitters")
@@ -99,9 +100,11 @@ def _confirmed_adhesion_provider(value: dict, capture: dict, adhesion_date: str)
         if (not isinstance(tasks, list) or not tasks or not all(is_unproductive_task(task) for task in tasks)
                 or not has_no_adhesion_movements(normalized)):
             return None
+    # A provider absent from the TOA resource directory can still be identified
+    # by its ID in the inventory and by the named activity form submitter.
     if not all(isinstance(item, dict) and _text(item.get("id")) == pid
-               and _text(item.get("external_id")).upper() == login
-               and _text(item.get("name")).casefold() == name.casefold() for item in inventory):
+               and _text(item.get("external_id")).upper() in {"", login}
+               and _text(item.get("name")).casefold() in {"", name.casefold()} for item in inventory):
         return None
     if not all(isinstance(form, dict) and _text(form.get("provider_id")) == pid
                and _text(form.get("user_name")).casefold() == name.casefold() for form in forms):

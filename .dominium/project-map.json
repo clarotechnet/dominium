@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-26T14:08:58+00:00",
+  "generated_at": "2026-11-26T18:21:49+00:00",
   "schema": 2,
-  "source_fingerprint": "0897827f18faf6e49e554cd60fb54485afeb22bfd5cac758f6525bdb5f57f349",
+  "source_fingerprint": "90927d005e219f9a2680af4c4a8e80106a0278fb6f423739a4854993c3ef7c66",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -97,8 +97,8 @@
     {
       "path": "adhesion_technician_evidence.py",
       "category": "shared",
-      "bytes": 6080,
-      "sha256": "15ca815fa46290b0c5b8c296a692e4f031370f161a51735b011f20d04b78f477",
+      "bytes": 6177,
+      "sha256": "ffc72017281198cb3c8dbd87ba91abe28027f60ae9d9431e751f2b1b2bfb4176",
       "summary": "Short-lived TOA evidence for the exact Natal adhesion order.",
       "imports": [
         "pathlib",
@@ -1673,8 +1673,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 37883,
-      "sha256": "80439af3f24a644902c09c889ff1d99ac04274dac84a52eb1d582cdd8bd5d2c3",
+      "bytes": 38610,
+      "sha256": "c9d6bd75a51dbd9df0adf4d5af8b0a8c36b9a62ddff40900a090dba08fd88392",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -9930,8 +9930,8 @@
     {
       "path": "tests/test_toa_secondary_session.py",
       "category": "tests",
-      "bytes": 5983,
-      "sha256": "fb63f3fefa2b71ea0fb5be4e2ee1ed2b2a7c98b52e6f28864f4c5461b509163b",
+      "bytes": 7082,
+      "sha256": "205a98640ff56fc4c34a037cea6aea82715d77ac86ae1cdcfe169de352320455",
       "summary": "",
       "imports": [
         "copy",
@@ -10723,8 +10723,8 @@
     {
       "path": "toa_secondary_session.py",
       "category": "toa",
-      "bytes": 13118,
-      "sha256": "ef2bb6a839d2aa67f6a38047a5db52e93c963a773afb89a729484c4128fab586",
+      "bytes": 13317,
+      "sha256": "0e9d9bab5e04a4e964e586d25d59ce8be8dcd7c5448f04dd8f273b6de12c7939",
       "summary": "",
       "imports": [
         "__future__",
