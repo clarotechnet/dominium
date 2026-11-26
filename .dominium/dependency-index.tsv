@@ -1345,6 +1345,8 @@ types	tests/test_disconnection_access.py
 unittest	tests/test_disconnection_access.py
 edge_voice	tests/test_edge_voice.py
 unittest	tests/test_edge_voice.py
+dataclasses	tests/test_equipment_atlas_correlations.py
+imperium_api	tests/test_equipment_atlas_correlations.py
 integrations	tests/test_equipment_atlas_correlations.py
 unittest	tests/test_equipment_atlas_correlations.py
 base64	tests/test_equipment_daily_catalog.py

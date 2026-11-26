@@ -2,6 +2,17 @@
 const test=require("node:test"),assert=require("node:assert/strict");
 const {parseContracts,isAdhesionBucket,codeOnly,selectCandidates,runBatch,readBatchToa}=require("../static/adhesion-batch.js");
 const scope={profile:"natal",date:"2026-11-24",contract:"12345678",epoch:4};
+test("restores a closed tab's list without treating interrupted work as confirmed", () => {
+ const {restoreQueue} = require("../static/adhesion-batch.js");
+ const saved = JSON.stringify({date:scope.date,rows:[
+  {contract:"12345678",label:"Baixado"}, {contract:"23456789",label:"Executando"},
+  {contract:"34567890",label:"Na fila"}, {contract:"45678901",label:"Aguardando confirmacao"},
+ ]});
+ assert.deepEqual(restoreQueue(saved,scope.date).map(({label})=>label),
+  ["Baixado","Interrompido","Interrompido","Aguardando confirmacao"]);
+ assert.deepEqual(restoreQueue(saved,"2026-11-25"), []);
+ assert.deepEqual(restoreQueue(null,scope.date), []);
+});
 function fixture(){
  const order={id_os:1,num_os:"2612345678",contract:scope.contract,service:"ADESAO - INSTALACAO DE ASSINATURA"};
  const capture={aid:"123",contract:scope.contract,route:"NTL-DMV",scheduled_date:scope.date,activity_status:"completed",decision:"candidate_after_validation",materials_complete:true,tasks:[{os_number:order.num_os,status:"executed",close_code:"409"}],imperium_matches:[order]};

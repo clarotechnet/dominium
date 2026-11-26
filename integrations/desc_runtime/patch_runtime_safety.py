@@ -319,6 +319,81 @@ def patch_official_atlas_master_unit(text: str) -> str:
     return text
 
 
+def patch_official_return_group_search(text: str) -> str:
+    """Use confirmed same-group RETORNO items after the official Atlas codes."""
+    changes = (
+        ('    parse_code_record,\n', '    parse_code_record,\n    parse_stock_atlas_record,\n    stocked_return_group_codes,\n'),
+        (
+            '    ) -> EquipmentAtlasRecord:\n        """Official read-only equipment master',
+            '        *, allow_empty: bool = False,\n    ) -> EquipmentAtlasRecord:\n        """Official read-only equipment master',
+        ),
+        (
+            '        return parse_code_record(payload, code)\n',
+            '        parser = parse_stock_atlas_record if allow_empty else parse_code_record\n'
+            '        return parser(payload, code)\n',
+        ),
+        (
+            '                        self._master_atlas_record_on(client, requested_code)\n',
+            '                        self._master_atlas_record_on(client, requested_code, allow_empty=self.profile_key == "natal")\n',
+        ),
+        (
+            '            for candidate_code in return_order:\n',
+            '''            group_return_codes = ()
+            if (official_atlas_first and self.profile_key == "natal" and remaining > 0
+                    and sum(source_remaining.get(code, 0) for code in return_order) < remaining):
+                reference = source_available.get(requested_code) or available.get(requested_code)
+                if reference is not None and (not master_unit or reference.unit == master_unit):
+                    group_return_codes = tuple(
+                        code for code in stocked_return_group_codes(
+                            reference, description, source_available, source_remaining,
+                        ) if code not in candidate_codes
+                    )
+                    return_order.extend(group_return_codes)
+            for candidate_code in return_order:
+''',
+        ),
+        (
+            '''            for candidate_code, parts in allocations.items():
+''',
+            '''            if any(code in group_return_codes for code in used_codes):
+                match_type = "grupo_retorno_confirmado"
+
+            for candidate_code, parts in allocations.items():
+''',
+        ),
+        (
+            '                concrete["match_types"].add(match_type)\n',
+            '                concrete_match = match_type\n'
+            '                if match_type == "grupo_retorno_confirmado" and candidate_code not in group_return_codes:\n'
+            '                    concrete_match = "exact_code" if requested_code == candidate_code else "codigo_atlas"\n'
+            '                concrete["match_types"].add(concrete_match)\n',
+        ),
+    )
+    audit_old = '''                        "codigo_atlas"
+                        if (
+                            "codigo_atlas" in match_types
+                            or any(code != material.code for code in requested_codes)
+                        )
+'''
+    audit_new = '''                        "grupo_retorno_confirmado"
+                        if "grupo_retorno_confirmado" in match_types
+                        else "codigo_atlas"
+''' + audit_old.split('\n', 1)[1]
+    if all(new in text for _, new in changes) and audit_new in text:
+        return text
+    for old, new in changes:
+        if text.count(old) != 1:
+            raise ValueError(f'Unsupported legacy RETORNO group search: {old.strip()[:100]}')
+        text = text.replace(old, new, 1)
+    marker = '    def prepare_official_materials(\n'
+    before, official = text.split(marker, 1)
+    if official.count(audit_old) != 1:
+        raise ValueError('Unsupported legacy official material audit')
+    text = before + marker + official.replace(audit_old, audit_new, 1)
+    ast.parse(text)
+    return text
+
+
 def patch_official_code_only(text: str, *, helper_source: str) -> str:
     marker = '    if not productive and (installed_source or removed_source or material_source):'
     guard = '''    if is_code_only_adhesion_service(_value(order, "service")) and (

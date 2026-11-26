@@ -477,3 +477,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Fila JavaScript, arvore de rotas, transporte de consulta secundario e gate completo.
 
 **Próximo passo/pendência:** Validar leitura em producao e conferir baixas pendentes no Imperium, sem reenviar.
+
+## 2026-11-26 02:13 UTC — Adesao NTL/PWM: grupo do RETORNO e recuperacao da fila
+
+**Motivo:** A ausencia confirmada de um codigo no cadastro Atlas bloqueava toda a OS, havia materiais identicos com codigos diferentes no RETORNO e a fila apagava ao fechar a aba.
+
+**Alterado:** Busca no grupo so aceita nome completo, grupo oficial, unidade e saldo coincidentes. Atlas vazio confirmado segue a rotina de falta de estoque. A fila salva contratos e status por operador/data neste navegador.
+
+**Verificação:** Fixtures de retorno e de aba interrompida, gate completo e consultas de producao em leitura.
+
+**Próximo passo/pendência:** Conferir a primeira execucao supervisionada com o novo planejamento, sem reenviar resultados incertos.
