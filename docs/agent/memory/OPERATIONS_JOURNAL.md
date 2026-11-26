@@ -497,3 +497,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Teste do workbook, rota portada, politica do relay e gate completo.
 
 **Próximo passo/pendência:** Verificar o XLSX do dia 25/11 na origem operacional apos publicar.
+
+## 2026-11-26 12:45 UTC — Adesao: preservar a origem da OS ao recuperar tarefas
+
+**Motivo:** A consulta ao TOA gerava um CSV auxiliar que o indice via como coleta de operacao. Entre capturar e revalidar, mudava o hash de origem e a fila retinha as OS.
+
+**Alterado:** O indice ignora pastas adhesion-readonly ao selecionar a fonte de aprovacao. A recuperacao ainda consulta o CSV auxiliar e uma mudanca da coleta regular continua invalidando o escopo antigo.
+
+**Verificação:** Reproducao da terceira tarefa e da integridade de escopo, suites dirigidas e gate completo.
+
+**Próximo passo/pendência:** Conferir em producao apenas por consulta o caso de tres OS.

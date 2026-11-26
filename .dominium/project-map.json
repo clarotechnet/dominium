@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-26T02:33:09+00:00",
+  "generated_at": "2026-11-26T12:45:45+00:00",
   "schema": 2,
-  "source_fingerprint": "16842bf94bb70f9e1bc55582f66dad81439f189b2fc6f38f96e7ae626a62b6dd",
+  "source_fingerprint": "496ef3d4bcb33fc2477b37874773e84760a2ea75214374aa6abfde3db863aeaf",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1673,8 +1673,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 34843,
-      "sha256": "08e6e1c9da9375b79bcf40a249a3badca581c02c477cae6ec073ad9f129292e2",
+      "bytes": 35508,
+      "sha256": "97d281cafa57320387af526b08a23ef41991dde760d348187ca5c89c1b1da458",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -9796,16 +9796,19 @@
     {
       "path": "tests/test_toa_export_task_recovery.py",
       "category": "tests",
-      "bytes": 4400,
-      "sha256": "fc9ebd3350e64a30141bc18bd1ac43d5216a5852970b694db5e884612fb9df58",
+      "bytes": 7352,
+      "sha256": "0ebd1ed3212eed7e56b7040982597a54b89a2427b5d1a6a484297bccb5fbd7cf",
       "summary": "",
       "imports": [
         "csv",
         "datetime",
+        "imperium_api",
         "integrations",
+        "operation_scope",
         "os",
         "pathlib",
         "tempfile",
+        "toa_context",
         "toa_export_task_recovery",
         "unittest"
       ],
@@ -9816,7 +9819,7 @@
         "TOA_BUCKET_COLLECTOR.running"
       ],
       "entrypoint": false,
-      "symbol_count": 3
+      "symbol_count": 4
     },
     {
       "path": "tests/test_toa_import.py",
@@ -10463,8 +10466,8 @@
     {
       "path": "toa_context.py",
       "category": "toa",
-      "bytes": 8323,
-      "sha256": "43ac572adde029a813ccc61475f86bf06932ce3999a1cdd8a1053c8fad6b7c44",
+      "bytes": 8585,
+      "sha256": "3205c222cb6487f4a6eaba5c34e11956e782aa6c0109ece3ecc98dc05730db37",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "collections",

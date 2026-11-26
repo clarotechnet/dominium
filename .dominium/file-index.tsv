@@ -87,7 +87,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	08e6e1c9da9375b7
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	97d281cafa573203
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -523,7 +523,7 @@ tests	tests/test_toa_connector.py	9				0b0027f6f3c21936
 tests	tests/test_toa_contract_registry.py	12				24da45304414f57e
 tests	tests/test_toa_datalake_store.py	5				9a077ca9a38c9926
 tests	tests/test_toa_discovery_browser.py	3				f5606883d40c3cc1
-tests	tests/test_toa_export_task_recovery.py	3		2		fc9ebd3350e64a30
+tests	tests/test_toa_export_task_recovery.py	4		2		0ebd1ed3212eed7e
 tests	tests/test_toa_import.py	15		1		28ef082b0cc1d01f
 tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
 tests	tests/test_toa_live.py	27		1		d2308d1bedea07a3
@@ -557,7 +557,7 @@ toa	toa_capture.py	29		1	Read-only validator for TECHCAP V5.6 capture exports.	d
 toa	toa_capture_panel.py	10		2	DOMINIUM | MAPA DE RESPONSABILIDADE	a1fdf7495ee34cb2
 toa	toa_cloud_client.py	9			Cliente da fila privada Cloudflare usada pelo DOMINIUM primario.	431148a4b1391254
 toa	toa_connector.py	25		2	API local, sanitizada e somente leitura para dados operacionais do TOA.	455092548c5ae402
-toa	toa_context.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	43ac572adde029a8
+toa	toa_context.py	8			DOMINIUM | MAPA DE RESPONSABILIDADE	3205c222cb6487f4
 toa	toa_contract_registry.py	17			DOMINIUM | MAPA DE RESPONSABILIDADE	643a5826dbdfa1a5
 toa	toa_datalake_store.py	19			DOMINIUM | MAPA DE RESPONSABILIDADE	f7c80584d8f7687e
 toa	toa_discovery_browser.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	70da7424e3e7a77f
