@@ -15,6 +15,26 @@ function readPrivateConnection() {
   return { token: process.env.DOMINIUM_DESC_REVIEW_TOKEN || stored.token };
 }
 
+async function fetchScheduledOrders(profile, date, connection = readPrivateConnection, fetcher = fetch) {
+  const { token } = connection();
+  if (!/^[A-Za-z0-9_-]{43,128}$/.test(String(token || ""))) {
+    throw new Error("operational_private_relay_not_configured");
+  }
+  const query = new URLSearchParams({ profile, date, status: "field", service_type: "all" });
+  const response = await fetcher(WORKER_ORIGIN + "/api/orders?" + query, {
+    headers: {
+      authorization: "Bearer " + token,
+      "x-dominium-role": "viewer",
+      "x-dominium-actor": "dominium-rotina-ordens",
+      accept: "application/json",
+    },
+    redirect: "error",
+    signal: AbortSignal.timeout(65_000),
+  });
+  if (!response.ok) throw new Error("operational_read_http_" + response.status);
+  return response.json();
+}
+
 function resolveOperationalRead(req, connection = readPrivateConnection) {
   const report = allowedOrderReport(req.method, req.originalUrl) ||
     allowedCommissionReport(req.method, req.originalUrl);
@@ -70,4 +90,4 @@ async function toaLookupFailure(upstream) {
   }
   return { ok: false, error: 'Consulta ao TOA indisponivel. Nenhuma baixa foi enviada nesta tentativa.' };
 }
-module.exports = { resolveOperationalRead, restorePrivateJsonContentType, toaLookupFailure };
+module.exports = { fetchScheduledOrders, resolveOperationalRead, restorePrivateJsonContentType, toaLookupFailure };

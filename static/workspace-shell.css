@@ -294,6 +294,45 @@ body.sidebar-collapsed .app-shell { grid-template-columns: 68px minmax(0, 1fr); 
 .workspace-search-results button:hover { background: var(--accent-soft); }
 .workspace-search-results p { margin: 5px; color: var(--muted); font-size: .85rem; }
 
+.side-nav-footer .workspace-footer-action { min-height: 31px; margin: 0; padding: 4px 0; }
+.side-nav-footer .workspace-footer-action + .workspace-footer-action { border-top: 1px solid var(--line); }
+.side-nav-footer .workspace-footer-action strong { font-size: .72rem; }
+.workspace-pending-badge {
+  margin-left: auto;
+  padding: 2px 6px;
+  color: var(--accent-hi);
+  background: var(--accent-soft);
+  border-radius: 5px;
+  font-size: .65rem;
+}
+.workspace-admin-heading { justify-content: space-between; flex-wrap: wrap; }
+.workspace-admin-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.workspace-admin-metrics article,
+.workspace-admin-results {
+  padding: clamp(10px, 2vw, 18px);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.workspace-admin-metrics span { font-size: .74rem; color: var(--muted); }
+.workspace-admin-metrics strong { display: block; margin-top: 7px; font-size: 1.55rem; }
+.workspace-admin-results { margin-top: 14px; }
+.workspace-admin-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.workspace-admin-filters label { display: grid; gap: 4px; color: var(--muted); font-size: .74rem; }
+.workspace-admin-filters :is(input, select) {
+  background: var(--surface-raised);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  padding: 7px 9px;
+  min-width: 0;
+  max-width: 100%;
+}
+.workspace-admin-results .account-user { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.workspace-admin-results .account-user small { color: var(--muted); }
+#operationalSettingsList { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 0; }
+#operationalSettingsList dd { margin: 0; color: var(--muted); }
+
 @media (max-width: 1050px) {
   .app-shell { --workspace-sidebar-width: 216px; }
   #dashboardWorkspace .dashboard-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -62,6 +62,10 @@ const state = {
     ? "order-reports"
     : window.location.hash === "#relatorios-comissao"
     ? "commission-reports"
+    : window.location.hash === "#solicitacoes-cadastro"
+    ? "registrations"
+    : window.location.hash === "#usuarios-permissoes"
+    ? "users"
     : window.location.hash === "#controle-baixas"
     ? "close-control"
     : window.location.hash === "#pendente"
@@ -204,6 +208,7 @@ const state = {
   monitorExportRows: [],
   monitorExportColumns: [],
   monitorLastUpdatedAt: "",
+  ordersSnapshot: null,
   monitorSnapshotStale: false,
   monitorCsvSnapshot: null,
   monitorCsvLoading: false,
@@ -898,6 +903,10 @@ function updateAddress() {
     ? (state.allCities ? "desconexao-backlog-todos" : "desconexao-backlog")
     : state.activeModule === "all-operations"
     ? "todos"
+    : state.activeModule === "registrations"
+    ? "solicitacoes-cadastro"
+    : state.activeModule === "users"
+    ? "usuarios-permissoes"
     : state.activeModule === "descAnalytics"
     ? "desconexao-indicadores"
     : state.activeModule === "confront"
@@ -1091,9 +1100,17 @@ function applyAuthUser(user, csrfToken = "") {
   elements.accountMeta.textContent = `${user?.username || "-"} · ${roleLabel}`;
   elements.accountAvatar.textContent = initials;
   elements.accountAuditActor.textContent = displayName;
-  elements.accountAdminSection.classList.toggle("hidden", user?.role !== "admin");
   // Bell notification: visible only to admins, with polling
   const isAdmin = user?.role === "admin";
+  for (const id of ["registrationsModule", "usersModule"]) {
+    const link = document.getElementById(id);
+    link.classList.toggle("hidden", !isAdmin);
+    link.setAttribute("aria-hidden", String(!isAdmin));
+  }
+  if (!isAdmin && ["registrations", "users"].includes(state.activeModule)) {
+    state.activeModule = "dashboard";
+    updateAddress();
+  }
   showAdminBell(isAdmin);
   if (isAdmin) {
     startPendingBadgePoll();
@@ -1164,6 +1181,9 @@ async function refreshPendingBadge() {
       elements.notificationBadge.textContent = count;
       elements.notificationBadge.classList.toggle("hidden", count === 0);
     }
+    const sidebarBadge = document.getElementById("sidebarPendingBadge");
+    sidebarBadge.textContent = count;
+    sidebarBadge.classList.toggle("hidden", count === 0);
   } catch {
     // Silently ignored — badge just won't update
   }
@@ -1276,28 +1296,60 @@ if (elements.rejectUserForm) {
 
 if (elements.notificationBell) {
   elements.notificationBell.addEventListener("click", () => {
-    // operatorButton ja abre o painel e carrega os cadastros para admins.
-    elements.operatorButton.click();
+    setModule("registrations");
   });
 }
 
 let _accountUsersLoadSeq = 0;
+let accountUsers = [];
 
 async function loadAccountUsers() {
   const loadSeq = ++_accountUsersLoadSeq;
   if (state.authUser?.role !== "admin") return;
-  elements.accountUsersList.replaceChildren();
+  elements.accountUsersList.textContent = "Carregando cadastros…";
+  document.getElementById("workspaceAdminMetrics").replaceChildren();
   try {
     const payload = await request("/api/auth/users", { timeoutMs: 15000 });
     if (loadSeq !== _accountUsersLoadSeq) return;
-    payload.users.forEach((user) => {
+    accountUsers = Array.isArray(payload.users) ? payload.users : [];
+    renderAccountUsers();
+  } catch (error) {
+    if (loadSeq !== _accountUsersLoadSeq) return;
+    accountUsers = [];
+    elements.accountUsersList.textContent = error.message;
+  }
+}
+
+function renderAccountUsers() {
+  if (state.authUser?.role !== "admin") return;
+  const registrations = state.activeModule === "registrations";
+  const metricArea = document.getElementById("workspaceAdminMetrics");
+  metricArea.replaceChildren();
+  for (const [label, status] of [["Pendentes", "pending"], ["Ativos", "active"], ["Desativados", "disabled"]]) {
+    const card = document.createElement("article");
+    const caption = document.createElement("span");
+    caption.textContent = label;
+    const count = document.createElement("strong");
+    count.textContent = accountUsers.filter((user) => user.status === status).length;
+    card.append(caption, count);
+    metricArea.append(card);
+  }
+  const query = normalize(document.getElementById("workspaceAdminSearch").value);
+  const role = document.getElementById("workspaceAdminRole").value;
+  const visibleUsers = accountUsers.filter((user) => (registrations ? user.status === "pending" : user.status !== "pending")
+    && (!role || user.role === role)
+    && normalize(`${user.display_name || ""} ${user.username || ""}`).includes(query));
+  elements.accountUsersList.replaceChildren();
+  if (!visibleUsers.length) elements.accountUsersList.textContent = "Nenhum cadastro encontrado.";
+  visibleUsers.forEach((user) => {
       const row = document.createElement("article");
       row.className = "account-user";
       const copy = document.createElement("div");
       const name = document.createElement("strong");
       name.textContent = user.display_name;
       const meta = document.createElement("small");
-      meta.textContent = `${user.username} · ${user.status} · ${AUTH_ROLE_LABELS[user.role] || user.role}`;
+      const status = { pending: "Pendente", active: "Ativo", disabled: "Desativado" }[user.status] || user.status;
+      meta.textContent = `${user.username} · ${status} · ${AUTH_ROLE_LABELS[user.role] || user.role}`;
       copy.append(name, meta);
       const actions = document.createElement("div");
       actions.className = "account-user-actions";
@@ -1358,14 +1410,7 @@ async function loadAccountUsers() {
       }
       row.append(copy, actions);
       elements.accountUsersList.append(row);
-    });
-  } catch (error) {
-    if (loadSeq !== _accountUsersLoadSeq) return;
-    const message = document.createElement("p");
-    message.className = "auth-message";
-    message.textContent = error.message;
-    elements.accountUsersList.append(message);
-  }
+  });
 }
 
 async function bootstrapAuthentication() {
@@ -1482,11 +1527,36 @@ elements.authRegisterForm.addEventListener("submit", async (event) => {
 elements.operatorButton.addEventListener("click", () => {
   updateAccountAttribution();
   elements.accountDialog.showModal();
-  if (state.authUser?.role === "admin") loadAccountUsers();
 });
-elements.operatorAvatar?.addEventListener("click", () => elements.operatorButton?.click());
+document.getElementById("sidebarAccount").addEventListener("click", () => elements.operatorButton.click());
+document.getElementById("sidebarHelp").addEventListener("click", () => document.getElementById("workspaceHelp").showModal());
+document.getElementById("sidebarLogout").addEventListener("click", () => elements.accountLogout.click());
+document.getElementById("operationalSettingsModule").addEventListener("click", () => {
+  const base = state.profiles.find((profile) => profile.key === state.profile)?.label || state.profile;
+  document.getElementById("operationalSettingsBase").textContent = state.profileSwitching
+    ? "Aguardando a consulta da base." : base;
+  const list = document.getElementById("operationalSettingsList");
+  list.replaceChildren();
+  if (!state.profileSwitching) {
+    for (const [label, enabled] of [
+      ["Baixa de O.S.", state.closeEnabled],
+      ["Baixa pela API oficial", state.officialCloseEnabled],
+      ["Criação de O.S.", state.nativeCreationEnabled],
+      ["Baixa de material", state.materialWriteoffEnabled],
+    ]) {
+      const term = document.createElement("dt");
+      term.textContent = label;
+      const value = document.createElement("dd");
+      value.textContent = enabled ? "Disponível" : "Indisponível";
+      list.append(term, value);
+    }
+  }
+  document.getElementById("operationalSettingsDialog").showModal();
+});
 elements.accountClose.addEventListener("click", () => elements.accountDialog.close());
 elements.accountUsersRefresh.addEventListener("click", loadAccountUsers);
+document.getElementById("workspaceAdminSearch").addEventListener("input", renderAccountUsers);
+document.getElementById("workspaceAdminRole").addEventListener("change", renderAccountUsers);
 
 function clearSensitiveBrowserState() {
   state.authCsrfToken = "";
@@ -3522,6 +3592,7 @@ async function switchProfile(profileKey) {
   state.nativeCreationServices = Array.isArray(profile.native_creation_services)
     ? profile.native_creation_services.map(String) : [];
   state.orders = [];
+  state.ordersSnapshot = null;
   state.selected.clear();
   state.failures = [];
   state.completed = 0;
@@ -3575,7 +3646,7 @@ async function switchProfile(profileKey) {
   try {
     await loadProfile();
     await loadMonitorCsvSnapshot({ quiet: true });
-    await loadOrders();
+    await loadOrders({ scheduled: true });
     await loadSemiAutoAgenda({ quiet: true });
     await loadCloseReport({ quiet: true });
     if (state.activeModule === "database") await loadOperationalDatabase({ quiet: true });
@@ -3663,12 +3734,14 @@ async function loadDescAnalyticsFrame() {
 
 function setModule(module) {
   if (module === "monitor") module = "close";
+  const administration = ["registrations", "users"].includes(module);
+  if (administration && state.authUser?.role !== "admin") return;
   if (
     state.running || state.bulkCreateLoading || state.stockBatchLoading
     || state.stockWriteoffLoading
     || ![
       "dashboard", "monitor", "orders", "stock", "serials", "confront", "technicians", "bulk", "imports",
-      "automation-test", "close", "close-control", "order-reports", "commission-reports", "report", "history", "intelligence", "database", "disconnection", "descAnalytics", "backlog",
+      "automation-test", "close", "close-control", "order-reports", "commission-reports", "report", "history", "intelligence", "database", "disconnection", "descAnalytics", "backlog", "registrations", "users",
     ].includes(module)
   ) return;
   if (module !== "stock" && state.stockSource === "official") {
@@ -3692,6 +3765,12 @@ function setModule(module) {
   if (module === "descAnalytics") void loadDescAnalyticsFrame();
   window.scrollTo({ top: 0, left: 0 });
   document.querySelector("main").scrollTo({ top: 0, left: 0 });
+  if (administration) {
+    document.getElementById("workspaceAdminSearch").value = "";
+    document.getElementById("workspaceAdminRole").value = "";
+    void loadAccountUsers();
+    return;
+  }
   if (module === "stock" && state.allCities) {
     window.DominiumStockNavigation?.openAllCityReadOnly?.();
   }
@@ -5443,18 +5522,25 @@ function renderDashboard() {
   const selected = state.selected.size;
   const completed = state.completed;
   const scale = Math.max(total, selected, failures, completed, 1);
+  const snapshot = state.ordersSnapshot;
+  const unconfirmed = ["waiting", "unavailable"].includes(snapshot?.snapshot_status);
 
-  elements.dashboardOpenCount.textContent = total;
-  elements.dashboardFieldCount.textContent = field;
+  elements.dashboardOpenCount.textContent = unconfirmed ? "—" : total;
+  elements.dashboardFieldCount.textContent = unconfirmed ? "—" : field;
   elements.dashboardCompletedCount.textContent = completed;
   elements.dashboardFailureCount.textContent = failures;
-  elements.dashboardTotalLabel.textContent = `${total} OS`;
-  elements.dashboardFieldLabel.textContent = field;
+  elements.dashboardTotalLabel.textContent = unconfirmed ? "Sem lista confirmada" : `${total} OS`;
+  elements.dashboardFieldLabel.textContent = unconfirmed ? "—" : field;
   elements.dashboardSelectedLabel.textContent = selected;
   elements.dashboardFailureLabel.textContent = failures;
   elements.dashboardCompletedLabel.textContent = completed;
   elements.dashboardAttentionCount.textContent = `${failures} pendencia${failures === 1 ? "" : "s"}`;
-  elements.dashboardUpdated.textContent = `Atualizado ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
+  const updatedAt = snapshot ? snapshot.updated_at : state.monitorLastUpdatedAt;
+  elements.dashboardUpdated.textContent = updatedAt
+    ? `${snapshot?.stale ? "Última lista disponível" : "Atualizado"} ${new Date(updatedAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" })}`
+    : snapshot?.snapshot_status === "closed" ? "Coleta começa às 08h"
+    : snapshot?.snapshot_status === "unavailable" ? "Coleta indisponível"
+    : "Aguardando lista do Imperium";
   setProgressWidth(elements.dashboardFieldBar, field, scale);
   setProgressWidth(elements.dashboardSelectedBar, selected, scale);
   setProgressWidth(elements.dashboardFailureBar, failures, scale);
@@ -7273,6 +7359,15 @@ function render() {
   document.getElementById("descAnalyticsWorkspace").classList.toggle("hidden", state.activeModule !== "descAnalytics");
   if (state.activeModule === "descAnalytics") void loadDescAnalyticsFrame();
   elements.dashboardModule.classList.toggle("active", state.activeModule === "dashboard");
+  const registrations = state.activeModule === "registrations";
+  const users = state.activeModule === "users";
+  elements.accountAdminSection.classList.toggle("hidden", !(registrations || users) || state.authUser?.role !== "admin");
+  document.getElementById("registrationsModule").classList.toggle("active", registrations);
+  document.getElementById("usersModule").classList.toggle("active", users);
+  document.getElementById("workspaceAdminTitle").textContent = registrations ? "Solicitações de cadastro" : "Usuários e permissões";
+  document.getElementById("workspaceAdminDescription").textContent = registrations
+    ? "Revise os pedidos de acesso e atribua o papel ao aprovar."
+    : "Consulte papéis e os vínculos com o Imperium.";
   document.getElementById("allOperationsModule")?.classList.toggle("active", state.activeModule === "all-operations");
   elements.monitorModule?.classList.toggle("active", state.activeModule === "monitor");
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
@@ -7330,7 +7425,7 @@ function render() {
     !(state.allCities && state.activeModule === "stock"));
 }
 
-async function loadOrders({ preserveSelection = false, quiet = false, visual = true } = {}) {
+async function loadOrders({ preserveSelection = false, quiet = false, visual = true, scheduled = false, passive = false } = {}) {
   if (state.loading) return false;
   const profileKey = state.profile;
   state.loading = true;
@@ -7345,23 +7440,29 @@ async function loadOrders({ preserveSelection = false, quiet = false, visual = t
   try {
     const status = elements.status.value || "field";
     const serviceType = elements.service.value || "all";
+    const useSnapshot = scheduled && status === "field" && serviceType === "all";
     const payload = await request(apiUrl(
-      `/api/orders?date=${encodeURIComponent(elements.date.value)}`
-      + `&status=${encodeURIComponent(status)}`
-      + `&service_type=${encodeURIComponent(serviceType)}`,
+      useSnapshot ? "/api/orders?snapshot=1" :
+        `/api/orders?date=${encodeURIComponent(elements.date.value)}&status=${encodeURIComponent(status)}&service_type=${encodeURIComponent(serviceType)}`,
     ), {
-      timeoutMs: status === "all" ? 300000 : 180000,
+      timeoutMs: useSnapshot ? 20000 : status === "all" ? 300000 : 180000,
       operation: quiet || !visual ? null : {
         phase: "searching",
-        label: "Consultando ordens no Imperium",
-        detail: status === "all" ? "Carregando todos os estados da operação" : "Buscando a lista operacional atual",
-        successLabel: "Ordens atualizadas",
+        label: useSnapshot ? "Carregando a lista programada" : "Consultando ordens no Imperium",
+        detail: useSnapshot ? "O.S. em campo da base selecionada" : "Buscando a lista operacional atual",
+        successLabel: useSnapshot ? "Lista carregada" : "Ordens atualizadas",
       },
     });
     if (profileKey !== state.profile) return false;
     state.orders = payload.orders;
+    const hasSnapshot = useSnapshot && Boolean(payload.snapshot_status);
+    state.ordersSnapshot = hasSnapshot ? payload : null;
+    if (hasSnapshot && payload.date && elements.date.value !== payload.date) {
+      elements.date.max = payload.date;
+      elements.date.value = payload.date;
+    }
     document.dispatchEvent(new CustomEvent("dominium:orders-updated"));
-    state.monitorLastUpdatedAt = new Date().toISOString();
+    state.monitorLastUpdatedAt = hasSnapshot ? (payload.updated_at || "") : new Date().toISOString();
     state.monitorSnapshotStale = Boolean(payload.stale);
     state.closeInstallerChecks = {};
     if (preserveSelection) {
@@ -7373,13 +7474,17 @@ async function loadOrders({ preserveSelection = false, quiet = false, visual = t
       state.selected.clear();
     }
     updateServiceOptions();
-    await loadFailures(profileKey);
-    await loadCloseReport({ quiet: true });
+    if (!passive) {
+      await loadFailures(profileKey);
+      await loadCloseReport({ quiet: true });
+    }
+    const snapshotMessage = { closed: "Coleta programada a partir das 08h", waiting: "Aguardando coleta de O.S.", unavailable: "Coleta de O.S. indisponível" };
     setConnection(
-      payload.stale
-        ? "Operação em andamento; exibindo lista atual"
+      payload.stale ? "Exibindo a última lista disponível"
+        : (useSnapshot && snapshotMessage[payload.snapshot_status])
+          ? snapshotMessage[payload.snapshot_status]
         : state.closeEnabled ? "Conectado ao servidor" : "Conectado; somente consulta",
-      payload.stale ? "busy" : "online",
+      payload.stale || (hasSnapshot && payload.snapshot_status !== "ready") ? "busy" : "online",
     );
     return true;
   } catch (error) {
@@ -12666,10 +12771,12 @@ elements.databaseDate.value = "";
 elements.intelligenceDate.value = localDate();
 elements.intelligenceDate.max = localDate();
 elements.bulkCreateDate.value = localDate();
-elements.refresh.addEventListener("click", () => loadOrders());
+elements.refresh.addEventListener("click", () => loadOrders({ scheduled: true }));
 elements.sidebarToggle.addEventListener("click", toggleSidebar);
 elements.dashboardModule.addEventListener("click", () => setModule("dashboard"));
 document.getElementById("allOperationsModule")?.addEventListener("click", () => showAllOperations(true));
+document.getElementById("registrationsModule").addEventListener("click", () => setModule("registrations"));
+document.getElementById("usersModule").addEventListener("click", () => setModule("users"));
 elements.workspaceProfile?.addEventListener("change", ({ target }) => {
   if (target.value === "all") showAllOperations();
   else void switchProfile(target.value);
@@ -13164,8 +13271,8 @@ elements.date.addEventListener("change", async () => {
   await loadSemiAutoAgenda({ quiet: true });
 });
 elements.search.addEventListener("input", render);
-elements.status.addEventListener("change", () => loadOrders());
-elements.service.addEventListener("change", () => loadOrders());
+elements.status.addEventListener("change", () => loadOrders({ scheduled: true }));
+elements.service.addEventListener("change", () => loadOrders({ scheduled: true }));
 elements.codeOptions.forEach((button) => {
   button.addEventListener("click", () => {
     if (state.running || state.loading || !state.closeEnabled) return;
@@ -13389,13 +13496,14 @@ async function initialize() {
     await loadProfile();
     await loadMonitorCsvSnapshot({ quiet: true });
     await loadToaLiveStatus({ quiet: true });
-    await loadOrders();
+    await loadOrders({ scheduled: true });
     await loadSemiAutoAgenda({ quiet: true });
     await loadCloseReport({ quiet: true });
     if (["stock", "bulk"].includes(state.activeModule)) {
       await loadStockTechnicians();
     }
     if (state.activeModule === "technicians") await loadTechnicians();
+    if (["registrations", "users"].includes(state.activeModule)) await loadAccountUsers();
     if (state.activeModule === "automation-test") await loadAutomationTestData();
     if (state.activeModule === "intelligence") {
       await Promise.all([loadIntelligence({ quiet: true }), loadHealthCheck({ quiet: true })]);
@@ -13490,6 +13598,14 @@ commissionReportsController = window.DominiumCommissionReports?.mount({
   requestBlob,
 });
 bootstrapAuthentication();
+function refreshScheduledOrders() {
+  if (!state.authReady || document.hidden || state.running || state.profileSwitching || state.loading
+    || state.allCities || !["dashboard", "orders"].includes(state.activeModule)
+    || elements.status.value !== "field" || elements.service.value !== "all") return;
+  void loadOrders({ scheduled: true, passive: true, quiet: true, preserveSelection: true });
+}
+window.setInterval(refreshScheduledOrders, 60_000);
+document.addEventListener("visibilitychange", refreshScheduledOrders);
 window.setTimeout(() => {
   if (state.authReady) showTermsOnFirstVisit();
 }, 250);

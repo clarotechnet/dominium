@@ -47,16 +47,17 @@
     const selected = exclusiveTab();
     const stockActive = state.activeModule === "stock";
     const serialActive = state.activeModule === "serials";
+    const queryActive = state.activeModule === "confront";
     const qcActive = stockActive && selected === "quality";
     const dailyActive = stockActive && selected === "daily";
     const reportsActive = stockActive && selected === "reports";
-    group.classList.toggle("active", stockActive || serialActive);
+    group.classList.toggle("active", stockActive || serialActive || queryActive);
     inventory.classList.toggle("active", stockActive && !qcActive && !dailyActive && !reportsActive);
     daily?.classList.toggle("active", dailyActive);
     reports?.classList.toggle("active", reportsActive);
     quality.classList.toggle("active", qcActive);
     serials.classList.toggle("active", serialActive);
-    if (stockActive || serialActive) expand(true);
+    if (stockActive || serialActive || queryActive) expand(true);
   }
   function openAllCityReadOnly() {
     if (state.activeModule !== "stock" || !state.allCities) return;

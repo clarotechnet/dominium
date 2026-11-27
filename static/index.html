@@ -16,7 +16,8 @@
   <link rel="stylesheet" href="/all-cities-scope.css?v=20261103-global-1">
   <link rel="stylesheet" href="/close-control.css?v=20261109-mro-ui-1">
   <link rel="stylesheet" href="/dominium-theme.css?v=20261127-1">
-  <link rel="stylesheet" href="/workspace-shell.css?v=20261127-1">
+  <link rel="stylesheet" href="/workspace-shell.css?v=20261127-2">
+  <link rel="stylesheet" href="/dominium-light.css?v=20261127-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -174,6 +175,10 @@
           <i data-lucide="calendar-days" aria-hidden="true"></i>
           <span><strong>Estoque Diário</strong><small>Saldo da empresa • Excel</small></span>
         </button>
+        <button class="side-nav-item stock-nav-child" id="confrontModule" type="button">
+          <i data-lucide="git-compare-arrows" aria-hidden="true"></i>
+          <span><strong>Query | Atlas</strong><small>Atlas × IMPERIUM</small></span>
+        </button>
       </div>
       <details class="workspace-nav-group">
         <summary title="Relatórios">
@@ -201,10 +206,6 @@
           <i data-lucide="chevron-down" class="workspace-nav-chevron" aria-hidden="true"></i>
         </summary>
         <div class="workspace-nav-items">
-          <button class="side-nav-item" id="confrontModule" type="button">
-            <i data-lucide="git-compare-arrows" aria-hidden="true"></i>
-            <span><strong>Query | Atlas</strong><small>Atlas × IMPERIUM</small></span>
-          </button>
           <button class="side-nav-item" id="techniciansModule" type="button">
             <i data-lucide="users-round" aria-hidden="true"></i>
             <span><strong>Técnicos</strong><small>Equipe DMV</small></span>
@@ -221,9 +222,33 @@
             <i data-lucide="history" aria-hidden="true"></i>
             <span><strong>Histórico e auditoria</strong><small>Auditoria</small></span>
           </button>
+          <button class="side-nav-item" id="operationalSettingsModule" type="button" data-sidebar-action>
+            <i data-lucide="sliders-horizontal" aria-hidden="true"></i><span><strong>Parâmetros operacionais</strong></span>
+          </button>
           <button class="side-nav-item hidden" id="automationTestModule" type="button" aria-hidden="true" tabindex="-1">
             <i data-lucide="scan-search" aria-hidden="true"></i>
             <span><strong>Teste de automacao</strong><small>Dry-run</small></span>
+          </button>
+        </div>
+      </details>
+      <details class="workspace-nav-group" id="administrationNav">
+        <summary title="Administração">
+          <i data-lucide="shield-check" aria-hidden="true"></i><span>Administração</span>
+          <i data-lucide="chevron-down" class="workspace-nav-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="workspace-nav-items">
+          <button class="side-nav-item hidden" id="registrationsModule" type="button" aria-hidden="true">
+            <i data-lucide="user-round-plus" aria-hidden="true"></i>
+            <span><strong>Solicitações de cadastro</strong></span><b id="sidebarPendingBadge" class="workspace-pending-badge hidden" aria-live="polite">0</b>
+          </button>
+          <button class="side-nav-item hidden" id="usersModule" type="button" aria-hidden="true">
+            <i data-lucide="users-round" aria-hidden="true"></i><span><strong>Usuários e permissões</strong></span>
+          </button>
+          <button class="side-nav-item" id="sidebarAccount" type="button" data-sidebar-action>
+            <i data-lucide="user-round" aria-hidden="true"></i><span><strong>Minha conta</strong></span>
+          </button>
+          <button class="side-nav-item" id="termsOpenButton" type="button" data-sidebar-action>
+            <i data-lucide="file-text" aria-hidden="true"></i><span><strong>Termos de uso</strong></span>
           </button>
         </div>
       </details>
@@ -237,9 +262,11 @@
             <i data-lucide="shield-check" aria-hidden="true"></i>
             <span>Domínio operacional</span>
           </div>
-          <button class="side-nav-legal" id="termsOpenButton" type="button">
-            <i data-lucide="file-text" aria-hidden="true"></i>
-            <span>Termos de uso</span>
+          <button class="side-nav-item workspace-footer-action" id="sidebarHelp" type="button" data-sidebar-action>
+            <i data-lucide="circle-help" aria-hidden="true"></i><span><strong>Central de ajuda</strong></span>
+          </button>
+          <button class="side-nav-item workspace-footer-action" id="sidebarLogout" type="button" data-sidebar-action>
+            <i data-lucide="log-out" aria-hidden="true"></i><span><strong>Sair do sistema</strong></span>
           </button>
         </div>
       </div>
@@ -285,6 +312,20 @@
     </header>
 
   <main id="workspaceMain">
+    <section id="accountAdminSection" class="workspace-admin hidden" aria-labelledby="workspaceAdminTitle">
+      <header class="workspace-heading workspace-admin-heading">
+        <div><h2 id="workspaceAdminTitle">Usuários e permissões</h2><p id="workspaceAdminDescription" class="workspace-description"></p></div>
+        <button class="button secondary" id="accountUsersRefresh" type="button">Atualizar</button>
+      </header>
+      <div id="workspaceAdminMetrics" class="workspace-admin-metrics" aria-label="Resumo de cadastros"></div>
+      <div class="workspace-admin-results">
+        <div class="workspace-admin-filters">
+          <label for="workspaceAdminSearch">Buscar por nome ou usuário<input id="workspaceAdminSearch" type="search" autocomplete="off"></label>
+          <label for="workspaceAdminRole">Perfil<select id="workspaceAdminRole"><option value="">Todos</option><option value="admin">Administrador</option><option value="controller">Controlador</option><option value="viewer">Visualizador</option></select></label>
+        </div>
+        <div id="accountUsersList" aria-live="polite"></div>
+      </div>
+    </section>
     <section class="order-reports-workspace hidden" id="orderReportsWorkspace" aria-label="Relatórios de OS do Imperium">
       <header class="workspace-heading">
         <div>
@@ -3009,15 +3050,27 @@
         <div><span>Identidade Imperium</span><strong id="accountDatasnapActor">Nao vinculado</strong><small>Vinculo operacional validado separadamente para cada base.</small></div>
         <div><span>Auditoria Dominium</span><strong id="accountAuditActor">Operador atual</strong><small>Registra quem clicou, canal, tecnico, contrato, OS e resultado.</small></div>
       </section>
-      <section class="account-admin hidden" id="accountAdminSection">
-        <div class="account-admin-heading"><h3>Cadastros</h3><button class="button secondary" id="accountUsersRefresh" type="button">Atualizar</button></div>
-        <div id="accountUsersList"></div>
-      </section>
       <footer><button class="button secondary" id="accountLogout" type="button"><i data-lucide="log-out"></i><span>Sair</span></button></footer>
     </div>
   </dialog>
 
   <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="workspaceHelp" class="dominium-dialog" aria-labelledby="workspaceHelpTitle">
+    <div class="dialog-content">
+      <h2 id="workspaceHelpTitle">Central de ajuda</h2>
+      <p>Use a busca de módulos para encontrar uma tela. Antes de baixar uma O.S., confira a base, o número da ordem e o código no Imperium. Em caso de erro ou resultado incerto, consulte o Relatório de baixas.</p>
+      <form method="dialog" class="dialog-actions"><button class="button secondary" type="submit">Fechar</button></form>
+    </div>
+  </dialog>
+  <dialog id="operationalSettingsDialog" class="dominium-dialog" aria-labelledby="operationalSettingsTitle">
+    <div class="dialog-content">
+      <h2 id="operationalSettingsTitle">Parâmetros operacionais</h2>
+      <p id="operationalSettingsBase"></p>
+      <dl id="operationalSettingsList"></dl>
+      <form method="dialog" class="dialog-actions"><button class="button secondary" type="submit">Fechar</button></form>
+    </div>
+  </dialog>
 
   <!-- Modal: aprovação de cadastro com seleção de papel -->
   <dialog class="dominium-dialog" id="approveUserDialog" aria-labelledby="approveUserDialogTitle">
@@ -3076,10 +3129,10 @@
   <script src="/lucide.min.js"></script>
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261103-event-guard-1"></script>
-  <script src="/all-operations.js?v=20261028-1"></script>
+  <script src="/all-operations.js?v=20261127-1"></script>
   <script src="/order-reports-ui.js?v=20261111-treated-1"></script>
   <script src="/commission-reports-ui.js?v=20261112-1"></script>
-  <script src="/app.js?v=20261127-workspace-1"></script>
+  <script src="/app.js?v=20261127-daily-orders-1"></script>
   <script src="/adhesion-batch.js?v=20261126-mudanca-endereco"></script>
   <script src="/close-control-engine.js?v=20261109-mro-ui-1"></script>
   <script src="/close-control-city-board.js?v=20261109-mro-ui-1"></script>
@@ -3093,7 +3146,7 @@
   <script src="/daily-stock-parser.js?v=20261028-1"></script>
   <script src="/daily-stock.js?v=20261103-nav-fix-1"></script>
   <script src="/material-stock-audit.js?v=20261118"></script>
-  <script src="/stock-nav.js?v=20261103-global-1"></script>
+  <script src="/stock-nav.js?v=20261127-1"></script>
   <script src="/stock-analysis-ui.js?v=20261103-global-1"></script>
   <script src="/stock-daily-analysis-ui.js?v=20261106-atlas-video-3"></script>
   <script src="/stock-report-preview-ui.js?v=20261103-global-1"></script>
@@ -3103,7 +3156,7 @@
   <script src="/confront.js?v=20261022-3"></script>
   <script src="/query-import-ui.js?v=20261023-1"></script>
   <script src="/atlas-query-ui.js?v=20261026-5"></script>
-  <script src="/workspace-navigation.js?v=20261127-1"></script>
+  <script src="/workspace-navigation.js?v=20261127-2"></script>
   <script type="module" src="/motion-ui.js?v=20261026-4"></script>
 </body>
 </html>

@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-27T13:12:03+00:00
-- Source fingerprint: `c7268f20b043797c`
-- Indexed files: 575
-- Indexed symbols: 4731
-- API path references: 583
+- Generated: 2026-11-27T13:32:16+00:00
+- Source fingerprint: `5e9d5d73f28bb31c`
+- Indexed files: 578
+- Indexed symbols: 4738
+- API path references: 586
 
 ## Navigation rule
 
@@ -98,7 +98,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/adhesion-batch.css`
 - `static/adhesion-batch.js` (36 symbols, 4 API paths) - Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */
 - `static/all-cities-scope.css` - DOMINIUM: "Todos" is a cross-module read-only scope, not an operational profile. */
-- `static/all-operations.js` (14 symbols, 2 API paths) - Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */
+- `static/all-operations.js` (14 symbols, 3 API paths) - Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */
 - `static/atlas-query-ui.js` (23 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
 - `static/backlog-analysis.css`
 - `static/backlog-analysis.js` (18 symbols, 7 API paths) - DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */
@@ -117,6 +117,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/daily-stock.js` (11 symbols, 2 API paths) - Estoque diario independente do Imperium; importacao por arquivo e historico. */
 - `static/desc-analytics-nav.js` (2 symbols) - Submenu de desconexao, independente dos fluxos de baixa existentes. */
 - `static/disconnection.js` (37 symbols, 10 API paths)
+- `static/dominium-light.css` - Light surfaces for legacy modules that still carry dark colors. */
 - `static/dominium-theme.css` - DOMINIUM workspace and shared interface palette. */
 - `static/fflate.browser.min.js` (22 symbols)
 - `static/fflate.LICENSE.txt` - MIT License
@@ -211,9 +212,9 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## Indexed areas not expanded here
 
 - shared: 173 files
-- tooling-deploy: 52 files
+- tooling-deploy: 53 files
 - docs: 53 files
-- tests: 180 files
+- tests: 181 files
 
 ## Search indexes
 
