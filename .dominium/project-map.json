@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-27T11:43:08+00:00",
+  "generated_at": "2026-11-27T12:55:58+00:00",
   "schema": 2,
-  "source_fingerprint": "bbade3153be33f59fe8d00ebe24611bb9a692ca42bbbf56b8f8cff5d01010b49",
+  "source_fingerprint": "a2bac95388915b4099811be76aa0670341510c2d89ddb7783c1338f1c8af3afe",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1673,8 +1673,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 39474,
-      "sha256": "d18f093cd6c927527faabfbd6dd4340bd43aeb9eee8ef8a6e8ce01e8d668e74e",
+      "bytes": 40079,
+      "sha256": "1b95c0f7c0d6d86518ce3d1cd2e01c41f098e138c3bca2e905aa7f3479521a26",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -6014,6 +6014,19 @@
       "symbol_count": 37
     },
     {
+      "path": "static/dominium-theme.css",
+      "category": "frontend",
+      "bytes": 10386,
+      "sha256": "7447f34023ca925aef60abeaabdd9280831c66d9fac049e144bf26327594222d",
+      "summary": "DOMINIUM workspace and shared interface palette. */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "static/fflate.browser.min.js",
       "category": "frontend",
       "bytes": 32665,
@@ -6055,8 +6068,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 185739,
-      "sha256": "aacea61eaf3eaaa8c9a58ce81de4834e06ec92b84f938dbae9e754a574d9ee43",
+      "bytes": 185750,
+      "sha256": "2709a8aa88294e029709c706306ee7ae63ae85c94d79fccd60a1c421f8e4521b",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -7290,8 +7303,8 @@
     {
       "path": "tests/test_build_hostinger_node_release.py",
       "category": "tests",
-      "bytes": 1777,
-      "sha256": "8efb9f24f1192e543fbbe811bee920dbeb7fb07e8765824903a5de1fe91b286f",
+      "bytes": 1853,
+      "sha256": "b811c43696f427c5c4a62cb80820928f07517e2672b283f274a6217ea0550e5e",
       "summary": "",
       "imports": [
         "pathlib",
