@@ -1,0 +1,83 @@
+/* The decorative layer shares the workspace grid cell without scrolling. */
+.workspace-ambient { display: none; }
+
+:root[data-theme="dark"]:not(.auth-pending) .workspace-ambient {
+  display: block;
+  position: relative;
+  grid-area: content;
+  overflow: hidden;
+  pointer-events: none;
+  background: #000;
+}
+
+:root[data-theme="dark"]:not(.auth-pending) .app-shell > main {
+  position: relative;
+  background: transparent;
+}
+
+.workspace-orbits {
+  --orbit-size: clamp(440px, 56vw, 760px);
+  position: absolute;
+  top: calc(var(--orbit-size) * -.44);
+  right: 2%;
+  width: var(--orbit-size);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, #1e0608 0, #0c0203 43%, transparent 70%);
+}
+
+.workspace-orbit,
+.workspace-orbit-brand {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: workspace-orbit-rotate var(--orbit-period, 74s) linear infinite;
+}
+
+.workspace-orbit-outer {
+  inset: 0;
+  border: 1px dashed #692127;
+  border-left-color: #9c252d;
+}
+
+.workspace-orbit-inner {
+  --orbit-period: 53s;
+  inset: 12%;
+  border: 1px solid #49161b;
+  border-top-color: #a02b31;
+  border-right-color: #702028;
+  animation-direction: reverse;
+}
+
+.workspace-orbit-brand {
+  --orbit-period: 38s;
+  inset: 44.7%;
+  opacity: .42;
+  background: url("/assets/brands/technet-rings.svg") center / 90% no-repeat;
+}
+
+.workspace-orbit-brand::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand-coral);
+}
+
+@keyframes workspace-orbit-rotate {
+  to { transform: rotate(1turn); }
+}
+
+@media (max-width: 700px) {
+  .workspace-orbits {
+    --orbit-size: 350px;
+    top: -126px;
+    right: -65px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-orbit,
+  .workspace-orbit-brand { animation: none; }
+}

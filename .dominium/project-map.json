@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-27T13:32:16+00:00",
+  "generated_at": "2026-11-27T13:39:35+00:00",
   "schema": 2,
-  "source_fingerprint": "5e9d5d73f28bb31cb4251e498fb5898beaf4dfaa13adb3b123bf05c5e902b69c",
+  "source_fingerprint": "b82c67af7675f1c38b30b6c898c025053d0251fae79a96258a3b48d9dff0114c",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -6097,8 +6097,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 193202,
-      "sha256": "81d51cba6785f4081556e48d0ff91dca01cb2b0af29b56c626d1fddf2b7c8f0f",
+      "bytes": 193561,
+      "sha256": "63fd49943106c2637b1f3b254bd2afb40a9aa235ffe7836866091087f5070620",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6351,6 +6351,19 @@
       "bytes": 11355,
       "sha256": "4d2a38ac35cda06a555c84074a819d413339cd3691b822cae50f8f322fe01f64",
       "summary": "Apache License",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "static/workspace-ambient.css",
+      "category": "frontend",
+      "bytes": 1811,
+      "sha256": "10b47f47d574823e54df20490d7c052368d793507372f7abc7984e3a997a6cf3",
+      "summary": "The decorative layer shares the workspace grid cell without scrolling. */",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -7358,8 +7371,8 @@
     {
       "path": "tests/test_build_hostinger_node_release.py",
       "category": "tests",
-      "bytes": 2013,
-      "sha256": "1b975c02f1c044b4bbc489330c378c81a8ee6d5780f19d74b6058ffc4b6edbbb",
+      "bytes": 2057,
+      "sha256": "233f7e3ab5b0d22fb5e3b5cbd17a495257d7daea7b800f224d72fa5dbf61d4b6",
       "summary": "",
       "imports": [
         "pathlib",
