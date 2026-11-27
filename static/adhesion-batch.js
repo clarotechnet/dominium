@@ -120,6 +120,7 @@
     if(omitted)parts.push("Sem saldo (dispensadas): "+omitted);
     if(partial)parts.push("Quantidade limitada ao saldo: "+partial);
     if(preparation.transferred)parts.push("Complemento pelo RETORNO");
+    if(preparation.transferred_serials?.length)parts.push("Seriais transferidos: "+preparation.transferred_serials.join(", "));
     if(preparation.fallback_removed_after_rejection?.length)parts.push("Itens retirados apos rejeicao confirmada: "+preparation.fallback_removed_after_rejection.join(", "));
     return parts.join("; ");
   }
@@ -129,6 +130,9 @@
   function priorCloseOutcome(record, failures=[]) {
     if(record.state==="confirmed") return {closed:true};
     const os="OS "+record.num_os+(record.close_code?" ("+record.close_code+")":"");
+    if(record.category==="SERIAL_TRANSFER_UNCERTAIN") {
+      return {reason:os+": "+String(record.message||"Transferencia de serial sem confirmacao. A baixa da OS nao foi enviada.")};
+    }
     // The legacy observer can overwrite an uncertain stock result with a
     // sending state. The day failure log retains the stock failure instead.
     const stockFailure=!record.accepted_at && !record.official_http_status && failures.find(f=>String(f.id_os)===String(record.id_os) &&
@@ -510,7 +514,7 @@
     const readCloseReport=()=>request(apiUrlForProfile("/api/close-report?date="+encodeURIComponent(date),profile),{timeoutMs:60000});
     let initialReport;
     async function outcomeFor(record) {
-      if(!isUnresolvedClose(record) || record.category==="MATERIAL_TRANSFER_UNCERTAIN") return priorCloseOutcome(record);
+      if(!isUnresolvedClose(record) || ["MATERIAL_TRANSFER_UNCERTAIN","SERIAL_TRANSFER_UNCERTAIN"].includes(record.category)) return priorCloseOutcome(record);
       let failures=[];
       try {
         const report=await request(apiUrlForProfile("/api/failures",profile),{timeoutMs:10000});

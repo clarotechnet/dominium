@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from imperium_api import DetailContext, ImperiumAPI
+from imperium_api import DetailContext, ImperiumAPI, Order
 from serialized_transfer import (
     SerializedTransferProtocol,
     SerializedTransferUncertainError,
@@ -224,6 +224,24 @@ class SerializedTransferAPITests(unittest.TestCase):
         self.assertTrue(result["ok"])
         self.assertTrue(result["confirmed_after_error"])
         self.assertEqual(client.request.call_count, 1)
+
+    def test_automatic_transfer_rechecks_exact_open_order_before_writing(self) -> None:
+        client = MagicMock()
+        order = Order(1234, "2662222222", "1234567", 10, "INSTALACAO WIFI MESH")
+        patches = self._patch_transfer([self.before, self.after], client)
+        with (
+            patches[0], patches[1], patches[2], patches[3], patches[4], patches[5], patches[6],
+            patch.object(self.api, "_detail_record", return_value=b"record"),
+            patch.object(self.api, "_read_short_text", return_value=(order.num_os, 16)) as number,
+            patch.object(self.api, "_detail_close_code", return_value="409") as code,
+        ):
+            with self.assertRaisesRegex(ValueError, "ja recebeu baixa"):
+                self.api.transfer_serialized_equipment(self.preview, open_order=order)
+            code.return_value = ""
+            number.return_value = ("2662222223", 16)
+            with self.assertRaisesRegex(ValueError, "A OS mudou"):
+                self.api.transfer_serialized_equipment(self.preview, open_order=order)
+        client.request.assert_not_called()
 
     def test_unconfirmed_timeout_is_never_repeated(self) -> None:
         client = MagicMock()

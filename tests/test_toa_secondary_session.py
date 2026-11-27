@@ -99,6 +99,13 @@ class TOASecondarySessionTests(unittest.TestCase):
             capture = self.session.lookup_contract("1234567", adhesion_date=day)["results"][0]
         self.assertEqual(capture["assigned_technician"], provider)
         self.assertEqual(capture["route_provider"], provider)
+        current = deepcopy(raw)
+        current["normalizedCapture"]["responsibility"]["assigned_technician"] = provider
+        with (patch("toa_secondary_session._toa_page", return_value={"url": "fixture"}),
+              patch.object(self.session, "_direct_lookup", return_value=current)):
+            capture = self.session.lookup_contract("1234567", adhesion_date=day)["results"][0]
+        self.assertEqual(capture["assigned_technician"], provider)
+        self.assertEqual(capture["route_provider"], provider)
         self.assertIsNone(_confirmed_adhesion_provider(raw, capture, ""))
         self.assertIsNone(_confirmed_adhesion_provider(raw, capture, "2026-11-25"))
         self.assertIsNone(_confirmed_adhesion_provider(raw, {**capture, "route_name": "NTL-DMV-ADM"}, day))

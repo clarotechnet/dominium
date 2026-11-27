@@ -91,3 +91,53 @@ class AdhesionTechnicianEvidenceTests(unittest.TestCase):
         refreshed["results"][0]["tasks"][0]["imperium_only"] = True
         self.reader.record("natal", refreshed)
         self.assertFalse(self.matches())
+
+    def test_stock_transfer_requires_exact_executed_409_and_installed_serial(self):
+        result = self.result()
+        capture = result["results"][0]
+        capture["tasks"][0]["close_code"] = "409"
+        capture["installed_equipment"] = [{"serial": "abcdef000001"}]
+        capture["removed_equipment"] = [{"serial": "abcdef000002"}]
+        self.reader.record("natal", result)
+        roster = [{"installer_id": 20, "technician_name": self.assigned["name"]}]
+
+        def matches(order=self.order, serial="ABCDEF000001", date=self.date):
+            return self.reader.matches(
+                "natal", order, date, self.assigned, 20, lambda: roster, serial=serial,
+            )
+
+        self.assertTrue(matches())
+        self.assertFalse(matches(serial="ABCDEF000002"))
+        self.assertFalse(matches(order=SimpleNamespace(
+            contract=self.order.contract, num_os="2662222223", id_os=self.order.id_os,
+        )))
+        self.assertFalse(matches(date=dt.date(2026, 11, 26)))
+        roster.append({**roster[0], "installer_id": 21})
+        self.assertFalse(matches())
+        roster.pop()
+        capture["tasks"].append(dict(capture["tasks"][0]))
+        self.reader.record("natal", result)
+        self.assertFalse(matches())
+
+    def test_cloud_stock_transfer_can_use_current_imperium_row(self):
+        result = self.result()
+        result["source"] = "toa_cloud"
+        capture = result["results"][0]
+        capture.update(
+            route_provider={"id": "NTL-DMV", "name": "NTL-DMV"},
+            decision="candidate_after_validation",
+            installed_equipment=[{"serial": "ABCDEF000001"}],
+        )
+        capture["tasks"][0]["close_code"] = "409"
+        order = capture["imperium_matches"][0]
+        order.update(
+            operation_source="imperium_cache", status="EM CAMPO", approved_state_hash="fixture",
+            manual_scope={"profile_key": "natal", "cache_date": self.date.isoformat()},
+        )
+        self.reader.record("natal", result)
+        self.assertTrue(self.reader.matches(
+            "natal", self.order, self.date, self.assigned, 20,
+            lambda: [{"installer_id": 20, "technician_name": self.assigned["name"]}],
+            serial="ABCDEF000001",
+        ))
+        self.assertFalse(self.matches())
