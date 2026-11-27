@@ -587,3 +587,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Testes de janelas de Brasília, renovação, falha, virada do dia, ponte privada, navegação e tema em Chromium, e gate completo.
 
 **Próximo passo/pendência:** Conferir lista e autorização após publicar o painel.
+
+## 2026-11-27 18:46 UTC — Baixa improdutiva da O.S. acompanhante de assinatura ou GPON
+
+**Motivo:** O TOA pode registrar apenas uma tarefa quando o atendimento termina improdutivo.
+
+**Alterado:** Lote Natal/Parnamirim reaproveita o codigo explicito da unica tarefa concluida para a acompanhante validada do mesmo atendimento, sem itens e apos confirmacao da principal.
+
+**Verificação:** Regressao simulada para codigos 106 e 110, ausencia de inventario, concorrencia de atividades e retomada com confirmacao exata.
+
+**Próximo passo/pendência:** Validar a publicacao do frontend sem executar baixas reais.

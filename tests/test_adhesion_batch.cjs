@@ -409,6 +409,89 @@ test("Imperium-only companion without confirmed TOA code is not inferred",()=>{
  assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps),/codigo de baixa nao confirmado/);
 });
 
+function unproductivePair(code, service) {
+ const f=fixture();
+ const manual_scope={profile_key:scope.profile,cache_date:scope.date};
+ Object.assign(f.order,{service:"MUDANCA DE PACOTE",operation_source:"imperium_cache",manual_scope});
+ const companion={...f.order,id_os:2,num_os:"2612345680",service};
+ Object.assign(f.capture,{installed_equipment:[],removed_equipment:[],materials:[]});
+ Object.assign(f.capture.tasks[0],{status:"N",close_code:code});
+ f.capture.tasks.push({os_number:companion.num_os,imperium_only:true});
+ f.capture.imperium_matches.push(companion);
+ f.deps.executed=status=>status==="N";
+ f.deps.knownCode=value=>["106","110","409"].includes(value);
+ f.deps.productive=value=>value==="409";
+ f.deps.equipment=()=>assert.fail("Ordens improdutivas devem seguir sem equipamentos");
+ return {...f,companion};
+}
+
+test("copies a confirmed unproductive code from the sole TOA task to GPON or signature", async()=>{
+ for(const [code,service] of [
+  ["110","INSTALACAO DE CABO GPON"],
+  ["106","ADESAO - INSTALACAO DE ASSINATURA"],
+ ]) {
+  const f=unproductivePair(code,service);
+  const orders=[f.companion,f.order];
+  const sent=[], events=[];
+  await runBatch([scope.contract],{
+   active:()=>true,
+   update:(...args)=>events.push(args),
+   prepare:async()=>selectCandidates(f.payload,orders,scope,f.deps),
+   send:async candidate=>{sent.push(candidate); return {closed:true};},
+  });
+  assert.deepEqual(sent.map(c=>[c.numOs,c.code,c.batchCodeOnly,c.batchInheritedFrom]),[
+   [f.order.num_os,code,true,undefined],[f.companion.num_os,code,true,f.order.num_os],
+  ]);
+  assert.equal(events.at(-1)[1],"Baixado");
+  assert.match(events.at(-1)[2],/Codigo improdutivo da OS 2612345678/);
+ }
+});
+
+test("leaves the missing companion in review when the exact unproductive pair is ambiguous",()=>{
+ const changes=[
+  f=>{f.capture.tasks[0].close_code="409";},
+  f=>{f.capture.tasks[0].close_code="999";},
+  f=>{f.capture.tasks[0].registry_only=true;},
+  f=>{f.capture.installed_equipment.push({serial:"AA0000000001"});},
+  f=>{delete f.capture.removed_equipment;},
+  f=>{f.companion.service="ADESAO - INSTALAR PONTO VIRTUA";},
+  f=>{f.companion.service="RETIRADA DE ASSINATURA";},
+  f=>{f.companion.activity_id="456";},
+  f=>{f.companion.manual_scope={...f.companion.manual_scope,cache_date:"2026-11-23"};},
+  f=>{f.payload.results.push({...f.capture,aid:"456",tasks:[]});},
+  f=>{f.capture.imperium_matches.pop();},
+ ];
+ for(const change of changes){
+  const f=unproductivePair("110","INSTALACAO DE CABO GPON");
+  change(f);
+  assert.throws(()=>selectCandidates(f.payload,[f.order,f.companion],scope,f.deps),/codigo de baixa nao confirmado|Codigo de baixa ausente ou invalido/);
+ }
+});
+
+test("waits for the primary close and only resumes the companion with the exact confirmed report", async()=>{
+ const f=unproductivePair("106","INSTALACAO DE CABO GPON");
+ const sent=[];
+ await runBatch([scope.contract],{
+  active:()=>true, update:()=>{},
+  prepare:async()=>selectCandidates(f.payload,[f.order,f.companion],scope,f.deps),
+  send:async candidate=>{sent.push(candidate.numOs);return {pending:true};},
+ });
+ assert.deepEqual(sent,[f.order.num_os]);
+ f.payload.imperium_refresh={refreshed:true};
+ f.capture.imperium_all_orders=[{...f.order,status:"REAGENDADA"}];
+ f.deps.confirmedCloses=[{
+  id_os:f.order.id_os,num_os:f.order.num_os,contract:scope.contract,
+  report_date:scope.date,state:"confirmed",close_code:"106",
+ }];
+ const [candidate]=selectCandidates(f.payload,[f.companion],scope,f.deps);
+ assert.equal(candidate.batchInheritedFrom,f.order.num_os);
+ assert.equal(candidate.code,"106");
+ const {refreshCandidate}=require("../static/adhesion-batch.js");
+ assert.throws(()=>refreshCandidate(candidate,[{...f.companion,activity_id:"456"}],()=>true),/vinculo da OS acompanhante mudou/);
+ f.deps.confirmedCloses[0].close_code="110";
+ assert.throws(()=>selectCandidates(f.payload,[f.companion],scope,f.deps),/codigo de baixa nao confirmado/);
+});
+
 test("an exact GPON task can proceed with code alone while uncorrelated orders stay in review", async () => {
  const f=fixture();
  f.order.service="INSTALACAO DE CABO GPON";

@@ -94,6 +94,86 @@
   function serviceWords(service) {
     return serviceLabel(service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"");
   }
+  function captureDate(capture) {
+    const value=String(capture.scheduled_date||"").slice(0,10);
+    return /^\d{2}\/\d{2}\/\d{4}$/.test(value)?value.split("/").reverse().join("-"):value;
+  }
+  function displayOnlyTask(task) {
+    return task.imperium_only===true || task.source==="imperium_contract_status"
+      || (task.registry_only===true && !String(task.close_code||"").trim());
+  }
+  function validateCapture(capture, scope, deps, taskNumbers) {
+    const legacyValidated=capture.decision==null && capture.found===true &&
+      Array.isArray(capture.validation_errors) && capture.validation_errors.length===0 &&
+      Array.isArray(capture.operation_blockers) && capture.operation_blockers.length===0;
+    const issues=[];
+    if(String(capture.contract)!==scope.contract)issues.push("contrato divergente");
+    if(!capture.aid)issues.push("ID da atividade ausente");
+    if(!deps.complete(capture.activity_status))issues.push("status da atividade: "+String(capture.activity_status||"nao informado").slice(0,80));
+    if(capture.decision!=="candidate_after_validation" && !legacyValidated)issues.push("decisao: "+String(capture.decision||"nao validada").slice(0,80));
+    if(capture.materials_complete===false)issues.push("captura de materiais incompleta");
+    if((capture.validation_errors||[]).length)issues.push("erros de validacao: "+capture.validation_errors.length);
+    if((capture.operation_blockers||[]).length)issues.push("bloqueios operacionais: "+capture.operation_blockers.length);
+    if(issues.length)throw Error("Atividade incompleta ou bloqueada no TOA. OS "+taskNumbers.join(", ")+": "+issues.join("; ")+". Nenhuma baixa enviada.");
+    if(captureDate(capture)!==scope.date)throw Error("Data do TOA divergente da data selecionada.");
+    return liveBucket(capture,scope.profile,deps.route);
+  }
+  function approvedActivityOrder(order, capture, scope, deps, route) {
+    if(!deps.valid(order,capture)) return false;
+    if(order.operation_source==="toa_import") {
+      const origin=importBucket(order,scope,capture);
+      return Boolean(origin && (!route || route===origin));
+    }
+    return Boolean(route && order.operation_source==="imperium_cache"
+      && order.manual_scope?.cache_date===scope.date
+      && (!order.activity_id || String(order.activity_id)===String(capture.aid)));
+  }
+  function addUnproductiveCompanion(payload, candidates, missing, scope, deps) {
+    if(missing.length!==1 || candidates.length>1) return;
+    const captures=(payload.results||[]).filter(c=>String(c.contract)===scope.contract && captureDate(c)===scope.date);
+    if(captures.length!==1) return;
+    const [capture]=captures;
+    const tasks=(capture.tasks||[]).filter(task=>!displayOnlyTask(task));
+    if(tasks.length!==1) return;
+    const [sourceTask]=tasks;
+    const sourceOs=String(sourceTask.os_number||"");
+    const code=String(sourceTask.close_code||"").trim();
+    if(!sourceOs || sourceTask.registry_only || !deps.executed(sourceTask.status)
+      || !/^\d{3}$/.test(code) || code==="430" || !deps.knownCode(code) || deps.productive?.(code)!==false
+      || !["installed_equipment","removed_equipment","materials"].every(key=>Array.isArray(capture[key]) && !capture[key].length)) return;
+    const [row]=missing;
+    const numOs=String(row.num_os);
+    const service=serviceWords(row.service);
+    if(!codeOnly(row.service) || /\b(?:DESCONEXAO|RETIRADA|CANCELAMENTO|STREAMING)\b/.test(service)
+      || sourceOs===numOs) return;
+    const exact=(capture.imperium_matches||[]).filter(order=>String(order.num_os)===numOs
+      && String(order.contract)===scope.contract && String(order.id_os)===String(row.id_os));
+    if(exact.length!==1) return;
+    const [order]=exact;
+    const route=validateCapture(capture,scope,deps,[sourceOs,numOs]);
+    if(!approvedActivityOrder(order,capture,scope,deps,route)) return;
+    const primary=candidates[0];
+    if(primary) {
+      if(primary.capture!==capture || primary.numOs!==sourceOs || primary.code!==code
+        || !approvedActivityOrder(primary.order,capture,scope,deps,route)
+        || ["technician_login","service_window","city"].some(key=>primary.order[key] && order[key]
+          && serviceLabel(primary.order[key]).trim()!==serviceLabel(order[key]).trim())) return;
+      primary.batchCodeOnly=true;
+    } else {
+      // A later run can finish the companion after a confirmed first send.
+      const closed=(capture.imperium_all_orders||[]).filter(item=>String(item.num_os)===sourceOs
+        && String(item.contract)===scope.contract && /^(?:CONCLUIDA|REAGENDADA|CANCELADA)$/.test(serviceLabel(item.status).trim()));
+      if(!route || payload.imperium_refresh?.refreshed!==true || closed.length!==1
+        || !deps.confirmedCloses?.some(item=>item.state==="confirmed" && String(item.close_code)===code
+          && item.report_date===scope.date && String(item.id_os)===String(closed[0].id_os)
+          && String(item.num_os)===sourceOs && String(item.contract)===scope.contract)) return;
+    }
+    candidates.push({
+      capture,task:{os_number:numOs,status:sourceTask.status,close_code:code},order,numOs,code,
+      isDisconnect:false,batchAdhesion:true,batchScope:{profile:scope.profile,date:scope.date,epoch:scope.epoch},
+      batchCodeOnly:true,batchInheritedFrom:sourceOs,
+    });
+  }
   function installsVoip(service) {
     return /^(?:ADESAO )?(?:INSTALAR|INSTALACAO DE) PONTO VOIP$/.test(serviceWords(service));
   }
@@ -109,6 +189,11 @@
        current.import_scope?.source_hash!==previous.import_scope?.source_hash ||
        (current.operation_source==="toa_import" && !importBucket(current,{...scope,contract:String(current.contract)},candidate.capture))) {
       throw Error("Escopo da OS mudou; nenhuma baixa enviada: "+candidate.numOs);
+    }
+    if(candidate.batchInheritedFrom && current.operation_source==="imperium_cache" &&
+      (current.manual_scope?.cache_date!==scope.date ||
+        ["activity_id","technician_login","service_window","city"].some(key=>String(current[key]||"")!==String(previous[key]||"")))) {
+      throw Error("O vinculo da OS acompanhante mudou; nenhuma baixa enviada: "+candidate.numOs);
     }
     return {...candidate,order:current};
   }
@@ -221,29 +306,14 @@
       const matching=(capture.tasks||[]).filter(task=>{
         const os=String(task.os_number||"");
         if(!byNumber.has(os)) return false;
-        if(task.imperium_only===true || task.source==="imperium_contract_status") {
+        if(displayOnlyTask(task)) {
           imperiumOnly.add(os);
           return false;
         }
         return true;
       });
       if(!matching.length) continue;
-      const legacyValidated=capture.decision==null && capture.found===true &&
-        Array.isArray(capture.validation_errors) && capture.validation_errors.length===0 &&
-        Array.isArray(capture.operation_blockers) && capture.operation_blockers.length===0;
-      const captureIssues=[];
-      if(String(capture.contract)!==contract)captureIssues.push("contrato divergente");
-      if(!capture.aid)captureIssues.push("ID da atividade ausente");
-      if(!deps.complete(capture.activity_status))captureIssues.push("status da atividade: "+String(capture.activity_status||"nao informado").slice(0,80));
-      if(capture.decision!=="candidate_after_validation" && !legacyValidated)captureIssues.push("decisao: "+String(capture.decision||"nao validada").slice(0,80));
-      if(capture.materials_complete===false)captureIssues.push("captura de materiais incompleta");
-      if((capture.validation_errors||[]).length)captureIssues.push("erros de validacao: "+capture.validation_errors.length);
-      if((capture.operation_blockers||[]).length)captureIssues.push("bloqueios operacionais: "+capture.operation_blockers.length);
-      if(captureIssues.length)throw Error("Atividade incompleta ou bloqueada no TOA. OS "+matching.map(t=>String(t.os_number)).join(", ")+": "+captureIssues.join("; ")+". Nenhuma baixa enviada.");
-      const rawDate=String(capture.scheduled_date||"").slice(0,10);
-      const normalizedDate=/^\d{2}\/\d{2}\/\d{4}$/.test(rawDate)?rawDate.split("/").reverse().join("-"):rawDate;
-      if(normalizedDate!==date) throw Error("Data do TOA divergente da data selecionada.");
-      const route=liveBucket(capture,profile,deps.route);
+      const route=validateCapture(capture,scope,deps,matching.map(task=>String(task.os_number)));
       for(const task of matching) {
         const os=String(task.os_number), activeOrder=byNumber.get(os);
         const exact=(capture.imperium_matches||[]).filter(o=>String(o.num_os)===os && String(o.contract)===contract && Number(o.id_os)===Number(activeOrder.id_os));
@@ -269,8 +339,10 @@
         candidates.push({capture,task:{...task,close_code:code},order,numOs:os,code,isDisconnect:false,batchAdhesion:true,batchScope:{profile,date,epoch:scope.epoch},batchCodeOnly:codeOnly(service)});
       }
     }
-    if(seen.size!==byNumber.size) {
-      const missing=[...byNumber.keys()].filter(os=>!seen.has(os));
+    addUnproductiveCompanion(payload,candidates,rows.filter(order=>!seen.has(String(order.num_os))),scope,deps);
+    const planned=new Set(candidates.map(candidate=>candidate.numOs));
+    if(planned.size!==byNumber.size) {
+      const missing=[...byNumber.keys()].filter(os=>!planned.has(os));
       const displayed=missing.filter(os=>imperiumOnly.has(os));
       const independent = candidates.filter(candidate => candidate.batchCodeOnly);
       if (deps.hold && displayed.length === missing.length && independent.length) {
@@ -397,7 +469,8 @@
             const res=await hooks.send(candidate);
             const reused = candidate.batchCustomerEmta?.length
               ? "EMTA ja cadastrado no cliente (sem movimentacao): " + candidate.batchCustomerEmta.join(", ") : "";
-            audit=[reused, materialAudit(res.materialPreparation)].filter(Boolean).join(". ");
+            const inherited=candidate.batchInheritedFrom ? "Codigo improdutivo da OS "+candidate.batchInheritedFrom : "";
+            audit=[inherited,reused,materialAudit(res.materialPreparation)].filter(Boolean).join(". ");
             detail=String(res.reason || res.error || "").slice(0,240);
             if(res.closed) result="confirmed";
             else if(res.pending) {
@@ -544,6 +617,7 @@
             readFieldOrders(contract, "Aguardando lista atualizada do Imperium."));
           return selectCandidates(payload,orders,{profile,contract,date,epoch},{
             complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,hold,
+            confirmedCloses:Array.isArray(initialReport?.records)?initialReport.records:[],
             valid:validToaCloseSnapshot,knownCode:code=>state.closeCodes.some(c=>c.code===code),
             assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials,equipmentType:item=>toaLiveEquipmentType(item,true),expectedType:expectedEquipmentType,productive:code=>Boolean(state.closeCodes.find(c=>c.code===code)?.productive)
           });
