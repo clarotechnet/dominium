@@ -32,6 +32,7 @@ class HostingerNodeReleaseTests(unittest.TestCase):
             "static/dominium-theme.css",
             "static/dominium-light.css",
             "static/workspace-shell.css",
+            "static/workspace-ambient.css",
             "static/workspace-navigation.js",
             "static/motion-ui.js",
             "static/assets/brands/claro-wordmark.png",
