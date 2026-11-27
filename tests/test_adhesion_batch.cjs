@@ -447,6 +447,32 @@ test("copies a confirmed unproductive code from the sole TOA task to GPON or sig
  }
 });
 
+test("uses separately approved Imperium field rows when the TOA only attaches the reported task", async()=>{
+ const {ordersForBatchContract}=require("../static/adhesion-batch.js");
+ const f=unproductivePair("110","INSTALACAO DE CABO GPON");
+ f.capture.imperium_matches.pop();
+ f.capture.tasks.splice(1,0,{os_number:"", status:"N", close_code:""});
+ f.payload.imperium_refresh={refreshed:true};
+ f.payload.imperium_all_orders=[f.order,f.companion].map(({num_os,id_os,contract,service})=>({
+  num_os,id_os,contract,service,status:"EM CAMPO",operation_source:"imperium_status_snapshot",
+ }));
+ const readOnly=f.payload.imperium_all_orders;
+ const approved={...f.companion,approved_state_hash:"fresh-field-approval"};
+ let reads=0;
+ const orders=await ordersForBatchContract(f.payload,scope.contract,async()=>{
+  reads++;
+  return {orders:[f.order,approved]};
+ },scope,f.deps);
+ assert.equal(reads,1);
+ const [primary,companion]=selectCandidates(f.payload,orders,scope,f.deps);
+ assert.equal(primary.numOs,f.order.num_os);
+ assert.equal(companion.code,"110");
+ assert.equal(companion.order,approved);
+ assert.throws(()=>selectCandidates(f.payload,readOnly,scope,f.deps),/codigo de baixa nao confirmado/);
+ f.capture.tasks[1].close_code="106";
+ assert.throws(()=>selectCandidates(f.payload,orders,scope,f.deps),/codigo de baixa nao confirmado/);
+});
+
 test("leaves the missing companion in review when the exact unproductive pair is ambiguous",()=>{
  const changes=[
   f=>{f.capture.tasks[0].close_code="409";},

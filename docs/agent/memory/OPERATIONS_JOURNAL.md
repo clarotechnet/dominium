@@ -597,3 +597,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Regressao simulada para codigos 106 e 110, ausencia de inventario, concorrencia de atividades e retomada com confirmacao exata.
 
 **Próximo passo/pendência:** Validar a publicacao do frontend sem executar baixas reais.
+
+## 2026-11-27 19:21 UTC — Acompanhante improdutiva com consulta TOA do servidor Windows
+
+**Motivo:** A resposta real apresentou uma linha de tarefa sem numero e sem codigo e nao anexou a O.S. auxiliar entre as aprovadas do TOA.
+
+**Alterado:** A linha vazia deixa de contar como tarefa, e a lista em campo do Imperium fornece a aprovacao propria da acompanhante quando necessario.
+
+**Verificação:** Captura de producao reproduzida em memoria sem enviar baixas e regressao do formato real do servidor.
+
+**Próximo passo/pendência:** Conferir a versao publicada no DOMINIUM.
