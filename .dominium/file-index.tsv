@@ -6,18 +6,18 @@ imperium	.imperium-project.json					a6c72b51e8822cc7
 shared	.mcp.json					488abc9205f55770
 shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
-shared	adhesion_technician_evidence.py	7			Short-lived TOA evidence for the exact Natal adhesion order.	ffc72017281198cb
+shared	adhesion_technician_evidence.py	9			Short-lived TOA evidence for the exact Natal adhesion order.	5bbfffaa0ecfc56e
 shared	adm_allocation.py	3			Read-only allocation for DESC multi-OS activities.	a9434a5b2e81e0ca
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	152	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	d32817feb4011536
+orchestration	app.py	153	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	0ec6c0921e639f76
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
 shared	bulk_orders.py	2			DOMINIUM | MAPA DE RESPONSABILIDADE	2775b7a068f33346
 shared	cancel_all_open.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	9dde6a0f10a22ffe
 shared	CLAUDE.md			1	DOMINIUM / Claude Code	de5472b9149c3be8
-shared	close_report.py	16			DOMINIUM | MAPA DE RESPONSABILIDADE	ab7baab5c38a7f98
+shared	close_report.py	16			DOMINIUM | MAPA DE RESPONSABILIDADE	780cc2754df8db9f
 shared	close_report_excel.py	3			DOMINIUM | MAPA DE RESPONSABILIDADE	db6f655647eeb923
 toa	Conectar TOA.cmd					5b1f2a4fb8c3ec37
 shared	config/official_close_code_catalog/Tabela_codigo_baixa0711.catalog.json			1		c1f98a79ea40eb4e
@@ -88,7 +88,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	90b401026072e09f
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	6e82a54944a8c21d
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -120,7 +120,7 @@ shared	flow_reader/static/app.js	30	1		DOMINIUM | MAPA DE RESPONSABILIDADE	406f3
 shared	flow_reader/static/index.html					e59d2e5b33c31164
 shared	flow_reader/static/styles.css					f204ad89f8897c62
 shared	GEMINI.md				DOMINIUM — instruções para Gemini	1b1a88b0e02ad6a0
-imperium	imperium_api.py	142		3	DOMINIUM | MAPA DE RESPONSABILIDADE	ac99115e9f5f5a8b
+imperium	imperium_api.py	142		3	DOMINIUM | MAPA DE RESPONSABILIDADE	42b3a459aedeb624
 imperium	imperium_http_api.py	37		2	DOMINIUM | MAPA DE RESPONSABILIDADE	f0fdaa781ea7c790
 imperium	imperium_http_plan.py	9			DOMINIUM | MAPA DE RESPONSABILIDADE	9dbe93e68be6432c
 imperium	imperium_operation_gate.py	7			Serializacao justa das operacoes do terminal Imperium/DataSnap.	06d73ed2f5d60b10
@@ -301,7 +301,7 @@ imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/adhesion-batch.css					d4d12428bcc10df7
-frontend	static/adhesion-batch.js	36	4		Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */	eb07d50d0eae37a4
+frontend	static/adhesion-batch.js	36	4		Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */	1f03a508bdfae28f
 frontend	static/all-cities-scope.css				DOMINIUM: "Todos" is a cross-module read-only scope, not an operational profile. */	d9fde79cee63719c
 frontend	static/all-operations.js	14	3		Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */	b894d76020be5578
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
@@ -376,12 +376,12 @@ tests	tests/qa_disconnection_browser.js	1	6			513566fce070a1c2
 tests	tests/qa_photo_assist_browser.js	4	6			462b748e72dda892
 tests	tests/qa_workspace_browser.js	1	3			9e5faa386308b743
 tests	tests/test_adhesion_batch.cjs	5				65852e1b152a38b4
-tests	tests/test_adhesion_technician_evidence.py	10				9e51e256153c9811
+tests	tests/test_adhesion_technician_evidence.py	12				acd6d493bb1c41ee
 tests	tests/test_adm_allocation.py	9				75b86d318f82567e
 tests	tests/test_agent_memory.py	9			Portable agent memory regression tests; no network, secrets or production changes.	a00628018291348f
 tests	tests/test_all_operations_view.cjs	2	3			7f88face26cb106a
 tests	tests/test_api_security.py	14	2			6a9274ff24f39348
-tests	tests/test_app.py	38	6	2		7b0da9ec07c55353
+tests	tests/test_app.py	40	6	2		d846c1334e1c0628
 tests	tests/test_atlas_bridge_client.py	14			Tests for the real BotDMV Atlas HTTP queue contract (synthetic only).	97a6ec2888879cf6
 tests	tests/test_atlas_query_data.py	6			QUERY Atlas table transformations and text-preserving exports.	0748addddb6b990d
 tests	tests/test_atlas_query_health.py	15			Session health must depend on a fresh queue response, not an open tab.	18d06c63a5a23aa4
@@ -506,7 +506,7 @@ tests	tests/test_semiauto_frontend.js	19				916377df2462b088
 tests	tests/test_serial_confront_engine.py	19			Synthetic contract tests for the read-only reconciliation engine.	096373a4120948c4
 tests	tests/test_serial_consult.py	3				3bb13e50693f977d
 tests	tests/test_serial_datasnap_history.py	9	3		Safe synthetic tests: no actual serials, credentials or captured client rows.	36414aaf670dbe68
-tests	tests/test_serialized_transfer.py	16				60606b0ffbf12f8a
+tests	tests/test_serialized_transfer.py	17				cff3be420d837ca1
 tests	tests/test_stock_all_scope.cjs	3				1dd1b43e48b9d7ca
 tests	tests/test_stock_analysis_proxy.cjs	4	11			dbe1d25b6229c377
 tests	tests/test_stock_analysis_reports.py	12	7		Tests for safe, cached, actor-scoped stock analysis report generation.	81edf96228f8fb8c
@@ -536,7 +536,7 @@ tests	tests/test_toa_inventory.py	5				a45e6a23cf09fd8a
 tests	tests/test_toa_live.py	27		1		d2308d1bedea07a3
 tests	tests/test_toa_live_lookup.py	15		1		dee51f885f154318
 tests	tests/test_toa_local_collector.py	10				4535aa3efc123af1
-tests	tests/test_toa_secondary_session.py	9				205a98640ff56fc4
+tests	tests/test_toa_secondary_session.py	9				fd8f0814d2d131d7
 tests	tests/test_toa_worker_cache.py	7				84d409c3fed69bd5
 tests	tests/test_ui_runtime_regression.py	11	2			5f410632ef3473f4
 tests	tests/test_used_equipment_live_datasnap.py	8		1	Tests for capture-verified, read-only Equipamentos Utilizados adapter.	94b967d784921e4a
@@ -576,5 +576,5 @@ toa	toa_live.py	34		3	DOMINIUM | MAPA DE RESPONSABILIDADE	06aef1bd07886d55
 toa	toa_local_collector.py	13			DOMINIUM | MAPA DE RESPONSABILIDADE	88bb369658f48698
 toa	toa_secondary_bucket_export.mjs	2		2		9f4a0fb9a6f478cc
 toa	toa_secondary_direct_lookup.mjs					938c8a1280f8fb95
-toa	toa_secondary_session.py	16				0e9d9bab5e04a4e9
+toa	toa_secondary_session.py	16				ee1922ff41921d41
 toa	verify_toa_cloud_bridge.py	3			Teste online seguro da ponte Cloudflare/D1 sem expor as chaves.	99d1169ad8c2856a

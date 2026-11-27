@@ -1734,7 +1734,7 @@ class ImperiumAPI:
             "target_match": target_match,
         }
 
-    def transfer_serialized_equipment(self, preview: dict) -> dict:
+    def transfer_serialized_equipment(self, preview: dict, *, open_order: Order | None = None) -> dict:
         if not self.serialized_transfer_enabled:
             raise ValueError(
                 "A transferencia de equipamento foi validada somente em Natal"
@@ -1785,7 +1785,13 @@ class ImperiumAPI:
             raise ValueError("A previa da transferencia possui dados invalidos")
 
         with self._operation_lock:
-            context = self._detail_context(self._fetch_detail(id_os, timeout=15.0))
+            detail = self._fetch_detail(id_os, timeout=15.0)
+            context = self._detail_context(detail)
+            if open_order is not None:
+                current_number, _ = self._read_short_text(self._detail_record(detail), 4)
+                if (context.id_os != open_order.id_os or context.contract != open_order.contract
+                        or current_number != open_order.num_os or self._detail_close_code(detail)):
+                    raise ValueError("A OS mudou ou ja recebeu baixa no Imperium; transferencia retida")
             if context.installer_id != target_installer_id:
                 raise ValueError(
                     "O instalador da OS mudou desde a previa. Localize o serial novamente"

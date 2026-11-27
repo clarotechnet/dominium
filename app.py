@@ -4639,7 +4639,7 @@ def _reconcile_order_installer_with_toa(
         target_installer_name,
         target_installer_id,
     )
-    return confirmed
+    return {**confirmed, "installer_reassigned": True}
 
 
 def _official_technician_code(
@@ -4762,8 +4762,11 @@ def _build_official_panel_plan(
 def _validate_official_installed_serial_ownership(
     profile: ProfileRuntime,
     plan: dict,
-) -> None:
-    """Block the official API before enqueueing a serial owned by another stock."""
+    *,
+    transfer_order: Order | None = None,
+    toa_technician: dict | None = None,
+) -> list[dict]:
+    """Validate installed serials and prepare eligible transfers without writing."""
     payload = plan.get("payload", {}).get("ordemservico", {})
     expected_name = str(plan.get("technician_name", "")).strip()
     try:
@@ -4775,6 +4778,7 @@ def _validate_official_installed_serial_ownership(
             "Nao foi possivel confirmar o instalador atual antes da baixa"
         )
 
+    transfers = []
     for item in payload.get("instaladosserializados", []):
         serial = str(item.get("serialnumber", "")).strip().upper()
         if not serial:
@@ -4793,11 +4797,45 @@ def _validate_official_installed_serial_ownership(
         owner_name = str(
             owner.get("technician_name") or owner.get("stock_name") or ""
         ).strip()
-        if owner_installer_id != expected_installer_id:
-            raise ValueError(
-                f"O serial {serial} nao pertence ao estoque de {expected_name}; "
-                f"atualmente esta com {owner_name or 'outro tecnico'}"
+        if owner_installer_id == expected_installer_id:
+            continue
+        if (
+            transfer_order is not None
+            and owner_installer_id > 0
+            and _is_adhesion_transfer_equipment(ownership.get("equipment") or {}, transfer_order)
+            and ADHESION_TECHNICIAN_EVIDENCE.matches(
+                profile.key, transfer_order, dt.date.fromisoformat(plan["scheduled_date"]),
+                toa_technician, expected_installer_id, profile.api.list_stock_technicians,
+                serial=serial,
             )
+        ):
+            preview = profile.api.serialized_transfer_preview(transfer_order.id_os, serial)
+            if (
+                preview["contract"] != transfer_order.contract
+                or preview["serial"] != serial
+                or int(preview["target"]["installer_id"]) != expected_installer_id
+                or preview["source"]["stock_id"] != owner.get("stock_id")
+                or not _is_adhesion_transfer_equipment(preview["equipment"], transfer_order)
+            ):
+                raise ValueError(f"O estoque ou o instalador da OS mudou ao validar o serial {serial}")
+            transfers.append(preview)
+            continue
+        raise ValueError(
+            f"O serial {serial} nao pertence ao estoque de {expected_name}; "
+            f"atualmente esta com {owner_name or 'outro tecnico'}"
+        )
+    return transfers
+
+
+def _is_adhesion_transfer_equipment(equipment: dict, order: Order) -> bool:
+    labels = normalize_technician(f"{equipment.get('name', '')} {equipment.get('group', '')}")
+    if re.search(r"\b(?:CHIP|SIM ?CARD|SMART ?CARD)\b", labels):
+        return False
+    if re.search(r"\b(?:EMTA|MODEM|TERMINAL DOCSIS|TERMINAL GPON|ONT|ONU|DECODER|DECODIFICADOR|SET TOP BOX|STB)\b", labels):
+        return True
+    # A serial for a mesh Wi-Fi installation is in the EMTA slot in the batch.
+    service = normalize_technician(order.service)
+    return bool(re.search(r"\bMESH\b", labels) and re.search(r"\bWI[ -]?FI MESH\b", service))
 
 
 def _official_material_preparation_items(
@@ -5093,6 +5131,7 @@ def _resume_close_confirmations() -> None:
         for record in profile.close_report.unresolved():
             if (
                 record.get("transport") in {"official_http", "datasnap"}
+                and record.get("attribution") != "serialized_stock_preparation"
                 and int(record.get("confirmation_checks") or 0) < 7
             ):
                 _start_close_confirmation(profile, record, initial_delay=2.0)
@@ -8286,8 +8325,9 @@ class PanelHandler(BaseHTTPRequestHandler):
             stock_retry_request_id = str(body.get("stock_retry_request_id", "")).strip()[:80]
             prepared_stock_retry = None
             effective_scheduled_date = report_date.isoformat()
+            installer = None
             if not stock_retry_request_id:
-                _reconcile_order_installer_with_toa(
+                installer = _reconcile_order_installer_with_toa(
                     profile, order, body, report_date, gate_already_acquired=gate_acquired,
                 )
             official_plan = (
@@ -8301,10 +8341,27 @@ class PanelHandler(BaseHTTPRequestHandler):
                 if transport == "official_http"
                 else None
             )
+            serial_transfers = []
             if official_plan is not None:
-                _validate_official_installed_serial_ownership(
+                toa_technician = body.get("toa_technician") or {}
+                transfer_eligible = (
+                    profile.key == "natal"
+                    and close_code == "409"
+                    and close_definition.productive
+                    and not (stock_retry_request_id or retry_of_request_id)
+                    and installer
+                    and not installer.get("installer_reassigned")
+                    and installer.get("installer_id") == official_plan["installer_id"]
+                    and profile.serialized_transfer_enabled
+                    and isinstance(toa_technician, dict)
+                    and str(toa_technician.get("external_id") or toa_technician.get("login") or "").strip().upper()
+                    == official_plan["technician_code"]
+                )
+                serial_transfers = _validate_official_installed_serial_ownership(
                     profile,
                     official_plan,
+                    transfer_order=order if transfer_eligible else None,
+                    toa_technician=toa_technician if transfer_eligible else None,
                 )
             # ----------------------------------------------------------------
             # Controlled retry gate
@@ -8372,6 +8429,10 @@ class PanelHandler(BaseHTTPRequestHandler):
                 report_payload["technician_id"] = int(
                     official_plan.get("installer_id") or 0
                 )
+            if serial_transfers:
+                report_payload["serial_transfer_serials"] = [
+                    preview["serial"] for preview in serial_transfers
+                ]
             report_payload["dominium_operator"] = {
                 "id": operator.get("id"),
                 "username": operator.get("username", ""),
@@ -8428,6 +8489,45 @@ class PanelHandler(BaseHTTPRequestHandler):
                         "instaladosmiscelaneas"
                     ] = resolved_materials
                     official_plan["material_count"] = len(resolved_materials)
+                if serial_transfers:
+                    if not OPERATION_GATE.acquire(timeout=20.0):
+                        raise ValueError("Outra operacao de estoque esta em andamento")
+                    gate_acquired = True
+                    stock_journal = {
+                        "state": "uncertain",
+                        "category": "SERIAL_TRANSFER_UNCERTAIN",
+                        "category_label": "Transferencia de serial em verificacao",
+                        "message": "Transferencia iniciada; a baixa da OS ainda nao foi enviada",
+                        "attribution": "serialized_stock_preparation",
+                    }
+                    if not profile.close_report.update(
+                        report_record["request_id"], stock_journal, date=report_date
+                    ):
+                        raise OSError("Nao foi possivel registrar a transferencia no relatorio")
+                    transferred_serials = []
+                    for preview in serial_transfers:
+                        result = profile.api.transfer_serialized_equipment(preview, open_order=order)
+                        self._auth_audit(
+                            "imperium.serial_transfer", "confirmed", channel="official_http",
+                            target=f"contrato={order.contract};os={order.num_os}",
+                            metadata={
+                                "serial": result["serial"],
+                                "source_installer_id": result["source"]["installer_id"],
+                                "target_installer_id": result["target"]["installer_id"],
+                                "profile": profile.key,
+                            },
+                        )
+                        transferred_serials.append(result["serial"])
+                    material_preparation["transferred_serials"] = transferred_serials
+                    OPERATION_GATE.release()
+                    gate_acquired = False
+                    profile.close_report.update(
+                        report_record["request_id"],
+                        {"state": "sending", "category": "PROCESSING", "category_label": "Processando",
+                         "message": "Seriais conferidos. Enviando solicitacao de baixa",
+                         "attribution": "pending"},
+                        date=report_date,
+                    )
                 LOGGER.warning(
                     "[%s] Integracao IMPERIUM: enviando uma unica solicitacao para "
                     "OS %s, codigo %s, tecnico %s",
@@ -8459,6 +8559,9 @@ class PanelHandler(BaseHTTPRequestHandler):
                     preparation_detail = (
                         "Saldo das miscelaneas validado no estoque do tecnico. "
                     )
+                if serial_transfers:
+                    serials = ", ".join(material_preparation["transferred_serials"])
+                    preparation_detail += f"Transferencia confirmada para o tecnico da OS: {serials}. "
                 for key, label in (
                     ("discarded_shortfalls", "Sem saldo, dispensadas"),
                     ("partial_shortfalls", "Quantidade limitada ao saldo"),
@@ -8767,6 +8870,22 @@ class PanelHandler(BaseHTTPRequestHandler):
                     "code": close_code,
                     "message": str(exc),
                 },
+            )
+        except SerializedTransferUncertainError as exc:
+            LOGGER.warning("[%s] Transferencia sem confirmacao para IdOS %s: %s", profile.label, id_os, exc)
+            message = f"{exc}. A baixa da OS nao foi enviada."
+            if report_record is not None:
+                profile.close_report.update(
+                    report_record["request_id"],
+                    {"state": "uncertain", "category": "SERIAL_TRANSFER_UNCERTAIN",
+                     "category_label": "Transferencia de serial incerta", "message": message,
+                     "safe_to_retry": False, "attribution": "serialized_stock_preparation"},
+                    date=report_date,
+                )
+            self._json(
+                HTTPStatus.BAD_GATEWAY,
+                {"ok": False, "error": message, "category": "SERIAL_TRANSFER_UNCERTAIN",
+                 "safe_to_retry": False, "close_sent": False},
             )
         except MaterialTransferUncertainError as exc:
             LOGGER.exception(

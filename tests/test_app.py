@@ -7,6 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
+from adhesion_technician_evidence import AdhesionTechnicianEvidence
 from app import (
     CLOSE_CONFIRM_RUNNING,
     _append_import_audit,
@@ -30,6 +31,7 @@ from bulk_orders import build_bulk_preview
 from close_report import CloseReportStore
 from imperium_api import CloseCode, MaterialTransferUncertainError, Order
 from imperium_http_api import ImperiumHTTPResult
+from serialized_transfer import SerializedTransferUncertainError
 
 
 class AutoImproductiveReportTests(unittest.TestCase):
@@ -764,7 +766,7 @@ class AppSanitizeResponseTests(unittest.TestCase):
                         return_value=("Z637677", "DENIS NUNES", 328898),
                     ),
                     patch(
-                        "app._validate_official_installed_serial_ownership"
+                        "app._validate_official_installed_serial_ownership", return_value=[]
                     ) as preflight,
                     patch.object(
                         profile.api,
@@ -928,7 +930,7 @@ class AppSanitizeResponseTests(unittest.TestCase):
                         return_value=("Z637677", "DENIS NUNES", 328898),
                     ),
                     patch(
-                        "app._validate_official_installed_serial_ownership"
+                        "app._validate_official_installed_serial_ownership", return_value=[]
                     ),
                     patch.object(
                         profile.api,
@@ -1054,6 +1056,116 @@ class AppSanitizeResponseTests(unittest.TestCase):
                     profile.cache_generation = original_generation
 
 
+
+
+class OfficialAdhesionSerialTransferTests(unittest.TestCase):
+    def test_transfer_requires_agreement_and_confirmation_before_sending(self):
+        from app import PanelHandler
+
+        scenarios = [
+            ("confirmed", False, "WI-FI MESH", 202, ["transfer", "close"]),
+            ("uncertain", False, "WI-FI MESH", 502, ["transfer"]),
+            ("reassigned", True, "WI-FI MESH", 400, []),
+            ("unsupported", False, "SMART CARD", 400, []),
+            ("different TOA serial", False, "WI-FI MESH", 400, []),
+        ]
+        for scenario, reassigned, product, status, expected_events in scenarios:
+            with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as folder:
+                order = Order(123, "2661111111", "1234567", 10, "INSTALACAO WIFI MESH", status="EM CAMPO")
+                date = dt.date(2026, 11, 27)
+                serial = "ABCDEF000001"
+                technician = {"id": "50", "external_id": "Z123456", "name": "TECNICO DESTINO"}
+                source = {"installer_id": 10, "stock_id": 1, "technician_name": "TECNICO ORIGEM"}
+                target = {"installer_id": 20, "stock_id": 2, "technician_name": technician["name"]}
+                preview = {"id_os": order.id_os, "serial": serial, "contract": order.contract,
+                           "source": source, "target": target, "equipment": {"name": product}}
+                events, responses = [], []
+                api = Mock(removed_equipment={})
+                api.find_serial_owner.return_value = {"found": True, "owner": source, "equipment": preview["equipment"]}
+                api.serialized_transfer_preview.return_value = preview
+                api.list_stock_technicians.return_value = [source, target]
+                api.prepare_official_materials.return_value = {}
+                profile = SimpleNamespace(
+                    key="natal", label="Natal", api=api, cache_lock=threading.Lock(), cache_date=date,
+                    cache_generation=1, order_cache={order.id_os: order}, installer_overrides={},
+                    close_enabled=True, serialized_transfer_enabled=True,
+                    close_report=CloseReportStore(Path(folder), "natal"),
+                )
+                scope = _manual_close_scope(profile, order)
+                evidence = AdhesionTechnicianEvidence()
+                evidence.record("natal", {
+                    "source": "toa_secondary_chrome_cdp", "contract": order.contract,
+                    "results": [{
+                        "contract": order.contract, "aid": "321", "route_name": "NTL-DMV",
+                        "scheduled_date": date.isoformat(), "activity_status": "complete",
+                        "assigned_technician": technician, "route_provider": technician,
+                        "tasks": [{"os_number": order.num_os, "status": "E", "close_code": "409"}],
+                        "installed_equipment": [{"serial": "ABCDEF000002" if scenario == "different TOA serial" else serial}],
+                        "imperium_matches": [{**order.to_dict(), "operation_source": "imperium_cache",
+                                             "manual_scope": scope, "approved_state_hash": scope["state_hash"]}],
+                    }],
+                })
+                handler = PanelHandler.__new__(PanelHandler)
+                handler.path = f"/api/orders/{order.id_os}/close?profile=natal"
+                handler._body = lambda: {
+                    "code": "409", "num_os": order.num_os, "operation_source": "imperium_cache",
+                    "manual_scope": scope, "approved_state_hash": scope["state_hash"],
+                    "toa_technician": technician, "installed_equipment": [{"serial": serial, "type": "emta"}],
+                }
+                handler._json = lambda status, body: responses.append((status, body))
+                handler._auth_audit = Mock()
+                credentials = Path(folder) / "credentials.dat"
+                credentials.touch()
+
+                def transfer(prepared, *, open_order):
+                    self.assertEqual(prepared, preview)
+                    self.assertEqual(open_order, order)
+                    self.assertEqual(profile.close_report.list(date)[0]["attribution"], "serialized_stock_preparation")
+                    events.append("transfer")
+                    if scenario == "uncertain":
+                        raise SerializedTransferUncertainError("O estoque nao confirmou a transferencia")
+                    return {"serial": serial, "source": source, "target": target}
+
+                def send(payload):
+                    events.append("close")
+                    self.assertEqual(payload["ordemservico"]["instaladosserializados"], [{"serialnumber": serial}])
+                    return ImperiumHTTPResult(status=200, response=None)
+
+                api.transfer_serialized_equipment.side_effect = transfer
+                with (
+                    patch("app._profile_from_query", return_value=profile),
+                    patch("app._resolve_close_definition", return_value=CloseCode("409", "409", "OK", 1, (), True)),
+                    patch("app._reconcile_order_installer_with_toa", return_value={
+                        "installer_id": 20, "installer_reassigned": reassigned,
+                    }),
+                    patch("app._official_technician_code", return_value=("Z123456", technician["name"], 20)),
+                    patch("app.ADHESION_TECHNICIAN_EVIDENCE", evidence),
+                    patch("app.OFFICIAL_HTTP_CREDENTIALS", credentials),
+                    patch("app._official_http_client", return_value=SimpleNamespace(close_order=send)),
+                    patch("app._start_close_confirmation") as confirm,
+                    patch("app._sync_operational_close_reports"),
+                ):
+                    handler.do_POST()
+                    self.assertEqual(responses[0][0], status)
+                    if scenario in {"confirmed", "uncertain"}:
+                        handler.do_POST()
+                        self.assertTrue(responses[1][1]["duplicate_request"])
+                self.assertEqual(events, expected_events)
+                if scenario == "confirmed":
+                    confirm.assert_called_once()
+                    self.assertEqual(responses[0][1]["material_preparation"]["transferred_serials"], [serial])
+                if scenario == "uncertain":
+                    confirm.assert_not_called()
+                    row = profile.close_report.list(date)[0]
+                    self.assertEqual(row["category"], "SERIAL_TRANSFER_UNCERTAIN")
+                    self.assertFalse(row["safe_to_retry"])
+                    with self.assertRaisesRegex(ValueError, "verificacao do estoque"):
+                        profile.close_report.authorize_retry(row["request_id"], order.id_os, date=date)
+                    with self.assertRaisesRegex(ValueError, "serial tem transferencia em verificacao"):
+                        profile.close_report.begin(
+                            {"id_os": 124, "num_os": "2661111112", "installed_equipment": [{"serial": serial}]},
+                            date=date, block_active_duplicate=True,
+                        )
 
 
 class OfficialImperiumReadApiTests(unittest.TestCase):

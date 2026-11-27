@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-27T13:39:35+00:00
-- Source fingerprint: `b82c67af7675f1c3`
+- Generated: 2026-11-27T15:00:57+00:00
+- Source fingerprint: `0db271a0b1d217b1`
 - Indexed files: 579
-- Indexed symbols: 4738
+- Indexed symbols: 4746
 - API path references: 586
 
 ## Navigation rule
@@ -16,7 +16,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## orchestration
 
-- `app.py` (152 symbols, 81 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
+- `app.py` (153 symbols, 81 API paths, 44 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `disconnect_automation.py` (26 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operation_scope.py` (55 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `operational_store.py` (25 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -150,7 +150,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `.mcp.json`
 - `ABRIR LEITOR DE FLUXOS.cmd`
 - `Abrir Painel.cmd`
-- `adhesion_technician_evidence.py` (7 symbols) - Short-lived TOA evidence for the exact Natal adhesion order.
+- `adhesion_technician_evidence.py` (9 symbols) - Short-lived TOA evidence for the exact Natal adhesion order.
 - `adm_allocation.py` (3 symbols) - Read-only allocation for DESC multi-OS activities.
 - `AGENTS.md` (1 DataSnap methods) - DOMINIUM agent guide
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.

@@ -117,6 +117,12 @@ class CloseReportStore:
             records = self._read_unlocked(report_date)
             id_os = int(record.get("id_os") or 0)
             fingerprint = _text(record.get("fingerprint"), 128)
+            transfer_serials = set(record.get("serial_transfer_serials") or ())
+            installed_serials = {
+                _text(item.get("serial"), 50).upper()
+                for item in record.get("installed_equipment") or ()
+                if isinstance(item, dict)
+            }
             stock_previous = None
             if block_active_duplicate:
                 for previous in records:
@@ -140,6 +146,14 @@ class CloseReportStore:
                         duplicate = dict(previous)
                         duplicate["duplicate_request"] = True
                         return duplicate, True
+                    if (not same_order and previous.get("state") in ACTIVE_STATES
+                            and (installed_serials | transfer_serials).intersection(
+                                previous.get("serial_transfer_serials") or ()
+                            )):
+                        raise ValueError(
+                            "O serial tem transferencia em verificacao para a OS "
+                            f"{previous.get('num_os', '')}; confira o estoque antes de continuar"
+                        )
                     if stock_retry_request_id and same_order and previous.get("state") == "confirmed":
                         raise ValueError("A OS ja tem baixa confirmada")
             if stock_retry_request_id and stock_previous is None:
@@ -198,6 +212,8 @@ class CloseReportStore:
                 "accepted_at": "",
                 "confirmed_at": "",
             }
+            if transfer_serials:
+                value["serial_transfer_serials"] = sorted(transfer_serials)
             if stock_previous is not None:
                 stock_previous.update({
                     "state": "failed", "category": "STOCK_RECHECKED",
@@ -322,6 +338,8 @@ class CloseReportStore:
             raise ValueError("A tentativa anterior pertence a outra OS")
         if previous.get("state") != "uncertain":
             raise ValueError("Somente uma tentativa nao confirmada pode ser repetida")
+        if previous.get("attribution") == "serialized_stock_preparation":
+            raise ValueError("A transferencia do serial exige verificacao do estoque antes de repetir")
         if int(previous.get("confirmation_checks") or 0) < 7:
             raise ValueError("A confirmacao da tentativa anterior ainda nao terminou")
         expected_code = _text(close_code, 16)

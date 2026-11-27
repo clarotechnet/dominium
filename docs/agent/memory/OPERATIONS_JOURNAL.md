@@ -587,3 +587,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Testes de janelas de Brasília, renovação, falha, virada do dia, ponte privada, navegação e tema em Chromium, e gate completo.
 
 **Próximo passo/pendência:** Conferir lista e autorização após publicar o painel.
+
+## 2026-11-27 15:00 UTC — Transferência de serial antes da baixa oficial 409
+
+**Motivo:** Um EMTA ou decoder instalado no TOA pode constar no estoque de outro técnico no Imperium.
+
+**Alterado:** Natal/Parnamirim confirma O.S., login, instalador e serial, reserva a tentativa, transfere pelo fluxo oficial de estoque e confirma origem e destino antes da baixa.
+
+**Verificação:** Cenários simulados cobrem TOA, estoque DataSnap, baixa oficial e bloqueio de duplicidade.
+
+**Próximo passo/pendência:** Conciliar as diferenças da cópia Windows antes de ativar no servidor.

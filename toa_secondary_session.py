@@ -81,6 +81,17 @@ def _confirmed_adhesion_provider(value: dict, capture: dict, adhesion_date: str)
     pid = _text(current.get("id"))
     login = _text(search.get("external_id")).upper()
     name = _text(value.get("tecnico"))
+    if (
+        pid.isdecimal() and pid == _text(historical.get("id"))
+        and pid == _text(search.get("pid")) == _text(value.get("pid"))
+        and _text(search.get("date")) == adhesion_date
+        and re.fullmatch(r"Z\d+", login) and _text(value.get("externalId")).upper() == login
+        and _text(historical.get("external_id")).upper() == login
+        and _text(current.get("external_id")).upper() in {"", login}
+        and len(name.split()) >= 2 and _text(historical.get("name")).casefold() == name.casefold()
+        and _text(current.get("name")).casefold() in {"", name.casefold()}
+    ):
+        return {"id": pid, "name": name, "external_id": login}
     if (not pid.isdecimal() or not re.fullmatch(r"Z\d+", login) or len(name.split()) < 2
             or _text(current.get("external_id")).upper() not in {"", login}
             or _text(current.get("name")).casefold() not in {"", name.casefold()}

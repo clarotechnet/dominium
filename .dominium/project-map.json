@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-27T13:39:35+00:00",
+  "generated_at": "2026-11-27T15:00:57+00:00",
   "schema": 2,
-  "source_fingerprint": "b82c67af7675f1c38b30b6c898c025053d0251fae79a96258a3b48d9dff0114c",
+  "source_fingerprint": "0db271a0b1d217b13d519fa55842a70b2a2122d1caee42c8e0dfdd3537a6018c",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -97,10 +97,11 @@
     {
       "path": "adhesion_technician_evidence.py",
       "category": "shared",
-      "bytes": 6177,
-      "sha256": "ffc72017281198cb3c8dbd87ba91abe28027f60ae9d9431e751f2b1b2bfb4176",
+      "bytes": 8646,
+      "sha256": "5bbfffaa0ecfc56ea35ed2c5658d0f8f54ba9a854cc7ce80309d6385fc130a1a",
       "summary": "Short-lived TOA evidence for the exact Natal adhesion order.",
       "imports": [
+        "dataclasses",
         "pathlib",
         "re",
         "threading",
@@ -111,7 +112,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 7
+      "symbol_count": 9
     },
     {
       "path": "adm_allocation.py",
@@ -181,8 +182,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 364952,
-      "sha256": "d32817feb401153607625feba84428965d5c508d9eeff64e603018f5cb36818a",
+      "bytes": 371732,
+      "sha256": "0ec6c0921e639f766d089c115090ee91890be49551b0421317897f934ee85bb8",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "adhesion_technician_evidence",
@@ -389,7 +390,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 152
+      "symbol_count": 153
     },
     {
       "path": "auth_store.py",
@@ -523,8 +524,8 @@
     {
       "path": "close_report.py",
       "category": "shared",
-      "bytes": 17652,
-      "sha256": "ab7baab5c38a7f9830d8fb5b6f0c15ee601a92736acf2ae971d664d30c182f2f",
+      "bytes": 18757,
+      "sha256": "780cc2754df8db9fb29cdc77a974b65842d25a26e3e3723d3678114ccd0a7741",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "__future__",
@@ -1688,8 +1689,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 41371,
-      "sha256": "90b401026072e09fcd07a2b1be0fc885aac9c2db2fca3972551479ee1c8a02cd",
+      "bytes": 41951,
+      "sha256": "6e82a54944a8c21d2afcbe4251ad575d148f6fe09cc19ec3730392307faaa471",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -2153,8 +2154,8 @@
     {
       "path": "imperium_api.py",
       "category": "imperium",
-      "bytes": 265863,
-      "sha256": "ac99115e9f5f5a8baae2886649be0e11068fcb63347788ba52d8abc2cc2a33ef",
+      "bytes": 266358,
+      "sha256": "42b3a459aedeb624c51e8067cca9015e7c1d13693a8d82bb617049eed63139fd",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "base64",
@@ -5716,8 +5717,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 37919,
-      "sha256": "eb07d50d0eae37a4218236cd1529cc400a070081b776ba004aeb9533e3cb4e7a",
+      "bytes": 38276,
+      "sha256": "1f03a508bdfae28fbc894fc500b1f4c12c31cfe648d003607e976a6f7593f22d",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -6844,8 +6845,8 @@
     {
       "path": "tests/test_adhesion_technician_evidence.py",
       "category": "tests",
-      "bytes": 4780,
-      "sha256": "9e51e256153c98119b2ff3f7704402cb1b7b6d24f2c6bf2d62ba26b34447512a",
+      "bytes": 7064,
+      "sha256": "acd6d493bb1c41ee8fdabc905b9d9351327583e7ef2923a5f10002b6e1c38536",
       "summary": "",
       "imports": [
         "adhesion_technician_evidence",
@@ -6857,7 +6858,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 10
+      "symbol_count": 12
     },
     {
       "path": "tests/test_adm_allocation.py",
@@ -6945,10 +6946,11 @@
     {
       "path": "tests/test_app.py",
       "category": "tests",
-      "bytes": 43951,
-      "sha256": "7b0da9ec07c5535333592b649fb37c61bb70bf0122987172d2d1889f00430a22",
+      "bytes": 51329,
+      "sha256": "d846c1334e1c0628aefd1c70bb3bcb6e403465c4bc60c7645a30cc808f53b29b",
       "summary": "",
       "imports": [
+        "adhesion_technician_evidence",
         "app",
         "bulk_orders",
         "close_report",
@@ -6957,6 +6959,7 @@
         "imperium_http_api",
         "json",
         "pathlib",
+        "serialized_transfer",
         "tempfile",
         "threading",
         "types",
@@ -6976,7 +6979,7 @@
         "TECHNICIANS.resolve"
       ],
       "entrypoint": true,
-      "symbol_count": 38
+      "symbol_count": 40
     },
     {
       "path": "tests/test_atlas_bridge_client.py",
@@ -9421,8 +9424,8 @@
     {
       "path": "tests/test_serialized_transfer.py",
       "category": "tests",
-      "bytes": 9622,
-      "sha256": "60606b0ffbf12f8ab1542987d1d96190ebc77b641d4638218756a502a42e47ee",
+      "bytes": 10732,
+      "sha256": "cff3be420d837ca1db433b31cbc519941b59c3c79f50a211dd76293695ad11e1",
       "summary": "",
       "imports": [
         "hashlib",
@@ -9437,7 +9440,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 16
+      "symbol_count": 17
     },
     {
       "path": "tests/test_stock_all_scope.cjs",
@@ -10026,8 +10029,8 @@
     {
       "path": "tests/test_toa_secondary_session.py",
       "category": "tests",
-      "bytes": 7082,
-      "sha256": "205a98640ff56fc4c34a037cea6aea82715d77ac86ae1cdcfe169de352320455",
+      "bytes": 7599,
+      "sha256": "fd8f0814d2d131d72481761f5348819024e93d50916fa87e73661ec080b27540",
       "summary": "",
       "imports": [
         "copy",
@@ -10819,8 +10822,8 @@
     {
       "path": "toa_secondary_session.py",
       "category": "toa",
-      "bytes": 13317,
-      "sha256": "0e9d9bab5e04a4e964e586d25d59ce8be8dcd7c5448f04dd8f273b6de12c7939",
+      "bytes": 13987,
+      "sha256": "ee1922ff41921d41f1c58d1748f715b906d30221dca150e4859570a125e0501c",
       "summary": "",
       "imports": [
         "__future__",
