@@ -28,6 +28,8 @@ class HostingerNodeReleaseTests(unittest.TestCase):
             "atlas-query-policy.js",
             "static/atlas-query-ui.js",
             "static/styles.css",
+            "static/assets/brands/claro-wordmark.png",
+            "static/assets/brands/claro-wordmark-filter.svg",
             "RELEASE_MANIFEST.json",
         ):
             self.assertIn(required, names)

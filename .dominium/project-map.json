@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-26T19:09:38+00:00",
+  "generated_at": "2026-11-27T11:43:08+00:00",
   "schema": 2,
-  "source_fingerprint": "ec0621dd0e44ae877130cb68ee72778c2144fd4e8c90efb5d48e1a75464fe519",
+  "source_fingerprint": "bbade3153be33f59fe8d00ebe24611bb9a692ca42bbbf56b8f8cff5d01010b49",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -6056,7 +6056,7 @@
       "path": "static/index.html",
       "category": "frontend",
       "bytes": 185739,
-      "sha256": "1668b1eec0e8421171a3d3eb4109457061a3d05248d3d67cb49d253d71aedc1e",
+      "sha256": "aacea61eaf3eaaa8c9a58ce81de4834e06ec92b84f938dbae9e754a574d9ee43",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6280,8 +6280,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 226297,
-      "sha256": "14749da8ad85a46532c451ebe5b38c5cc3e07d605e24a5c6989d135769145918",
+      "bytes": 226369,
+      "sha256": "c1ebed8fefc7ab1ddfe0628d5921cd0fa9f075cb968b8a090ae2c0cddcae41c0",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7290,8 +7290,8 @@
     {
       "path": "tests/test_build_hostinger_node_release.py",
       "category": "tests",
-      "bytes": 1660,
-      "sha256": "157aef4ebdf049a32bed1fa12e4a662566f99b768ed7304221ceb5a1dd6a827b",
+      "bytes": 1777,
+      "sha256": "8efb9f24f1192e543fbbe811bee920dbeb7fb07e8765824903a5de1fe91b286f",
       "summary": "",
       "imports": [
         "pathlib",

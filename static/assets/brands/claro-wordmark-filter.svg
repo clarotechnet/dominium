@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <filter id="remove-white" color-interpolation-filters="sRGB" x="0" y="0" width="1" height="1">
+    <!-- The PNG is red ink on white. Use its green channel to recover the ink opacity. -->
+    <feColorMatrix type="matrix" values="
+      0  0        0  0        1
+      0  0        0  0        0.117647
+      0  0        0  0        0.117647
+      0 -1.133333 0  1.133333 0"/>
+  </filter>
+</svg>
