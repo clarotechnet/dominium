@@ -607,3 +607,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Captura de producao reproduzida em memoria sem enviar baixas e regressao do formato real do servidor.
 
 **Próximo passo/pendência:** Conferir a versao publicada no DOMINIUM.
+
+## 2026-11-27 19:31 UTC — Instalador do Imperium na baixa improdutiva acompanhante
+
+**Motivo:** A O.S. auxiliar sem tarefa no TOA recebia indevidamente a identidade da O.S. principal no payload.
+
+**Alterado:** Lote reaproveita apenas o codigo improdutivo; o backend consulta o instalador e resolve o login a partir da propria O.S. acompanhante.
+
+**Verificação:** Leitura do instalador e login resolvido nas duas ordens de cada par real; regressao do JSON da baixa sem disparo.
+
+**Próximo passo/pendência:** Conferir a publicacao do site e manter a baixa original conciliada.

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-27T19:21:37+00:00",
+  "generated_at": "2026-11-27T19:31:33+00:00",
   "schema": 2,
-  "source_fingerprint": "b10470985c6583a3cac9bebdf4477cc6b304c00af4298a2c626808ce8b453081",
+  "source_fingerprint": "b4f8a1efe6a80a23d228e0aa35786b7161f80f48a931c44d6f74804f7a1ecfc5",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1688,8 +1688,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 42561,
-      "sha256": "f64417e99e327e06f75cadba209e6a79c5f788d3e65f32635c6c75cb33b103bc",
+      "bytes": 43143,
+      "sha256": "4893a9c3fb8c4c3b7b754b59a30e4f39b6ac8744e20c988a6ce61c5628ef33fc",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -6097,8 +6097,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 193566,
-      "sha256": "5381b8e0ec0bf612645337db42bcb85172224cd2b295bc40f65d45bffdbea717",
+      "bytes": 193575,
+      "sha256": "3e6fc6cf6bb1125a35f2358007061773604c599f90fbfceb0084e33c0c0f4e61",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -9344,15 +9344,17 @@
     {
       "path": "tests/test_semiauto_frontend.js",
       "category": "tests",
-      "bytes": 29669,
-      "sha256": "916377df2462b088edd672abe2c192229307ee6be3974a8f834d50b7edc5be8d",
+      "bytes": 31496,
+      "sha256": "16fdae7451f6ceb5e281bf6fff6f983cfae2fefb3ee11065f837ead08bf6e491",
       "summary": "",
       "imports": [],
-      "endpoints": [],
+      "endpoints": [
+        "/api/orders/2/close"
+      ],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 19
+      "symbol_count": 23
     },
     {
       "path": "tests/test_serial_confront_engine.py",

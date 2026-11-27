@@ -3,6 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const test = require("node:test");
 
 const source = fs.readFileSync(
   path.join(__dirname, "..", "static", "app.js"),
@@ -150,6 +151,45 @@ assert.match(autoCloser, /430_without_removed_equipment/);
 assert.match(autoCloser, /installed_equipment_in_430/);
 assert.match(autoCloser, /candidate\.validatedMaterials = \[\]/);
 assert.match(autoCloser, /executeDirectAutoClose\(candidate, \[\]\)/);
+
+test("an inherited unproductive code sends the companion's approved order without a TOA technician", async () => {
+  const requests = [];
+  const state = {
+    adhesionBatchRunning: true, profile: "natal", profileEpoch: 7,
+    officialCloseEnabled: true, closeEnabled: true, orders: [],
+  };
+  const date = "2026-11-27";
+  const execute = new Function("state", "elements", "request", `
+    const validToaCloseSnapshot = () => true;
+    const normalize = value => value;
+    const defaultMovement = () => "none";
+    const apiUrl = value => value;
+    async ${extractFunction("executeDirectAutoClose")}
+    return executeDirectAutoClose;
+  `)(state, {date:{value:date}}, async (url, options) => {
+    requests.push({url, body: JSON.parse(options.body)});
+    return {pending_confirmation:true};
+  });
+  const base = {
+    order: {id_os:2, num_os:"2661111112", service:"INSTALACAO DE CABO GPON",
+      approved_state_hash:"companion-approval", manual_scope:{state_hash:"companion-approval"}},
+    capture: {assigned_technician:{name:"Tecnico da principal", external_id:"Z123456", id:"45"}},
+    task:{close_code:"110"},
+    batchAdhesion:true, batchCodeOnly:true, batchScope:{profile:"natal",date,epoch:7},
+  };
+  await execute({...base, batchInheritedFrom:"2661111111"});
+  assert.equal(requests[0].url, "/api/orders/2/close");
+  assert.equal(requests[0].body.code, "110");
+  assert.equal(requests[0].body.approved_state_hash, "companion-approval");
+  assert.equal("toa_technician" in requests[0].body, false);
+  for(const field of ["installed_equipment","removed_equipment","materials"]) {
+    assert.deepEqual(requests[0].body[field], []);
+  }
+  await execute(base);
+  assert.deepEqual(requests[1].body.toa_technician, {
+    name:"Tecnico da principal", login:"Z123456", id:"45",
+  });
+});
 
 const renderer = extractFunction("renderSemiAutoQueue");
 assert.match(renderer, /data-semi-contract-review/);
