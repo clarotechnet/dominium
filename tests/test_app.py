@@ -13,6 +13,7 @@ from app import (
     _build_official_panel_plan,
     _confirm_bulk_creation,
     _installer_change_preview,
+    _inherited_unproductive_installer,
     _manual_close_scope,
     _material_assignment,
     _material_paste_key,
@@ -483,6 +484,25 @@ class AppPersistenceTests(unittest.TestCase):
 
 
 class AppSanitizeResponseTests(unittest.TestCase):
+    def test_inherited_unproductive_login_uses_confirmed_source_and_same_installer(self):
+        date = dt.date(2026, 11, 27)
+        gpon = Order(124, "2661111112", "1234567", 198, "INSTALACAO DE CABO GPON")
+        source = {"id_os": 123, "num_os": "2661111111", "contract": gpon.contract,
+                  "close_code": "110", "state": "confirmed"}
+        api = Mock()
+        api.order_installer.return_value = {"installer_id": 338736, "installer_name": "ESLI MELQUISEDEQUI D"}
+        profile = SimpleNamespace(key="natal", api=api, close_report=Mock())
+        profile.close_report.list.return_value = [source]
+        definition = SimpleNamespace(code="110", productive=False)
+        body = {"adhesion_batch": True, "inherited_close_from_os": source["num_os"]}
+        self.assertEqual(_inherited_unproductive_installer(profile, gpon, definition, body, date)[0], "Z657807")
+        api.order_installer.side_effect = [{"installer_id": 52}, api.order_installer.return_value]
+        with self.assertRaisesRegex(ValueError, "instaladores diferentes"):
+            _inherited_unproductive_installer(profile, gpon, definition, body, date)
+        profile.close_report.list.return_value = [{**source, "close_code": "106"}]
+        with self.assertRaisesRegex(ValueError, "mesmo codigo"):
+            _inherited_unproductive_installer(profile, gpon, definition, body, date)
+
     """Verify the _sanitize_response helper that stores the official API body."""
 
     def setUp(self) -> None:

@@ -19,6 +19,17 @@ def _name(value):
     return " ".join("".join(ch for ch in value if not unicodedata.combining(ch)).split())
 
 
+def verified_stock_alias_login(installer_id, installer_name):
+    name = _name(installer_name)
+    if len(name) < 12:
+        return ""
+    matches = {
+        login for (known_id, login, _), stock_name in _IMPERIUM_STOCK_NAMES.items()
+        if known_id == str(installer_id) and stock_name.startswith(name)
+    }
+    return next(iter(matches)) if len(matches) == 1 else ""
+
+
 def is_unproductive_task(task):
     return (isinstance(task, dict) and str(task.get("status")).upper() == "N"
             and re.fullmatch(r"\d{3}", str(task.get("close_code") or "")) is not None)
