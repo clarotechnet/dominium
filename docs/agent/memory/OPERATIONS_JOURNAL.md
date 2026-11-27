@@ -617,3 +617,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Leitura do instalador e login resolvido nas duas ordens de cada par real; regressao do JSON da baixa sem disparo.
 
 **Próximo passo/pendência:** Conferir a publicacao do site e manter a baixa original conciliada.
+
+## 2026-11-27 19:54 UTC — Prevenir falhas de escopo, codigo e vinculo nas baixas em lote
+
+**Motivo:** A captura TOA pode oscilar ou omitir codigos e o nome exibido pode divergir do instalador no Imperium.
+
+**Alterado:** O lote repete somente leituras transitorias, isola codigos desconhecidos e aceita variante de nome apenas com vinculo ja verificado para a ordem e para uma baixa improdutiva. Mantem trava de duplicidade e exige o mesmo codigo na confirmacao.
+
+**Verificação:** Regressoes de escopo TOA, codigo desconhecido, movimentacao, divergencia de login, aliases e tentativas aceitas.
+
+**Próximo passo/pendência:** Conferir o frontend publicado e a adaptacao no runtime Windows sem executar baixas.

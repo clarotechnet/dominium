@@ -10651,6 +10651,7 @@ async function executeDirectAutoClose(candidate, materials = []) {
     code,
     num_os: String(match.num_os || currentOrder.num_os || "").trim(),
     transport,
+    ...(batch ? {adhesion_batch:true} : {}),
     toa_technician: toaTechnician,
     observation: String(capture.technician_observation || capture.observation || "").trim(),
     operation_source: operationSource,

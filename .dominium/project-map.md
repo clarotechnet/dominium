@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-27T19:31:33+00:00
-- Source fingerprint: `b4f8a1efe6a80a23`
+- Generated: 2026-11-27T19:54:34+00:00
+- Source fingerprint: `889103f79df3e84d`
 - Indexed files: 579
-- Indexed symbols: 4751
+- Indexed symbols: 4755
 - API path references: 587
 
 ## Navigation rule
@@ -96,7 +96,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 ## frontend
 
 - `static/adhesion-batch.css`
-- `static/adhesion-batch.js` (44 symbols, 4 API paths) - Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */
+- `static/adhesion-batch.js` (45 symbols, 4 API paths) - Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */
 - `static/all-cities-scope.css` - DOMINIUM: "Todos" is a cross-module read-only scope, not an operational profile. */
 - `static/all-operations.js` (14 symbols, 3 API paths) - Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */
 - `static/atlas-query-ui.js` (23 symbols, 2 API paths) - DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */
@@ -150,7 +150,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `.mcp.json`
 - `ABRIR LEITOR DE FLUXOS.cmd`
 - `Abrir Painel.cmd`
-- `adhesion_technician_evidence.py` (7 symbols) - Short-lived TOA evidence for the exact Natal adhesion order.
+- `adhesion_technician_evidence.py` (8 symbols) - Short-lived TOA evidence for the exact Natal adhesion order.
 - `adm_allocation.py` (3 symbols) - Read-only allocation for DESC multi-OS activities.
 - `AGENTS.md` (1 DataSnap methods) - DOMINIUM agent guide
 - `api_security.py` (9 symbols, 6 API paths) - Controles centrais de seguranca para as integracoes do DOMINIUM.

@@ -39,6 +39,7 @@
   // while its shared lock is held. Only retry reads, never a close.
   class FreshOrdersBusyError extends Error {}
   class ToaBridgeUnavailableError extends Error {}
+  class ToaActivityScopeUnconfirmedError extends Error {}
 
   async function freshOrders(read, {active,wait,notify=()=>{},attempts=4,delay=1500,budgetMs=15000,now=Date.now}) {
     const deadline=now()+budgetMs;
@@ -60,18 +61,25 @@
   }
   async function readBatchToa(read, {active,wait,notify}) {
     const retryDelays = [1000, 3000, 5000];
+    let activityUnconfirmed=false;
     for (let attempt = 0; attempt <= retryDelays.length; attempt++) {
       if (!active()) throw Error("Lote interrompido.");
       try {
         return await read();
       } catch (error) {
-        if (error.status !== 502 || error.message !== "TOA secundario nao localizado") throw error;
+        activityUnconfirmed=[400,502].includes(error.status) && /\badhesion_activity_scope_unconfirmed\b/.test(error.message);
+        const unavailable=error.status===502 && (error.message==="TOA secundario nao localizado"
+          || /\btoa_resposta_busca_invalida\b/.test(error.message));
+        if (!activityUnconfirmed && !unavailable) throw error;
         if (!active()) throw Error("Lote interrompido.");
         if (attempt === retryDelays.length) break;
         notify();
         await wait(retryDelays[attempt]);
       }
     }
+    if(activityUnconfirmed) throw new ToaActivityScopeUnconfirmedError(
+      "O TOA nao confirmou a atividade de adesao na data e na rota NTL/PWM. Nenhuma baixa foi enviada."
+    );
     throw new ToaBridgeUnavailableError("A ponte do TOA nao respondeu. Nenhuma baixa foi enviada nesta tentativa.");
   }
   async function ordersForBatchContract(payload, contract, readFresh, scope, deps) {
@@ -228,9 +236,14 @@
   function isUnresolvedClose(record) {
     return ["sending","pending","uncertain"].includes(record.state);
   }
-  function priorCloseOutcome(record, failures=[]) {
-    if(record.state==="confirmed") return {closed:true};
+  function priorCloseOutcome(record, failures=[], expectedCode="") {
     const os="OS "+record.num_os+(record.close_code?" ("+record.close_code+")":"");
+    if(record.state==="confirmed") {
+      if(expectedCode && String(record.close_code)!==String(expectedCode)) {
+        return {reason:os+" ja confirmada com codigo diferente do "+expectedCode+" pedido neste lote."};
+      }
+      return {closed:true};
+    }
     // The legacy observer can overwrite an uncertain stock result with a
     // sending state. The day failure log retains the stock failure instead.
     const stockFailure=!record.accepted_at && !record.official_http_status && failures.find(f=>String(f.id_os)===String(record.id_os) &&
@@ -247,7 +260,12 @@
           ? String(record.request_id||"") : "",
       };
     }
-    if(isUnresolvedClose(record)) return {pending:true,reason:os+" possui tentativa anterior sem confirmacao no Imperium."};
+    if(isUnresolvedClose(record)) {
+      const time=String(record.accepted_at||"").match(/T(\d\d:\d\d)/)?.[1];
+      return {pending:true,reason:time
+        ? os+" aceita as "+time+", aguardando confirmacao no Imperium. Reenvio bloqueado."
+        : os+" possui tentativa anterior sem confirmacao no Imperium."};
+    }
     return {reason:os+" possui tentativa anterior sem liberacao para reenvio."};
   }
   // One physical EMTA can support both Virtua and VoIP. Only an exact
@@ -318,7 +336,7 @@
       if(!os || byNumber.has(os)) throw Error("OS duplicada ou sem numero no Imperium.");
       byNumber.set(os,row);
     }
-    const candidates=[], seen=new Set(), imperiumOnly=new Set();
+    const candidates=[], seen=new Set(), imperiumOnly=new Set(), blockedCodes=new Map();
     for(const capture of payload.results||[]) {
       const matching=(capture.tasks||[]).filter(task=>{
         const os=String(task.os_number||"");
@@ -335,9 +353,20 @@
         const os=String(task.os_number), activeOrder=byNumber.get(os);
         const exact=(capture.imperium_matches||[]).filter(o=>String(o.num_os)===os && String(o.contract)===contract && Number(o.id_os)===Number(activeOrder.id_os));
         if(seen.has(os) || exact.length!==1 || !deps.valid(exact[0],capture) || !deps.executed(task.status)) throw Error("OS sem correspondencia unica, aprovada e executada: "+os);
-        let code=String(task.close_code||"").trim();
-        if(!code || code==="430" || !deps.knownCode(code)) throw Error("Codigo de baixa ausente ou invalido: "+os);
         const order=exact[0], service=String(order.service||"");
+        const origin=importBucket(order,scope,capture);
+        if(order.operation_source==="toa_import" && !origin) throw Error("OS "+os+": origem importada sem comprovacao de bucket, data e atividade de adesao.");
+        if(!route && !origin) throw Error("OS "+os+": bucket NTL/PWM sem comprovacao no TOA ou no arquivo de importacao.");
+        if(route && origin && route!==origin) throw Error("Bucket TOA diverge da origem importada.");
+        if(!service || /DESCONEX|RETIRADA\s+DE\s+ASSINATURA/i.test(service)) throw Error("Servico fora do escopo de adesao: "+os);
+        seen.add(os);
+        let code=String(task.close_code||"").trim();
+        if(!/^\d{3}$/.test(code) || code==="430" || !deps.knownCode(code)) {
+          const reason=!code ? "sem codigo de baixa confirmado no TOA" : /^\d{3}$/.test(code)
+            ? "com codigo "+code+" indisponivel para a baixa oficial de adesao" : "com codigo de baixa invalido no TOA";
+          blockedCodes.set(os,"OS "+os+" "+reason);
+          continue;
+        }
         const chipService=serviceLabel(service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"")==="ENVIO DE CHIP VIA TECNICO";
         // TOA records generic success 409; the Imperium chip service uses 706.
         // Do not convert a nonexecuted task or an unidentified ICCID.
@@ -347,12 +376,6 @@
           if(!["E","EXECUTADA","EXECUTADO","EXECUTED"].includes(serviceLabel(task.status).trim()) || chips.size!==1 || chipOrders.length!==1 || !deps.knownCode("706"))throw Error("Chip sem ICCID ou tarefa executada confirmada para codigo 706: "+os);
           code="706";
         }
-        const origin=importBucket(order,scope,capture);
-        if(order.operation_source==="toa_import" && !origin) throw Error("OS "+os+": origem importada sem comprovacao de bucket, data e atividade de adesao.");
-        if(!route && !origin) throw Error("OS "+os+": bucket NTL/PWM sem comprovacao no TOA ou no arquivo de importacao.");
-        if(route && origin && route!==origin) throw Error("Bucket TOA diverge da origem importada.");
-        if(!service || /DESCONEX|RETIRADA\s+DE\s+ASSINATURA/i.test(service)) throw Error("Servico fora do escopo de adesao: "+os);
-        seen.add(os);
         candidates.push({capture,task:{...task,close_code:code},order,numOs:os,code,isDisconnect:false,batchAdhesion:true,batchScope:{profile,date,epoch:scope.epoch},batchCodeOnly:codeOnly(service)});
       }
     }
@@ -362,14 +385,15 @@
       const missing=[...byNumber.keys()].filter(os=>!planned.has(os));
       const displayed=missing.filter(os=>imperiumOnly.has(os));
       const independent = candidates.filter(candidate => candidate.batchCodeOnly);
-      if (deps.hold && displayed.length === missing.length && independent.length) {
+      if(deps.hold && missing.every(os=>imperiumOnly.has(os)||blockedCodes.has(os)) && independent.length) {
         deps.hold([
-          ...displayed.map(os => "OS " + os + " sem codigo de baixa confirmado no TOA"),
+          ...missing.map(os=>blockedCodes.get(os)||"OS "+os+" sem codigo de baixa confirmado no TOA"),
           ...candidates.filter(candidate => !candidate.batchCodeOnly).map(candidate =>
             "OS " + candidate.numOs + " retida para conciliar os itens da atividade"),
         ]);
         return independent;
       }
+      if(blockedCodes.size) throw Error([...blockedCodes.values()].join(". "));
       if(displayed.length) throw Error("OS "+displayed.join(", ")+" nao localizada no TOA; codigo de baixa nao confirmado.");
       throw Error("OS em campo sem conciliacao no TOA: "+missing.join(", ")+".");
     }
@@ -453,8 +477,11 @@
       // resend or a retry of the material transfer in this execution.
       return {...response,...outcome,reason:outcome.reason||unresolved.message};
     }
-    const confirmed=matches.find(r=>r.state==="confirmed" && String(r.close_code)===String(candidate.code));
-    if(confirmed)return {...response,closed:true,pending:false,reason:"Confirmada no relatorio do Imperium."};
+    const confirmed=matches.find(r=>r.state==="confirmed");
+    if(confirmed){
+      const outcome=priorCloseOutcome(confirmed,[],candidate.code);
+      return {...response,...outcome,pending:false,reason:outcome.reason||"Confirmada no relatorio do Imperium."};
+    }
     const failed=matches.find(r=>r.state==="failed" && String(r.close_code)===String(candidate.code));
     if(failed)return {...response,reason:failed.message||response?.reason};
     return response;
@@ -515,9 +542,9 @@
         const detail=confirmed+" confirmada(s), "+waiting+" pendente(s), "+(blocked+held.length)+" em tratativa, "+rest+" nao enviada(s). "+[...outcomes,...held].join(" | ");
         hooks.update(contract,waiting?"Aguardando confirmacao":blocked||held.length?"Tratativa":confirmed===candidates.length?"Baixado":"Interrompido",detail);
       } catch(err) {
-        if ((err instanceof FreshOrdersBusyError || err instanceof ToaBridgeUnavailableError) && !deferred && hooks.active()) {
+        if ((err instanceof FreshOrdersBusyError || err instanceof ToaBridgeUnavailableError || err instanceof ToaActivityScopeUnconfirmedError) && !deferred && hooks.active()) {
           queue.push({contract, deferred: true});
-          hooks.update(contract, "Na fila", err instanceof ToaBridgeUnavailableError ? "Ponte TOA indisponivel. Nova consulta no fim do lote; nenhuma baixa enviada." : "Imperium ocupado. Nova consulta no fim do lote.");
+          hooks.update(contract, "Na fila", err.message+" Nova consulta no fim do lote.");
         } else {
           hooks.update(contract, "Tratativa", String(err.message || err).slice(0, 300));
         }
@@ -599,8 +626,8 @@
     };
     const readCloseReport=()=>request(apiUrlForProfile("/api/close-report?date="+encodeURIComponent(date),profile),{timeoutMs:60000});
     let initialReport;
-    async function outcomeFor(record) {
-      if(!isUnresolvedClose(record) || record.category==="MATERIAL_TRANSFER_UNCERTAIN") return priorCloseOutcome(record);
+    async function outcomeFor(record, expectedCode) {
+      if(!isUnresolvedClose(record) || record.category==="MATERIAL_TRANSFER_UNCERTAIN") return priorCloseOutcome(record,[],expectedCode);
       let failures=[];
       try {
         const report=await request(apiUrlForProfile("/api/failures",profile),{timeoutMs:10000});
@@ -647,7 +674,7 @@
           if(!active() || !Array.isArray(report.records)) throw Error("Relatorio de baixa indisponivel.");
           const previous=report.records.find(r=>String(r.id_os)===String(candidate.order.id_os) &&
             (isUnresolvedClose(r) || r.state==="confirmed" || (r.state==="failed" && r.safe_to_retry!==true)));
-          const outcome=previous?await outcomeFor(previous):null;
+          const outcome=previous?await outcomeFor(previous,candidate.code):null;
           if(outcome && !outcome.stockRetryRequestId) return outcome;
           if(!active()) throw Error("Lote interrompido.");
           const fresh = await readFieldOrders(
@@ -659,7 +686,7 @@
           if(!active())return result;
           return reconcileCloseRead(refreshed,result,readCloseReport);
         },
-        async confirm(requestId) {
+        async confirm(requestId, candidate) {
           for(let attempt=0;attempt<12;attempt++){
             if(!active()) return "pending";
             await sleep(10000);
@@ -667,7 +694,7 @@
             try{
               const report=await readCloseReport();
               const row=(report.records||[]).find(r=>String(r.request_id)===requestId);
-              if(row?.state==="confirmed")return "confirmed";
+              if(row?.state==="confirmed")return String(row.close_code)===String(candidate.code) ? "confirmed" : "review";
               if(["failed","uncertain"].includes(row?.state))return "review";
             }catch{/* consultar novamente, nunca repetir a escrita */}
           }

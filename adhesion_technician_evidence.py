@@ -28,6 +28,42 @@ def has_no_adhesion_movements(capture):
     return all(capture.get(field) == [] for field in ("installed_equipment", "removed_equipment", "materials"))
 
 
+def matches_imported_unproductive_alias(
+    profile, order, date, supplied, installer_id, installer_name, approved_order,
+):
+    """Resolve a verified spelling difference using the exact imported order."""
+    if profile != "natal" or not isinstance(supplied, dict):
+        return False
+    login = str(supplied.get("external_id") or supplied.get("login") or "").strip().upper()
+    signed_login = str(approved_order.get("technician_login") or "").strip().upper()
+    signed_name = _name(approved_order.get("technician"))
+    stock_name = _IMPERIUM_STOCK_NAMES.get((str(installer_id), login, signed_name))
+    current_name = _name(installer_name)
+    if not stock_name or login != signed_login or len(current_name) < 12 or not stock_name.startswith(current_name):
+        return False
+    scope = approved_order.get("import_scope") or {}
+    identity = approved_order.get("operation_identity") or {}
+    if not isinstance(scope, dict) or not isinstance(identity, dict):
+        return False
+    filename = PurePosixPath(str(scope.get("source_file") or "").replace("\\", "/")).name
+    date_suffix = date.strftime("%d_%m_%y")
+    return bool(
+        approved_order.get("operation_source") == "toa_import"
+        and approved_order.get("approved_state_hash")
+        and not approved_order.get("read_only")
+        and not approved_order.get("operation_blockers")
+        and str(approved_order.get("id_os")) == str(order.id_os)
+        and str(approved_order.get("num_os")) == str(order.num_os)
+        and str(approved_order.get("contract")) == str(order.contract)
+        and str(identity.get("contract")) == str(order.contract)
+        and identity.get("activity_id")
+        and identity.get("profile_key") == profile
+        and scope.get("expected_profile_key") == profile
+        and scope.get("source_hash")
+        and re.fullmatch(rf"Atividades-(?:NTL|PWM)-DMV_{date_suffix}(?: \(\d+\))?\.(?:csv|xlsx)", filename, re.I)
+    )
+
+
 class AdhesionTechnicianEvidence:
     def __init__(self, clock=time.monotonic):
         self._clock = clock
