@@ -87,7 +87,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	d18f093cd6c92752
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	1b95c0f7c0d6d865
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -321,10 +321,11 @@ frontend	static/daily-stock-parser.js	6			Parser local de planilhas SAPUI5: usa 
 frontend	static/daily-stock.js	11	2		Estoque diario independente do Imperium; importacao por arquivo e historico. */	5202763e802b7213
 frontend	static/desc-analytics-nav.js	2			Submenu de desconexao, independente dos fluxos de baixa existentes. */	06dccb7e8e84c574
 frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
+frontend	static/dominium-theme.css				DOMINIUM workspace and shared interface palette. */	7447f34023ca925a
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			aacea61eaf3eaaa8
+frontend	static/index.html		1			2709a8aa88294e02
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/material-stock-audit.js	15	1			b484bd2f18b0b23e
@@ -397,7 +398,7 @@ tests	tests/test_backlog_status_reload_20261107.cjs	1				b8c6664881c88ae7
 tests	tests/test_backlog_todos_navigation.cjs	2				fe3d1917db6de65e
 tests	tests/test_backlog_ui_deploy_20261031.py		3			8662ffd9dbb14987
 tests	tests/test_backlog_whatsapp_report.js					c136df0853e1647d
-tests	tests/test_build_hostinger_node_release.py	3				8efb9f24f1192e54
+tests	tests/test_build_hostinger_node_release.py	3				b811c43696f427c5
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87
 tests	tests/test_city_scope_integration.py	18				02411a9b3190bb77

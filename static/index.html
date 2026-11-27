@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="/backlog-fora-rota.css?v=20261123-release-1">
   <link rel="stylesheet" href="/all-cities-scope.css?v=20261103-global-1">
   <link rel="stylesheet" href="/close-control.css?v=20261109-mro-ui-1">
+  <link rel="stylesheet" href="/dominium-theme.css?v=20261127-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -112,7 +113,7 @@
       <p class="side-nav-label">Operacao</p>
       <button class="side-nav-item active" id="dashboardModule" type="button">
         <i data-lucide="layout-dashboard" aria-hidden="true"></i>
-        <span><strong>Visao geral</strong><small>Operacao</small></span>
+        <span><strong>Visão geral</strong><small>Operação</small></span>
       </button>
       <button class="side-nav-item" id="ordersModule" type="button">
         <i data-lucide="clipboard-check" aria-hidden="true"></i>
@@ -424,11 +425,10 @@
       <p class="all-ops-disclaimer">Os totais são exibidos somente para fontes confirmadas. Falhas ou fontes indisponíveis não são tratadas como zero. Os contratos TOA são os registros disponíveis na agenda do dia, não todas as atividades do TOA.</p>
     </section>
 
-    <section class="dashboard-workspace" id="dashboardWorkspace" aria-label="Visao geral">
+    <section class="dashboard-workspace" id="dashboardWorkspace" aria-label="Visão geral">
       <header class="workspace-heading dashboard-heading">
         <div>
-          <p class="section-label">PAINEL OPERACIONAL EM TEMPO REAL</p>
-          <h2>Visao geral</h2>
+          <h2>Visão geral</h2>
         </div>
         <span class="dashboard-updated" id="dashboardUpdated">Atualizando agora</span>
       </header>
@@ -445,12 +445,12 @@
           <small>Prontas para tratativa</small>
         </article>
         <article class="dashboard-metric success">
-          <div><span>Baixadas na sessao</span><i data-lucide="circle-check-big" aria-hidden="true"></i></div>
+          <div><span>Baixadas na sessão</span><i data-lucide="circle-check-big" aria-hidden="true"></i></div>
           <strong id="dashboardCompletedCount">0</strong>
           <small>Confirmadas pelo servidor</small>
         </article>
         <article class="dashboard-metric danger">
-          <div><span>Nao baixadas</span><i data-lucide="triangle-alert" aria-hidden="true"></i></div>
+          <div><span>Não baixadas</span><i data-lucide="triangle-alert" aria-hidden="true"></i></div>
           <strong id="dashboardFailureCount">0</strong>
           <small>Exigem nova tentativa</small>
         </article>
@@ -458,11 +458,11 @@
 
       <div class="dashboard-grid">
         <section class="dashboard-panel status-panel">
-          <header><h3>Distribuicao da operacao</h3><span id="dashboardTotalLabel">0 OS</span></header>
+          <header><h3>Distribuição da operação</h3><span id="dashboardTotalLabel">0 OS</span></header>
           <div class="status-distribution">
             <div><span>Em campo</span><div class="distribution-track"><i id="dashboardFieldBar"></i></div><strong id="dashboardFieldLabel">0</strong></div>
             <div><span>Selecionadas</span><div class="distribution-track"><i class="selected-bar" id="dashboardSelectedBar"></i></div><strong id="dashboardSelectedLabel">0</strong></div>
-            <div><span>Nao baixadas</span><div class="distribution-track"><i class="failure-bar" id="dashboardFailureBar"></i></div><strong id="dashboardFailureLabel">0</strong></div>
+            <div><span>Não baixadas</span><div class="distribution-track"><i class="failure-bar" id="dashboardFailureBar"></i></div><strong id="dashboardFailureLabel">0</strong></div>
             <div><span>Baixadas</span><div class="distribution-track"><i class="completed-bar" id="dashboardCompletedBar"></i></div><strong id="dashboardCompletedLabel">0</strong></div>
           </div>
         </section>
@@ -473,7 +473,7 @@
         </section>
 
         <section class="dashboard-panel attention-panel">
-          <header><h3>Atencao operacional</h3><span class="danger-text" id="dashboardAttentionCount">0 pendencias</span></header>
+          <header><h3>Atenção operacional</h3><span class="danger-text" id="dashboardAttentionCount">0 pendências</span></header>
           <div class="attention-list" id="dashboardAttentionList"></div>
         </section>
       </div>
@@ -482,7 +482,7 @@
         <header><h3>Ordens recentes</h3><button class="text-button" id="dashboardOpenOrders" type="button">Ver todas</button></header>
         <div class="table-scroll dashboard-table-scroll">
           <table>
-            <thead><tr><th>OS</th><th>Contrato</th><th>Servico</th><th>Cidade</th><th>Tecnico</th><th>Status</th></tr></thead>
+            <thead><tr><th>OS</th><th>Contrato</th><th>Serviço</th><th>Cidade</th><th>Técnico</th><th>Status</th></tr></thead>
             <tbody id="dashboardRecentBody"></tbody>
           </table>
         </div>

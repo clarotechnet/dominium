@@ -2,9 +2,9 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-27T11:43:08+00:00
-- Source fingerprint: `bbade3153be33f59`
-- Indexed files: 572
+- Generated: 2026-11-27T12:55:58+00:00
+- Source fingerprint: `a2bac95388915b40`
+- Indexed files: 573
 - Indexed symbols: 4726
 - API path references: 583
 
@@ -117,6 +117,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/daily-stock.js` (11 symbols, 2 API paths) - Estoque diario independente do Imperium; importacao por arquivo e historico. */
 - `static/desc-analytics-nav.js` (2 symbols) - Submenu de desconexao, independente dos fluxos de baixa existentes. */
 - `static/disconnection.js` (37 symbols, 10 API paths)
+- `static/dominium-theme.css` - DOMINIUM workspace and shared interface palette. */
 - `static/fflate.browser.min.js` (22 symbols)
 - `static/fflate.LICENSE.txt` - MIT License
 - `static/impeccable.css`

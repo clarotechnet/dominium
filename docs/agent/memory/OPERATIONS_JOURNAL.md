@@ -557,3 +557,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** 46 testes JavaScript e 19 testes Python focados. Consulta real somente leitura validou o isolador 22056394 e o marcador 22065723.
 
 **Próximo passo/pendência:** Conferir o asset e o parser depois de publicar, usando somente leituras. Acompanhar solicitações pendentes pelo relatório sem reenviar.
+
+## 2026-11-27 12:55 UTC — Identidade visual DOMINIUM em preto e vermelho
+
+**Motivo:** Padronizar a interface operacional com a nova paleta e a estrutura compacta da referência do usuário.
+
+**Alterado:** Tema visual compartilhado, menu, cabeçalho e indicadores. A animação de consulta existente usa a paleta nova sem mudança no controlador ou APIs.
+
+**Verificação:** Chromium no desktop e a 390 px, alternância de tema, navegação, fluxo de animação e movimento reduzido. Empacotamento Hostinger.
+
+**Próximo passo/pendência:** Validar o CSS publicado e a entrada do painel após o deploy.
