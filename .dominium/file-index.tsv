@@ -324,7 +324,7 @@ frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			1668b1eec0e84211
+frontend	static/index.html		1			aacea61eaf3eaaa8
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/material-stock-audit.js	15	1			b484bd2f18b0b23e
@@ -339,7 +339,7 @@ frontend	static/stock-analysis-ui.js	13	3		Stock analysis reports: three read-on
 frontend	static/stock-daily-analysis-ui.js	37	14		Daily equipment: independent period/catalog; Atlas QUERY is not its source. */	c0e5347c72f9cf29
 frontend	static/stock-nav.js	7			Navegacao consolidada de Estoque (mantem os modulos existentes). */	3263ee4c4be095a4
 frontend	static/stock-report-preview-ui.js	5	2		The three stock analysis processes have independent, paged workspace views. */	09735f63ebcd8565
-frontend	static/styles.css					14749da8ad85a465
+frontend	static/styles.css					c1ebed8fefc7ab1d
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/vendor/LICENSE.sheetjs.txt				Apache License	4d2a38ac35cda06a
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
@@ -397,7 +397,7 @@ tests	tests/test_backlog_status_reload_20261107.cjs	1				b8c6664881c88ae7
 tests	tests/test_backlog_todos_navigation.cjs	2				fe3d1917db6de65e
 tests	tests/test_backlog_ui_deploy_20261031.py		3			8662ffd9dbb14987
 tests	tests/test_backlog_whatsapp_report.js					c136df0853e1647d
-tests	tests/test_build_hostinger_node_release.py	3				157aef4ebdf049a3
+tests	tests/test_build_hostinger_node_release.py	3				8efb9f24f1192e54
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87
 tests	tests/test_city_scope_integration.py	18				02411a9b3190bb77
