@@ -29,6 +29,8 @@ class HostingerNodeReleaseTests(unittest.TestCase):
             "static/atlas-query-ui.js",
             "static/styles.css",
             "static/dominium-theme.css",
+            "static/workspace-shell.css",
+            "static/workspace-navigation.js",
             "static/motion-ui.js",
             "static/assets/brands/claro-wordmark.png",
             "static/assets/brands/claro-wordmark-filter.svg",

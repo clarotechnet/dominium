@@ -92,7 +92,7 @@ const state = {
                         ? "database"
                       : window.location.hash === "#ordens" || window.location.hash === "#falhas"
                         ? "orders"
-                        : "close",
+                        : "dashboard",
   activeView: window.location.hash === "#falhas" ? "failures" : "orders",
   importTargets: [],
   importTarget: "rn",
@@ -312,6 +312,7 @@ const elements = {
   sidebarToggle: document.querySelector("#sidebarToggle"),
   sidebar: document.querySelector("#primarySidebar"),
   profileTabs: document.querySelector("#profileTabs"),
+  workspaceProfile: document.querySelector("#workspaceProfile"),
   connection: document.querySelector("#connectionStatus"),
   pendingLabel: document.querySelector("#pendingLabel"),
   pendingCount: document.querySelector("#pendingCount"),
@@ -921,6 +922,8 @@ function updateAddress() {
                   ? "criar-os"
                   : state.activeModule === "order-reports"
                     ? "relatorios-os"
+                  : state.activeModule === "commission-reports"
+                    ? "relatorios-comissao"
                   : state.activeModule === "close-control"
                     ? "controle-baixas"
                     : state.activeModule === "close"
@@ -2522,7 +2525,13 @@ function renderProfileTabs() {
     return button;
   });
   elements.profileTabs.replaceChildren(all, ...tabs);
-  // O simbolo do consolidado permanece legivel em todos os temas.
+  if (elements.workspaceProfile && tabs.length) {
+    const options = [new Option("Todas as bases", "all")];
+    state.profiles.forEach((profile) => options.push(new Option(profile.label, profile.key)));
+    elements.workspaceProfile.replaceChildren(...options);
+    elements.workspaceProfile.value = allSelected ? "all" : state.profile;
+    elements.workspaceProfile.disabled = all.disabled;
+  }
 }
 
 async function loadProfiles() {
@@ -7264,6 +7273,7 @@ function render() {
   document.getElementById("descAnalyticsWorkspace").classList.toggle("hidden", state.activeModule !== "descAnalytics");
   if (state.activeModule === "descAnalytics") void loadDescAnalyticsFrame();
   elements.dashboardModule.classList.toggle("active", state.activeModule === "dashboard");
+  document.getElementById("allOperationsModule")?.classList.toggle("active", state.activeModule === "all-operations");
   elements.monitorModule?.classList.toggle("active", state.activeModule === "monitor");
   elements.ordersModule.classList.toggle("active", state.activeModule === "orders");
   document.getElementById("orderReportsModule")?.classList.toggle("active", state.activeModule === "order-reports");
@@ -12659,6 +12669,11 @@ elements.bulkCreateDate.value = localDate();
 elements.refresh.addEventListener("click", () => loadOrders());
 elements.sidebarToggle.addEventListener("click", toggleSidebar);
 elements.dashboardModule.addEventListener("click", () => setModule("dashboard"));
+document.getElementById("allOperationsModule")?.addEventListener("click", () => showAllOperations(true));
+elements.workspaceProfile?.addEventListener("change", ({ target }) => {
+  if (target.value === "all") showAllOperations();
+  else void switchProfile(target.value);
+});
 document.getElementById("disconnectionModule").addEventListener("click", () => setModule("disconnection"));
 document.getElementById("descAnalyticsModule").addEventListener("click", () => setModule("descAnalytics"));
 elements.monitorModule?.addEventListener("click", () => setModule("monitor"));

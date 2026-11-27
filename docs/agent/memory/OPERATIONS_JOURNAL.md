@@ -567,3 +567,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Chromium no desktop e a 390 px, alternância de tema, navegação, fluxo de animação e movimento reduzido. Empacotamento Hostinger.
 
 **Próximo passo/pendência:** Validar o CSS publicado e a entrada do painel após o deploy.
+
+## 2026-11-27 13:11 UTC — Layout de navegação inspirado no protótipo DOMINIUM
+
+**Motivo:** Migrar a estrutura da interface de referência para o painel operacional.
+
+**Alterado:** Menu de altura integral com grupos e gaveta móvel, cabeçalho com seletor de base e busca de módulos, Visão geral na entrada e painel reorganizado em duas colunas. Fluxos e animação existentes reaproveitados.
+
+**Verificação:** Chromium desktop e celular, rotas diretas, navegação, escopo por base e consolidado, tema e animação. Testes de navegação do Backlog e empacotamento.
+
+**Próximo passo/pendência:** Conferir a publicação do painel web.
