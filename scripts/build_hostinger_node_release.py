@@ -21,6 +21,7 @@ RUNTIME_FILES = (
     "commission-report-policy.js",
     "operational-policy.js",
     "operational-relay.js",
+    "daily-orders.js",
     "order-close-proxy.js",
     "confront-policy.js",
     "atlas-query-policy.js",

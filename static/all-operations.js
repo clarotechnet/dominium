@@ -2,13 +2,17 @@
 (function (scope) {
   "use strict";
   const SOURCES = ["imperium", "toa"];
-  const makeRequestJobs = (profiles, date, apiUrl) => profiles.flatMap((p) => [
+  const makeRequestJobs = (profiles, date, apiUrl, scheduled = false) => profiles.flatMap((p) => [
     { key: p.key, source: "imperium",
-      url: apiUrl("/api/orders?status=field&service_type=all&date=" + encodeURIComponent(date), p.key) },
+      url: apiUrl(scheduled ? "/api/orders?snapshot=1" :
+        "/api/orders?status=field&service_type=all&date=" + encodeURIComponent(date), p.key) },
     { key: p.key, source: "toa",
       url: apiUrl("/api/toa-contracts?date=" + encodeURIComponent(date), p.key) },
   ]);
   function validatePayload(source, payload) {
+    if (source === "imperium" && ["waiting", "unavailable"].includes(payload?.snapshot_status)) {
+      throw new Error("Coleta programada ainda sem uma lista confirmada");
+    }
     const key = source === "imperium" ? "orders" : "records";
     if (!Array.isArray(payload?.[key])) throw new Error("Fonte sem dados válidos: " + source);
     return payload[key];
@@ -122,7 +126,7 @@
       imperium: { status: "pending", rows: [], error: "" },
       toa: { status: "pending", rows: [], error: "" } }));
     render();
-    const jobs = makeRequestJobs(context.profiles, date, context.apiUrlForProfile);
+    const jobs = makeRequestJobs(context.profiles, date, context.apiUrlForProfile, date === context.date);
     let next = 0;
     async function worker() {
       while (next < jobs.length && active(id)) {

@@ -20,7 +20,9 @@ assert 'src="/backlog-report.js?v=20261103-whatsapp-1"' in html
 assert 'href="/backlog-analysis.css?v=20261103-image-1"' in html
 assert len(re.findall(r'src="/app\.js\?v=[a-z0-9-]+"', html)) == 1
 assert 'href="/all-cities-scope.css?v=20261103-global-1"' in html
-assert 'src="/stock-nav.js?v=20261103-global-1"' in html
+assert len(re.findall(r'src="/stock-nav\.js\?v=[a-z0-9-]+"', html)) == 1
+stock_menu = html.split('id="stockNavChildren"', 1)[1].split("</div>", 1)[0]
+assert 'id="confrontModule"' in stock_menu
 assert 'src="/stock-daily-analysis-ui.js?v=20261106-atlas-video-3"' in html
 assert 'src="/stock-analysis-ui.js?v=20261103-global-1"' in html
 assert 'src="/stock-report-preview-ui.js?v=20261103-global-1"' in html

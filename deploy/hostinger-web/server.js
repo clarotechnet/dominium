@@ -622,7 +622,7 @@ async function edgeAuthAction(action, body = {}, actorUserId = 0) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 20000);
   try {
-    const requestBody = { action, ...(body || {}) };
+    const requestBody = { ...(body || {}), action };
     if (actorUserId) requestBody.actor_user_id = Number(actorUserId);
     const response = await fetch(DOMINIUM_AUTH_OPS_URL, {
       method: "POST",
@@ -927,8 +927,6 @@ app.get("/api/auth/pending-count", async (_req, res) => {
   }
 });
 
-app.post(/^\/api\/auth\/users\/\d+\/(approve|reject|imperium-identity)$/, proxyOperationalRequest);
-
 app.post(/^\/api\/auth\/users\/\d+\/(approve|reject|imperium-identity)$/, async (req, res) => {
   if (req.dominiumUser?.role !== "admin") {
     return res.status(403).json({ ok: false, error: "Esta acao exige um administrador" });
@@ -986,10 +984,29 @@ const { createDisconnectionMiddleware } = require('./disconnection-proxy');
 app.use('/api/disconnection', createDisconnectionMiddleware({ audit: auditAuth }));
 const { createImportMiddleware } = require('./import-proxy');
 const { createOrderCloseMiddleware } = require('./order-close-proxy');
-const { resolveOperationalRead, restorePrivateJsonContentType, toaLookupFailure } = require('./operational-relay');
+const { fetchScheduledOrders, resolveOperationalRead, restorePrivateJsonContentType, toaLookupFailure } = require('./operational-relay');
+const { createDailyOrders } = require('./daily-orders');
 const { allowedOperationalRead, allowedToaLookup, allowedQualityControl, allowedDailyStock } = require('./operational-policy');
 app.use(['/api/import-targets', '/api/import-history', '/api/imports'], createImportMiddleware());
 app.post(/^\/api\/orders\/[^/]+\/close$/, createOrderCloseMiddleware());
+
+const dailyOrders = createDailyOrders({
+  profiles: Object.keys(PROFILES),
+  fetchOrders: fetchScheduledOrders,
+  onError: (profile, error) => console.warn("DOMINIUM coleta de O.S.", profile, error.message),
+});
+app.get("/api/orders", (req, res, next) => {
+  if (req.query.snapshot !== "1") return next();
+  if (!["admin", "controller", "viewer"].includes(req.dominiumUser?.role)) {
+    return res.status(403).json({ ok: false, error: "Consulta operacional não autorizada" });
+  }
+  const profile = req.query.profile || "natal";
+  if (typeof profile !== "string" || !Object.hasOwn(PROFILES, profile) || (req.query.status || "field") !== "field" ||
+      (req.query.service_type || "all") !== "all") {
+    return res.status(400).json({ ok: false, error: "Lista programada disponível para todas as O.S. em campo por base" });
+  }
+  return res.set("cache-control", "no-store").json(dailyOrders.read(profile));
+});
 
 async function proxyOperationalRequest(req, res, next) {
   const controller = new AbortController();
@@ -1315,4 +1332,5 @@ app.use((req, res, next) => {
 const port = Number(process.env.PORT || 3000);
 app.listen(port, "0.0.0.0", () => {
   console.log("DOMINIUM web listening on " + port);
+  dailyOrders.start();
 });

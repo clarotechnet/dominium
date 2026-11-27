@@ -577,3 +577,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Chromium desktop e celular, rotas diretas, navegação, escopo por base e consolidado, tema e animação. Testes de navegação do Backlog e empacotamento.
 
 **Próximo passo/pendência:** Conferir a publicação do painel web.
+
+## 2026-11-27 13:31 UTC — Lista diária de OS e administração DOMINIUM
+
+**Motivo:** Evitar consulta DataSnap a cada abertura e apresentar módulos administrativos e tema claro consistente.
+
+**Alterado:** Lista de campo por base a cada cinco minutos das 08h à meia-noite, cache volátil autenticado, Query no Estoque, superfícies claras e telas de administração com dados e permissões existentes.
+
+**Verificação:** Testes de janelas de Brasília, renovação, falha, virada do dia, ponte privada, navegação e tema em Chromium, e gate completo.
+
+**Próximo passo/pendência:** Conferir lista e autorização após publicar o painel.

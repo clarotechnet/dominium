@@ -20,7 +20,7 @@
   function refreshGroups() {
     sidebar.querySelectorAll(".side-nav-item:not([aria-controls])").forEach((button) => {
       const active = button.classList.contains("active");
-      if (active) {
+      if (active && !button.hasAttribute("data-sidebar-action")) {
         button.setAttribute("aria-current", "page");
         const group = button.closest("details");
         if (group) group.open = true;
@@ -66,7 +66,7 @@
   function renderSearch() {
     const query = searchable(searchInput.value.trim()).split(/\s+/).filter(Boolean);
     const results = [...sidebar.querySelectorAll(
-      ".side-nav-item:not([aria-controls]):not(.hidden):not([aria-hidden='true']):not(:disabled)",
+      ".side-nav-item:not([aria-controls]):not(.hidden):not([aria-hidden='true']):not(:disabled):not(#sidebarLogout)",
     )].filter((module) => query.every((word) => searchable(module.textContent).includes(word)));
     searchResults.replaceChildren();
     if (!results.length) {

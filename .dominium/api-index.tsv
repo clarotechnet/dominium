@@ -146,6 +146,7 @@ endpoint	path
 /api/toa-live/connect	deploy/hostinger-web/operational-policy.js
 /api/toa-live/status	deploy/hostinger-web/operational-policy.js
 /api/voice/synthesize	deploy/hostinger-web/operational-policy.js
+/api/orders?	deploy/hostinger-web/operational-relay.js
 /api/atlas-query/	deploy/hostinger-web/server.js
 /api/auth/	deploy/hostinger-web/server.js
 /api/auth/bootstrap	deploy/hostinger-web/server.js
@@ -269,6 +270,7 @@ endpoint	path
 /api/failures	static/adhesion-batch.js
 /api/orders?date=	static/adhesion-batch.js
 /api/toa-live/lookup	static/adhesion-batch.js
+/api/orders?snapshot=1	static/all-operations.js
 /api/orders?status=field&service_type=all&date=	static/all-operations.js
 /api/toa-contracts?date=	static/all-operations.js
 /api/atlas-query/jobs	static/atlas-query-ui.js
@@ -392,6 +394,7 @@ endpoint	path
 /api/confront/jobs?id=1	tests/test_confront_http.py
 /api/confront/status	tests/test_confront_http.py
 /api/orders	tests/test_confront_http.py
+/api/orders	tests/test_daily_orders.cjs
 /api/stock/daily	tests/test_daily_stock.cjs
 /api/disconnection/	tests/test_desc_review_proxy.py
 /api/disconnection/../session	tests/test_desc_review_proxy.py

@@ -33,18 +33,19 @@ tooling-deploy	deploy/hostinger-web/atlas-query-policy.js	1	2			5920be286b6b2e0f
 tooling-deploy	deploy/hostinger-web/backlog-proxy.js	3	1	1		6bc78dbcfdb73ea8
 tooling-deploy	deploy/hostinger-web/commission-report-policy.js	1				041563d6afe915ae
 tooling-deploy	deploy/hostinger-web/confront-policy.js	1	3			9834dd541ca9ff51
+tooling-deploy	deploy/hostinger-web/daily-orders.js	6				bba47c56606a5b0c
 tooling-deploy	deploy/hostinger-web/disconnection-policy.js	1	1			b000d7e6a37d1516
 tooling-deploy	deploy/hostinger-web/disconnection-proxy.js	4				95e9d600d86bae3d
 tooling-deploy	deploy/hostinger-web/import-policy.js	1	4			aee7b48926d7c1a7
 tooling-deploy	deploy/hostinger-web/import-proxy.js	2	1			dce1b677951e99de
 tooling-deploy	deploy/hostinger-web/operational-policy.js	13	48			c226c85143e3767a
-tooling-deploy	deploy/hostinger-web/operational-relay.js	4				4974ad9ebe20168e
+tooling-deploy	deploy/hostinger-web/operational-relay.js	5	1			9c654c0c1bc90350
 tooling-deploy	deploy/hostinger-web/order-close-proxy.js	2				e8108812d88d552f
 tooling-deploy	deploy/hostinger-web/order-report-policy.js	1				d634fc2aab4a6d9f
 tooling-deploy	deploy/hostinger-web/package-lock.json					891bf4bcfe97f467
 tooling-deploy	deploy/hostinger-web/package.json					2a416a1cb0bd6b95
 tooling-deploy	deploy/hostinger-web/protocol_templates.json					dea41cc769da2970
-tooling-deploy	deploy/hostinger-web/server.js	41	38	1		3902d9de63ca3af8
+tooling-deploy	deploy/hostinger-web/server.js	41	38	1		622c44da53424fb6
 tooling-deploy	deploy/hostinger-web/stock-analysis-policy.js	1	6			ec489159895ad366
 tooling-deploy	deploy/legacy-vps/README-VPS.md				DOMINIUM - deploy web no Hostinger VPS	8462550912b037ce
 tooling-deploy	deploy/README.md				Deploy do DOMINIUM	e3974a0970f9716e
@@ -87,7 +88,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	9f0eb0675229b652
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	90b401026072e09f
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -273,7 +274,7 @@ tooling-deploy	scripts/agent_memory.py	13		1	DOMINIUM portable agent memory: Git
 tooling-deploy	scripts/agent_memory_mcp.py	4			Portable MCP stdio entrypoint for DOMINIUM read/search/record memory.	a198c9aa044acd44
 tooling-deploy	scripts/bootstrap_admin.py	2				578b01fcd9f2bce3
 tooling-deploy	scripts/build_hostinger_frontend.py	3				376de6598486d1b3
-tooling-deploy	scripts/build_hostinger_node_release.py	4				cccea0f3a3236239
+tooling-deploy	scripts/build_hostinger_node_release.py	4				bc4bbe82dd27d3c9
 tooling-deploy	scripts/build_web_release.py	8		1		12c3694527509ac1
 tooling-deploy	scripts/check_supabase_ready.py	1				ef416758e6102aca
 tooling-deploy	scripts/configure_imperium_credentials.py	2				ded6c45e67597ae0
@@ -289,7 +290,7 @@ tooling-deploy	scripts/install_atlas_session_watchdog.ps1			2		7b17ecaf06189449
 tooling-deploy	scripts/install_confront_relay.py	3	1		Minimal, backup-first insertion of the confront read-only API into live DESC relay.	4ae20a35e3eeb9d3
 tooling-deploy	scripts/probe_atlas_synthetic.py				Synthetic Atlas queue smoke test. NEVER prints records, tokens or request IDs.	865b81e754d5a762
 tooling-deploy	scripts/probe_used_equipment_report.py	1			Read-only DataSnap discovery. Does not download any report or execute SQL.	ed0fd4dbc5bb1986
-tooling-deploy	scripts/quality_gate.py	5				05737aae127d6176
+tooling-deploy	scripts/quality_gate.py	5				4704ad96f3f63121
 tooling-deploy	scripts/query_agent_context.py	12		1		b7d58cddd31e16f2
 tooling-deploy	scripts/restart_confront_relay.ps1					de8c58415028c25c
 tooling-deploy	scripts/smoke_confront_cloudflare.mjs		3		Verify private Worker route with the same Node fetch transport used by Hostinger. */	5d9320441c44eea2
@@ -302,7 +303,7 @@ toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor prot
 frontend	static/adhesion-batch.css					d4d12428bcc10df7
 frontend	static/adhesion-batch.js	36	4		Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */	eb07d50d0eae37a4
 frontend	static/all-cities-scope.css				DOMINIUM: "Todos" is a cross-module read-only scope, not an operational profile. */	d9fde79cee63719c
-frontend	static/all-operations.js	14	2		Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */	2bc9ea7f772fad01
+frontend	static/all-operations.js	14	3		Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */	b894d76020be5578
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
 frontend	static/backlog-analysis.css					1adb5fde1c5b6ead
 frontend	static/backlog-analysis.js	18	7		DOMINIUM > Recursos > Análise Backlog. Existing request() adds CSRF/session. */	9f83d2bc7de02eb5
@@ -321,11 +322,12 @@ frontend	static/daily-stock-parser.js	6			Parser local de planilhas SAPUI5: usa 
 frontend	static/daily-stock.js	11	2		Estoque diario independente do Imperium; importacao por arquivo e historico. */	5202763e802b7213
 frontend	static/desc-analytics-nav.js	2			Submenu de desconexao, independente dos fluxos de baixa existentes. */	06dccb7e8e84c574
 frontend	static/disconnection.js	37	10			d0a7123c5e6e47b4
+frontend	static/dominium-light.css				Light surfaces for legacy modules that still carry dark colors. */	f3a4c9eeb7399966
 frontend	static/dominium-theme.css				DOMINIUM workspace and shared interface palette. */	7447f34023ca925a
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			d6d2c296bb780b82
+frontend	static/index.html		1			81d51cba6785f408
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/material-stock-audit.js	15	1			b484bd2f18b0b23e
@@ -338,13 +340,13 @@ frontend	static/query-import-ui.js	5			DOMINIUM Pendente — import/query workfl
 frontend	static/query-import.js	16			DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.	ababf90a8a393c7f
 frontend	static/stock-analysis-ui.js	13	3		Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */	b1919e4fb8a8da41
 frontend	static/stock-daily-analysis-ui.js	37	14		Daily equipment: independent period/catalog; Atlas QUERY is not its source. */	c0e5347c72f9cf29
-frontend	static/stock-nav.js	7			Navegacao consolidada de Estoque (mantem os modulos existentes). */	3263ee4c4be095a4
+frontend	static/stock-nav.js	7			Navegacao consolidada de Estoque (mantem os modulos existentes). */	c73ef6e529375195
 frontend	static/stock-report-preview-ui.js	5	2		The three stock analysis processes have independent, paged workspace views. */	09735f63ebcd8565
 frontend	static/styles.css					c1ebed8fefc7ab1d
 frontend	static/theme-init.js					97eb92ef899f8dcf
 frontend	static/vendor/LICENSE.sheetjs.txt				Apache License	4d2a38ac35cda06a
-frontend	static/workspace-navigation.js	5			Workspace navigation delegates to the existing module buttons. */	9b18946172e3e6a6
-frontend	static/workspace-shell.css				Navigation frame shared by the existing operational workspaces. */	460f64a2b6970848
+frontend	static/workspace-navigation.js	5			Workspace navigation delegates to the existing module buttons. */	d895da281564e4da
+frontend	static/workspace-shell.css				Navigation frame shared by the existing operational workspaces. */	c8e89f736f6773b8
 frontend	static/workspace.css				Shared workspace: the original Technet image, floating glass and Dominium red. */	d93cb7a305db2dd3
 imperium	stock_inventory.py	21			DOMINIUM | MAPA DE RESPONSABILIDADE	019fbb8f33d571b8
 shared	stock_pdf.py	28			Geracao de relatorios PDF de estoque sem dependencias externas.	fa8e4d89fe978fe6
@@ -398,9 +400,9 @@ tests	tests/test_backlog_hostinger_proxy.js	3	9			0ffdbca1cc822dd4
 tests	tests/test_backlog_report_image.js	1				b8b66a90f2cb8ddd
 tests	tests/test_backlog_status_reload_20261107.cjs	1				b8c6664881c88ae7
 tests	tests/test_backlog_todos_navigation.cjs	2				fe3d1917db6de65e
-tests	tests/test_backlog_ui_deploy_20261031.py		3			8662ffd9dbb14987
+tests	tests/test_backlog_ui_deploy_20261031.py		3			b5db0693cf1d527d
 tests	tests/test_backlog_whatsapp_report.js					c136df0853e1647d
-tests	tests/test_build_hostinger_node_release.py	3				cfec2db3bb6f8289
+tests	tests/test_build_hostinger_node_release.py	3				1b975c02f1c044b4
 tests	tests/test_build_web_release.py	4				eabc3ef6da8765dc
 tests	tests/test_bulk_orders.py	6				f1b4e9b58dcc0d87
 tests	tests/test_city_scope_integration.py	18				02411a9b3190bb77
@@ -415,6 +417,7 @@ tests	tests/test_configure_imperium_credentials.py	4				931f61ff4157fbfa
 tests	tests/test_confront_frontend.js	4	3			7d19b6c801d8072b
 tests	tests/test_confront_http.py	15	8		Authorization, actor isolation and passive confrontation API regression tests.	2e7e3e3b64652874
 tests	tests/test_confront_job_runner.py	19			Durability, idempotency and recovery tests; synthetic providers only.	324d0850c76d1131
+tests	tests/test_daily_orders.cjs		1			6f54d90b0536c35b
 tests	tests/test_daily_stock.cjs	4	1			3d0a0c1bef47dc99
 tests	tests/test_daily_stock_service.py	7			Testes isolados sem gravação externa.	f3c6ece469385641
 tests	tests/test_desc_analytics_frontend.py	11			Contratos de frontend da Visão Claro incorporada ao DOMINIUM.	02c968e46e1d0105

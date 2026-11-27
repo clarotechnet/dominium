@@ -1,0 +1,168 @@
+/* Light surfaces for legacy modules that still carry dark colors. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --card-bg: var(--surface);
+  --border-color: var(--line);
+  --green-soft: #e8f5ed;
+  --amber-soft: #fff2db;
+  --red-soft: #fbe9e9;
+  --info: #245d8a;
+  --danger: var(--red);
+  --warning: var(--amber);
+}
+
+:root[data-theme="light"] :is(main, dialog:not(.auth-gate)) {
+  color-scheme: light;
+}
+
+:root[data-theme="light"] main :is(
+  .summary, .stock-summary, .import-summary, .toolbar, .stock-toolbar, .stock-filters,
+  .import-toolbar, .bulk-create-form, .close-toolbar, .report-toolbar, .database-toolbar,
+  .history-toolbar, .table-scroll, .table-section, .stock-table-section, .bulk-create-table-section,
+  .import-preview-section, .view-tabs, .runbar, .fixed-code, .intelligence-panel,
+  .toa-automation, .automation-test-controls, .automation-test-review, .automation-result-card,
+  .history-import-audit, .history-audit-row, .all-ops-card, .all-ops-metric, .all-ops-results,
+  .desc-inbox, .desc-detail, .desc-equipment, .desc-operation, .desc-message,
+  .semi-auto-panel, .semi-auto-window-control, .manual-create-card, .close-queue-panel,
+  .close-detail-panel, .close-equipment-summary, .history-panel, .history-summary-card,
+  .database-panel, .account-shell, .account-current, .account-attribution > div, .account-user,
+  .import-dropzone, .monitor-csv-source, .monitor-attention-stage, .monitor-route-console,
+  .stock-analysis-subtabbar, .server-log-panel, .server-log-panel pre, .import-selected-file,
+  .compact-search, .close-equipment-summary > div, .close-preview > div, thead
+) {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] main :is(
+  .metric strong, .fixed-code strong, .import-summary strong, .table-section h3,
+  .stock-table-section h3, .manual-create-card h3, .close-queue-panel h3,
+  .close-detail-panel h3, .close-equipment-summary h4, .history-panel h3,
+  .history-summary-card h3, .history-audit-row-stats b, .desc-detail-heading h3,
+  .desc-inbox-heading h3, .desc-section h4
+) { color: var(--ink); }
+
+:root[data-theme="light"] main :is(
+  .metric small, .metric span, .fixed-code > span, .import-summary span, .field span,
+  .search-field span, .compact-field span, .loading-state, .empty-state, .intelligence-empty,
+  .desc-updated, .desc-batch small, .desc-batch time, .desc-detail-heading p:not(.section-label),
+  .desc-detail-heading p span, .desc-message small, .desc-equipment small, .desc-muted
+) { color: var(--muted); }
+
+:root[data-theme="light"] main :is(.metric.success-metric strong, .metric .success-text) {
+  color: var(--green);
+}
+
+:root[data-theme="light"] :is(main, .dominium-dialog, .workspace-search-dialog)
+  :is(input:not([type="checkbox"], [type="radio"], [type="range"]), textarea, select) {
+  color: var(--ink);
+  background: var(--surface-raised);
+  border-color: var(--line-strong);
+  box-shadow: none;
+}
+
+:root[data-theme="light"] :is(main, .dominium-dialog) :is(input, textarea)::placeholder {
+  color: var(--muted);
+}
+:root[data-theme="light"] select option { color: var(--ink); background: var(--surface); }
+:root[data-theme="light"] :is(input[type="checkbox"], input[type="radio"]) {
+  accent-color: var(--accent-hi);
+}
+
+:root[data-theme="light"] main :is(
+  .view-tab, .code-option, .history-audit-row-stats span, .desc-search,
+  .desc-metrics article, .semi-auto-window-list > *, .all-ops-filter-tabs, .distribution-track
+) {
+  color: var(--ink);
+  background: var(--surface-raised);
+  border-color: var(--line);
+}
+:root[data-theme="light"] main :is(.view-tab.active, .code-option.active, .desc-batch.selected) {
+  color: var(--accent-hi);
+  background: var(--accent-soft);
+  border-color: var(--accent-hi);
+}
+:root[data-theme="light"] main .desc-batch:hover { background: var(--surface-hover); }
+:root[data-theme="light"] main .desc-contract-icon { color: var(--accent-hi); background: var(--accent-soft); }
+:root[data-theme="light"] main .desc-alert { color: var(--amber); background: var(--amber-soft); }
+:root[data-theme="light"] main .desc-alert.soft { color: var(--info); background: var(--surface-raised); }
+
+:root[data-theme="light"] main .toa-live-session {
+  color: var(--muted);
+  background: var(--surface-raised);
+}
+:root[data-theme="light"] main .toa-live-session.online { color: var(--green); }
+:root[data-theme="light"] main .toa-live-session.busy { color: var(--amber); }
+:root[data-theme="light"] main .toa-live-session.error { color: var(--red); }
+
+:root[data-theme="light"] :is(
+  .dominium-dialog, .stock-writeoff-dialog, .desc-photo-dialog, .desc-photo-heading, .terms-dialog, .terms-shell,
+  .terms-content section, .terms-intro, .account-dialog, .account-dialog .account-shell,
+  .account-dialog .account-current, .account-dialog .account-attribution > div,
+  .desc-tech-dialog, .serial-owner-details, .serial-owner-serial, .serial-owner-route,
+  .serial-owner-loading, .installer-move-summary, .installer-move-orders,
+  .serialized-transfer-equipment, .semi-auto-contract-dialog, .semi-auto-skipped-dialog
+) {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line);
+}
+:root[data-theme="light"] :is(.dominium-dialog, .desc-tech-dialog) :is(h2, h3) { color: var(--ink); }
+:root[data-theme="light"] :is(.dominium-dialog, .desc-tech-dialog) p { color: var(--muted); }
+:root[data-theme="light"] :is(.terms-dialog, .account-dialog) :is(h2, h3, strong) { color: var(--ink); }
+:root[data-theme="light"] :is(.terms-dialog, .account-dialog) :is(p, small) { color: var(--muted); }
+
+:root[data-theme="light"] .operation-orb-hud {
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .14);
+}
+:root[data-theme="light"] .operation-orb-hud::before { opacity: .4; }
+:root[data-theme="light"] .operation-orb-hud :is(.operation-orb-label, .operation-orb-detail) { color: var(--ink); }
+:root[data-theme="light"] .operation-orb-eyebrow { color: var(--accent-hi); }
+
+:root[data-theme="light"] #closeControlWorkspace { color: var(--ink); }
+:root[data-theme="light"] #closeControlWorkspace :is(
+  .cc-btn, .cc-metric, .cc-note, .cc-table-wrap, .cc-report, .cc-city, .cc-city-item,
+  .cc-worker-section, .cc-worker-metric, .cc-product-card, input, select
+) {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line-strong);
+}
+:root[data-theme="light"] #closeControlWorkspace :is(
+  .cc-eyebrow, .cc-subtle, .cc-toolbar label, .cc-demo-actions label, .cc-metric span, .cc-metric small,
+  .cc-foot, .cc-empty, .cc-city-empty, .cc-city-item p, .cc-worker-metric span, .cc-product-card small
+) { color: var(--muted); }
+:root[data-theme="light"] #closeControlWorkspace :is(td, .cc-city-heading h3, .cc-city-item h4) {
+  color: var(--ink);
+  border-bottom-color: var(--line);
+}
+:root[data-theme="light"] #closeControlWorkspace :is(.cc-city-count, .cc-city-state, .cc-badge) {
+  color: var(--ink);
+  background: var(--surface-raised);
+}
+:root[data-theme="light"] #closeControlWorkspace :is(.cc-city-item.review, .cc-city-count.review, .cc-badge.cc-review, .cc-safe) {
+  color: var(--amber);
+  background: var(--amber-soft);
+}
+:root[data-theme="light"] #closeControlWorkspace :is(.cc-city-item.confirmed, .cc-city-count.confirmed, .cc-badge.cc-ready) {
+  color: var(--green);
+  background: var(--green-soft);
+}
+:root[data-theme="light"] #closeControlWorkspace :is(.cc-city-item.active, .cc-city-count.active, .cc-city-state.active) {
+  color: var(--info);
+  background: #e7f2fa;
+}
+:root[data-theme="light"] #closeControlWorkspace .cc-city-head {
+  color: var(--accent-hi);
+  background: var(--accent-soft);
+}
+:root[data-theme="light"] #closeControlWorkspace .cc-city[data-city="mossoro"] .cc-city-head {
+  background: #f8d7d7;
+}
+:root[data-theme="light"] #closeControlWorkspace .cc-btn:hover:not(:disabled) {
+  color: var(--ink);
+  background: var(--surface-hover);
+}

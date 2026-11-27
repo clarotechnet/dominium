@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-27T13:12:03+00:00",
+  "generated_at": "2026-11-27T13:32:16+00:00",
   "schema": 2,
-  "source_fingerprint": "c7268f20b043797c4a58329b56145a4894799b5dd3e5508a554fff895f4792d1",
+  "source_fingerprint": "5e9d5d73f28bb31cb4251e498fb5898beaf4dfaa13adb3b123bf05c5e902b69c",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -789,6 +789,19 @@
       "symbol_count": 1
     },
     {
+      "path": "deploy/hostinger-web/daily-orders.js",
+      "category": "tooling-deploy",
+      "bytes": 2855,
+      "sha256": "bba47c56606a5b0c98bbc1865922bbd3e4a919df3eafdf327c7f598b55d9fac2",
+      "summary": "",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 6
+    },
+    {
       "path": "deploy/hostinger-web/disconnection-policy.js",
       "category": "tooling-deploy",
       "bytes": 1051,
@@ -919,17 +932,19 @@
     {
       "path": "deploy/hostinger-web/operational-relay.js",
       "category": "tooling-deploy",
-      "bytes": 4322,
-      "sha256": "4974ad9ebe20168e59e9871bef6a973cb4fe7f7fe855e006352a7c865ed5193c",
+      "bytes": 5147,
+      "sha256": "9c654c0c1bc90350f0e1d9e0758decbb6aa531ae05f48a35ca3d9190a530f08b",
       "summary": "",
       "imports": [],
-      "endpoints": [],
+      "endpoints": [
+        "/api/orders?"
+      ],
       "env_vars": [
         "DOMINIUM_DESC_REVIEW_TOKEN"
       ],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 4
+      "symbol_count": 5
     },
     {
       "path": "deploy/hostinger-web/order-close-proxy.js",
@@ -1001,8 +1016,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 45515,
-      "sha256": "3902d9de63ca3af82c213d60a7079628377fd6fe958b2b2af4e85a871ced8453",
+      "bytes": 46430,
+      "sha256": "622c44da53424fb63eea99d62a09014107a7db6a6b3cf2c9fcd12a04f2222052",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1673,8 +1688,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 40726,
-      "sha256": "9f0eb0675229b652728e376db008a38d44c7569238d188a1ebfff4a9cd2649a2",
+      "bytes": 41371,
+      "sha256": "90b401026072e09fcd07a2b1be0fc885aac9c2db2fca3972551479ee1c8a02cd",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -5169,8 +5184,8 @@
     {
       "path": "scripts/build_hostinger_node_release.py",
       "category": "tooling-deploy",
-      "bytes": 4959,
-      "sha256": "cccea0f3a32362396a91480557c3f90281c180e6216790264d17de944f95a332",
+      "bytes": 4982,
+      "sha256": "bc4bbe82dd27d3c93531f78dd6f89d76fb980d6ac195288210fdbe600bc75393",
       "summary": "",
       "imports": [
         "__future__",
@@ -5496,8 +5511,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 7120,
-      "sha256": "05737aae127d6176a803f5185a7150ac35492c1fc7af420597639c93fcabc776",
+      "bytes": 7166,
+      "sha256": "4704ad96f3f63121310f619a2fd89ecdd9f273e24ab1edde6a0a4d4fe43a4a16",
       "summary": "",
       "imports": [
         "__future__",
@@ -5732,11 +5747,12 @@
     {
       "path": "static/all-operations.js",
       "category": "frontend",
-      "bytes": 8197,
-      "sha256": "2bc9ea7f772fad0132b5f59088a6568d11c9a3ec3f38e7a8144ff03c4b956213",
+      "bytes": 8465,
+      "sha256": "b894d76020be55780e5be71ab56607aa5803a249eb4de43a1c3931013e4888fa",
       "summary": "Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */",
       "imports": [],
       "endpoints": [
+        "/api/orders?snapshot=1",
         "/api/orders?status=field&service_type=all&date=",
         "/api/toa-contracts?date="
       ],
@@ -6014,6 +6030,19 @@
       "symbol_count": 37
     },
     {
+      "path": "static/dominium-light.css",
+      "category": "frontend",
+      "bytes": 7894,
+      "sha256": "f3a4c9eeb7399966c2c46b6c3807f4cd76bb6b99924a5931dab33b8b1e570d8f",
+      "summary": "Light surfaces for legacy modules that still carry dark colors. */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
       "path": "static/dominium-theme.css",
       "category": "frontend",
       "bytes": 10386,
@@ -6068,8 +6097,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 189319,
-      "sha256": "d6d2c296bb780b82ca354659db2340a50824c4c2a76f398e68fce0a9edaa7f86",
+      "bytes": 193202,
+      "sha256": "81d51cba6785f4081556e48d0ff91dca01cb2b0af29b56c626d1fddf2b7c8f0f",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6264,8 +6293,8 @@
     {
       "path": "static/stock-nav.js",
       "category": "frontend",
-      "bytes": 5666,
-      "sha256": "3263ee4c4be095a4d8ab443f7d7f2cc0dffb75afefd41eb69990cbf6ab44dcee",
+      "bytes": 5756,
+      "sha256": "c73ef6e52937519546960291eff131d8ba3ade05468fea7acb29d71a53d49908",
       "summary": "Navegacao consolidada de Estoque (mantem os modulos existentes). */",
       "imports": [],
       "endpoints": [],
@@ -6332,8 +6361,8 @@
     {
       "path": "static/workspace-navigation.js",
       "category": "frontend",
-      "bytes": 4417,
-      "sha256": "9b18946172e3e6a6825f6f87c8e8d19ca9d33b146a9b9378c482e2863761d731",
+      "bytes": 4484,
+      "sha256": "d895da281564e4da717468514f36adcdbd3c1725ff2fedbf1290951f5d61f288",
       "summary": "Workspace navigation delegates to the existing module buttons. */",
       "imports": [],
       "endpoints": [],
@@ -6345,8 +6374,8 @@
     {
       "path": "static/workspace-shell.css",
       "category": "frontend",
-      "bytes": 11430,
-      "sha256": "460f64a2b69708481ce2e7a0af9a97569dd39bd16814b6f4c5cb6ae18821f136",
+      "bytes": 13216,
+      "sha256": "c8e89f736f6773b804e9fb2eee9b660d42f5708a53b01bfd2ad667f6876b1310",
       "summary": "Navigation frame shared by the existing operational workspaces. */",
       "imports": [],
       "endpoints": [],
@@ -7299,8 +7328,8 @@
     {
       "path": "tests/test_backlog_ui_deploy_20261031.py",
       "category": "tests",
-      "bytes": 4330,
-      "sha256": "8662ffd9dbb149878d818d4a103d701051ab83c2c4e1ab5beeff6858536bcbb5",
+      "bytes": 4466,
+      "sha256": "b5db0693cf1d527d7f54f08649d89bbbe40cb8f89374b2e5626d1f339ad34cda",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -7329,8 +7358,8 @@
     {
       "path": "tests/test_build_hostinger_node_release.py",
       "category": "tests",
-      "bytes": 1941,
-      "sha256": "cfec2db3bb6f8289610e9cbd8026f618252157e4ed216d7e4ea514cf6e9e9712",
+      "bytes": 2013,
+      "sha256": "1b975c02f1c044b4bbc489330c378c81a8ee6d5780f19d74b6058ffc4b6edbbb",
       "summary": "",
       "imports": [
         "pathlib",
@@ -7616,6 +7645,21 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 19
+    },
+    {
+      "path": "tests/test_daily_orders.cjs",
+      "category": "tests",
+      "bytes": 3677,
+      "sha256": "6f54d90b0536c35bcddd81cd5042c02c7840d3c3df8bf976e0b8bc3018c299d2",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/orders"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
     },
     {
       "path": "tests/test_daily_stock.cjs",
