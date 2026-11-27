@@ -1,4 +1,4 @@
-/* The three stock analysis processes have independent, paged workspace views. */
+/* Stock analysis processes have independent workspace views. */
 (() => {
   "use strict";
   const byId=id=>document.getElementById(id);
@@ -8,8 +8,8 @@
   let selected="query";
   const title={query:"Query",suspeitos:"Suspects"};
   function displayTab(name){
-    if(!["query","equipamentos","suspeitos"].includes(name))return;
-    if(state.activeModule==="stock" && state.allCities && name!=="equipamentos"){
+    if(!["query","equipamentos","suspeitos","miscelaneas"].includes(name))return;
+    if(state.activeModule==="stock" && state.allCities && !["equipamentos","miscelaneas"].includes(name)){
       // Nunca exibir QUERY ou Suspeitos da cidade operacional anterior como dados consolidados.
       return displayTab("equipamentos");
     }
@@ -24,6 +24,8 @@
     });
     if(name==="equipamentos"){
       byId("stockDailyAnalysisOpen")?.click();
+    }else if(name==="miscelaneas"){
+      document.dispatchEvent(new Event("dominium:misc-open"));
     }else{void loadLatest(name);}
   }
   function draw(kind,data){
@@ -101,7 +103,10 @@
     byId("stock"+key+"Prev")?.addEventListener("click",()=>void showPage(kind,stateByKind[kind].page-1));
     byId("stock"+key+"Next")?.addEventListener("click",()=>void showPage(kind,stateByKind[kind].page+1));
   }
-  byId("stockReportsRefresh")?.addEventListener("click",()=>{if(selected!=="equipamentos")void loadLatest(selected);});
+  byId("stockReportsRefresh")?.addEventListener("click",()=>{
+    if(selected==="miscelaneas")document.dispatchEvent(new Event("dominium:misc-refresh"));
+    else if(selected!=="equipamentos")void loadLatest(selected);
+  });
   document.addEventListener("dominium:stock-report-ready",event=>{
     if(event.detail?.kind===selected)void loadLatest(selected);
   });

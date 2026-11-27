@@ -2,11 +2,11 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-27T19:31:33+00:00
-- Source fingerprint: `b4f8a1efe6a80a23`
-- Indexed files: 579
-- Indexed symbols: 4751
-- API path references: 587
+- Generated: 2026-11-27T20:12:40+00:00
+- Source fingerprint: `1843505a27d925fb`
+- Indexed files: 583
+- Indexed symbols: 4820
+- API path references: 597
 
 ## Navigation rule
 
@@ -85,7 +85,7 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `integrations/serial_consult/imperium_atlas_video.py` (11 symbols, 1 API paths) - Stage 3: verified read-only Atlas lookups, resumable in Dominium Supabase.
 - `integrations/serial_consult/imperium_serial_treatment.py` (12 symbols, 1 API paths) - Second, explicit stage of daily Imperium equipment workflow: read-only serial treatment.
 - `integrations/serial_consult/imperium_source_http.py` (6 symbols, 3 API paths) - Source-specific Imperium used-equipment period extraction with local history.
-- `integrations/serial_consult/imperium_supabase_live.py` (19 symbols, 1 API paths) - Live Imperium -> normalized, versioned Supabase snapshots; zero Excel dependency.
+- `integrations/serial_consult/imperium_supabase_live.py` (21 symbols, 1 API paths) - Live Imperium -> normalized, versioned Supabase snapshots; zero Excel dependency.
 - `manual_orders.py` (7 symbols, 1 DataSnap methods) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `native_orders.py` (16 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
 - `serialized_transfer.py` (7 symbols) - DOMINIUM | MAPA DE RESPONSABILIDADE
@@ -135,8 +135,9 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/query-import.js` (16 symbols) - DOMINIUM: browser-only CSV/XLSX reader for Atlas equipment query exports.
 - `static/stock-analysis-ui.js` (13 symbols, 3 API paths) - Stock analysis reports: three read-only jobs reusing last verified Atlas QUERY. */
 - `static/stock-daily-analysis-ui.js` (37 symbols, 14 API paths) - Daily equipment: independent period/catalog; Atlas QUERY is not its source. */
+- `static/stock-misc-dashboard.js` (42 symbols, 2 API paths)
 - `static/stock-nav.js` (7 symbols) - Navegacao consolidada de Estoque (mantem os modulos existentes). */
-- `static/stock-report-preview-ui.js` (5 symbols, 2 API paths) - The three stock analysis processes have independent, paged workspace views. */
+- `static/stock-report-preview-ui.js` (5 symbols, 2 API paths) - Stock analysis processes have independent workspace views. */
 - `static/styles.css`
 - `static/theme-init.js`
 - `static/vendor/LICENSE.sheetjs.txt` - Apache License
@@ -212,10 +213,10 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 
 ## Indexed areas not expanded here
 
-- shared: 173 files
+- shared: 174 files
 - tooling-deploy: 53 files
 - docs: 53 files
-- tests: 181 files
+- tests: 183 files
 
 ## Search indexes
 

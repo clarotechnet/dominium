@@ -500,3 +500,27 @@ Alterações preparadas para commit (3 arquivos). Para motivação e resultado c
 - `static/adhesion-batch.js`
 - `static/index.html`
 - `tests/test_adhesion_batch.cjs`
+
+## 2026-11-27 | staged:02308dcff18c861c
+
+Alterações preparadas para commit (19 arquivos). Para motivação e resultado consulte a mensagem do commit e OPERATIONS_JOURNAL.md.
+
+- `deploy/hostinger-web/server.js`
+- `deploy/hostinger-web/stock-analysis-policy.js`
+- `docs/agent/memory/OPERATIONS_JOURNAL.md`
+- `integrations/import_bridge/worker.mjs`
+- `integrations/import_bridge/worker.test.mjs`
+- `integrations/serial_consult/desc_review_relay.py`
+- `integrations/serial_consult/imperium_supabase_live.py`
+- `integrations/serial_consult/miscellaneous_dashboard.py`
+- `integrations/serial_consult/stock_analysis_http.py`
+- `integrations/serial_consult/used_equipment_live_datasnap.py`
+- `scripts/quality_gate.py`
+- `static/index.html`
+- `static/stock-misc-dashboard.js`
+- `static/stock-report-preview-ui.js`
+- `static/styles.css`
+- `tests/test_backlog_ui_deploy_20261031.py`
+- `tests/test_imperium_supabase_live.py`
+- `tests/test_miscellaneous_dashboard.py`
+- `tests/test_stock_misc_dashboard.cjs`

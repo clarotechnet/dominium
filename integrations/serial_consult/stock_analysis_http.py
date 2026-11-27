@@ -29,6 +29,7 @@ from imperium_atlas_video import AtlasVideoService, route_for as parse_atlas_vid
 from report_sheet_preview import snapshot_page
 from material_stock_audit import MaterialStockAudit, route_for as parse_material_audit_route
 from technician_stock_snapshots import TechnicianStockSnapshots
+from miscellaneous_dashboard import MiscDashboard, route_for as parse_misc_route
 from xml.sax.saxutils import escape
 
 # These are the stable report column labels, not a dependency on the Atlas
@@ -66,6 +67,9 @@ def filtered_query_records(records):
 
 
 def route_for(method: str, target: str):
+    misc = parse_misc_route(method, target)
+    if misc is not None:
+        return "misc", misc
     material_audit = parse_material_audit_route(method, target)
     if material_audit is not None:
         return "material_audit", material_audit
@@ -306,6 +310,7 @@ class StockAnalysisService:
               error TEXT NOT NULL DEFAULT '', summary TEXT NOT NULL DEFAULT '{}')""")
             con.execute("CREATE INDEX IF NOT EXISTS idx_report_actor ON jobs(actor, created_at DESC)")
             con.execute("UPDATE jobs SET state='queued' WHERE state='processing'")
+        self.misc_dashboard=MiscDashboard(self._connect)
         self.thread=None
         if start_worker:
             self.thread=threading.Thread(target=self._work,daemon=True,name="stock-reports")
@@ -348,6 +353,8 @@ class StockAnalysisService:
         if route is None:return 404,{"ok":False,"error":"Rota nao permitida"},None
         if not ACTOR.fullmatch(actor or ""):return 403,{"ok":False,"error":"Operador invalido"},None
         action,argument=route
+        if action=="misc":
+            return self.misc_dashboard.handle(*argument, actor, body)
         if action=="material_audit":
             return self.material_audit.handle(*argument, actor, body)
         if action=="daily_catalog":

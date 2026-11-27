@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-27T19:31:33+00:00",
+  "generated_at": "2026-11-27T20:12:40+00:00",
   "schema": 2,
-  "source_fingerprint": "b4f8a1efe6a80a23d228e0aa35786b7161f80f48a931c44d6f74804f7a1ecfc5",
+  "source_fingerprint": "1843505a27d925fbbf98381f1233b5291593f4ff9056ee60936d279db8ed48b5",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1016,8 +1016,8 @@
     {
       "path": "deploy/hostinger-web/server.js",
       "category": "tooling-deploy",
-      "bytes": 46430,
-      "sha256": "622c44da53424fb63eea99d62a09014107a7db6a6b3cf2c9fcd12a04f2222052",
+      "bytes": 46468,
+      "sha256": "9efcaba3a10466e70d08dc5829e1ae0c49fb3030edc1087d5e595f504ef18d17",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1050,6 +1050,7 @@
         "/api/status",
         "/api/stock/analyses/",
         "/api/stock/analyses/daily/import",
+        "/api/stock/analyses/misc/missing",
         "/api/stock/batch",
         "/api/stock/daily",
         "/api/stock/quality-control",
@@ -1075,8 +1076,8 @@
     {
       "path": "deploy/hostinger-web/stock-analysis-policy.js",
       "category": "tooling-deploy",
-      "bytes": 2571,
-      "sha256": "ec489159895ad366bfa85ca15a4c31c6fa79709c7e58be6ba55e63fd37cac8f2",
+      "bytes": 2908,
+      "sha256": "f70c558480d5a416d003334727ca9c0be9206bdbd5f4e95d4565b474c9ff680f",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -1607,8 +1608,8 @@
     {
       "path": "docs/agent/memory/AUTO_CHANGES.md",
       "category": "docs",
-      "bytes": 19182,
-      "sha256": "9178a8529b0f0abc8484d09f99b491c826e4fa68991f4b4015103c9828d68f03",
+      "bytes": 20180,
+      "sha256": "7e6f4c15b0f2ec4962c5ec56229f59aec84e294a7c7c870151dbe091ad050830",
       "summary": "DOMINIUM — trilha automática de alterações versionadas",
       "imports": [],
       "endpoints": [],
@@ -1688,8 +1689,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 43143,
-      "sha256": "4893a9c3fb8c4c3b7b754b59a30e4f39b6ac8744e20c988a6ce61c5628ef33fc",
+      "bytes": 43762,
+      "sha256": "966f10db38e3f811f0a528fc6682127b2b3d1912e1a5d825a8bc44b2e520964f",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -3051,8 +3052,8 @@
     {
       "path": "integrations/import_bridge/worker.mjs",
       "category": "shared",
-      "bytes": 7665,
-      "sha256": "18c95685f9b65ede116c99b15a54bb29f995085c67a7ebdcf24682a987d78d71",
+      "bytes": 7710,
+      "sha256": "f315912e382639fe9cdcee40b6694ac48c20a2e0f4acf40a2f2d8176955b79f0",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3061,6 +3062,7 @@
         "/api/orders/bulk-create",
         "/api/serials/consult",
         "/api/stock/analyses/daily/import",
+        "/api/stock/analyses/misc/missing",
         "/api/toa-agenda/import"
       ],
       "env_vars": [],
@@ -3071,8 +3073,8 @@
     {
       "path": "integrations/import_bridge/worker.test.mjs",
       "category": "shared",
-      "bytes": 21367,
-      "sha256": "aee145f9fcdedc5c27fc3b8ed0ab22081bc540987488b612a10f819f97b45b29",
+      "bytes": 21487,
+      "sha256": "e0d11914358dd2a8f486ac8296e661834320ee33354db6b07b7644d88ddd5afd",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -3088,7 +3090,10 @@
         "/api/stock/analyses/imperium/serial-treatment/export?city=natal&run=",
         "/api/stock/analyses/imperium/serial-treatment/next",
         "/api/stock/analyses/imperium/serial-treatment/next?unsafe=true",
-        "/api/stock/analyses/imperium/serial-treatment/status?city=natal&run="
+        "/api/stock/analyses/imperium/serial-treatment/status?city=natal&run=",
+        "/api/stock/analyses/misc",
+        "/api/stock/analyses/misc/missing",
+        "/api/stock/analyses/misc/rules"
       ],
       "env_vars": [],
       "datasnap_methods": [],
@@ -3562,8 +3567,8 @@
     {
       "path": "integrations/serial_consult/desc_review_relay.py",
       "category": "shared",
-      "bytes": 15148,
-      "sha256": "a35e5f2efadc4aaf305291701f9eb93b1b0e33cdcabad2fcbadf45ed65545f30",
+      "bytes": 15185,
+      "sha256": "254edb5149ef1984b25602264a243e0c1f092c3180138a0d7ff6fb9322f342d9",
       "summary": "Authenticated relay for DESC review and private read-only Imperium checks.",
       "imports": [
         "__future__",
@@ -3590,7 +3595,8 @@
       ],
       "endpoints": [
         "/api/monitor/snapshot",
-        "/api/stock/analyses/daily/import"
+        "/api/stock/analyses/daily/import",
+        "/api/stock/analyses/misc/missing"
       ],
       "env_vars": [
         "DOMINIUM_IMPERIUM_RUNTIME_ROOT"
@@ -3738,8 +3744,8 @@
     {
       "path": "integrations/serial_consult/imperium_supabase_live.py",
       "category": "imperium",
-      "bytes": 20670,
-      "sha256": "25180fe00af2b8fcdce23fbea729f35de02b5733b7c9bca307643b9499f7e09b",
+      "bytes": 23728,
+      "sha256": "e47d47dd400377932d2fb5eecaec711523cfa5bc9055b199c49d621d372718e5",
       "summary": "Live Imperium -> normalized, versioned Supabase snapshots; zero Excel dependency.",
       "imports": [
         "__future__",
@@ -3749,6 +3755,7 @@
         "hashlib",
         "json",
         "logging",
+        "order_reports",
         "os",
         "pathlib",
         "re",
@@ -3766,7 +3773,7 @@
       ],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 19
+      "symbol_count": 21
     },
     {
       "path": "integrations/serial_consult/material_stock_audit.py",
@@ -3814,6 +3821,33 @@
       "datasnap_methods": [],
       "entrypoint": false,
       "symbol_count": 3
+    },
+    {
+      "path": "integrations/serial_consult/miscellaneous_dashboard.py",
+      "category": "shared",
+      "bytes": 13062,
+      "sha256": "20f264eee8771973a2722da8efa4496df6df86666a70867a1dfc6531b96d1d6b",
+      "summary": "Miscelâneas: verificação analítica de consultas já gravadas no Dominium.",
+      "imports": [
+        "__future__",
+        "collections",
+        "datetime",
+        "hashlib",
+        "imperium_supabase_live",
+        "json",
+        "logging",
+        "material_stock_audit",
+        "re",
+        "technician_stock_snapshots",
+        "used_equipment_report"
+      ],
+      "endpoints": [
+        "/api/stock/analyses/misc"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 14
     },
     {
       "path": "integrations/serial_consult/monitor_snapshot_relay.py",
@@ -3958,8 +3992,8 @@
     {
       "path": "integrations/serial_consult/stock_analysis_http.py",
       "category": "shared",
-      "bytes": 27803,
-      "sha256": "4a2b995ae7c871166730314d35fa21bd413cb9241da3a34c53c2f1f7e12c82ab",
+      "bytes": 28135,
+      "sha256": "3ff4b31cb2f1cb61db612bedee5518984be2d866c00028243438c096bdaab472",
       "summary": "Audited, read-only stock reports from a previously validated Atlas QUERY.",
       "imports": [
         "__future__",
@@ -3975,6 +4009,7 @@
         "json",
         "logging",
         "material_stock_audit",
+        "miscellaneous_dashboard",
         "pathlib",
         "re",
         "report_sheet_preview",
@@ -4053,8 +4088,8 @@
     {
       "path": "integrations/serial_consult/used_equipment_live_datasnap.py",
       "category": "shared",
-      "bytes": 9197,
-      "sha256": "d94464678263744f34fd8cd9548373d517c8a049696a492227f00a54a6534945",
+      "bytes": 9563,
+      "sha256": "4b73fa96a36b80e48e72d9fa8491cce17e5105824b90e0b774d14ed96e8961c7",
       "summary": "Capturably identical READ-ONLY Imperium equipment report requests.",
       "imports": [
         "__future__",
@@ -5511,8 +5546,8 @@
     {
       "path": "scripts/quality_gate.py",
       "category": "tooling-deploy",
-      "bytes": 7166,
-      "sha256": "4704ad96f3f63121310f619a2fd89ecdd9f273e24ab1edde6a0a4d4fe43a4a16",
+      "bytes": 7220,
+      "sha256": "2b0f29ee663aa9a91b4d64716ce91bfa05f8d7780f5413d56369451e954b7558",
       "summary": "",
       "imports": [
         "__future__",
@@ -6097,8 +6132,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 193575,
-      "sha256": "3e6fc6cf6bb1125a35f2358007061773604c599f90fbfceb0084e33c0c0f4e61",
+      "bytes": 199285,
+      "sha256": "3ae955de98bf306f4f67d4fd7b73ef246aa190e3946b23e45f8fd6da1cbc7f6e",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6291,6 +6326,22 @@
       "symbol_count": 37
     },
     {
+      "path": "static/stock-misc-dashboard.js",
+      "category": "frontend",
+      "bytes": 26927,
+      "sha256": "3423eaddfa2318f21472af35ce6f97315e9f8b80d68d26a049741a7e296ff963",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/stock/analyses/imperium/live",
+        "/api/stock/analyses/misc"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 42
+    },
+    {
       "path": "static/stock-nav.js",
       "category": "frontend",
       "bytes": 5756,
@@ -6306,9 +6357,9 @@
     {
       "path": "static/stock-report-preview-ui.js",
       "category": "frontend",
-      "bytes": 4951,
-      "sha256": "09735f63ebcd8565650a2f64930d5175ed39747d8d967a3a6daf40f92687d90d",
-      "summary": "The three stock analysis processes have independent, paged workspace views. */",
+      "bytes": 5177,
+      "sha256": "d6543b7b55fb7f8c7f6d6c6eacf31f0b3400e53c3e3e71e097d101acce3cc1b2",
+      "summary": "Stock analysis processes have independent workspace views. */",
       "imports": [],
       "endpoints": [
         "/api/stock/analyses/jobs",
@@ -6322,8 +6373,8 @@
     {
       "path": "static/styles.css",
       "category": "frontend",
-      "bytes": 226369,
-      "sha256": "c1ebed8fefc7ab1ddfe0628d5921cd0fa9f075cb968b8a090ae2c0cddcae41c0",
+      "bytes": 227958,
+      "sha256": "b57e438e749cd41d1cd79f0db3fa41c92bccf7a1e6577b7b0ec1aa5e0a43b2a4",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -7341,8 +7392,8 @@
     {
       "path": "tests/test_backlog_ui_deploy_20261031.py",
       "category": "tests",
-      "bytes": 4466,
-      "sha256": "b5db0693cf1d527d7f54f08649d89bbbe40cb8f89374b2e5626d1f339ad34cda",
+      "bytes": 4482,
+      "sha256": "c92e82fbf27649c46a98cd98b30f0e0d6b2e1b3d0c2f64300d4e6fa734bdec93",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -8306,8 +8357,8 @@
     {
       "path": "tests/test_imperium_supabase_live.py",
       "category": "tests",
-      "bytes": 8552,
-      "sha256": "2a80f60bcb64a85764aafec3e9fde5887bd0ecdb247671e3562511e898f964b6",
+      "bytes": 9534,
+      "sha256": "deb52afc38a5ebd4d8edb7a97105f10d31eb4a274d03619184cda6d224b7db64",
       "summary": "No Excel intermediary: DataSnap -> normalized records -> private Supabase batches.",
       "imports": [
         "copy",
@@ -8323,7 +8374,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 16
+      "symbol_count": 17
     },
     {
       "path": "tests/test_import_audit_history.py",
@@ -8598,6 +8649,28 @@
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
+      "entrypoint": true,
+      "symbol_count": 9
+    },
+    {
+      "path": "tests/test_miscellaneous_dashboard.py",
+      "category": "tests",
+      "bytes": 6207,
+      "sha256": "0090b1ffe2597ee294024cd7afdf58698737991420fd26c30bd47b3a5eac8dbd",
+      "summary": "Quantity and service rules use all material rows from the saved Imperium period.",
+      "imports": [
+        "miscellaneous_dashboard",
+        "pathlib",
+        "stock_analysis_http",
+        "sys",
+        "tempfile",
+        "unittest"
+      ],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [
+        "TARGET.replace"
+      ],
       "entrypoint": true,
       "symbol_count": 9
     },
@@ -9556,6 +9629,21 @@
       "datasnap_methods": [],
       "entrypoint": true,
       "symbol_count": 5
+    },
+    {
+      "path": "tests/test_stock_misc_dashboard.cjs",
+      "category": "tests",
+      "bytes": 3253,
+      "sha256": "37203959c749d406e0501df2488cd8f5b6a4e7280c7f97d900b0597224fadd2e",
+      "summary": "",
+      "imports": [],
+      "endpoints": [
+        "/api/stock/analyses/misc"
+      ],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 1
     },
     {
       "path": "tests/test_stock_navigation_monitor.cjs",
@@ -10912,6 +11000,7 @@
     "USERPROFILE"
   ],
   "datasnap_methods": [
+    "TARGET.replace",
     "TASK_LAYOUTS.map",
     "TASK_ROUTER.md",
     "TASK_SLOTS.get",

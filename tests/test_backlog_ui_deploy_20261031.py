@@ -25,7 +25,7 @@ stock_menu = html.split('id="stockNavChildren"', 1)[1].split("</div>", 1)[0]
 assert 'id="confrontModule"' in stock_menu
 assert 'src="/stock-daily-analysis-ui.js?v=20261106-atlas-video-3"' in html
 assert 'src="/stock-analysis-ui.js?v=20261103-global-1"' in html
-assert 'src="/stock-report-preview-ui.js?v=20261103-global-1"' in html
+assert len(re.findall(r'src="/stock-report-preview-ui\.js\?v=[a-z0-9-]+"', html)) == 1
 assert html.count('id="allCityModuleNotice"')==1
 assert html.count('id="allCityOverviewButton"')==1
 assert html.count('id="stockAllScopeHint"')==1

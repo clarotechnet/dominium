@@ -6,7 +6,7 @@
   <title>DOMINIUM</title>
   <link rel="icon" type="image/svg+xml" href="/assets/brands/technet-rings.svg">
   <script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="/styles.css?v=20261127-claro-logo-1">
+  <link rel="stylesheet" href="/styles.css?v=20261127-stock-misc-1">
   <link rel="stylesheet" href="/adhesion-batch.css?v=20261124-1">
   <link rel="stylesheet" href="/order-reports.css?v=20261111-treated-1">
   <link rel="stylesheet" href="/impeccable.css">
@@ -1255,7 +1255,7 @@
         <header class="workspace-heading">
           <div><p class="section-label">ATLAS + IMPERIUM</p>
             <h2>Analises e Relatorios do Estoque</h2>
-            <p class="workspace-description">Três processos independentes: QUERY tratada; análise diária do Imperium; análise de suspeitos baseada na QUERY.</p>
+            <p class="workspace-description">Consulte QUERY, equipamentos, suspeitos e baixas de miscelâneas.</p>
           </div>
           <button class="button secondary" id="stockReportsRefresh" type="button">Atualizar</button>
         </header>
@@ -1264,6 +1264,7 @@
           <button type="button" class="button secondary active" data-stock-analysis-tab="query" role="tab" aria-selected="true">1. QUERY tratada</button>
           <button type="button" class="button secondary" data-stock-analysis-tab="equipamentos" role="tab" aria-selected="false">2. Análise de equipamentos</button>
           <button type="button" class="button secondary" data-stock-analysis-tab="suspeitos" role="tab" aria-selected="false">3. Análise de suspeitos</button>
+          <button id="miscTab" type="button" class="button secondary" data-stock-analysis-tab="miscelaneas" role="tab" aria-selected="false" aria-controls="miscWorkspace">4. Miscelâneas</button>
         </div>
         <section id="stockQueryWorkspace" data-stock-analysis-workspace="query" class="stock-analysis-workspace" role="tabpanel">
           <div class="stock-analysis-toolbar">
@@ -1400,6 +1401,80 @@
           </div>
           <p id="stockReportsProgress" class="stock-analysis-status" role="status"></p>
           <p id="stockReportsNotice" class="stock-analysis-status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section id="miscWorkspace" class="stock-analysis-workspace" data-stock-analysis-workspace="miscelaneas" role="tabpanel" aria-labelledby="miscTab" hidden>
+          <div class="stock-analysis-toolbar">
+            <div><h3>Dashboard de miscelâneas</h3><p id="miscCity"></p></div>
+            <button class="button secondary" id="miscAuditLink" type="button">Vistoria de saldo</button>
+            <button class="button secondary" id="miscQualityLink" type="button">Limites de qualidade</button>
+          </div>
+          <div class="misc-controls">
+            <label class="field"><span>Data inicial</span><input id="miscStart" type="date"></label>
+            <label class="field"><span>Data final</span><input id="miscEnd" type="date"></label>
+            <label class="field"><span>Consulta salva no Imperium</span><select id="miscHistory"></select></label>
+            <button class="button secondary" id="miscLoad" type="button">Ver período</button>
+            <button class="button primary" id="miscConsult" type="button">Consultar Imperium</button>
+          </div>
+          <p id="miscStatus" class="stock-analysis-status" role="status"></p>
+
+          <div class="daily-stock-summary misc-metrics" aria-label="Indicadores do período">
+            <article><span>OS com baixas</span><strong id="miscUsageCount">—</strong><small id="miscUsageNote">Imperium · Por OS</small></article>
+            <article><span>OS acima do limite</span><strong id="miscExcessCount">—</strong><small id="miscLimitNote">Quantidade somada por OS e material</small></article>
+            <article><span>OS com código fora da regra</span><strong id="miscCodeCount">—</strong><small id="miscCodeNote">Códigos permitidos por serviço</small></article>
+            <article><span>OS sem miscelâneas</span><strong id="miscMissingCount">—</strong><small id="miscCoverage">Aguardando relatório</small></article>
+          </div>
+
+          <div class="misc-controls misc-filters">
+            <label class="field"><span>Ocorrências</span><select id="miscMode">
+              <option value="above">Acima do limite</option>
+              <option value="different">Código fora da regra</option>
+              <option value="missing">Sem miscelâneas</option>
+              <option value="review">Conferir ou sem regra</option>
+              <option value="all">Todas as baixas</option>
+            </select></label>
+            <label class="field"><span>Buscar</span><input id="miscSearch" type="search" placeholder="OS, contrato, material ou equipe"></label>
+            <label class="field"><span>Agrupar ranking por</span><select id="miscRankBy">
+              <option value="technician">Técnico</option><option value="controller">Controlador</option><option value="material">Material</option>
+            </select></label>
+          </div>
+          <div class="misc-results">
+            <section aria-labelledby="miscRankTitle">
+              <h4 id="miscRankTitle">Ranking de ocorrências</h4>
+              <p id="miscRankNote" class="stock-analysis-status"></p>
+              <ol id="miscRanking" class="misc-ranking"></ol>
+            </section>
+            <section aria-labelledby="miscResultsTitle">
+              <h4 id="miscResultsTitle">Detalhes por OS</h4>
+              <div class="table-scroll"><table id="miscTable" class="daily-stock-table"></table></div>
+              <div class="stock-analysis-pagination">
+                <button class="button secondary" id="miscPrev" type="button">Anterior</button>
+                <span id="miscPageInfo">—</span>
+                <button class="button secondary" id="miscNext" type="button">Próxima</button>
+              </div>
+            </section>
+          </div>
+
+          <details id="miscRuleEditor" class="misc-tools" hidden>
+            <summary>Códigos permitidos por serviço</summary>
+            <form id="miscRuleForm" class="misc-controls">
+              <label class="field"><span>Serviço conforme o Imperium</span><input id="miscService" list="miscServiceList" required maxlength="140" autocomplete="off"></label>
+              <datalist id="miscServiceList"></datalist>
+              <label class="field"><span>Códigos de material permitidos</span><textarea id="miscCodes" rows="2" maxlength="3400" placeholder="Separe os códigos por vírgula ou linha"></textarea></label>
+              <button class="button secondary" id="miscSaveRule" type="submit">Salvar regra</button>
+              <button class="button secondary" id="miscClearRule" type="button">Remover regra</button>
+            </form>
+          </details>
+          <details id="miscImporter" class="misc-tools" hidden>
+            <summary>Importar OS sem miscelâneas</summary>
+            <p class="stock-analysis-status">Escolha o relatório com a aba Contratos Sem Miscelâneas. Cada data importada passa a ter cobertura no painel pela data indicada na planilha.</p>
+            <form id="miscMissingForm" class="misc-controls">
+              <label class="field"><span>Relatório XLSX</span><input id="miscFile" type="file" accept=".xlsx"></label>
+              <label class="field"><span>Dia da planilha a salvar</span><select id="miscImportDay"></select></label>
+              <button class="button secondary" id="miscSaveMissing" type="submit" disabled>Salvar dia</button>
+            </form>
+            <p id="miscImportNote" class="stock-analysis-status" role="status"></p>
+          </details>
         </section>
       </section>
     </section>
@@ -3157,7 +3232,8 @@
   <script src="/stock-nav.js?v=20261127-1"></script>
   <script src="/stock-analysis-ui.js?v=20261103-global-1"></script>
   <script src="/stock-daily-analysis-ui.js?v=20261106-atlas-video-3"></script>
-  <script src="/stock-report-preview-ui.js?v=20261103-global-1"></script>
+  <script src="/stock-report-preview-ui.js?v=20261127-stock-misc-1"></script>
+  <script src="/stock-misc-dashboard.js?v=20261127-stock-misc-1"></script>
   <script src="/desc-analytics-nav.js?v=20261027-1"></script>
   <script src="/fflate.browser.min.js?v=0.8.2"></script>
   <script src="/query-import.js?v=20261023-1"></script>

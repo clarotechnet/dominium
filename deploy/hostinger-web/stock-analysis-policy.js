@@ -5,6 +5,8 @@ const JOB = /^\/api\/stock\/analyses\/jobs\/[a-f0-9]{32}(?:\/export)?$/;
 function allowedStockAnalysisRoute(method,target){
  if(!['GET','POST'].includes(method)||typeof target!=='string'||target.length>180||
     target.includes('%')||target.includes('#')||target.includes('//'))return false;
+ if(method==='POST' && /^\/api\/stock\/analyses\/misc\/(?:rules|missing)$/.test(target))return true;
+ if(method==='GET' && /^\/api\/stock\/analyses\/misc\?city=(natal|fortaleza|mossoro|recife)&start=\d{4}-\d{2}-\d{2}&end=\d{4}-\d{2}-\d{2}(?:&run=[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})?$/.test(target))return true;
  if(method==='POST' && /^\/api\/stock\/analyses\/material-audit\/(?:capture|verify)$/.test(target))return true;
  if(method==='GET' && /^\/api\/stock\/analyses\/material-audit\?city=(natal|fortaleza|mossoro|recife)$/.test(target))return true;
  if(method==='POST')return target==='/api/stock/analyses/jobs'||target==='/api/stock/analyses/daily/import'||target==='/api/stock/analyses/imperium/extract'||target==='/api/stock/analyses/imperium/live'||target==='/api/stock/analyses/imperium/serial-treatment/next'||target==='/api/stock/analyses/imperium/atlas-video/next';

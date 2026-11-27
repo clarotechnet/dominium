@@ -57,7 +57,7 @@ export default {
       if (!request.headers.get('content-type')?.toLowerCase().startsWith('application/json')) return json(415,'Envie JSON');
       const maxBytes=technetReview ? 8192 : url.pathname==='/api/toa-agenda/import' ? 24*1024*1024 :
         operationalWrite ? 256*1024 :
-        (analysis && url.pathname==='/api/stock/analyses/daily/import') ? 5*1024*1024 :
+        (analysis && ['/api/stock/analyses/daily/import','/api/stock/analyses/misc/missing'].includes(url.pathname)) ? 5*1024*1024 :
         (desc || confrontation || query || analysis || reports || technetReview || toaLookup || orderClose || quality || daily) ? 64*1024 : MAX_IMPORT_BYTES;
       if (Number(request.headers.get('content-length')||0)>maxBytes) return json(413,'Arquivo acima do limite');
       body=await request.arrayBuffer();

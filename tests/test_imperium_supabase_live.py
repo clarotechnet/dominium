@@ -37,6 +37,8 @@ class FakeRest:
     @staticmethod
     def compare(row,query):
         for name,test in (query or {}).items():
+            if test.startswith("gte.") and int(row[name]) < int(test[4:]):
+                return False
             if not test.startswith("eq."):continue
             actual=str(row.get(name))
             if actual!=test[3:]:return False
@@ -90,6 +92,24 @@ class SupabaseLiveTests(unittest.TestCase):
                     URL+"/550e8400-e29b-41d4-a716-446655440000/data?city=mossoro&category=forbidden&page=1",
                     URL+"?city=all&start=2026-11-03&end=2026-11-03"):
             self.assertIsNone(route_for("GET",url))
+    def test_read_category_requires_a_complete_exact_period(self):
+        self.service.fetcher = lambda *args, **kwargs: {
+            **DATA, "por_os": DATA["por_os"] * 670,
+        }
+        status, result, _ = self.sync()
+        self.assertEqual(status, 201, result)
+        run = result["selected"]["id"]
+        store = self.store()
+        params = (run, BODY["city"], "por_os", BODY["start"], BODY["end"])
+        meta, records = store.read_category(*params)
+        self.assertEqual(meta["id"], run)
+        self.assertEqual(records, DATA["por_os"] * 670)
+        with self.assertRaisesRegex(LiveSyncError, "neste período"):
+            store.read_category(run, "mossoro", "por_os", BODY["start"], "2026-11-04")
+        del self.api.batches[run, "por_os", 1]
+        with self.assertRaisesRegex(LiveSyncError, "incompleta"):
+            store.read_category(*params)
+
     def test_full_snapshots_are_saved_to_supabase_without_excel(self):
         status,result,_=self.sync()
         self.assertEqual(status,201,result)

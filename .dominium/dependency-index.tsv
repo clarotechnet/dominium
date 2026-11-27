@@ -637,6 +637,7 @@ equipment_video_transform	integrations/serial_consult/imperium_supabase_live.py
 hashlib	integrations/serial_consult/imperium_supabase_live.py
 json	integrations/serial_consult/imperium_supabase_live.py
 logging	integrations/serial_consult/imperium_supabase_live.py
+order_reports	integrations/serial_consult/imperium_supabase_live.py
 os	integrations/serial_consult/imperium_supabase_live.py
 pathlib	integrations/serial_consult/imperium_supabase_live.py
 re	integrations/serial_consult/imperium_supabase_live.py
@@ -662,6 +663,17 @@ datetime	integrations/serial_consult/midas_reader.py
 decimal	integrations/serial_consult/midas_reader.py
 io	integrations/serial_consult/midas_reader.py
 struct	integrations/serial_consult/midas_reader.py
+__future__	integrations/serial_consult/miscellaneous_dashboard.py
+collections	integrations/serial_consult/miscellaneous_dashboard.py
+datetime	integrations/serial_consult/miscellaneous_dashboard.py
+hashlib	integrations/serial_consult/miscellaneous_dashboard.py
+imperium_supabase_live	integrations/serial_consult/miscellaneous_dashboard.py
+json	integrations/serial_consult/miscellaneous_dashboard.py
+logging	integrations/serial_consult/miscellaneous_dashboard.py
+material_stock_audit	integrations/serial_consult/miscellaneous_dashboard.py
+re	integrations/serial_consult/miscellaneous_dashboard.py
+technician_stock_snapshots	integrations/serial_consult/miscellaneous_dashboard.py
+used_equipment_report	integrations/serial_consult/miscellaneous_dashboard.py
 __future__	integrations/serial_consult/monitor_snapshot_relay.py
 json	integrations/serial_consult/monitor_snapshot_relay.py
 os	integrations/serial_consult/monitor_snapshot_relay.py
@@ -716,6 +728,7 @@ io	integrations/serial_consult/stock_analysis_http.py
 json	integrations/serial_consult/stock_analysis_http.py
 logging	integrations/serial_consult/stock_analysis_http.py
 material_stock_audit	integrations/serial_consult/stock_analysis_http.py
+miscellaneous_dashboard	integrations/serial_consult/stock_analysis_http.py
 pathlib	integrations/serial_consult/stock_analysis_http.py
 re	integrations/serial_consult/stock_analysis_http.py
 report_sheet_preview	integrations/serial_consult/stock_analysis_http.py
@@ -1489,6 +1502,12 @@ integrations	tests/test_midas_bcd_used_equipment.py
 json	tests/test_midas_bcd_used_equipment.py
 struct	tests/test_midas_bcd_used_equipment.py
 unittest	tests/test_midas_bcd_used_equipment.py
+miscellaneous_dashboard	tests/test_miscellaneous_dashboard.py
+pathlib	tests/test_miscellaneous_dashboard.py
+stock_analysis_http	tests/test_miscellaneous_dashboard.py
+sys	tests/test_miscellaneous_dashboard.py
+tempfile	tests/test_miscellaneous_dashboard.py
+unittest	tests/test_miscellaneous_dashboard.py
 json	tests/test_monitor_snapshot_relay.py
 monitor_snapshot_relay	tests/test_monitor_snapshot_relay.py
 pathlib	tests/test_monitor_snapshot_relay.py

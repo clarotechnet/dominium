@@ -251,7 +251,7 @@ class DescRelayHandler(BaseHTTPRequestHandler):
     def _read_json(self):
         try:
             length = int(self.headers.get('Content-Length', '0'))
-            limit = 5*1024*1024 if self.path == '/api/stock/analyses/daily/import' else 64*1024
+            limit = 5*1024*1024 if self.path in {'/api/stock/analyses/daily/import','/api/stock/analyses/misc/missing'} else 64*1024
             if not 0 < length <= limit or self.headers.get_content_type() != 'application/json':
                 raise ValueError
             body = json.loads(self.rfile.read(length))

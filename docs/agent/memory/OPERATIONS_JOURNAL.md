@@ -617,3 +617,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Leitura do instalador e login resolvido nas duas ordens de cada par real; regressao do JSON da baixa sem disparo.
 
 **Próximo passo/pendência:** Conferir a publicacao do site e manter a baixa original conciliada.
+
+## 2026-11-27 20:05 UTC — Dashboard de miscelâneas no estoque
+
+**Motivo:** Concentrar a análise de lançamentos e das regras por serviço no Dominium, reaproveitando a vistoria de saldos
+
+**Alterado:** Painel por praça e período, leitura da consulta Por OS do Imperium, limites de qualidade existentes, códigos permitidos por serviço e relatórios de OS sem miscelâneas versionados
+
+**Verificação:** 31 testes direcionados Python e 23 testes JS, com validação de escopo e da ponte
+
+**Próximo passo/pendência:** Validar em ambiente operacional antes de publicar Hostinger, Worker interno e relay Windows

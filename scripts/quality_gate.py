@@ -34,6 +34,7 @@ JS_TESTS = (
     ROOT / "tests" / "test_query_import.js",
     ROOT / "tests" / "test_atlas_query_policy.js",
     ROOT / "tests" / "test_atlas_query_ui_status.js",
+    ROOT / "tests" / "test_stock_misc_dashboard.cjs",
     ROOT / "tests" / "test_atlas_query_proxy_json.js",
 )
 SECRET_PATTERNS = (

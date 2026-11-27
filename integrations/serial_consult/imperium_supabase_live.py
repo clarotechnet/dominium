@@ -28,6 +28,7 @@ from urllib.parse import urlencode, urlsplit, parse_qs
 from urllib.request import Request, urlopen
 
 from equipment_video_transform import is_chip, serial_key
+from order_reports import CREDENTIALS
 from used_equipment_live_datasnap import fetch_read_only
 from used_equipment_report import normalize_range
 
@@ -179,8 +180,10 @@ class SupabasePeriodStore:
         self.key=key
 
     def call(self,table,method="GET",*,query=None,body=None,upsert=False):
-        company_read = method == "GET" and table in ("estoque_diario_importacoes", "estoque_diario_itens")
-        if not company_read and table not in (RUNS,BATCHES,"dominium_imperium_tratamento_itens"):
+        reference_read = method == "GET" and table in (
+            "estoque_diario_importacoes", "estoque_diario_itens", "controle_qualidade_materiais",
+        )
+        if not reference_read and table not in (RUNS,BATCHES,"dominium_imperium_tratamento_itens"):
             raise LiveSyncError(500,"internal_table","Tabela de destino não autorizada")
         if self._requester is not None:
             return self._requester(table,method,query,body)
@@ -314,6 +317,63 @@ class SupabasePeriodStore:
         if not isinstance(rows,list):raise LiveSyncError(502,"supabase_response","Histórico inválido")
         return [self._public(row) for row in rows]
 
+    def quality_limits(self):
+        rows = []
+        for offset in range(0, 10000, 500):
+            page = self.call("controle_qualidade_materiais", query={
+                "select": "material,qtd_controle_qualidade", "order": "id.asc",
+                "limit": "500", "offset": str(offset),
+            })
+            if not isinstance(page, list) or any(not isinstance(row, dict) for row in page):
+                raise LiveSyncError(502, "quality_response", "Limites de qualidade indisponíveis")
+            rows.extend(page)
+            if len(page) < 500:
+                return rows
+        raise LiveSyncError(502, "quality_limit", "Cadastro de limites fora do tamanho esperado")
+
+    def read_category(self, run_id, city, category, start, end):
+        runs = self.call(RUNS, query={
+            "select": "id,cidade,data_inicio,data_fim,criado_em,estado,observacoes",
+            "id": "eq." + run_id, "cidade": "eq." + city,
+            "data_inicio": "eq." + start, "data_fim": "eq." + end,
+            "estado": "eq.concluido", "limit": "1",
+        })
+        if not isinstance(runs, list) or not runs:
+            raise LiveSyncError(404, "run_not_found", "Consulta não encontrada neste período e praça")
+        meta = self._public(runs[0])
+        expected = meta["counts"].get(category)
+        if type(expected) is not int or not 0 <= expected <= MAX_DATASET_ROWS:
+            raise LiveSyncError(502, "invalid_run", "Contagem da consulta inválida")
+        batch_count = (expected + CHUNK_ROWS - 1) // CHUNK_ROWS
+        records = []
+        size = 8
+        index = 0
+        while index < batch_count:
+            count = min(size, batch_count - index)
+            try:
+                page = self.call(BATCHES, query={
+                    "select": "indice_lote,quantidade,registros",
+                    "consulta_id": "eq." + run_id, "categoria": "eq." + category,
+                    "indice_lote": "gte." + str(index), "order": "indice_lote.asc", "limit": str(count),
+                })
+            except LiveSyncError as error:
+                if error.code != "response_too_large" or size == 1:
+                    raise
+                size = max(1, size // 2)
+                continue
+            if not isinstance(page, list) or len(page) != count:
+                raise LiveSyncError(502, "incomplete_run", "Consulta salva está incompleta")
+            for batch in page:
+                number = min(CHUNK_ROWS, expected - len(records))
+                chunk = batch.get("registros") if isinstance(batch, dict) else None
+                if (not isinstance(chunk, list) or len(chunk) != number
+                    or batch.get("indice_lote") != index or batch.get("quantidade") != number
+                    or any(not isinstance(row, dict) for row in chunk)):
+                    raise LiveSyncError(502, "incomplete_run", "Consulta salva está incompleta")
+                records.extend(chunk)
+                index += 1
+        return meta, records
+
     def preview(self,run_id,city,category,page):
         rows=self.call(RUNS,query={
             "select":"id,cidade,data_inicio,data_fim,criado_em,estado,observacoes",
@@ -390,7 +450,7 @@ class ImperiumLiveSyncService:
             # Fail before expensive DataSnap query when the Supabase schema is missing.
             repo.ensure_ready()
             data=self.fetcher(start,end,profile=city,partner_id=ALLOWED_PROFILES[city],
-                              credential_path=Path(r"C:\DominiumMain\config\credentials.dat"))
+                              credential_path=CREDENTIALS)
             structured,counts,digest=prepare_snapshot(data,city)
             result=repo.store(city,start,end,actor,structured,counts,digest)
             return (200 if result["reused"] else 201),result,None

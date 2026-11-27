@@ -195,9 +195,13 @@ def fetch_read_only(
         raise ValueError("Cidade não autorizada")
     if not 1 <= timeout <= 40:
         raise ValueError("Timeout inválido")
+    # The standalone relay has no repository two directories above it.
+    # Use templates beside the credential in its configured Imperium runtime.
+    filenames = ("protocol_templates.json", "stock_protocol_templates.json")
+    template_root = ROOT if all((ROOT / name).is_file() for name in filenames) else Path(credential_path).parent.parent
     packets = {
         mode: build_query(start, end, mode=mode, partner_id=partner_id,
-                          service=service, group=group)
+                          service=service, group=group, root=template_root)
         for mode in PROVIDERS
     }
     from datasnap_client import DataSnapClient, load_credentials

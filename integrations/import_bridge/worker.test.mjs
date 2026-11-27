@@ -308,6 +308,7 @@ test('new Imperium DataSnap, Atlas and serial treatment routes are allowed only 
  const uuid='550e8400-e29b-41d4-a716-446655440000';
  for(const endpoint of [
   '/api/stock/analyses/imperium/live'+qs,
+  '/api/stock/analyses/misc'+qs+'&run='+uuid,
   '/api/stock/analyses/imperium/live/'+uuid+'/data?city=natal&category=seriais_tratados&page=1',
   '/api/stock/analyses/imperium/serial-treatment/status?city=natal&run='+uuid,
   '/api/stock/analyses/imperium/serial-treatment/export?city=natal&run='+uuid,
@@ -326,6 +327,8 @@ test('new Imperium DataSnap, Atlas and serial treatment routes are allowed only 
   '/api/stock/analyses/imperium/live',
   '/api/stock/analyses/imperium/serial-treatment/next',
   '/api/stock/analyses/imperium/atlas-video/next',
+  '/api/stock/analyses/misc/rules',
+  '/api/stock/analyses/misc/missing',
  ]){
   const body=JSON.stringify({city:'natal',run:uuid,start:'2026-11-05',end:'2026-11-05'});
   const res=await worker.fetch(new Request(base+endpoint,{

@@ -176,6 +176,7 @@ endpoint	path
 /api/status	deploy/hostinger-web/server.js
 /api/stock/analyses/	deploy/hostinger-web/server.js
 /api/stock/analyses/daily/import	deploy/hostinger-web/server.js
+/api/stock/analyses/misc/missing	deploy/hostinger-web/server.js
 /api/stock/batch	deploy/hostinger-web/server.js
 /api/stock/daily	deploy/hostinger-web/server.js
 /api/stock/quality-control	deploy/hostinger-web/server.js
@@ -213,6 +214,7 @@ endpoint	path
 /api/orders/bulk-create	integrations/import_bridge/worker.mjs
 /api/serials/consult	integrations/import_bridge/worker.mjs
 /api/stock/analyses/daily/import	integrations/import_bridge/worker.mjs
+/api/stock/analyses/misc/missing	integrations/import_bridge/worker.mjs
 /api/toa-agenda/import	integrations/import_bridge/worker.mjs
 /api/close	integrations/import_bridge/worker.test.mjs
 /api/imperium-official/stocks/123/items?profile=fortaleza	integrations/import_bridge/worker.test.mjs
@@ -227,6 +229,9 @@ endpoint	path
 /api/stock/analyses/imperium/serial-treatment/next	integrations/import_bridge/worker.test.mjs
 /api/stock/analyses/imperium/serial-treatment/next?unsafe=true	integrations/import_bridge/worker.test.mjs
 /api/stock/analyses/imperium/serial-treatment/status?city=natal&run=	integrations/import_bridge/worker.test.mjs
+/api/stock/analyses/misc	integrations/import_bridge/worker.test.mjs
+/api/stock/analyses/misc/missing	integrations/import_bridge/worker.test.mjs
+/api/stock/analyses/misc/rules	integrations/import_bridge/worker.test.mjs
 /api/imperium-official/stocks	integrations/official_stock_relay/official_stock_bridge.py
 /api/atlas-query/jobs	integrations/serial_consult/atlas_query_http.py
 /api/atlas-query/jobs/(	integrations/serial_consult/atlas_query_http.py
@@ -236,6 +241,7 @@ endpoint	path
 /api/confront/status	integrations/serial_consult/confront_http.py
 /api/monitor/snapshot	integrations/serial_consult/desc_review_relay.py
 /api/stock/analyses/daily/import	integrations/serial_consult/desc_review_relay.py
+/api/stock/analyses/misc/missing	integrations/serial_consult/desc_review_relay.py
 /api/stock/analyses/daily	integrations/serial_consult/equipment_daily_catalog.py
 /api/stock/analyses/daily/(	integrations/serial_consult/equipment_daily_catalog.py
 /api/stock/analyses/daily/import	integrations/serial_consult/equipment_daily_catalog.py
@@ -246,6 +252,7 @@ endpoint	path
 /api/stock/analyses/imperium/runs/(	integrations/serial_consult/imperium_source_http.py
 /api/stock/analyses/imperium/live	integrations/serial_consult/imperium_supabase_live.py
 /api/stock/analyses/material-audit	integrations/serial_consult/material_stock_audit.py
+/api/stock/analyses/misc	integrations/serial_consult/miscellaneous_dashboard.py
 /api/monitor/snapshot	integrations/serial_consult/monitor_snapshot_relay.py
 /api/order-reports/export\.xlsx\?profile=(natal	integrations/serial_consult/order_reports.py
 /api/serials/consult	integrations/serial_consult/serial_service.py
@@ -321,6 +328,8 @@ endpoint	path
 /api/stock/analyses/imperium/serial-treatment/export?city=	static/stock-daily-analysis-ui.js
 /api/stock/analyses/imperium/serial-treatment/next	static/stock-daily-analysis-ui.js
 /api/stock/analyses/imperium/serial-treatment/status?city=	static/stock-daily-analysis-ui.js
+/api/stock/analyses/imperium/live	static/stock-misc-dashboard.js
+/api/stock/analyses/misc	static/stock-misc-dashboard.js
 /api/stock/analyses/jobs	static/stock-report-preview-ui.js
 /api/stock/analyses/jobs/	static/stock-report-preview-ui.js
 /api/auth/session	tests/qa_disconnection_browser.js
@@ -579,6 +588,7 @@ endpoint	path
 /api/stock/analyses/imperium/runs?	tests/test_stock_daily_analysis_feedback.cjs
 /api/stock/analyses/imperium/serial-treatment/next	tests/test_stock_daily_analysis_feedback.cjs
 /api/stock/analyses/imperium/serial-treatment/status?	tests/test_stock_daily_analysis_feedback.cjs
+/api/stock/analyses/misc	tests/test_stock_misc_dashboard.cjs
 /api/orders/1/close	tests/test_stock_quality_bridge.mjs
 /api/stock/quality-control	tests/test_stock_quality_bridge.mjs
 /api/auth/login	tests/test_ui_runtime_regression.py
