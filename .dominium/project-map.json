@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-27T12:55:58+00:00",
+  "generated_at": "2026-11-27T13:12:03+00:00",
   "schema": 2,
-  "source_fingerprint": "a2bac95388915b4099811be76aa0670341510c2d89ddb7783c1338f1c8af3afe",
+  "source_fingerprint": "c7268f20b043797c4a58329b56145a4894799b5dd3e5508a554fff895f4792d1",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1673,8 +1673,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 40079,
-      "sha256": "1b95c0f7c0d6d86518ce3d1cd2e01c41f098e138c3bca2e905aa7f3479521a26",
+      "bytes": 40726,
+      "sha256": "9f0eb0675229b652728e376db008a38d44c7569238d188a1ebfff4a9cd2649a2",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -6068,8 +6068,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 185750,
-      "sha256": "2709a8aa88294e029709c706306ee7ae63ae85c94d79fccd60a1c421f8e4521b",
+      "bytes": 189319,
+      "sha256": "d6d2c296bb780b82ca354659db2340a50824c4c2a76f398e68fce0a9edaa7f86",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6322,6 +6322,32 @@
       "bytes": 11355,
       "sha256": "4d2a38ac35cda06a555c84074a819d413339cd3691b822cae50f8f322fe01f64",
       "summary": "Apache License",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 0
+    },
+    {
+      "path": "static/workspace-navigation.js",
+      "category": "frontend",
+      "bytes": 4417,
+      "sha256": "9b18946172e3e6a6825f6f87c8e8d19ca9d33b146a9b9378c482e2863761d731",
+      "summary": "Workspace navigation delegates to the existing module buttons. */",
+      "imports": [],
+      "endpoints": [],
+      "env_vars": [],
+      "datasnap_methods": [],
+      "entrypoint": false,
+      "symbol_count": 5
+    },
+    {
+      "path": "static/workspace-shell.css",
+      "category": "frontend",
+      "bytes": 11430,
+      "sha256": "460f64a2b69708481ce2e7a0af9a97569dd39bd16814b6f4c5cb6ae18821f136",
+      "summary": "Navigation frame shared by the existing operational workspaces. */",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
@@ -7303,8 +7329,8 @@
     {
       "path": "tests/test_build_hostinger_node_release.py",
       "category": "tests",
-      "bytes": 1853,
-      "sha256": "b811c43696f427c5c4a62cb80820928f07517e2672b283f274a6217ea0550e5e",
+      "bytes": 1941,
+      "sha256": "cfec2db3bb6f8289610e9cbd8026f618252157e4ed216d7e4ea514cf6e9e9712",
       "summary": "",
       "imports": [
         "pathlib",

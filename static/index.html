@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/all-cities-scope.css?v=20261103-global-1">
   <link rel="stylesheet" href="/close-control.css?v=20261109-mro-ui-1">
   <link rel="stylesheet" href="/dominium-theme.css?v=20261127-1">
+  <link rel="stylesheet" href="/workspace-shell.css?v=20261127-1">
 </head>
 <body data-deploy-target="hostinger-web">
   <section class="auth-gate hidden" id="authGate" aria-labelledby="authTitle">
@@ -65,7 +66,8 @@
       <footer><i data-lucide="shield-check"></i><span>Senha Dominium protegida por hash; credenciais externas nao sao salvas aqui.</span></footer>
     </div>
   </section>
-  <header class="app-header">
+  <div class="app-shell">
+    <aside class="side-nav" id="primarySidebar" aria-label="Módulos">
     <div class="brand-block">
       <div class="brand-mark" aria-hidden="true">
         <img class="brand-asset" src="/assets/brands/technet-rings.svg" alt="">
@@ -75,14 +77,190 @@
       <p class="product-tagline">Toda operação em um só domínio.</p>
       <h1>Baixa de ordens de serviço</h1>
       </div>
-      <img class="header-partner-logo brand-asset" src="/assets/brands/claro-orb.png" alt="Claro">
       <button class="sidebar-toggle" id="sidebarToggle" type="button"
         aria-controls="primarySidebar" aria-expanded="true" aria-label="Recolher menu lateral"
         title="Recolher menu lateral">
         <i data-lucide="panel-left-close" aria-hidden="true"></i>
       </button>
     </div>
-    <nav class="profile-tabs" id="profileTabs" aria-label="Base do Imperium"></nav>
+      <nav class="side-nav-scroll" aria-label="Navegação principal">
+      <details class="workspace-nav-group" open>
+        <summary title="Início">
+          <i data-lucide="house" aria-hidden="true"></i><span>Início</span>
+          <i data-lucide="chevron-down" class="workspace-nav-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="workspace-nav-items">
+          <button class="side-nav-item active" id="dashboardModule" type="button">
+            <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+            <span><strong>Visão geral</strong></span>
+          </button>
+          <button class="side-nav-item" id="allOperationsModule" type="button">
+            <i data-lucide="layout-grid" aria-hidden="true"></i>
+            <span><strong>Todas as operações</strong><small>Visão consolidada</small></span>
+          </button>
+        </div>
+      </details>
+      <details class="workspace-nav-group" open>
+        <summary title="Ordens de serviço">
+          <i data-lucide="clipboard-list" aria-hidden="true"></i><span>Ordens de serviço</span>
+          <i data-lucide="chevron-down" class="workspace-nav-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="workspace-nav-items">
+          <button class="side-nav-item" id="ordersModule" type="button">
+            <i data-lucide="clipboard-check" aria-hidden="true"></i>
+            <span><strong>Consultar O.S.</strong><small>Consulta</small></span>
+          </button>
+          <button class="side-nav-item" id="importsModule" type="button">
+            <i data-lucide="upload" aria-hidden="true"></i>
+            <span><strong>Importar CSV</strong><small>TOA</small></span>
+          </button>
+          <button class="side-nav-item" id="bulkCreateModule" type="button">
+            <i data-lucide="layers" aria-hidden="true"></i>
+            <span><strong>Criar OS Manual</strong><small>Cadastro</small></span>
+          </button>
+          <button class="side-nav-item" id="closeModule" type="button">
+            <i data-lucide="square-check-big" aria-hidden="true"></i>
+            <span><strong>Baixar OS</strong><small id="closeQueueBadge">0 aguardando</small></span>
+          </button>
+          <button class="side-nav-item" id="closeControlModule" type="button">
+            <i data-lucide="list-checks" aria-hidden="true"></i>
+            <span><strong>Controle de Baixas</strong><small>Mossoró em foco · fila e cache</small></span>
+          </button>
+        </div>
+      </details>
+      <button class="side-nav-item stock-group-toggle desc-group-toggle" id="disconnectionGroupToggle" type="button" aria-expanded="false" aria-controls="disconnectionNavChildren">
+        <i data-lucide="unplug" aria-hidden="true"></i>
+        <span><strong>Desconexão</strong><small>Operação e indicadores</small></span>
+        <i data-lucide="chevron-down" class="stock-group-chevron" aria-hidden="true"></i>
+      </button>
+      <div class="stock-nav-children desc-nav-children" id="disconnectionNavChildren" aria-label="Opções de desconexão" hidden>
+        <button class="side-nav-item stock-nav-child" id="disconnectionModule" type="button">
+          <i data-lucide="message-circle" aria-hidden="true"></i>
+          <span><strong>WhatsApp · Atlas</strong><small>Revisão de contratos</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="backlogModule" type="button">
+          <i data-lucide="clipboard-list" aria-hidden="true"></i>
+          <span><strong>Análise Backlog</strong><small>Imperium + rotas Claro</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="descAnalyticsModule" type="button">
+          <i data-lucide="chart-column-increasing" aria-hidden="true"></i>
+          <span><strong>Visão Claro</strong><small>Produtividade e %QUEBRA</small></span>
+        </button>
+      </div>
+      <button class="side-nav-item stock-group-toggle" id="stockGroupToggle" type="button"
+        aria-expanded="true" aria-controls="stockNavChildren">
+        <i data-lucide="boxes" aria-hidden="true"></i>
+        <span><strong>Estoque e equipamentos</strong><small>Materiais e consultas</small></span>
+        <i data-lucide="chevron-down" class="stock-group-chevron" aria-hidden="true"></i>
+      </button>
+      <div class="stock-nav-children" id="stockNavChildren" aria-label="Opcoes de estoque">
+        <button class="side-nav-item stock-nav-child" id="stockModule" type="button">
+          <i data-lucide="package-search" aria-hidden="true"></i>
+          <span><strong>Estoque por técnico</strong><small>Saldo e baixas</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="serialsModule" type="button">
+          <i data-lucide="scan-barcode" aria-hidden="true"></i>
+          <span><strong>Consultar Seriais</strong><small>Busca em lote</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="stockQualityModule" type="button">
+          <i data-lucide="clipboard-list" aria-hidden="true"></i>
+          <span><strong>Controle de Qualidade</strong><small>Materiais e quantidades</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="stockReportsModule" type="button">
+          <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
+          <span><strong>Análises e Relatórios</strong><small>Atlas e Imperium</small></span>
+        </button>
+        <button class="side-nav-item stock-nav-child" id="stockDailyModule" type="button">
+          <i data-lucide="calendar-days" aria-hidden="true"></i>
+          <span><strong>Estoque Diário</strong><small>Saldo da empresa • Excel</small></span>
+        </button>
+      </div>
+      <details class="workspace-nav-group">
+        <summary title="Relatórios">
+          <i data-lucide="file-chart-column" aria-hidden="true"></i><span>Relatórios</span>
+          <i data-lucide="chevron-down" class="workspace-nav-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="workspace-nav-items">
+          <button class="side-nav-item" id="orderReportsModule" type="button">
+            <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
+            <span><strong>Relatórios de OS</strong><small>Exportar do Imperium</small></span>
+          </button>
+          <button class="side-nav-item" id="commissionReportsModule" type="button">
+            <i data-lucide="receipt-text" aria-hidden="true"></i>
+            <span><strong>Relatórios de Comissão</strong><small>DataSnap · 4 bases</small></span>
+          </button>
+          <button class="side-nav-item" id="reportModule" type="button">
+            <i data-lucide="file-chart-column" aria-hidden="true"></i>
+            <span><strong>Relatório de baixas</strong><small>Baixas e erros</small></span>
+          </button>
+        </div>
+      </details>
+      <details class="workspace-nav-group">
+        <summary title="Gestão operacional">
+          <i data-lucide="settings-2" aria-hidden="true"></i><span>Gestão operacional</span>
+          <i data-lucide="chevron-down" class="workspace-nav-chevron" aria-hidden="true"></i>
+        </summary>
+        <div class="workspace-nav-items">
+          <button class="side-nav-item" id="confrontModule" type="button">
+            <i data-lucide="git-compare-arrows" aria-hidden="true"></i>
+            <span><strong>Query | Atlas</strong><small>Atlas × IMPERIUM</small></span>
+          </button>
+          <button class="side-nav-item" id="techniciansModule" type="button">
+            <i data-lucide="users-round" aria-hidden="true"></i>
+            <span><strong>Técnicos</strong><small>Equipe DMV</small></span>
+          </button>
+          <button class="side-nav-item" id="intelligenceModule" type="button">
+            <i data-lucide="activity" aria-hidden="true"></i>
+            <span><strong>Central inteligente</strong><small id="healthNavStatus">Bases e produtividade</small></span>
+          </button>
+          <button class="side-nav-item" id="databaseModule" type="button">
+            <i data-lucide="database" aria-hidden="true"></i>
+            <span><strong>Base operacional</strong><small>Contratos e equipamentos</small></span>
+          </button>
+          <button class="side-nav-item" id="historyModule" type="button">
+            <i data-lucide="history" aria-hidden="true"></i>
+            <span><strong>Histórico e auditoria</strong><small>Auditoria</small></span>
+          </button>
+          <button class="side-nav-item hidden" id="automationTestModule" type="button" aria-hidden="true" tabindex="-1">
+            <i data-lucide="scan-search" aria-hidden="true"></i>
+            <span><strong>Teste de automacao</strong><small>Dry-run</small></span>
+          </button>
+        </div>
+      </details>
+      </nav>
+      <div class="side-nav-footer">
+        <div class="side-brand-lockup" aria-label="TechNet, agente autorizado Claro">
+          <img class="side-brand-claro brand-asset" src="/assets/brands/claro-wordmark.png" alt="Claro">
+        </div>
+        <div class="side-nav-footer-meta">
+          <div class="side-nav-assurance">
+            <i data-lucide="shield-check" aria-hidden="true"></i>
+            <span>Domínio operacional</span>
+          </div>
+          <button class="side-nav-legal" id="termsOpenButton" type="button">
+            <i data-lucide="file-text" aria-hidden="true"></i>
+            <span>Termos de uso</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+    <header class="app-header">
+      <div class="workspace-toolbar">
+        <button class="workspace-menu-button" id="workspaceMenuOpen" type="button" aria-label="Abrir menu" aria-controls="workspaceMenu" aria-expanded="false">
+          <i data-lucide="menu" aria-hidden="true"></i>
+        </button>
+        <label class="workspace-city">
+          <i data-lucide="map-pin" aria-hidden="true"></i>
+          <select id="workspaceProfile" aria-label="Base do Imperium" disabled>
+            <option>Carregando bases…</option>
+          </select>
+        </label>
+        <nav class="profile-tabs hidden" id="profileTabs" aria-label="Bases operacionais"></nav>
+        <button class="workspace-search-button" id="workspaceSearchOpen" type="button" aria-haspopup="dialog" aria-keyshortcuts="Control+k Meta+k" aria-label="Buscar módulos">
+          <i data-lucide="search" aria-hidden="true"></i>
+          <span>Buscar módulos</span><kbd aria-hidden="true">Ctrl K</kbd>
+        </button>
+      </div>
     <div class="header-actions">
       <button class="theme-toggle" id="themeToggle" data-theme-toggle type="button"
         aria-label="Alternar para tema claro" title="Alternar para tema claro">
@@ -100,147 +278,13 @@
         <span class="notification-badge hidden" id="notificationBadge" aria-live="polite">0</span>
       </button>
       <button class="operator operator-button" id="operatorButton" type="button" aria-label="Conta do operador atual">
-        <span id="operatorName">OPERADOR</span>
-        <small id="operatorRole">Sessao Dominium</small>
+        <span class="operator-avatar" id="operatorAvatar" aria-hidden="true">OP</span>
+        <span class="workspace-operator-copy"><strong id="operatorName">Operador</strong><small id="operatorRole">Sessão DOMINIUM</small></span>
       </button>
-      <div class="operator-avatar" id="operatorAvatar" aria-hidden="true">OP</div>
     </div>
-  </header>
+    </header>
 
-  <div class="app-shell">
-    <aside class="side-nav" id="primarySidebar" aria-label="Modulos">
-      <div class="side-nav-scroll">
-      <p class="side-nav-label">Operacao</p>
-      <button class="side-nav-item active" id="dashboardModule" type="button">
-        <i data-lucide="layout-dashboard" aria-hidden="true"></i>
-        <span><strong>Visão geral</strong><small>Operação</small></span>
-      </button>
-      <button class="side-nav-item" id="ordersModule" type="button">
-        <i data-lucide="clipboard-check" aria-hidden="true"></i>
-        <span><strong>Ordens de servico</strong><small>Consulta</small></span>
-      </button>
-      <button class="side-nav-item" id="orderReportsModule" type="button">
-        <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
-        <span><strong>Relatórios de OS</strong><small>Exportar do Imperium</small></span>
-      </button>
-      <button class="side-nav-item" id="commissionReportsModule" type="button">
-        <i data-lucide="receipt-text" aria-hidden="true"></i>
-        <span><strong>Relatórios de Comissão</strong><small>DataSnap · 4 bases</small></span>
-      </button>
-      <p class="side-nav-label side-nav-section">Producao</p>
-      <button class="side-nav-item stock-group-toggle desc-group-toggle" id="disconnectionGroupToggle" type="button" aria-expanded="false" aria-controls="disconnectionNavChildren">
-        <i data-lucide="unplug" aria-hidden="true"></i>
-        <span><strong>DESCONEXÃO</strong><small>Operação e indicadores</small></span>
-        <i data-lucide="chevron-down" class="stock-group-chevron" aria-hidden="true"></i>
-      </button>
-      <div class="stock-nav-children desc-nav-children" id="disconnectionNavChildren" aria-label="Opções de desconexão" hidden>
-        <button class="side-nav-item stock-nav-child" id="disconnectionModule" type="button">
-          <i data-lucide="message-circle" aria-hidden="true"></i>
-          <span><strong>WhatsApp · Atlas</strong><small>Revisão de contratos</small></span>
-        </button>
-        <button class="side-nav-item stock-nav-child" id="backlogModule" type="button">
-          <i data-lucide="clipboard-list" aria-hidden="true"></i>
-          <span><strong>Análise Backlog</strong><small>Imperium + rotas Claro</small></span>
-        </button>
-        <button class="side-nav-item stock-nav-child" id="descAnalyticsModule" type="button">
-          <i data-lucide="chart-column-increasing" aria-hidden="true"></i>
-          <span><strong>Visão Claro</strong><small>Produtividade e %QUEBRA</small></span>
-        </button>
-      </div>
-      <button class="side-nav-item" id="importsModule" type="button">
-        <i data-lucide="upload" aria-hidden="true"></i>
-        <span><strong>Importar CSV</strong><small>TOA</small></span>
-      </button>
-      <button class="side-nav-item hidden" id="automationTestModule" type="button" aria-hidden="true" tabindex="-1">
-        <i data-lucide="scan-search" aria-hidden="true"></i>
-        <span><strong>Teste de automacao</strong><small>Dry-run</small></span>
-      </button>
-      <button class="side-nav-item" id="bulkCreateModule" type="button">
-        <i data-lucide="layers" aria-hidden="true"></i>
-        <span><strong>Criar OS Manual</strong><small>Cadastro</small></span>
-      </button>
-      <button class="side-nav-item" id="closeModule" type="button">
-        <i data-lucide="square-check-big" aria-hidden="true"></i>
-        <span><strong>Baixar OS</strong><small id="closeQueueBadge">0 aguardando</small></span>
-      </button>
-      <button class="side-nav-item" id="closeControlModule" type="button">
-        <i data-lucide="list-checks" aria-hidden="true"></i>
-        <span><strong>Controle de Baixas</strong><small>Mossoró em foco · fila e cache</small></span>
-      </button>
-      <p class="side-nav-label side-nav-section">Recursos</p>
-      <button class="side-nav-item stock-group-toggle" id="stockGroupToggle" type="button"
-        aria-expanded="true" aria-controls="stockNavChildren">
-        <i data-lucide="boxes" aria-hidden="true"></i>
-        <span><strong>Estoque</strong><small>Materiais e consultas</small></span>
-        <i data-lucide="chevron-down" class="stock-group-chevron" aria-hidden="true"></i>
-      </button>
-      <div class="stock-nav-children" id="stockNavChildren" aria-label="Opcoes de estoque">
-        <button class="side-nav-item stock-nav-child" id="stockModule" type="button">
-          <i data-lucide="package-search" aria-hidden="true"></i>
-          <span><strong>Estoque por tecnico</strong><small>Saldo e baixas</small></span>
-        </button>
-        <button class="side-nav-item stock-nav-child" id="serialsModule" type="button">
-          <i data-lucide="scan-barcode" aria-hidden="true"></i>
-          <span><strong>Consultar Seriais</strong><small>Busca em lote</small></span>
-        </button>
-        <button class="side-nav-item stock-nav-child" id="stockQualityModule" type="button">
-          <i data-lucide="clipboard-list" aria-hidden="true"></i>
-          <span><strong>Controle de Qualidade</strong><small>Materiais e quantidades</small></span>
-        </button>
-        <button class="side-nav-item stock-nav-child" id="stockReportsModule" type="button">
-          <i data-lucide="file-spreadsheet" aria-hidden="true"></i>
-          <span><strong>Analises e Relatorios</strong><small>Atlas e Imperium</small></span>
-        </button>
-        <button class="side-nav-item stock-nav-child" id="stockDailyModule" type="button">
-          <i data-lucide="calendar-days" aria-hidden="true"></i>
-          <span><strong>Estoque Diário</strong><small>Saldo da empresa • Excel</small></span>
-        </button>
-      </div>
-      <button class="side-nav-item" id="confrontModule" type="button">
-        <i data-lucide="git-compare-arrows" aria-hidden="true"></i>
-        <span><strong>Query | Atlas</strong><small>Atlas × IMPERIUM</small></span>
-      </button>
-      <button class="side-nav-item" id="techniciansModule" type="button">
-        <i data-lucide="users-round" aria-hidden="true"></i>
-        <span><strong>Tecnicos</strong><small>Equipe DMV</small></span>
-      </button>
-      <button class="side-nav-item" id="intelligenceModule" type="button">
-        <i data-lucide="activity" aria-hidden="true"></i>
-        <span><strong>Central inteligente</strong><small id="healthNavStatus">Bases e produtividade</small></span>
-      </button>
-      <button class="side-nav-item" id="reportModule" type="button">
-        <i data-lucide="file-chart-column" aria-hidden="true"></i>
-        <span><strong>Relatorio</strong><small>Baixas e erros</small></span>
-      </button>
-      <button class="side-nav-item" id="databaseModule" type="button">
-        <i data-lucide="database" aria-hidden="true"></i>
-        <span><strong>Base operacional</strong><small>Contratos e equipamentos</small></span>
-      </button>
-      <button class="side-nav-item" id="historyModule" type="button">
-        <i data-lucide="history" aria-hidden="true"></i>
-        <span><strong>Historico</strong><small>Auditoria</small></span>
-      </button>
-      </div>
-      <div class="side-nav-footer">
-        <div class="side-brand-lockup" aria-label="TechNet, agente autorizado Claro">
-          <img class="side-brand-technet brand-asset" src="/assets/brands/technet-rings.svg" alt="TechNet">
-          <span aria-hidden="true"></span>
-          <img class="side-brand-claro brand-asset" src="/assets/brands/claro-wordmark.png" alt="Claro">
-        </div>
-        <div class="side-nav-footer-meta">
-          <div class="side-nav-assurance">
-            <i data-lucide="shield-check" aria-hidden="true"></i>
-            <span>Dominio operacional</span>
-          </div>
-          <button class="side-nav-legal" id="termsOpenButton" type="button">
-            <i data-lucide="file-text" aria-hidden="true"></i>
-            <span>Termos de uso</span>
-          </button>
-        </div>
-      </div>
-    </aside>
-
-  <main>
+  <main id="workspaceMain">
     <section class="order-reports-workspace hidden" id="orderReportsWorkspace" aria-label="Relatórios de OS do Imperium">
       <header class="workspace-heading">
         <div>
@@ -472,21 +516,21 @@
           <div class="city-bars" id="dashboardCityBars"></div>
         </section>
 
+        <section class="dashboard-panel recent-panel">
+          <header><h3>Ordens recentes</h3><button class="text-button" id="dashboardOpenOrders" type="button">Ver todas</button></header>
+          <div class="table-scroll dashboard-table-scroll">
+            <table>
+              <thead><tr><th>OS</th><th>Contrato</th><th>Serviço</th><th>Cidade</th><th>Técnico</th><th>Status</th></tr></thead>
+              <tbody id="dashboardRecentBody"></tbody>
+            </table>
+          </div>
+        </section>
+
         <section class="dashboard-panel attention-panel">
           <header><h3>Atenção operacional</h3><span class="danger-text" id="dashboardAttentionCount">0 pendências</span></header>
           <div class="attention-list" id="dashboardAttentionList"></div>
         </section>
       </div>
-
-      <section class="dashboard-panel recent-panel">
-        <header><h3>Ordens recentes</h3><button class="text-button" id="dashboardOpenOrders" type="button">Ver todas</button></header>
-        <div class="table-scroll dashboard-table-scroll">
-          <table>
-            <thead><tr><th>OS</th><th>Contrato</th><th>Serviço</th><th>Cidade</th><th>Técnico</th><th>Status</th></tr></thead>
-            <tbody id="dashboardRecentBody"></tbody>
-          </table>
-        </div>
-      </section>
     </section>
 
     <section class="monitor-workspace hidden" id="monitorWorkspace" aria-label="Monitor de ordens de servico">
@@ -3015,13 +3059,27 @@
     </div>
   </dialog>
 
+  <dialog class="workspace-menu" id="workspaceMenu" aria-label="Menu de módulos">
+    <button class="workspace-menu-close" id="workspaceMenuClose" type="button" aria-label="Fechar menu" autofocus>
+      <i data-lucide="x" aria-hidden="true"></i>
+    </button>
+  </dialog>
+  <dialog class="workspace-search-dialog" id="workspaceSearch" aria-labelledby="workspaceSearchTitle">
+    <div class="workspace-search-heading">
+      <h2 id="workspaceSearchTitle">Buscar módulos</h2>
+      <button type="button" id="workspaceSearchClose" aria-label="Fechar busca"><i data-lucide="x" aria-hidden="true"></i></button>
+    </div>
+    <input id="workspaceSearchInput" type="search" placeholder="Digite o nome do módulo" aria-label="Nome do módulo" autocomplete="off" autofocus>
+    <div id="workspaceSearchResults" class="workspace-search-results" aria-live="polite"></div>
+  </dialog>
+
   <script src="/lucide.min.js"></script>
   <script src="/operations-monitor.js"></script>
   <script src="/disconnection.js?v=20261103-event-guard-1"></script>
   <script src="/all-operations.js?v=20261028-1"></script>
   <script src="/order-reports-ui.js?v=20261111-treated-1"></script>
   <script src="/commission-reports-ui.js?v=20261112-1"></script>
-  <script src="/app.js?v=20261125-close-report-xlsx"></script>
+  <script src="/app.js?v=20261127-workspace-1"></script>
   <script src="/adhesion-batch.js?v=20261126-mudanca-endereco"></script>
   <script src="/close-control-engine.js?v=20261109-mro-ui-1"></script>
   <script src="/close-control-city-board.js?v=20261109-mro-ui-1"></script>
@@ -3045,6 +3103,7 @@
   <script src="/confront.js?v=20261022-3"></script>
   <script src="/query-import-ui.js?v=20261023-1"></script>
   <script src="/atlas-query-ui.js?v=20261026-5"></script>
+  <script src="/workspace-navigation.js?v=20261127-1"></script>
   <script type="module" src="/motion-ui.js?v=20261026-4"></script>
 </body>
 </html>

@@ -2,10 +2,10 @@
 
 Generated index for agent navigation. Source code remains authoritative.
 
-- Generated: 2026-11-27T12:55:58+00:00
-- Source fingerprint: `a2bac95388915b40`
-- Indexed files: 573
-- Indexed symbols: 4726
+- Generated: 2026-11-27T13:12:03+00:00
+- Source fingerprint: `c7268f20b043797c`
+- Indexed files: 575
+- Indexed symbols: 4731
 - API path references: 583
 
 ## Navigation rule
@@ -139,6 +139,8 @@ For operational-language routing, read docs/agent/TASK_ROUTER.md.
 - `static/styles.css`
 - `static/theme-init.js`
 - `static/vendor/LICENSE.sheetjs.txt` - Apache License
+- `static/workspace-navigation.js` (5 symbols) - Workspace navigation delegates to the existing module buttons. */
+- `static/workspace-shell.css` - Navigation frame shared by the existing operational workspaces. */
 - `static/workspace.css` - Shared workspace: the original Technet image, floating glass and Dominium red. */
 
 ## shared core
