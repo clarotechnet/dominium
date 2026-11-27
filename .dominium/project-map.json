@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-27T13:39:35+00:00",
+  "generated_at": "2026-11-27T18:46:49+00:00",
   "schema": 2,
-  "source_fingerprint": "b82c67af7675f1c38b30b6c898c025053d0251fae79a96258a3b48d9dff0114c",
+  "source_fingerprint": "6d959994eda230c813ce1bf70af6f12e5f4fe7e27e720718a68ca209d4b8014d",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -1688,8 +1688,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 41371,
-      "sha256": "90b401026072e09fcd07a2b1be0fc885aac9c2db2fca3972551479ee1c8a02cd",
+      "bytes": 41983,
+      "sha256": "fce765a6f816b70399e39bf8bcbc71d8cd64ca721ec66400b7bd8dae58aa48ed",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -5716,8 +5716,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 37919,
-      "sha256": "eb07d50d0eae37a4218236cd1529cc400a070081b776ba004aeb9533e3cb4e7a",
+      "bytes": 42395,
+      "sha256": "77d19cd8bb7fed9abd5621655c677ef3259263145eb2664b93b2eb7b7d370c52",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -5729,7 +5729,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 36
+      "symbol_count": 41
     },
     {
       "path": "static/all-cities-scope.css",
@@ -6097,8 +6097,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 193561,
-      "sha256": "63fd49943106c2637b1f3b254bd2afb40a9aa235ffe7836866091087f5070620",
+      "bytes": 193569,
+      "sha256": "2b5b5dcc6a7bb9db96f2996c9a6f8a2ae589ae6475903193576303dbe49e6956",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6831,15 +6831,15 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 33256,
-      "sha256": "65852e1b152a38b48f78eac4046ea1dec51b4f7ccf3636fe690e40cbe43da169",
+      "bytes": 37215,
+      "sha256": "314fcf3fa36d01844de37f20990be963c9b4c25cb565266ea2d8fff0a182544a",
       "summary": "",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 5
+      "symbol_count": 6
     },
     {
       "path": "tests/test_adhesion_technician_evidence.py",
