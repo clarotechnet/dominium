@@ -627,3 +627,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Regressoes de escopo TOA, codigo desconhecido, movimentacao, divergencia de login, aliases e tentativas aceitas.
 
 **Próximo passo/pendência:** Conferir o frontend publicado e a adaptacao no runtime Windows sem executar baixas.
+
+## 2026-11-27 20:28 UTC — Separar Mesh, Virtua e VoIP e revalidar codigo improdutivo herdado
+
+**Motivo:** Inventario TOA pode repetir o mesmo EMTA para Virtua e VoIP e reportar Mesh como serial de 12 caracteres. O codigo 410 pertence exclusivamente ao TOA.
+
+**Alterado:** O lote usa um serial por Mesh e um EMTA por Virtua, e envia apenas codigo autorizado para VoIP compartilhado. Consulta o instalador da principal e da acompanhante para confirmar a heranca improdutiva. Impede envio de 410.
+
+**Verificação:** Regressoes de dois e quatro Mesh, serial repetido, codigo 410, caso GPON e alias cadastrado, com simulacao sem escritas.
+
+**Próximo passo/pendência:** Verificar a publicacao do site e a continuidade do painel Windows sem reprocessar OS.

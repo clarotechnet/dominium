@@ -39,7 +39,7 @@ def is_code_only_adhesion_service(service: Any) -> bool:
     normalized = "".join(c for c in normalized if not unicodedata.combining(c))
     normalized = " ".join(re.sub(r"[^A-Z0-9]+", " ", normalized).split())
     return (
-        normalized in {"INST GPON INST CABO", "INSTALACAO DE CABO GPON"}
+        normalized in {"INST GPON INST CABO", "INSTALACAO DE CABO GPON", "INSTALACAO CABO GPON"}
         or (normalized.startswith("ADESAO ") and "ASSINATURA" in normalized.split())
     )
 
@@ -65,6 +65,8 @@ def build_manual_official_plan(
     body: dict[str, Any],
     removed_type_codes: dict[str, str],
 ) -> dict[str, Any]:
+    if close_code == "410":
+        raise ValueError("Codigo 410 exclusivo do TOA. O Imperium nao recebe essa baixa.")
     installed_source = _items(body.get("installed_equipment"), "installed_equipment")
     removed_source = _items(body.get("removed_equipment"), "removed_equipment")
     material_source = _items(body.get("materials"), "materials")

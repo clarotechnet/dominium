@@ -15,7 +15,7 @@
 # A ordem executavel abaixo foi preservada para evitar regressao.
 # =============================================================================
 import argparse
-from adhesion_technician_evidence import AdhesionTechnicianEvidence, matches_imported_unproductive_alias
+from adhesion_technician_evidence import AdhesionTechnicianEvidence, matches_imported_unproductive_alias, verified_stock_alias_login
 from desc_review_proxy import DescReviewProxy, ProxyError
 import base64
 import csv
@@ -84,7 +84,7 @@ from imperium_api import (
     Order,
 )
 from imperium_operation_gate import FairOperationGate
-from official_close import build_manual_official_plan
+from official_close import build_manual_official_plan, is_code_only_adhesion_service
 from operation_scope import (
     ImportScope,
     OSIdentity,
@@ -324,6 +324,8 @@ def _resolve_close_definition(
     code: str,
     transport: str,
 ) -> CloseCode:
+    if code == "410":
+        raise ValueError("Codigo 410 exclusivo do TOA. O Imperium nao recebe essa baixa.")
     try:
         return profile.api.close_code(code)
     except ValueError:
@@ -339,6 +341,7 @@ def _merged_close_code_metadata(profile: "ProfileRuntime") -> list[dict]:
     }
     for definition in profile.api.close_codes.values():
         definitions[definition.code] = definition.to_dict()
+    definitions.pop("410", None)
 
     def sort_key(item: dict) -> tuple[int, str]:
         code = str(item.get("code") or "")
@@ -4760,6 +4763,40 @@ def _official_technician_code(
     return login, current_name or str(technician.get("name", "")), installer_id
 
 
+def _inherited_unproductive_installer(profile, order, close_definition, body, scheduled_date):
+    source_number = str(body.get("inherited_close_from_os") or "").strip()
+    if not source_number:
+        return None
+    if (
+        profile.key != "natal" or body.get("adhesion_batch") is not True
+        or close_definition.productive or not is_code_only_adhesion_service(order.service)
+        or not re.fullmatch(r"\d{5,18}", source_number) or source_number == order.num_os
+    ):
+        raise ValueError("Heranca de codigo improdutivo invalida para esta OS")
+    sources = {
+        int(record.get("id_os") or 0): record
+        for record in profile.close_report.list(scheduled_date)
+        if str(record.get("num_os")) == source_number and str(record.get("contract")) == order.contract
+        and str(record.get("close_code")) == close_definition.code and record.get("state") == "confirmed"
+    }
+    if len(sources) != 1 or 0 in sources or order.id_os in sources:
+        raise ValueError("A baixa da OS principal ainda nao foi confirmada com o mesmo codigo")
+    source_order = _confirmation_order(next(iter(sources.values())))
+    source = profile.api.order_installer(source_order)
+    current = profile.api.order_installer(order)
+    installer_id = int(current.get("installer_id") or 0)
+    name = str(current.get("installer_name") or "").strip()
+    if not installer_id or installer_id != int(source.get("installer_id") or 0):
+        raise ValueError("OS principal e acompanhante possuem instaladores diferentes no Imperium")
+    login = verified_stock_alias_login(installer_id, name)
+    if not login:
+        technician = _technician_by_current_name(name) or {}
+        login = str(technician.get("login") or "").strip().upper()
+    if not re.fullmatch(r"[ZT][A-Z0-9]{3,20}", login):
+        raise ValueError("Login do instalador da OS acompanhante nao confirmado no Imperium")
+    return login, name, installer_id
+
+
 def _build_official_panel_plan(
     profile: ProfileRuntime,
     order: Order,
@@ -4769,7 +4806,8 @@ def _build_official_panel_plan(
 ) -> dict:
     if not OFFICIAL_HTTP_CREDENTIALS.is_file():
         raise ValueError("Credenciais da integracao IMPERIUM nao configuradas")
-    technician_code, current_installer, installer_id = _official_technician_code(
+    inherited = _inherited_unproductive_installer(profile, order, close_definition, body, scheduled_date)
+    technician_code, current_installer, installer_id = inherited or _official_technician_code(
         profile,
         order,
         scheduled_date,
@@ -8326,7 +8364,7 @@ class PanelHandler(BaseHTTPRequestHandler):
             stock_retry_request_id = str(body.get("stock_retry_request_id", "")).strip()[:80]
             prepared_stock_retry = None
             effective_scheduled_date = report_date.isoformat()
-            if not stock_retry_request_id:
+            if not stock_retry_request_id and not (transport == "official_http" and body.get("inherited_close_from_os")):
                 _reconcile_order_installer_with_toa(
                     profile, order, body, report_date, gate_already_acquired=gate_acquired,
                     allow_imported_unproductive_alias=not close_definition.productive,

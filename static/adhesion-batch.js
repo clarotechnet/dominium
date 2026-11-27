@@ -281,15 +281,18 @@
       const capture=virtua[0].capture;
       if(!deps.equipmentType || !group.every(c=>c.capture===capture))continue;
       const chip=group.filter(c=>kind(c)==="ENVIO DE CHIP VIA TECNICO");
-      const allowed=group.every(c=>c===virtua[0]||c===voip[0]||chip.includes(c)||kind(c)==="ADESAO INSTALACAO DE ASSINATURA");
+      const allowed=group.every(c=>c===virtua[0]||c===voip[0]||chip.includes(c)||c.batchCodeOnly
+        || /\bMESH\b/.test(kind(c)));
       const installed=capture.installed_equipment, removed=capture.removed_equipment;
-      if(!allowed || chip.length>1 || !Array.isArray(installed) || !Array.isArray(removed) || removed.length)continue;
-      if(virtua[0].code!=="409" || voip[0].code!=="409" || chip.some(c=>c.code!=="706"))continue;
+      if(!allowed || chip.length>1 || !Array.isArray(installed) || !Array.isArray(removed)
+        || removed.length>1 || removed.some(item=>deps.equipmentType(item)!=="emta"))continue;
+      if((virtua[0].code!=="409" && deps.productive?.(virtua[0].code)!==true)
+        || chip.some(c=>c.code!=="706"))continue;
       const bySerial=new Map();
       for(const item of installed){
         const serial=String(item.serial||"").replace(/[^A-Z0-9]/gi,"").toUpperCase();
         const type=deps.equipmentType(item);
-        if(!serial || !["emta","chip"].includes(type) || (bySerial.has(serial)&&bySerial.get(serial)!==type))throw Error("Inventario Virtua/VoIP sem identidade segura.");
+        if(!serial || !["emta","chip","mesh"].includes(type) || (bySerial.has(serial)&&bySerial.get(serial)!==type))throw Error("Inventario Virtua/VoIP sem identidade segura.");
         bySerial.set(serial,type);
       }
       const emtas=[...bySerial].filter(([,type])=>type==="emta");
@@ -336,7 +339,7 @@
       if(!os || byNumber.has(os)) throw Error("OS duplicada ou sem numero no Imperium.");
       byNumber.set(os,row);
     }
-    const candidates=[], seen=new Set(), imperiumOnly=new Set(), blockedCodes=new Map();
+    const candidates=[], toaOnly=[], seen=new Set(), imperiumOnly=new Set(), blockedCodes=new Map();
     for(const capture of payload.results||[]) {
       const matching=(capture.tasks||[]).filter(task=>{
         const os=String(task.os_number||"");
@@ -361,6 +364,10 @@
         if(!service || /DESCONEX|RETIRADA\s+DE\s+ASSINATURA/i.test(service)) throw Error("Servico fora do escopo de adesao: "+os);
         seen.add(os);
         let code=String(task.close_code||"").trim();
+        if(code==="410"){
+          toaOnly.push({capture,order,numOs:os,code,batchCodeOnly:codeOnly(service)});
+          continue;
+        }
         if(!/^\d{3}$/.test(code) || code==="430" || !deps.knownCode(code)) {
           const reason=!code ? "sem codigo de baixa confirmado no TOA" : /^\d{3}$/.test(code)
             ? "com codigo "+code+" indisponivel para a baixa oficial de adesao" : "com codigo de baixa invalido no TOA";
@@ -379,8 +386,21 @@
         candidates.push({capture,task:{...task,close_code:code},order,numOs:os,code,isDisconnect:false,batchAdhesion:true,batchScope:{profile,date,epoch:scope.epoch},batchCodeOnly:codeOnly(service)});
       }
     }
+    applySharedEmtaRule([...candidates,...toaOnly],deps);
+    const skipped=new Set();
+    for(const item of toaOnly){
+      const noInventory=["installed_equipment","removed_equipment","materials"]
+        .every(key=>Array.isArray(item.capture[key])&&!item.capture[key].length);
+      const message="OS "+item.numOs+" (410) registrada somente no TOA";
+      if(item.batchCodeOnly || noInventory){
+        skipped.add(item.numOs);
+        deps.toaOnly?.(message);
+      }else{
+        blockedCodes.set(item.numOs,message+"; inventario compartilhado em tratativa");
+      }
+    }
     addUnproductiveCompanion(payload,candidates,rows.filter(order=>!seen.has(String(order.num_os))),scope,deps);
-    const planned=new Set(candidates.map(candidate=>candidate.numOs));
+    const planned=new Set([...candidates.map(candidate=>candidate.numOs),...skipped]);
     if(planned.size!==byNumber.size) {
       const missing=[...byNumber.keys()].filter(os=>!planned.has(os));
       const displayed=missing.filter(os=>imperiumOnly.has(os));
@@ -405,15 +425,16 @@
       const activeTasks=new Set(candidates.filter(c=>c.capture.aid===capture.aid).map(c=>c.numOs));
       for(const task of capture.tasks||[]) {
         const os=String(task.os_number||"");
-        if(!os || activeTasks.has(os))continue;
+        if(!os || activeTasks.has(os) || skipped.has(os))continue;
         if((task.imperium_only===true || task.source==="imperium_contract_status") && seen.has(os))continue;
         const other=(capture.imperium_matches||[]).find(o=>String(o.num_os)===os)
-          || (capture.imperium_all_orders||[]).find(o=>String(o.num_os)===os);
+          || (capture.imperium_all_orders||[]).find(o=>String(o.num_os)===os)
+          || deps.confirmedCloses?.find(o=>String(o.num_os)===os && String(o.contract)===contract
+            && o.report_date===date && o.state==="confirmed");
         if(!other || !codeOnly(other.service))throw Error("Atividade com OS acompanhante fora de campo; risco de duplicar estoque.");
       }
     }
     keepCustomerEmtaForStandaloneVoip(candidates,deps);
-    applySharedEmtaRule(candidates,deps);
     deps.assign(candidates);
     const serials=new Map(), byActivity=new Map();
     for(const candidate of candidates) {
@@ -430,6 +451,10 @@
         && Array.isArray(installed) && Array.isArray(removed) && !plan.installed.length;
       if(expected && (candidate.code==="706" || deps.productive?.(candidate.code)) && !keepsEquipment && !plan.installed.some(item=>item.type===expected || (expected==="decoder" && item.type==="smart"))) {
         throw Error("Serial obrigatorio nao conciliado para OS "+candidate.numOs+" ("+expected+").");
+      }
+      if(expected==="mesh" && deps.productive?.(candidate.code) &&
+        (plan.installed.length!==1 || plan.installed[0].type!=="mesh" || plan.removed.length)) {
+        throw Error("OS "+candidate.numOs+" exige um unico Wi-Fi Mesh instalado.");
       }
       if(candidate.code==="706" && (plan.installed.length!==1 || plan.installed[0].type!=="chip" || !/^\d{18,25}$/.test(String(plan.installed[0].serial||"")) || plan.removed.length))throw Error("Codigo 706 exige um unico ICCID instalado.");
       for(const item of [...plan.installed,...plan.removed]) {
@@ -499,9 +524,13 @@
           continue;
         }
         const held = [];
-        const candidates=await hooks.prepare(contract, reasons => held.push(...reasons));
+        const toaOnly=[];
+        const candidates=await hooks.prepare(contract, reasons => held.push(...reasons), reason=>toaOnly.push(reason));
         if(!hooks.active()) break;
-        if(!candidates.length) {hooks.update(contract,"Sem OS em campo","Nenhuma baixa enviada.");continue;}
+        if(!candidates.length) {
+          hooks.update(contract,toaOnly.length?"Somente TOA":"Sem OS em campo",toaOnly.join(" | ")||"Nenhuma baixa enviada.");
+          continue;
+        }
         let confirmed=0, waiting=0, blocked=0;
         const outcomes=[];
         for(const candidate of candidates) {
@@ -539,7 +568,7 @@
           break;
         }
         const rest=candidates.length-confirmed-waiting-blocked;
-        const detail=confirmed+" confirmada(s), "+waiting+" pendente(s), "+(blocked+held.length)+" em tratativa, "+rest+" nao enviada(s). "+[...outcomes,...held].join(" | ");
+        const detail=confirmed+" confirmada(s), "+waiting+" pendente(s), "+(blocked+held.length)+" em tratativa, "+rest+" nao enviada(s). "+[...outcomes,...held,...toaOnly].join(" | ");
         hooks.update(contract,waiting?"Aguardando confirmacao":blocked||held.length?"Tratativa":confirmed===candidates.length?"Baixado":"Interrompido",detail);
       } catch(err) {
         if ((err instanceof FreshOrdersBusyError || err instanceof ToaBridgeUnavailableError || err instanceof ToaActivityScopeUnconfirmedError) && !deferred && hooks.active()) {
@@ -646,7 +675,7 @@
             if(!outcome.stockRetryRequestId) return outcome;
           }
         },
-        async prepare(contract, hold) {
+        async prepare(contract, hold, toaOnly) {
           const payload = await readBatchToa(
             () => request(apiUrlForProfile("/api/toa-live/lookup", profile), {
               method: "POST",
@@ -659,10 +688,10 @@
           if(!active()) throw Error("Cidade/data alterada; fila interrompida.");
           const scope={profile,contract,date,epoch};
           const deps={
-            complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,hold,
+            complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,hold,toaOnly,
             confirmedCloses:Array.isArray(initialReport?.records)?initialReport.records:[],
             valid:validToaCloseSnapshot,knownCode:code=>state.closeCodes.some(c=>c.code===code),
-            assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials,equipmentType:item=>toaLiveEquipmentType(item,true),expectedType:expectedEquipmentType,productive:code=>Boolean(state.closeCodes.find(c=>c.code===code)?.productive)
+            assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials,equipmentType:item=>toaLiveEquipmentType(item,true),expectedType:service=>expectedEquipmentType(service,true),productive:code=>Boolean(state.closeCodes.find(c=>c.code===code)?.productive)
           };
           const orders = await ordersForBatchContract(payload, contract, () =>
             readFieldOrders(contract, "Aguardando lista atualizada do Imperium."),scope,deps);

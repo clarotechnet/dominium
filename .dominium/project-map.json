@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-27T19:54:34+00:00",
+  "generated_at": "2026-11-27T20:28:22+00:00",
   "schema": 2,
-  "source_fingerprint": "889103f79df3e84db13222c6016c36d27f4f3b6babae2457052f1ee828aad64b",
+  "source_fingerprint": "4c44200be46ae4068283e9b72622fea7936d37ed98f50b3137e1a0931c30fa4f",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -97,8 +97,8 @@
     {
       "path": "adhesion_technician_evidence.py",
       "category": "shared",
-      "bytes": 8118,
-      "sha256": "94f237a5aa5b7eefd73ff44f48b3bd260636f784625dfbc4274d6295e84334f2",
+      "bytes": 8495,
+      "sha256": "0614d0216eb64227987ef8c54165df3c036d7fb7ff14cce6d6051c3c3b6f4af3",
       "summary": "Short-lived TOA evidence for the exact Natal adhesion order.",
       "imports": [
         "pathlib",
@@ -111,7 +111,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 8
+      "symbol_count": 9
     },
     {
       "path": "adm_allocation.py",
@@ -181,8 +181,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 367216,
-      "sha256": "65cc98481fe1c593d0e9537e458fbbde55ea368acdda6c6e278952ff7730f5c7",
+      "bytes": 369554,
+      "sha256": "fb97ef40849f2b14e9963ffe32668a3aa1d072b0c9d3c2029c38ea7383e12124",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "adhesion_technician_evidence",
@@ -389,7 +389,7 @@
         "Tabela_codigo_baixa0711.catalog"
       ],
       "entrypoint": true,
-      "symbol_count": 152
+      "symbol_count": 153
     },
     {
       "path": "auth_store.py",
@@ -1688,8 +1688,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 43857,
-      "sha256": "bac62d95e810407a678558e1d0344a1fa916330ffe12e51e17580ee2d6671fcd",
+      "bytes": 44613,
+      "sha256": "25becb1abd4d4a4fe7911ae8313888bb55f95084db985797438fd27f014bf764",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -4603,8 +4603,8 @@
     {
       "path": "official_close.py",
       "category": "shared",
-      "bytes": 7306,
-      "sha256": "a913e2229bd603cf82c9006ccd99000f33e3d3fcd88b3990402616f80da95813",
+      "bytes": 7449,
+      "sha256": "d20003b698fb8bbe11a8192dd4e373cc50439550521f35bf985a46ad9c345d92",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "datetime",
@@ -5716,8 +5716,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 44923,
-      "sha256": "5d6931559a4d5e6365977f466808bd8d87c5f921fecf9a4cef9a6562d9f53d57",
+      "bytes": 46367,
+      "sha256": "fae59b007edf992fef7c559b90efc22f2a4888ca8d3796fe09a5f8a9e556bbad",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -6097,8 +6097,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 193559,
-      "sha256": "b5753c05c70ab417663f7089da459a8bc7bb65819aeee8d6e51ac869ec4e9125",
+      "bytes": 193549,
+      "sha256": "acca6ab247fac029e3503df6573c5cc7efa64348507dc4dffd044ecf3ec14cc3",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6831,15 +6831,15 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 40685,
-      "sha256": "591b50d891dd2fda639a303e1d06341fd534eca62f81224baee573ca1bef734f",
+      "bytes": 43803,
+      "sha256": "8a83029aa75e32a4ab386c40a6020085c087fc9b40d2b5670a963262f2026a77",
       "summary": "",
       "imports": [],
       "endpoints": [],
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 6
+      "symbol_count": 9
     },
     {
       "path": "tests/test_adhesion_technician_evidence.py",
@@ -6945,8 +6945,8 @@
     {
       "path": "tests/test_app.py",
       "category": "tests",
-      "bytes": 43951,
-      "sha256": "7b0da9ec07c5535333592b649fb37c61bb70bf0122987172d2d1889f00430a22",
+      "bytes": 45369,
+      "sha256": "a4e1b1e1bbb597aa2d9e340bd1edf0ab4286051fc394af954719d8fd0a392c93",
       "summary": "",
       "imports": [
         "app",
@@ -6976,7 +6976,7 @@
         "TECHNICIANS.resolve"
       ],
       "entrypoint": true,
-      "symbol_count": 38
+      "symbol_count": 39
     },
     {
       "path": "tests/test_atlas_bridge_client.py",
@@ -8658,8 +8658,8 @@
     {
       "path": "tests/test_official_close.py",
       "category": "tests",
-      "bytes": 6731,
-      "sha256": "8583cd990afdfd630ac05affe3ec040cab48de1dcaf489dfc3e2955781a7b903",
+      "bytes": 6917,
+      "sha256": "7c46b354ec1ad6fa6b7d21cfa4391df37bc646219e21101b60cef953a1e12e9c",
       "summary": "",
       "imports": [
         "datetime",
@@ -8671,7 +8671,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 11
+      "symbol_count": 12
     },
     {
       "path": "tests/test_official_close_code_catalog.py",

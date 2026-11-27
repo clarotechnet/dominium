@@ -391,7 +391,7 @@ test("keeps an unsupported code in review and plans only the independent signatu
  const voip={...f.order,id_os:2,num_os:"2612345680",service:"ADESAO - INSTALAR PONTO VOIP"};
  const virtua={...f.order,id_os:3,num_os:"2612345681",service:"ADESAO - INSTALAR PONTO VIRTUA"};
  f.capture.tasks.push(
-  {os_number:voip.num_os,status:"executed",close_code:"410"},
+  {os_number:voip.num_os,status:"executed",close_code:"411"},
   {os_number:virtua.num_os,status:"executed",close_code:"409"},
  );
  f.capture.imperium_matches.push(voip,virtua);
@@ -400,7 +400,7 @@ test("keeps an unsupported code in review and plans only the independent signatu
  f.deps.equipment=()=>assert.fail("Nenhum estoque compartilhado deve ser planejado");
  const planned=selectCandidates(f.payload,[f.order,voip,virtua],scope,f.deps);
  assert.deepEqual(planned.map(c=>c.numOs),[f.order.num_os]);
- assert.match(held[0],/2612345680.*410 indisponivel/);
+ assert.match(held[0],/2612345680.*411 indisponivel/);
  assert.match(held[1],/2612345681.*conciliar os itens/);
 });
 
@@ -688,6 +688,53 @@ test("one shared EMTA moves once in Virtua; VoIP code only; chip gets its own se
  virtua.service="INSTALAR PONTO VIRTUA";
  voip.service="INSTALAR PONTO VOIP";
  assert.equal(selectCandidates(f.payload,orders,scope,f.deps).find(c=>c.order===voip).batchCodeOnly,true);
+});
+
+test("allocates two or four Mesh serials without repeating the Virtua EMTA or sending TOA-only 410", async()=>{
+ const source=require("node:fs").readFileSync(require("node:path").join(__dirname,"../static/app.js"),"utf8");
+ const section=(start,end)=>source.slice(source.indexOf("function "+start),source.indexOf(end,source.indexOf("function "+start)));
+ const {toaLiveEquipmentDraft,toaLiveEquipmentType,expectedEquipmentType}=new Function([
+   'const normalize=value=>String(value||"").toUpperCase();',
+   section("toaLiveSerialLooksLikeChip","function toaLiveMaterialsDraft"),
+   section("expectedEquipmentType","const APPROVED_MATERIAL_EQUIVALENCE_GROUPS"),
+   "return {toaLiveEquipmentDraft,toaLiveEquipmentType,expectedEquipmentType};",
+ ].join("\n"))();
+ for(const [count,voipCode] of [[2,"410"],[4,"409"]]){
+  const f=fixture(),signature=f.order;
+  const order=(id,service)=>({...f.order,id_os:id,num_os:String(2612345680+id),service});
+  const virtua=order(2,"ADESAO - INSTALAR PONTO VIRTUA");
+  const voip=order(3,"ADESAO - INSTALAR PONTO VOIP");
+  const meshes=Array.from({length:count},(_,i)=>order(i+4,"INSTALACAO WIFI MESH"));
+  const orders=[signature,virtua,voip,...meshes];
+  f.capture.imperium_matches=orders.slice(1);
+  f.capture.tasks=orders.map(o=>({os_number:o.num_os,status:"executed",close_code:o===voip?voipCode:meshes.includes(o)?"477":"409"}));
+  const emta={serial:"AABBCCDDEEFF",type:"3 - EMTA"};
+  const equipment=meshes.map((_,i)=>({type:"6 - WIFI MESH",serial:"ABCDEF00000"+i}));
+  f.capture.installed_equipment=[emta,...equipment,{...emta}];
+  f.capture.removed_equipment=[];
+  f.capture.materials=[{code:"22026223",quantity:1}];
+  const deps={
+   ...f.deps,knownCode:()=>true,productive:()=>true,
+   confirmedCloses:[{...signature,report_date:scope.date,state:"confirmed"}],
+   equipmentType:i=>toaLiveEquipmentType(i,true),expectedType:s=>expectedEquipmentType(s,true),
+   equipment:c=>({installed:toaLiveEquipmentDraft(c.capture.installed_equipment,c.order,c.capture.imperium_matches,true),removed:[]}),
+   assign:cs=>cs.forEach(c=>c.materialOwner=c.order===virtua),
+  };
+  const sent=[], events=[];
+  await runBatch([scope.contract],{
+   active:()=>true,update:(...args)=>events.push(args),
+   prepare:async (_,hold,toaOnly)=>selectCandidates(f.payload,orders.slice(1),scope,{...deps,hold,toaOnly}),
+   send:async c=>{sent.push([c.numOs,c.code,c.batchCodeOnly?[]:deps.equipment(c).installed.map(i=>i.serial)]);return {closed:true};},
+  });
+  assert.deepEqual(sent.find(row=>row[0]===virtua.num_os),[virtua.num_os,"409",[emta.serial]]);
+  assert.deepEqual(meshes.map(({num_os})=>sent.find(row=>row[0]===num_os)),meshes.map(({num_os},i)=>[num_os,"477",[equipment[i].serial]]));
+  if(voipCode==="410"){
+   assert.equal(sent.some(row=>row[0]===voip.num_os),false);
+   assert.match(events.at(-1)[2],/\(410\) registrada somente no TOA/);
+  }else assert.deepEqual(sent.find(row=>row[0]===voip.num_os),[voip.num_os,"409",[]]);
+  f.capture.installed_equipment.splice(1,1);
+  assert.throws(()=>selectCandidates(f.payload,orders.slice(1),scope,deps),/Wi-Fi Mesh|Serial obrigatorio/);
+ }
 });
 
 test("generic close error is reconciled against exact durable stock result without write",async()=>{

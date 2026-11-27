@@ -30,6 +30,10 @@ class OfficialClosePlanTests(unittest.TestCase):
             removed_type_codes=self.removed_codes,
         )
 
+    def test_toa_only_410_never_builds_an_imperium_payload(self) -> None:
+        with self.assertRaisesRegex(ValueError, "410 exclusivo do TOA"):
+            self.plan({}, code="410")
+
     def test_builds_exact_productive_payload(self) -> None:
         result = self.plan(
             {

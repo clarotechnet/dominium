@@ -8611,6 +8611,7 @@ function toaLiveEquipmentType(item, batchAdhesion = false) {
   const label = normalize(`${item.type || ""} ${item.description || ""}`);
   const serial = String(item.serial || "").trim().toUpperCase();
   if (batchAdhesion && /\bSMART (?:CARD|SIM CARD NAGRA)\b/.test(label)) return "smart";
+  if (batchAdhesion && /\bMESH\b/.test(label)) return "mesh";
   if (label.includes("CHIP") || label.includes("SIMCARD") || label.includes("SIM CARD")) return "chip";
   if (toaLiveSerialLooksLikeChip(serial)) return "chip";
   if (label.includes("SMART")) return "smart";
@@ -8637,7 +8638,7 @@ function toaLiveEquipmentDraft(items, order, contractOrders = [], batchAdhesion 
     }
   }
   if (!values.length) return [];
-  const expected = expectedEquipmentType(order?.service || "");
+  const expected = expectedEquipmentType(order?.service || "", batchAdhesion);
   const matching = expected
     ? values.filter((item) => {
         if (expected === "decoder") return item.type === "decoder" || item.type === "smart";
@@ -8651,7 +8652,7 @@ function toaLiveEquipmentDraft(items, order, contractOrders = [], batchAdhesion 
     : (state.orders || []).filter((item) => String(item.contract) === String(order?.contract));
 
   const matchingContractOrders = activeOrders
-    .filter((item) => (expected ? expectedEquipmentType(item.service) === expected : !isNoEquipmentService(item.service)))
+    .filter((item) => (expected ? expectedEquipmentType(item.service, batchAdhesion) === expected : !isNoEquipmentService(item.service)))
     .sort((a, b) => Number(a.id_os || 0) - Number(b.id_os || 0));
 
   if (matchingContractOrders.length <= 1) {
@@ -9924,7 +9925,7 @@ function semiAutoCandidateEquipmentPlan(candidate) {
   const rawInstalled = toaLiveEquipmentDraft(capture.installed_equipment, match, contractOrders, batchAdhesion);
   const untypedRemoved = toaLiveEquipmentDraft(capture.removed_equipment, match, contractOrders, batchAdhesion);
   const installedType = rawInstalled.find((item) => item.type && item.type !== "auto")?.type || "";
-  const expectedType = expectedEquipmentType(match.service);
+  const expectedType = expectedEquipmentType(match.service, batchAdhesion);
   const rawRemoved = untypedRemoved.map((item) => {
     if (item.type && item.type !== "auto") return item;
     const resolvedType = installedType
@@ -10652,6 +10653,7 @@ async function executeDirectAutoClose(candidate, materials = []) {
     num_os: String(match.num_os || currentOrder.num_os || "").trim(),
     transport,
     ...(batch ? {adhesion_batch:true} : {}),
+    ...(inheritedCode ? {inherited_close_from_os: candidate.batchInheritedFrom} : {}),
     toa_technician: toaTechnician,
     observation: String(capture.technician_observation || capture.observation || "").trim(),
     operation_source: operationSource,
@@ -11727,8 +11729,9 @@ function materialValues() {
   });
 }
 
-function expectedEquipmentType(service) {
+function expectedEquipmentType(service, batchAdhesion = false) {
   const value = normalize(service);
+  if (batchAdhesion && /\bMESH\b/.test(value)) return "mesh";
   if (value.includes("CHIP") || value.includes("SIM CARD") || value.includes("SIMCARD") || value.includes("LINHA MOVEL")) return "chip";
   if (value.includes("STREAM") || value.includes("DECODER") || value.includes("CLARO TV") || value.includes("TV")) return "decoder";
   if (value.includes("PONTO VIRT") || value.includes("VIRTUA") || value.includes("EMTA") || value.includes("INTERNET") || value.includes("BANDA LARGA") || value.includes("WIFI") || value.includes("MODEM")) return "emta";
