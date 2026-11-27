@@ -74,13 +74,16 @@
     }
     throw new ToaBridgeUnavailableError("A ponte do TOA nao respondeu. Nenhuma baixa foi enviada nesta tentativa.");
   }
-  async function ordersForBatchContract(payload, contract, readFresh) {
+  async function ordersForBatchContract(payload, contract, readFresh, scope, deps) {
     const orders=payload.imperium_all_orders;
     if(payload.imperium_refresh?.refreshed===true && Array.isArray(orders) &&
        orders.every(order=>order?.contract && order.status)) {
       // This snapshot establishes which OS are still in the field. Only
       // refreshCandidate can authorize a send using a fresh field-list row.
-      return orders.filter(order=>String(order.contract)===contract && String(order.status).trim().toUpperCase()==="EM CAMPO");
+      const field=orders.filter(order=>String(order.contract)===contract && String(order.status).trim().toUpperCase()==="EM CAMPO");
+      const source=scope && unproductiveSource(payload,scope,deps);
+      if(!source || field.length>2 || !field.some(order=>isUnproductiveCompanion(order,source.sourceOs) &&
+        !capturedOrders(source.capture,order).some(match=>match.approved_state_hash))) return field;
     }
     return (await readFresh()).orders;
   }
@@ -128,12 +131,12 @@
       && order.manual_scope?.cache_date===scope.date
       && (!order.activity_id || String(order.activity_id)===String(capture.aid)));
   }
-  function addUnproductiveCompanion(payload, candidates, missing, scope, deps) {
-    if(missing.length!==1 || candidates.length>1) return;
+  function unproductiveSource(payload, scope, deps) {
     const captures=(payload.results||[]).filter(c=>String(c.contract)===scope.contract && captureDate(c)===scope.date);
     if(captures.length!==1) return;
     const [capture]=captures;
-    const tasks=(capture.tasks||[]).filter(task=>!displayOnlyTask(task));
+    const tasks=(capture.tasks||[]).filter(task=>!displayOnlyTask(task) &&
+      (String(task.os_number||"").trim() || String(task.close_code||"").trim()));
     if(tasks.length!==1) return;
     const [sourceTask]=tasks;
     const sourceOs=String(sourceTask.os_number||"");
@@ -141,15 +144,29 @@
     if(!sourceOs || sourceTask.registry_only || !deps.executed(sourceTask.status)
       || !/^\d{3}$/.test(code) || code==="430" || !deps.knownCode(code) || deps.productive?.(code)!==false
       || !["installed_equipment","removed_equipment","materials"].every(key=>Array.isArray(capture[key]) && !capture[key].length)) return;
+    return {capture,sourceTask,sourceOs,code};
+  }
+  function capturedOrders(capture, row) {
+    return (capture.imperium_matches||[]).filter(order=>String(order.num_os)===String(row.num_os)
+      && String(order.contract)===String(row.contract) && String(order.id_os)===String(row.id_os));
+  }
+  function isUnproductiveCompanion(order, sourceOs) {
+    return String(order.num_os)!==sourceOs && codeOnly(order.service)
+      && !/\b(?:DESCONEXAO|RETIRADA|CANCELAMENTO|STREAM(?:ING)?)\b/.test(serviceWords(order.service));
+  }
+  function addUnproductiveCompanion(payload, candidates, missing, scope, deps) {
+    if(missing.length!==1 || candidates.length>1) return;
+    const source=unproductiveSource(payload,scope,deps);
+    if(!source) return;
+    const {capture,sourceTask,sourceOs,code}=source;
     const [row]=missing;
+    if(!isUnproductiveCompanion(row,sourceOs)) return;
     const numOs=String(row.num_os);
-    const service=serviceWords(row.service);
-    if(!codeOnly(row.service) || /\b(?:DESCONEXAO|RETIRADA|CANCELAMENTO|STREAMING)\b/.test(service)
-      || sourceOs===numOs) return;
-    const exact=(capture.imperium_matches||[]).filter(order=>String(order.num_os)===numOs
-      && String(order.contract)===scope.contract && String(order.id_os)===String(row.id_os));
-    if(exact.length!==1) return;
-    const [order]=exact;
+    const exact=capturedOrders(capture,row);
+    // Some versions of the TOA bridge only attach orders present in a task.
+    // A separately read field row carries its own backend approval.
+    const order=exact[0]||row;
+    if(exact.length>1 || (!exact.length && !row.approved_state_hash)) return;
     const route=validateCapture(capture,scope,deps,[sourceOs,numOs]);
     if(!approvedActivityOrder(order,capture,scope,deps,route)) return;
     const primary=candidates[0];
@@ -613,14 +630,16 @@
             {active, wait: sleep, notify: () => update(contract, "Consultando", "Ponte do TOA aguardando resposta.")},
           );
           if(!active()) throw Error("Cidade/data alterada; fila interrompida.");
-          const orders = await ordersForBatchContract(payload, contract, () =>
-            readFieldOrders(contract, "Aguardando lista atualizada do Imperium."));
-          return selectCandidates(payload,orders,{profile,contract,date,epoch},{
+          const scope={profile,contract,date,epoch};
+          const deps={
             complete:disconnectActivityComplete,executed:disconnectTaskExecuted,route:automationProviderLabel,hold,
             confirmedCloses:Array.isArray(initialReport?.records)?initialReport.records:[],
             valid:validToaCloseSnapshot,knownCode:code=>state.closeCodes.some(c=>c.code===code),
             assign:semiAutoAssignMaterialOwners,equipment:semiAutoCandidateEquipmentPlan,materials:toaLiveMaterialsDraft,allowsMaterials:closeCodeAllowsMaterials,equipmentType:item=>toaLiveEquipmentType(item,true),expectedType:expectedEquipmentType,productive:code=>Boolean(state.closeCodes.find(c=>c.code===code)?.productive)
-          });
+          };
+          const orders = await ordersForBatchContract(payload, contract, () =>
+            readFieldOrders(contract, "Aguardando lista atualizada do Imperium."),scope,deps);
+          return selectCandidates(payload,orders,scope,deps);
         },
         async send(candidate) {
           // A previously accepted/uncertain order is not submitted again.
