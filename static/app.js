@@ -10637,30 +10637,21 @@ async function executeDirectAutoClose(candidate, materials = []) {
     || (state.officialCloseEnabled ? "official_http" : (hasDataSnap ? "datasnap" : "official_http"))
   );
 
-  const toaTechName = String(
-    capture.assigned_technician?.name
-    || capture.technician_name
-    || capture.technician
-    || ""
-  ).trim();
-  const toaTechLogin = String(
-    capture.assigned_technician?.external_id
-    || capture.assigned_technician?.login
-    || capture.technician_login
-    || ""
-  ).trim().toUpperCase();
-  const toaTechId = String(capture.assigned_technician?.id || "").trim();
+  // An inherited code has no TOA technician record for the companion itself.
+  // The backend reads the installer from that exact Imperium order.
+  const inheritedCode = batch && candidate.batchCodeOnly && candidate.batchInheritedFrom;
+  const toaTechnician = inheritedCode ? undefined : {
+    name: String(capture.assigned_technician?.name || capture.technician_name || capture.technician || "").trim(),
+    login: String(capture.assigned_technician?.external_id || capture.assigned_technician?.login || capture.technician_login || "").trim().toUpperCase(),
+    id: String(capture.assigned_technician?.id || "").trim(),
+  };
 
   const body = {
     profile: state.profile,
     code,
     num_os: String(match.num_os || currentOrder.num_os || "").trim(),
     transport,
-    toa_technician: {
-      name: toaTechName,
-      login: toaTechLogin,
-      id: toaTechId,
-    },
+    toa_technician: toaTechnician,
     observation: String(capture.technician_observation || capture.observation || "").trim(),
     operation_source: operationSource,
     operation_identity: identity,

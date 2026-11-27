@@ -545,6 +545,7 @@ endpoint	path
 /api/toa-datalake/feed?profile=natal	tests/test_private_operational_migration.cjs
 /api/toa-live/connect	tests/test_private_operational_migration.cjs
 /api/voice/synthesize	tests/test_private_operational_migration.cjs
+/api/orders/2/close	tests/test_semiauto_frontend.js
 /api/serials/consult?serials=SERIAL000000	tests/test_serial_datasnap_history.py
 /api/serials/consult?serials=SERIAL000000&mode=analitico&profile=natal	tests/test_serial_datasnap_history.py
 /api/serials/consult?serials=SERIAL000000&profile=natal&profile=recife	tests/test_serial_datasnap_history.py
