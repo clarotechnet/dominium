@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-27T19:31:33+00:00",
+  "generated_at": "2026-11-27T19:54:34+00:00",
   "schema": 2,
-  "source_fingerprint": "b4f8a1efe6a80a23d228e0aa35786b7161f80f48a931c44d6f74804f7a1ecfc5",
+  "source_fingerprint": "889103f79df3e84db13222c6016c36d27f4f3b6babae2457052f1ee828aad64b",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -97,8 +97,8 @@
     {
       "path": "adhesion_technician_evidence.py",
       "category": "shared",
-      "bytes": 6177,
-      "sha256": "ffc72017281198cb3c8dbd87ba91abe28027f60ae9d9431e751f2b1b2bfb4176",
+      "bytes": 8118,
+      "sha256": "94f237a5aa5b7eefd73ff44f48b3bd260636f784625dfbc4274d6295e84334f2",
       "summary": "Short-lived TOA evidence for the exact Natal adhesion order.",
       "imports": [
         "pathlib",
@@ -111,7 +111,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 7
+      "symbol_count": 8
     },
     {
       "path": "adm_allocation.py",
@@ -181,8 +181,8 @@
     {
       "path": "app.py",
       "category": "orchestration",
-      "bytes": 364952,
-      "sha256": "d32817feb401153607625feba84428965d5c508d9eeff64e603018f5cb36818a",
+      "bytes": 367216,
+      "sha256": "65cc98481fe1c593d0e9537e458fbbde55ea368acdda6c6e278952ff7730f5c7",
       "summary": "DOMINIUM | MAPA DE RESPONSABILIDADE",
       "imports": [
         "adhesion_technician_evidence",
@@ -1688,8 +1688,8 @@
     {
       "path": "docs/agent/memory/OPERATIONS_JOURNAL.md",
       "category": "docs",
-      "bytes": 43143,
-      "sha256": "4893a9c3fb8c4c3b7b754b59a30e4f39b6ac8744e20c988a6ce61c5628ef33fc",
+      "bytes": 43857,
+      "sha256": "bac62d95e810407a678558e1d0344a1fa916330ffe12e51e17580ee2d6671fcd",
       "summary": "DOMINIUM — diário de decisões e entregas dos agentes",
       "imports": [],
       "endpoints": [],
@@ -5716,8 +5716,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 43486,
-      "sha256": "249d5aeade9dbb610d9dc64c0b32601196cb0c9d35009e93ab4505bc33011ec1",
+      "bytes": 44923,
+      "sha256": "5d6931559a4d5e6365977f466808bd8d87c5f921fecf9a4cef9a6562d9f53d57",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -5729,7 +5729,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 44
+      "symbol_count": 45
     },
     {
       "path": "static/all-cities-scope.css",
@@ -6097,8 +6097,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 193575,
-      "sha256": "3e6fc6cf6bb1125a35f2358007061773604c599f90fbfceb0084e33c0c0f4e61",
+      "bytes": 193559,
+      "sha256": "b5753c05c70ab417663f7089da459a8bc7bb65819aeee8d6e51ac869ec4e9125",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6831,8 +6831,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 38561,
-      "sha256": "7955605c9e1cdd86f0f8dd8cac3a9e0dc24b19dd7e5e4eb4d32c4af5abd91ba2",
+      "bytes": 40685,
+      "sha256": "591b50d891dd2fda639a303e1d06341fd534eca62f81224baee573ca1bef734f",
       "summary": "",
       "imports": [],
       "endpoints": [],
@@ -6844,8 +6844,8 @@
     {
       "path": "tests/test_adhesion_technician_evidence.py",
       "category": "tests",
-      "bytes": 4780,
-      "sha256": "9e51e256153c98119b2ff3f7704402cb1b7b6d24f2c6bf2d62ba26b34447512a",
+      "bytes": 5885,
+      "sha256": "1d82478181f1bf1c52cd30827db072a0cf233a68bbc523a64c254336f92dd262",
       "summary": "",
       "imports": [
         "adhesion_technician_evidence",
@@ -6857,7 +6857,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": false,
-      "symbol_count": 10
+      "symbol_count": 11
     },
     {
       "path": "tests/test_adm_allocation.py",
@@ -8407,8 +8407,8 @@
     {
       "path": "tests/test_installer_reassignment.py",
       "category": "tests",
-      "bytes": 18267,
-      "sha256": "0822801264d594155c2418ffef632fe1a4d71178ca39509557dbc9cbe3375652",
+      "bytes": 18969,
+      "sha256": "fec211879d7402f6523ca681133f37e90dd54e43299fc1c77f82fe8ee56db6c5",
       "summary": "",
       "imports": [
         "app",
@@ -8424,7 +8424,7 @@
       "env_vars": [],
       "datasnap_methods": [],
       "entrypoint": true,
-      "symbol_count": 20
+      "symbol_count": 21
     },
     {
       "path": "tests/test_intelligence_frontend.js",

@@ -15,7 +15,7 @@
 # A ordem executavel abaixo foi preservada para evitar regressao.
 # =============================================================================
 import argparse
-from adhesion_technician_evidence import AdhesionTechnicianEvidence
+from adhesion_technician_evidence import AdhesionTechnicianEvidence, matches_imported_unproductive_alias
 from desc_review_proxy import DescReviewProxy, ProxyError
 import base64
 import csv
@@ -4504,6 +4504,7 @@ def _reconcile_order_installer_with_toa(
     report_date: dt.date,
     *,
     gate_already_acquired: bool = False,
+    allow_imported_unproductive_alias: bool = False,
 ) -> dict | None:
     """Ensure the order installer in Imperium matches the technician in TOA.
 
@@ -4545,6 +4546,16 @@ def _reconcile_order_installer_with_toa(
     toa_login = str(
         toa_tech.get("login") or toa_tech.get("external_id") or ""
     ).strip().upper()
+    batch = body.get("adhesion_batch") is True
+    if batch and toa_login:
+        canonical = _technician_by_current_name(current_installer_name) or {}
+        current_login = str(canonical.get("login") or "").strip().upper()
+        if current_login:
+            if current_login == toa_login:
+                return current_installer
+            raise InstallerMismatchUnresolvedError(
+                f"OS {order.num_os}: Imperium {current_installer_name} ({current_login}); TOA {toa_login}."
+            )
 
     # Check if current Imperium installer already matches TOA
     if toa_name and _same_technician_name(current_installer_name, toa_name):
@@ -4555,6 +4566,17 @@ def _reconcile_order_installer_with_toa(
             canon_name = str(resolved_tech.get("name") or "").strip()
             if canon_name and _same_technician_name(current_installer_name, canon_name):
                 return current_installer
+
+    if allow_imported_unproductive_alias and matches_imported_unproductive_alias(
+        profile.key, order, report_date, toa_tech, current_installer_id, current_installer_name,
+        _enrich_orders(profile, report_date, [order])[0],
+    ):
+        return current_installer
+    if batch:
+        raise InstallerMismatchUnresolvedError(
+            f"OS {order.num_os}: vinculo do instalador {current_installer_name} "
+            f"com o login TOA {toa_login or 'nao informado'} nao confirmado."
+        )
 
     # 3. Mismatch detected! Check if installer change is enabled
     if not getattr(profile, "installer_change_enabled", False):
@@ -4647,6 +4669,8 @@ def _official_technician_code(
     order: Order,
     scheduled_date: dt.date,
     body: dict | None = None,
+    *,
+    allow_imported_unproductive_alias: bool = False,
 ) -> tuple[str, str, int]:
     current = profile.api.order_installer(order)
     current_name = str(current.get("installer_name", "")).strip()
@@ -4657,7 +4681,23 @@ def _official_technician_code(
     if installer_id <= 0:
         raise ValueError("O instalador atual da OS nao possui ID valido no Imperium")
 
+    supplied = body.get("toa_technician") if isinstance(body, dict) else None
+    if isinstance(supplied, dict) and body.get("adhesion_batch") is True:
+        supplied_login = str(supplied.get("external_id") or supplied.get("login") or "").strip().upper()
+        canonical = _technician_by_current_name(current_name) or {}
+        current_login = str(canonical.get("login") or "").strip().upper()
+        if supplied_login and current_login:
+            if current_login != supplied_login:
+                raise InstallerMismatchUnresolvedError(
+                    f"OS {order.num_os}: Imperium {current_name} ({current_login}); TOA {supplied_login}."
+                )
+            return current_login, current_name, installer_id
+
     enriched = _enrich_orders(profile, scheduled_date, [order])[0]
+    if allow_imported_unproductive_alias and matches_imported_unproductive_alias(
+        profile.key, order, scheduled_date, supplied, installer_id, current_name, enriched,
+    ):
+        return str(enriched["technician_login"]).strip().upper(), current_name, installer_id
     captured_login = str(enriched.get("technician_login", "")).strip().upper()
     captured_name = str(enriched.get("technician", "")).strip()
     if not captured_login:
@@ -4686,7 +4726,6 @@ def _official_technician_code(
         if not captured_name or _same_technician_name(current_name, captured_name):
             return captured_login, current_name or captured_name, installer_id
 
-    supplied = body.get("toa_technician") if isinstance(body, dict) else None
     if ADHESION_TECHNICIAN_EVIDENCE.matches(
         getattr(profile, "key", ""), order, scheduled_date, supplied,
         installer_id, lambda: profile.api.list_stock_technicians(),
@@ -4735,6 +4774,7 @@ def _build_official_panel_plan(
         order,
         scheduled_date,
         body=body,
+        allow_imported_unproductive_alias=not close_definition.productive,
     )
     removed_type_codes = {
         key: value.code
@@ -8289,6 +8329,7 @@ class PanelHandler(BaseHTTPRequestHandler):
             if not stock_retry_request_id:
                 _reconcile_order_installer_with_toa(
                     profile, order, body, report_date, gate_already_acquired=gate_acquired,
+                    allow_imported_unproductive_alias=not close_definition.productive,
                 )
             official_plan = (
                 _build_official_panel_plan(

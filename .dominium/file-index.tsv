@@ -6,11 +6,11 @@ imperium	.imperium-project.json					a6c72b51e8822cc7
 shared	.mcp.json					488abc9205f55770
 shared	ABRIR LEITOR DE FLUXOS.cmd					2dff58e7ef08f81c
 shared	Abrir Painel.cmd					cc450d4a69af656f
-shared	adhesion_technician_evidence.py	7			Short-lived TOA evidence for the exact Natal adhesion order.	ffc72017281198cb
+shared	adhesion_technician_evidence.py	8			Short-lived TOA evidence for the exact Natal adhesion order.	94f237a5aa5b7eef
 shared	adm_allocation.py	3			Read-only allocation for DESC multi-OS activities.	a9434a5b2e81e0ca
 shared	AGENTS.md			1	DOMINIUM agent guide	d23a2f7665c0ed43
 shared	api_security.py	9	6		Controles centrais de seguranca para as integracoes do DOMINIUM.	76a2328be5b8d312
-orchestration	app.py	152	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	d32817feb4011536
+orchestration	app.py	152	81	44	DOMINIUM | MAPA DE RESPONSABILIDADE	65cc98481fe1c593
 shared	auth_store.py	28			Autenticacao local do DOMINIUM.	373b039733be460c
 shared	auth_store_postgres.py	18			Backend PostgreSQL para identidade, sessao e auditoria do DOMINIUM.	9581b0862c3c7811
 shared	auto_improductive_close.py	23				67e908956f5d6ca3
@@ -88,7 +88,7 @@ docs	docs/agent/memory/checkpoints/2026-10-25-fortaleza-1217.md				Fortaleza —
 docs	docs/agent/memory/CURRENT_STATE.md			2	18/11/2026 — Vistoria diária de materiais em preparação	88321d6c15d825d5
 docs	docs/agent/memory/DECISIONS.md				DOMINIUM — decisões arquiteturais permanentes	a638ce63e51eab14
 docs	docs/agent/memory/DESC_ADESAO_REVALIDACAO_20261029.md				DESC, Adesão e lote 106 — revalidação em 29/10/2026	cfd90b1e827f71dd
-docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	4893a9c3fb8c4c3b
+docs	docs/agent/memory/OPERATIONS_JOURNAL.md			1	DOMINIUM — diário de decisões e entregas dos agentes	bac62d95e810407a
 docs	docs/agent/MEMORY_SYSTEM.md				DOMINIUM Memory — memória portátil para ChatGPT, Codex, Claude e outros	63bbf9a16b302c8c
 docs	docs/agent/ORDER_CLOSE_PRIVATE_BRIDGE_20261027.md				Estado atualizado apos autorizacao explicita	d61e5235d69a0aed
 docs	docs/agent/ORDER_REPORTS_20261111.md				Relatórios nativos de OS — 11/11/2026	797243aa5135cbdb
@@ -301,7 +301,7 @@ imperium	serialized_transfer.py	7			DOMINIUM | MAPA DE RESPONSABILIDADE	99d03cfc
 shared	serialized_transfer_protocol_templates.json			2		e2b8d2a089b99a02
 toa	show_toa_cloud_collector_setup.py	1			Mostra a URL e a chave do coletor protegidas pelo DPAPI deste Windows.	4b6b90457606c503
 frontend	static/adhesion-batch.css					d4d12428bcc10df7
-frontend	static/adhesion-batch.js	44	4		Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */	249d5aeade9dbb61
+frontend	static/adhesion-batch.js	45	4		Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */	5d6931559a4d5e63
 frontend	static/all-cities-scope.css				DOMINIUM: "Todos" is a cross-module read-only scope, not an operational profile. */	d9fde79cee63719c
 frontend	static/all-operations.js	14	3		Visão de quatro operações, somente leitura: nenhuma alteração de perfil global. */	b894d76020be5578
 frontend	static/atlas-query-ui.js	23	2		DOMINIUM / Pendente — automated Atlas equipment QUERY (read only). */	e187590e36e6e6ac
@@ -327,7 +327,7 @@ frontend	static/dominium-theme.css				DOMINIUM workspace and shared interface pa
 frontend	static/fflate.browser.min.js	22				c3b34f2e9f5e74d4
 frontend	static/fflate.LICENSE.txt				MIT License	805f6cb28bb8b6d3
 frontend	static/impeccable.css					1ee5b4c5d97f7a64
-frontend	static/index.html		1			3e6fc6cf6bb1125a
+frontend	static/index.html		1			b5753c05c70ab417
 frontend	static/LUCIDE-LICENSE.txt				ISC License	b495047bd93a9b06
 frontend	static/lucide.min.js	1				ab85225ecc1daa20
 frontend	static/material-stock-audit.js	15	1			b484bd2f18b0b23e
@@ -375,8 +375,8 @@ tests	tests/fixtures/legacy_movement_reader.py	13			Frozen legacy Windows reader
 tests	tests/qa_disconnection_browser.js	1	6			513566fce070a1c2
 tests	tests/qa_photo_assist_browser.js	4	6			462b748e72dda892
 tests	tests/qa_workspace_browser.js	1	3			9e5faa386308b743
-tests	tests/test_adhesion_batch.cjs	6				7955605c9e1cdd86
-tests	tests/test_adhesion_technician_evidence.py	10				9e51e256153c9811
+tests	tests/test_adhesion_batch.cjs	6				591b50d891dd2fda
+tests	tests/test_adhesion_technician_evidence.py	11				1d82478181f1bf1c
 tests	tests/test_adm_allocation.py	9				75b86d318f82567e
 tests	tests/test_agent_memory.py	9			Portable agent memory regression tests; no network, secrets or production changes.	a00628018291348f
 tests	tests/test_all_operations_view.cjs	2	3			7f88face26cb106a
@@ -457,7 +457,7 @@ tests	tests/test_import_audit_history.py	3				6df23f085d3bdbda
 tests	tests/test_import_hostinger.js	3	7			798f5671d881d663
 tests	tests/test_improductive_catalog_close.py	4				34a290574b15bc9a
 tests	tests/test_installer_change.py	11				c0e798b009cdfd15
-tests	tests/test_installer_reassignment.py	20	1			0822801264d59415
+tests	tests/test_installer_reassignment.py	21	1			fec211879d7402f6
 tests	tests/test_intelligence_frontend.js	6				ccd4a4f46b3303ac
 tests	tests/test_manual_materials.py	14				13ebf22bf45dd258
 tests	tests/test_manual_serial_installer.py	4				2ffbc70495e2cdcf

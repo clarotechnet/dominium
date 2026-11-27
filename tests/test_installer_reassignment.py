@@ -175,6 +175,19 @@ class InstallerReassignmentTests(unittest.TestCase):
         self.assertEqual(result["installer_id"], 339175)
         self.api.change_order_installer.assert_not_called()
 
+    def test_batch_keeps_a_conflicting_installer_in_review(self) -> None:
+        self.api.order_installer.return_value = {
+            "installer_id": 339177, "installer_name": "GUILHERME HENRIQUE",
+        }
+        body = {
+            "adhesion_batch": True,
+            "toa_technician": {"name": "GUILHERME HENRIQUE", "login": "Z657613"},
+        }
+        with patch("app._technician_by_current_name", return_value={"login": "Z123456"}):
+            with self.assertRaisesRegex(InstallerMismatchUnresolvedError, "Z123456.*Z657613"):
+                _reconcile_order_installer_with_toa(self.profile, self.order, body, dt.date.today())
+        self.api.change_order_installer.assert_not_called()
+
     def test_divergence_reassigns_installer_successfully(self) -> None:
         # Initial call: order in Imperium is with Guilherme
         # After change: order in Imperium is with Janderson

@@ -2,7 +2,7 @@ import datetime as dt
 import unittest
 from types import SimpleNamespace
 
-from adhesion_technician_evidence import AdhesionTechnicianEvidence
+from adhesion_technician_evidence import AdhesionTechnicianEvidence, matches_imported_unproductive_alias
 
 
 class AdhesionTechnicianEvidenceTests(unittest.TestCase):
@@ -43,6 +43,28 @@ class AdhesionTechnicianEvidenceTests(unittest.TestCase):
         self.assertFalse(self.matches(supplied={**self.assigned, "external_id": "Z123455"}))
         self.now += 301
         self.assertFalse(self.matches())
+
+    def test_signed_unproductive_alias_uses_installer_id_and_exact_order(self):
+        approved = self.result()["results"][0]["imperium_matches"][0]
+        approved.update(
+            approved_state_hash="validated",
+            technician_login="Z657807",
+            technician="ESLI MELQUISEDEQUE DA SILVA",
+        )
+        supplied = {"login": "Z657807", "name": "NOME EXIBIDO DIVERGENTE"}
+
+        def match(row=approved, installer_id=338736, tech=supplied, date=self.date, profile="natal"):
+            return matches_imported_unproductive_alias(
+                profile, self.order, date, tech, installer_id, "ESLI MELQUISEDEQUI D", row,
+            )
+
+        self.assertTrue(match())
+        self.assertFalse(match(installer_id=20))
+        self.assertFalse(match(tech={"login": "Z131558"}))
+        self.assertFalse(match(row={**approved, "num_os": "2662222223"}))
+        self.assertFalse(match(row={**approved, "approved_state_hash": ""}))
+        self.assertFalse(match(date=dt.date(2026, 11, 26)))
+        self.assertFalse(match(profile="recife"))
 
     def test_conflicting_active_login_remains_in_review(self):
         self.reader.record("natal", self.result())

@@ -376,6 +376,44 @@ test("limits bridge retries and preserves cancellation and other lookup failures
   assert.equal(reads, 6);
 });
 
+test("retries a TOA scope response and retains review when the date and route are still inconclusive",async()=>{
+ const error=Object.assign(new Error("Error: adhesion_activity_scope_unconfirmed"),{status:502});
+ const options={active:()=>true,wait:async()=>{},notify:()=>{}};
+ const payload={ok:true,contract:scope.contract};
+ let reads=0;
+ assert.equal(await readBatchToa(async()=>{if(++reads===1)throw error;return payload;},options),payload);
+ assert.equal(reads,2);
+ await assert.rejects(readBatchToa(async()=>{throw error;},options),/data e na rota NTL\/PWM/);
+});
+
+test("keeps an unsupported code in review and plans only the independent signature order",()=>{
+ const f=fixture();
+ const voip={...f.order,id_os:2,num_os:"2612345680",service:"ADESAO - INSTALAR PONTO VOIP"};
+ const virtua={...f.order,id_os:3,num_os:"2612345681",service:"ADESAO - INSTALAR PONTO VIRTUA"};
+ f.capture.tasks.push(
+  {os_number:voip.num_os,status:"executed",close_code:"410"},
+  {os_number:virtua.num_os,status:"executed",close_code:"409"},
+ );
+ f.capture.imperium_matches.push(voip,virtua);
+ const held=[];
+ f.deps.hold=items=>held.push(...items);
+ f.deps.equipment=()=>assert.fail("Nenhum estoque compartilhado deve ser planejado");
+ const planned=selectCandidates(f.payload,[f.order,voip,virtua],scope,f.deps);
+ assert.deepEqual(planned.map(c=>c.numOs),[f.order.num_os]);
+ assert.match(held[0],/2612345680.*410 indisponivel/);
+ assert.match(held[1],/2612345681.*conciliar os itens/);
+});
+
+test("a prior accepted HTTP 200 stays pending and a confirmation with a different code remains in review",()=>{
+ const {priorCloseOutcome}=require("../static/adhesion-batch.js");
+ const accepted={num_os:"2612345680",close_code:"409",state:"pending",official_http_status:200,accepted_at:"2026-11-27T16:37:09-03:00"};
+ assert.match(priorCloseOutcome(accepted).reason,/16:37.*Reenvio bloqueado/);
+ assert.equal(priorCloseOutcome(accepted).pending,true);
+ const confirmed={...accepted,state:"confirmed"};
+ assert.equal(priorCloseOutcome(confirmed,[],"409").closed,true);
+ assert.match(priorCloseOutcome(confirmed,[],"110").reason,/codigo diferente do 110/);
+});
+
 test("uses the refreshed lookup status list without repeating the initial field read", async () => {
  const {ordersForBatchContract} = require("../static/adhesion-batch.js");
  const active = {contract: scope.contract, num_os: "1", status: "EM CAMPO"};
@@ -490,7 +528,7 @@ test("leaves the missing companion in review when the exact unproductive pair is
  for(const change of changes){
   const f=unproductivePair("110","INSTALACAO DE CABO GPON");
   change(f);
-  assert.throws(()=>selectCandidates(f.payload,[f.order,f.companion],scope,f.deps),/codigo de baixa nao confirmado|Codigo de baixa ausente ou invalido/);
+  assert.throws(()=>selectCandidates(f.payload,[f.order,f.companion],scope,f.deps),/codigo de baixa nao confirmado|codigo 999 indisponivel/);
  }
 });
 
