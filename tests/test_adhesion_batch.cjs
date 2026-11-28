@@ -766,3 +766,76 @@ test("confirmed executed chip task maps generic TOA success to official 706",()=
  f.capture.installed_equipment=[];
  assert.throws(()=>selectCandidates(f.payload,[f.order],scope,f.deps),/Chip sem ICCID/);
 });
+
+test("a single telephone ICCID resolves the exact chip OS without a TOA close code",()=>{
+ const f=fixture(), signature=f.order;
+ const virtua={...signature,id_os:2,num_os:"2612345679",service:"ADESAO - INSTALAR PONTO VIRTUA"};
+ const chip={...signature,id_os:3,num_os:"2612345680",service:"ENVIO DE CHIP VIA TECNICO",
+  operation_source:"toa_import",
+  import_scope:{expected_profile_key:"natal",source_hash:"test",source_file:"Atividades-NTL-DMV_24_11_26.csv"},
+  operation_identity:{profile_key:"natal",contract:scope.contract,activity_id:f.capture.aid}};
+ const emta={type:"3 - EMTA",serial:"AABBCCDDEEFF"};
+ const sim={type:"TELEFONICO",serial:"89550000000000000001"};
+ const televisionCard={type:"SMART CARD MERCANTIL",serial:"89550000000000000002"};
+ const cable={type:"HFC",material_code:"22026219",quantity:9};
+ const {toaLiveEquipmentDraft,toaLiveEquipmentType,expectedEquipmentType}=loadAdhesionEquipment();
+ f.capture.imperium_matches=[signature,virtua,chip];
+ f.capture.imperium_all_orders=[{...signature,status:"CONCLUIDA"},virtua,chip];
+ f.capture.removed_equipment=[];
+ f.capture.customer_equipment=[televisionCard];
+ f.capture.tasks.push({os_number:virtua.num_os,status:"E",close_code:"409"});
+ f.capture.tasks.push({os_number:chip.num_os,status:"E",close_code:""});
+ f.deps.executed=s=>["E","N","executed"].includes(s);
+ f.deps.knownCode=c=>["409","410","706","106"].includes(c);
+ f.deps.productive=c=>c==="409";
+ f.deps.equipmentType=i=>toaLiveEquipmentType(i,true);
+ f.deps.expectedType=s=>expectedEquipmentType(s,true);
+ f.deps.assign=cs=>cs.forEach(c=>{c.materialOwner=c.order===virtua;});
+ f.deps.equipment=c=>({installed:toaLiveEquipmentDraft(c.capture.installed_equipment,c.order,c.capture.imperium_matches,true),removed:[]});
+
+ for(const fromMaterials of [false,true]){
+  f.capture.installed_equipment=fromMaterials?[emta]:[emta,sim];
+  const simLine={type:"TELEFONICO",description:sim.serial,quantity:1};
+  f.capture.materials=[cable,simLine];
+  f.capture.tasks[2]={os_number:chip.num_os,status:"E",close_code:""};
+  const candidates=selectCandidates(f.payload,[virtua,chip],scope,f.deps);
+  assert.deepEqual(candidates.map(c=>[c.numOs,c.code]),[[virtua.num_os,"409"],[chip.num_os,"706"]]);
+  assert.deepEqual(f.deps.equipment(candidates[0]).installed,[{type:"emta",serial:emta.serial}]);
+  assert.deepEqual(f.deps.equipment(candidates[1]).installed,[{type:"chip",serial:sim.serial}]);
+  assert.deepEqual(candidates[0].capture.materials,[cable]);
+  assert.deepEqual(f.capture.materials,[cable,simLine]);
+  assert.equal(candidates[1].materialOwner,false);
+ }
+ f.capture.tasks[2]={os_number:chip.num_os,status:"NAO LOCALIZADA NA CAPTURA TOA",close_code:"",
+  source:"imperium_contract_status",imperium_only:true};
+ assert.equal(selectCandidates(f.payload,[virtua,chip],scope,f.deps)[1].code,"706");
+ const source=chip.operation_identity.activity_id;
+ chip.operation_identity.activity_id="other";
+ assert.throws(()=>selectCandidates(f.payload,[virtua,chip],scope,f.deps),/codigo de baixa nao confirmado/);
+ chip.operation_identity.activity_id=source;
+
+ f.capture.tasks[2]={os_number:chip.num_os,status:"N",close_code:""};
+ assert.throws(()=>selectCandidates(f.payload,[virtua,chip],scope,f.deps),/sem codigo/);
+ f.capture.tasks[2]={os_number:chip.num_os,status:"N",close_code:"106"};
+ f.capture.installed_equipment=[emta];
+ f.capture.materials=[cable];
+ assert.equal(selectCandidates(f.payload,[virtua,chip],scope,f.deps)[1].code,"106");
+ f.capture.tasks[2]={os_number:chip.num_os,status:"E",close_code:"410"};
+ assert.throws(()=>selectCandidates(f.payload,[virtua,chip],scope,f.deps),/410/);
+ f.capture.tasks[2]={os_number:chip.num_os,status:"E",close_code:""};
+ f.capture.installed_equipment=[emta,televisionCard];
+ assert.throws(()=>selectCandidates(f.payload,[virtua,chip],scope,f.deps),/ICCID/);
+ f.capture.installed_equipment=[emta,sim,{...sim,serial:"89550000000000000003"}];
+ assert.throws(()=>selectCandidates(f.payload,[virtua,chip],scope,f.deps),/ICCID/);
+});
+
+function loadAdhesionEquipment(){
+ const text=require("node:fs").readFileSync(require("node:path").join(__dirname,"../static/app.js"),"utf8");
+ const section=(start,end)=>text.slice(text.indexOf("function "+start),text.indexOf(end,text.indexOf("function "+start)));
+ return new Function([
+  'const normalize=value=>String(value||"").toUpperCase();',
+  section("toaLiveSerialLooksLikeChip","function toaLiveMaterialsDraft"),
+  section("expectedEquipmentType","const APPROVED_MATERIAL_EQUIVALENCE_GROUPS"),
+  "return {toaLiveEquipmentDraft,toaLiveEquipmentType,expectedEquipmentType};",
+ ].join("\n"))();
+}

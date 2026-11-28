@@ -637,3 +637,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Regressoes de dois e quatro Mesh, serial repetido, codigo 410, caso GPON e alias cadastrado, com simulacao sem escritas.
 
 **Próximo passo/pendência:** Verificar a publicacao do site e a continuidade do painel Windows sem reprocessar OS.
+
+## 2026-11-28 12:39 UTC — Adesao reconhece ICCID instalado na OS de chip
+
+**Motivo:** TOA pode devolver o ICCID como TELEFONICO ou na lista de miscelaneas sem devolver o codigo da tarefa de chip.
+
+**Alterado:** A fila prepara 706 na OS de envio de chip quando ha um ICCID unico na atividade concluida e tarefa executada ou vinculo exato da importacao. Preserva codigo explicito de outro resultado e exclui Smart Cards de TV.
+
+**Verificação:** Regressao cobre assinatura concluida, Virtua com miscelaneas e chip, ICCID em miscelanea, codigo 410, status N e identidade divergente.
+
+**Próximo passo/pendência:** Validar producao em modo leitura e usar a fila normal para novas os.
