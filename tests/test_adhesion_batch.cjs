@@ -1,9 +1,8 @@
 "use strict";
 const test=require("node:test"),assert=require("node:assert/strict");
-const {parseContracts,isAdhesionBucket,codeOnly,selectCandidates,runBatch,readBatchToa}=require("../static/adhesion-batch.js");
+const {parseContracts,isAdhesionBucket,codeOnly,selectCandidates,runBatch,readBatchToa,restoreQueue}=require("../static/adhesion-batch.js");
 const scope={profile:"natal",date:"2026-11-24",contract:"12345678",epoch:4};
 test("restores a closed tab's list without treating interrupted work as confirmed", () => {
- const {restoreQueue} = require("../static/adhesion-batch.js");
  const saved = JSON.stringify({date:scope.date,rows:[
   {contract:"12345678",label:"Baixado"}, {contract:"23456789",label:"Executando"},
   {contract:"34567890",label:"Na fila"}, {contract:"45678901",label:"Aguardando confirmacao"},
@@ -20,10 +19,28 @@ function fixture(){
  const deps={complete:s=>s==="completed",executed:s=>s==="executed",route:()=>"",valid:()=>true,knownCode:c=>c==="409",assign:()=>{},equipment:()=>({installed:[],removed:[]}),materials:a=>a||[]};
  return {order,capture,payload,deps};
 }
-test("multiple separators, duplicate contracts, invalid values and limit",()=>{
+test("multiple separators, duplicate contracts and invalid values",()=>{
  assert.deepEqual(parseContracts("12345678, 23456789\n12345678; 00001234"),["12345678","23456789","00001234"]);
  assert.throws(()=>parseContracts("12345a")); assert.throws(()=>parseContracts(""));
- assert.throws(()=>parseContracts(Array.from({length:51},(_,i)=>String(10000+i)).join(",")));
+});
+test("accepts, processes and restores 300 distinct contracts in order", async () => {
+ const contracts=Array.from({length:300},(_,i)=>String(10000+i));
+ const queued=parseContracts([...contracts,contracts[0]].join("\n"));
+ assert.deepEqual(queued,contracts);
+ assert.throws(()=>parseContracts([...contracts,"10300"].join(",")),/1 a 300/);
+
+ const processed=[];
+ await runBatch(queued,{
+  active:()=>true,
+  update:()=>{},
+  prepare:async contract=>{processed.push(contract);return [];},
+ });
+ assert.deepEqual(processed,contracts);
+
+ const saved=JSON.stringify({date:scope.date,rows:contracts.map(contract=>({contract,label:"Na fila"}))});
+ const restored=restoreQueue(saved,scope.date);
+ assert.deepEqual(restored.map(row=>row.contract),contracts);
+ assert.ok(restored.every(row=>row.label==="Interrompido"));
 });
 test("Natal and Parnamirim adhesion only, not ADM, unspecified or other city",()=>{
  assert.equal(isAdhesionBucket("natal","NTL-DMV"),true);
