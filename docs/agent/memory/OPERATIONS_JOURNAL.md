@@ -647,3 +647,13 @@ reais, contratos, tokens de autenticação ou informações de sessão.
 **Verificação:** Regressao cobre assinatura concluida, Virtua com miscelaneas e chip, ICCID em miscelanea, codigo 410, status N e identidade divergente.
 
 **Próximo passo/pendência:** Validar producao em modo leitura e usar a fila normal para novas os.
+
+## 2026-11-28 17:28 UTC — Adesao antecipa consulta do proximo contrato
+
+**Motivo:** A fila espera a confirmacao de cada OS e so depois consulta o proximo contrato. Mediana observada de 37,5s entre envios em 28/11.
+
+**Alterado:** Preparar apenas o proximo contrato enquanto a ultima OS do atual aguarda confirmacao; reaproveitar a consulta sem adiantar a escrita e preservar conciliacao e aprovacao antes de enviar.
+
+**Verificação:** Testes Node cobrem a sobreposicao por leitura, ordem dos envios e parada da fila.
+
+**Próximo passo/pendência:** Publicar apos o lote em curso e medir em producao antes de considerar mais de um envio pendente.

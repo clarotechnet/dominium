@@ -561,20 +561,28 @@
   }
   async function runBatch(contracts, hooks) {
     const queue = contracts.map(contract => ({contract, deferred: false}));
-    for(const {contract, deferred} of queue) {
+    let nextPreparation;
+    async function prepareContract(contract) {
+      const prior=await hooks.priorContract?.(contract);
+      if(!hooks.active() || prior) return {prior};
+      const held=[], toaOnly=[];
+      const candidates=await hooks.prepare(contract, reasons=>held.push(...reasons), reason=>toaOnly.push(reason));
+      return {candidates,held,toaOnly};
+    }
+    for(const [index,{contract, deferred}] of queue.entries()) {
       if(!hooks.active()) break;
       hooks.update(contract,"Consultando","Conferindo TOA e Imperium");
       try {
-        const prior=await hooks.priorContract?.(contract);
+        const prefetched=nextPreparation;
+        nextPreparation=undefined;
+        const prepared=prefetched ? await prefetched : {value:await prepareContract(contract)};
+        if(!("value" in prepared)) throw prepared.error;
+        const {prior,candidates,held,toaOnly}=prepared.value;
         if(!hooks.active()) break;
         if(prior) {
           hooks.update(contract,prior.pending?"Aguardando confirmacao":"Tratativa",prior.reason);
           continue;
         }
-        const held = [];
-        const toaOnly=[];
-        const candidates=await hooks.prepare(contract, reasons => held.push(...reasons), reason=>toaOnly.push(reason));
-        if(!hooks.active()) break;
         if(!candidates.length) {
           hooks.update(contract,toaOnly.length?"Somente TOA":"Sem OS em campo",toaOnly.join(" | ")||"Nenhuma baixa enviada.");
           continue;
@@ -598,6 +606,12 @@
               result="pending";
               if(res.requestId) {
                 hooks.update(contract,"Aguardando confirmacao",os+" enviada uma vez. "+audit);
+                const next=queue[index+1];
+                // Prepare at most one contract while the last OS is being confirmed.
+                // The send path still rechecks the report and refreshes the exact OS.
+                if(candidate===candidates.at(-1) && next && hooks.active()) {
+                  nextPreparation=prepareContract(next.contract).then(value=>({value}),error=>({error}));
+                }
                 result=await hooks.confirm(res.requestId,candidate);
               }
             }
@@ -627,6 +641,8 @@
         }
       }
     }
+    // A stop can leave one read in flight. Wait for it before releasing the queue.
+    await nextPreparation;
   }
   function restoreQueue(raw, date) {
     const saved=JSON.parse(raw);

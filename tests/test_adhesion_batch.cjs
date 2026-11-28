@@ -188,6 +188,55 @@ test("pending confirmation never resends, never submits companion while uncertai
  assert.deepEqual(sent,["1","3"]);assert.equal(events.findLast(v=>v[0]==="12345678")[1],"Aguardando confirmacao");assert.equal(events.at(-1)[1],"Baixado");
 });
 
+test("prepares one next contract during confirmation and keeps sends sequential", async()=>{
+ const events=[];
+ let releaseConfirmation, nextStarted;
+ const confirmation=new Promise(resolve=>{releaseConfirmation=resolve;});
+ const nextPrepared=new Promise(resolve=>{nextStarted=resolve;});
+ const batch=runBatch(["first","second","third"],{
+  active:()=>true,
+  update:()=>{},
+  async prepare(contract){
+   events.push("prepare "+contract);
+   if(contract==="second")nextStarted();
+   return (contract==="first"?["first-1","first-2"]:[contract]).map(numOs=>({numOs}));
+  },
+  async send({numOs}){
+   events.push("send "+numOs);
+   return numOs==="first-2"?{pending:true,requestId:"request"}:{closed:true};
+  },
+  async confirm(){return confirmation;},
+ });
+ await nextPrepared;
+ assert.deepEqual(events,["prepare first","send first-1","send first-2","prepare second"]);
+ releaseConfirmation("confirmed");
+ await batch;
+ assert.deepEqual(events,["prepare first","send first-1","send first-2","prepare second",
+  "send second","prepare third","send third"]);
+});
+
+test("stopping during an early preparation prevents the next send", async()=>{
+ let active=true, releasePrepare;
+ const earlyRead=new Promise(resolve=>{releasePrepare=resolve;});
+ const sent=[];
+ let nextStarted;
+ const nextPreparing=new Promise(resolve=>{nextStarted=resolve;});
+ const batch=runBatch(["first","second"],{
+  active:()=>active,
+  update:()=>{},
+  async prepare(contract){
+   if(contract==="second"){nextStarted();await earlyRead;}
+   return [{numOs:contract}];
+  },
+  async send({numOs}){sent.push(numOs);return {pending:true,requestId:"request"};},
+  async confirm(){await nextPreparing;active=false;return "pending";},
+ });
+ await nextPreparing;
+ releasePrepare();
+ await batch;
+ assert.deepEqual(sent,["first"]);
+});
+
 test("a busy read defers one contract and never repeats a close with an uncertain result", async () => {
  const {freshOrders} = require("../static/adhesion-batch.js");
  const order = [], sends = [];
