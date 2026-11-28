@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-28T12:39:34+00:00",
+  "generated_at": "2026-11-28T16:49:34+00:00",
   "schema": 2,
-  "source_fingerprint": "e112e28953f0bc4faa92b15e6be14f9c2c17494490be8bb50ea19067f5851405",
+  "source_fingerprint": "d5e6d27ae3b4870b119d622b8afdb3ed9394600ff756d42b9fb8d04bb30c932b",
   "files": [
     {
       "path": ".agents/skills/dominium-memory/SKILL.md",
@@ -5716,8 +5716,8 @@
     {
       "path": "static/adhesion-batch.js",
       "category": "frontend",
-      "bytes": 48661,
-      "sha256": "ff6db790da7c79c1fa47a3708b6f8d115dab327fb37af093fadcf462addcb248",
+      "bytes": 48662,
+      "sha256": "822cc708cfa279ac8d159df9df194243c197e3f137af4451d81b750ce5c56eb3",
       "summary": "Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */",
       "imports": [],
       "endpoints": [
@@ -6097,8 +6097,8 @@
     {
       "path": "static/index.html",
       "category": "frontend",
-      "bytes": 193548,
-      "sha256": "c5a18b3356bf2934ded1bd17c6eed4ddaad0da5816ba0ad0988a912ce7d9fc89",
+      "bytes": 193549,
+      "sha256": "9ee2273f0f65da2327462de399c48bb08698cedc4e436745094c9eb115b42639",
       "summary": "",
       "imports": [],
       "endpoints": [
@@ -6831,8 +6831,8 @@
     {
       "path": "tests/test_adhesion_batch.cjs",
       "category": "tests",
-      "bytes": 48405,
-      "sha256": "ebc3b9ee662f2fe85cf74c90c02424aa4b38df62e75ad2169b5ffa87b978a3b1",
+      "bytes": 49068,
+      "sha256": "fa4b52c8e2080a107dd58c7079834ab9c8da7822f56b511b81077e14ff26937d",
       "summary": "",
       "imports": [],
       "endpoints": [],

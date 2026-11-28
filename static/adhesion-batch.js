@@ -1,7 +1,7 @@
 /* Lista explicita de contratos: sem varredura geral, sem fallback DataSnap. */
 (function(root) {
   "use strict";
-  const MAX = 50;
+  const MAX = 300;
   const PREFIXES = { natal:["NTL","PWM"] };
   function parseContracts(raw) {
     const tokens = String(raw || "").trim().split(/[\s,;]+/).filter(Boolean);
