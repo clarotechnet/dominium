@@ -105,6 +105,40 @@
   function serviceWords(service) {
     return serviceLabel(service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"");
   }
+  function isChipService(service) {
+    return serviceWords(service)==="ENVIO DE CHIP VIA TECNICO";
+  }
+  function chipTaskCode(task) {
+    const code=String(task?.close_code||"").trim();
+    return /^(?:-+|N\/?A|NULL|NONE)$/i.test(code) ? "" : code;
+  }
+  function installedChipCapture(capture, equipmentType) {
+    const installed=capture.installed_equipment||[];
+    const materials=capture.materials||[];
+    const mobileLabel=item=>!/\b(?:SMART\s*CARD|NAGRA|DECODER|DECO|EMTA|MODEM)\b/
+      .test(serviceWords(`${item.type||""} ${item.description||""}`));
+    const fromEquipment=new Map(installed.filter(item=>mobileLabel(item) && equipmentType?.(item)==="chip")
+      .map(item=>[String(item.serial||"").trim(),item])
+      .filter(([serial])=>/^\d{18,25}$/.test(serial)));
+    const fromMaterial=item=>{
+      if(!mobileLabel(item))return "";
+      for(const value of [item.serial,item.identifier,item.material_code,item.code,item.description]){
+        const match=/^(?:(?:ICCID|TELEFONICO|CHIP)\s*[:#=-]?\s*)?(\d{18,25})$/i.exec(
+          serviceLabel(value).trim(),
+        );
+        if(match)return match[1];
+      }
+      return "";
+    };
+    const materialSerials=materials.map(fromMaterial);
+    const serials=new Set([...fromEquipment.keys(),...materialSerials.filter(Boolean)]);
+    if(serials.size!==1)return null;
+    const [serial]=serials;
+    return {...capture,
+      installed_equipment:fromEquipment.has(serial)?installed:[...installed,{type:"chip",serial}],
+      materials:materials.filter((_,i)=>materialSerials[i]!==serial),
+    };
+  }
   function captureDate(capture) {
     const value=String(capture.scheduled_date||"").slice(0,10);
     return /^\d{2}\/\d{2}\/\d{4}$/.test(value)?value.split("/").reverse().join("-"):value;
@@ -280,7 +314,7 @@
       if(virtua.length!==1 || voip.length!==1)continue;
       const capture=virtua[0].capture;
       if(!deps.equipmentType || !group.every(c=>c.capture===capture))continue;
-      const chip=group.filter(c=>kind(c)==="ENVIO DE CHIP VIA TECNICO");
+      const chip=group.filter(c=>isChipService(c.order.service));
       const allowed=group.every(c=>c===virtua[0]||c===voip[0]||chip.includes(c)||c.batchCodeOnly
         || /\bMESH\b/.test(kind(c)));
       const installed=capture.installed_equipment, removed=capture.removed_equipment;
@@ -340,11 +374,26 @@
       byNumber.set(os,row);
     }
     const candidates=[], toaOnly=[], seen=new Set(), imperiumOnly=new Set(), blockedCodes=new Map();
-    for(const capture of payload.results||[]) {
+    for(const rawCapture of payload.results||[]) {
+      const tasks=rawCapture.tasks||[];
+      const chipOrders=(rawCapture.imperium_matches||[]).filter(o=>isChipService(o.service));
+      const chipOrder=chipOrders.length===1?chipOrders[0]:null;
+      const chipTask=chipOrder && byNumber.has(String(chipOrder.num_os))
+        ? tasks.find(task=>String(task.os_number)===String(chipOrder.num_os)) : null;
+      const linkedChip=chipTask && importBucket(chipOrder,scope,rawCapture);
+      // An installed ICCID on the same completed activity supplies positive
+      // evidence for the exact imported chip order when the TOA task is omitted.
+      const chipOmitted=linkedChip && (chipTask.imperium_only===true
+        || chipTask.source==="imperium_contract_status") && !chipTaskCode(chipTask);
+      const chipExecuted=chipTask && /^(?:E|EXECUTAD[AO]|EXECUTED)$/.test(serviceLabel(chipTask.status).trim());
+      const canResolveChip=chipTask && ["","409","706"].includes(chipTaskCode(chipTask))
+        && (chipOmitted || (chipExecuted && (!displayOnlyTask(chipTask) || linkedChip)));
+      const chipCapture=canResolveChip ? installedChipCapture(rawCapture,deps.equipmentType) : null;
+      const capture=chipCapture||rawCapture;
       const matching=(capture.tasks||[]).filter(task=>{
         const os=String(task.os_number||"");
         if(!byNumber.has(os)) return false;
-        if(displayOnlyTask(task)) {
+        if(displayOnlyTask(task) && !(task===chipTask && chipCapture)) {
           imperiumOnly.add(os);
           return false;
         }
@@ -355,7 +404,8 @@
       for(const task of matching) {
         const os=String(task.os_number), activeOrder=byNumber.get(os);
         const exact=(capture.imperium_matches||[]).filter(o=>String(o.num_os)===os && String(o.contract)===contract && Number(o.id_os)===Number(activeOrder.id_os));
-        if(seen.has(os) || exact.length!==1 || !deps.valid(exact[0],capture) || !deps.executed(task.status)) throw Error("OS sem correspondencia unica, aprovada e executada: "+os);
+        if(seen.has(os) || exact.length!==1 || !deps.valid(exact[0],capture)
+          || !(deps.executed(task.status) || (task===chipTask && chipOmitted && chipCapture))) throw Error("OS sem correspondencia unica, aprovada e executada: "+os);
         const order=exact[0], service=String(order.service||"");
         const origin=importBucket(order,scope,capture);
         if(order.operation_source==="toa_import" && !origin) throw Error("OS "+os+": origem importada sem comprovacao de bucket, data e atividade de adesao.");
@@ -363,25 +413,23 @@
         if(route && origin && route!==origin) throw Error("Bucket TOA diverge da origem importada.");
         if(!service || /DESCONEX|RETIRADA\s+DE\s+ASSINATURA/i.test(service)) throw Error("Servico fora do escopo de adesao: "+os);
         seen.add(os);
-        let code=String(task.close_code||"").trim();
+        const chipService=isChipService(service);
+        let code=chipService ? chipTaskCode(task) : String(task.close_code||"").trim();
         if(code==="410"){
           toaOnly.push({capture,order,numOs:os,code,batchCodeOnly:codeOnly(service)});
           continue;
+        }
+        if(chipService && (code==="409" || code==="706" || (!code && (chipExecuted || chipOmitted)))) {
+          if(task!==chipTask || !chipCapture || !deps.knownCode("706")) {
+            throw Error("Chip sem ICCID unico ou tarefa executada confirmada para codigo 706: "+os);
+          }
+          code="706";
         }
         if(!/^\d{3}$/.test(code) || code==="430" || !deps.knownCode(code)) {
           const reason=!code ? "sem codigo de baixa confirmado no TOA" : /^\d{3}$/.test(code)
             ? "com codigo "+code+" indisponivel para a baixa oficial de adesao" : "com codigo de baixa invalido no TOA";
           blockedCodes.set(os,"OS "+os+" "+reason);
           continue;
-        }
-        const chipService=serviceLabel(service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"")==="ENVIO DE CHIP VIA TECNICO";
-        // TOA records generic success 409; the Imperium chip service uses 706.
-        // Do not convert a nonexecuted task or an unidentified ICCID.
-        if(chipService && code==="409"){
-          const chips=new Set((capture.installed_equipment||[]).filter(i=>deps.equipmentType?.(i)==="chip" && /^\d{18,25}$/.test(String(i.serial||""))).map(i=>String(i.serial)));
-          const chipOrders=(capture.imperium_matches||[]).filter(o=>serviceLabel(o.service).replace(/[^A-Z0-9]+/g," ").trim().replace(/^\d+ /,"")==="ENVIO DE CHIP VIA TECNICO");
-          if(!["E","EXECUTADA","EXECUTADO","EXECUTED"].includes(serviceLabel(task.status).trim()) || chips.size!==1 || chipOrders.length!==1 || !deps.knownCode("706"))throw Error("Chip sem ICCID ou tarefa executada confirmada para codigo 706: "+os);
-          code="706";
         }
         candidates.push({capture,task:{...task,close_code:code},order,numOs:os,code,isDisconnect:false,batchAdhesion:true,batchScope:{profile,date,epoch:scope.epoch},batchCodeOnly:codeOnly(service)});
       }
